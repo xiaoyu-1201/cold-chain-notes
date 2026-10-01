@@ -456,6 +456,8 @@ export interface SlideData {
   blocks: Block[]
   /** 第二階段（進階）內容 */
   advanced?: boolean
+  /** 內容來源：沒標＝課堂錄音／講義；handbook＝一丞手冊延伸；extra＝業界常識補充 */
+  source?: 'handbook' | 'extra'
   /** 每頁底部「📌 本章小結論」 */
   conclusion: { label?: string; text: ReactNode }
 }

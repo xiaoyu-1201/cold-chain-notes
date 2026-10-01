@@ -10,6 +10,7 @@ import { interactionHints } from '../lib/interactions'
 import { toneStyles } from '../lib/tone'
 import { ChapterDrawer } from './ChapterDrawer'
 import { MobileBlock } from './mobile/MobileBlocks'
+import { SOURCE_LABEL } from './SlideCard'
 
 const scrollToId = (id: string) => document.getElementById(`reader-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
@@ -117,6 +118,7 @@ function MobileSlide({ slide, index }: { slide: SlideData; index: number }) {
             <span className="font-mono text-slate-500">{pad(index + 1)}</span>
             <span className={cn('rounded-md border px-2 py-0.5 font-semibold', toneStyles[part.tone].chip)}>{part.short}</span>
             {slide.chapter && <span className="rounded-md border border-white/15 px-2 py-0.5 font-semibold text-slate-300">{slide.chapter}</span>}
+            {slide.source && <span className="rounded-md border border-white/15 px-2 py-0.5 font-semibold text-slate-400">{SOURCE_LABEL[slide.source]}</span>}
             {slide.advanced && <span className="rounded-md border border-amber-400/40 bg-amber-400/10 px-2 py-0.5 font-semibold text-amber-200">進階</span>}
           </div>
           <h2 className="mt-2 text-[26px] font-black leading-[1.3] text-white">{slide.title}</h2>

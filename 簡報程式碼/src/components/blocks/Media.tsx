@@ -1,9 +1,11 @@
-import { ArrowUpRight, AudioLines, Headphones, MousePointerClick, Play } from 'lucide-react'
+import { ArrowUpRight, AudioLines, Box, Headphones, MousePointerClick, Play } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { useDeck } from '../../context/deck'
 import type { AudioBlock, HotspotGroup, HotspotsBlock } from '../../data/types'
 import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
+import { part3DFor } from '../three/ids'
+import { PartViewer } from '../three/PartViewer'
 import { Badge } from '../ui/Badge'
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
@@ -33,6 +35,8 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
   const selected = block.items.find((i) => i.id === selectedId) ?? block.items[0]
   const group = block.groups[selected.group]
   const gt = toneStyles[group.tone]
+  const model = part3DFor(selected.id)
+  const [view, setView] = useState(false)
 
   const playAt = (sec: number) => {
     const audio = audioRef.current
@@ -90,6 +94,19 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
           <p className="mt-0.5 font-mono text-[16px] uppercase tracking-[0.14em] text-slate-400">{selected.en}</p>
           <p className="mt-3 text-[19px] leading-normal text-slate-200">{selected.func}</p>
           <div className="mt-4 flex flex-wrap gap-2">
+            {model && (
+              <button
+                type="button"
+                onClick={() => setView(true)}
+                className={cn(
+                  'flex items-center gap-1.5 rounded-lg border border-sky-400/50 bg-sky-400/15 px-3 py-1.5 text-[16px] font-semibold text-sky-100 transition hover:bg-sky-400/25',
+                  focusRing,
+                )}
+              >
+                <Box className="size-4" aria-hidden />
+                3D 看構造
+              </button>
+            )}
             {selected.slide && (
               <button
                 type="button"
@@ -137,6 +154,7 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
             )}
           </div>
           {block.audioSrc2 && <audio ref={audio2Ref} src={block.audioSrc2} preload="none" controls={false} />}
+          {view && model && <PartViewer id={model} title={selected.name} alias={`講義型號 ${selected.code}`} onClose={() => setView(false)} />}
         </div>
         {block.note && <p className="-mt-1 text-[17px] leading-snug text-amber-200/90">{block.note}</p>}
 

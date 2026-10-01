@@ -7,9 +7,9 @@ import type { LegendItem, Part3DId } from './models'
 
 const Part3D = lazy(() => import('./Part3D'))
 
-/** 店裡實拍或自由授權照片：放進 src/assets/parts/<id>.jpg 就會自動出現 */
+/** 照片：src/assets/parts/<file>.jpg，對應與出處寫在 data/photoCredits.ts */
 const photos = import.meta.glob<string>('../../assets/parts/*.{jpg,jpeg,png,webp}', { eager: true, import: 'default' })
-const photoOf = (id: string) => Object.entries(photos).find(([path]) => path.split('/').pop()?.split('.')[0] === id)?.[1]
+const photoOf = (file?: string) => (file ? Object.entries(photos).find(([path]) => path.split('/').pop()?.split('.')[0] === file)?.[1] : undefined)
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
 
@@ -22,8 +22,8 @@ interface PartViewerProps {
 
 /** 零件構造檢視（全螢幕）：3D 可轉可放大、可剖開；有照片時可切換看照片 */
 export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
-  const photo = photoOf(id)
   const credit = photoCredits[id]
+  const photo = photoOf(credit?.file)
   const [tab, setTab] = useState<'3d' | 'photo'>('3d')
   const [cut, setCut] = useState(false)
   const [spin, setSpin] = useState(true)
@@ -117,17 +117,21 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
           </div>
         ) : (
           <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 p-4">
-            {photo ? (
+            {photo && credit ? (
               <>
-                <img src={photo} alt={title} className="min-h-0 max-w-full flex-1 rounded-2xl object-contain" />
-                {credit && (
-                  <p className="text-center text-[13px] text-slate-400">
-                    照片：{credit.title}・{credit.author}・{credit.license}・
-                    <a href={credit.source} target="_blank" rel="noreferrer" className="underline hover:text-sky-300">
-                      來源
-                    </a>
-                  </p>
-                )}
+                <img src={photo} alt={title} className="min-h-0 max-w-full flex-1 rounded-2xl bg-white object-contain" />
+                <p className="max-w-3xl text-center text-[17px] font-semibold leading-snug text-amber-100">{credit.note}</p>
+                <p className="text-center text-[13px] text-slate-400">
+                  照片：{credit.title}・{credit.author}・
+                  <a href={credit.licenseUrl} target="_blank" rel="noreferrer" className="underline hover:text-sky-300">
+                    {credit.license}
+                  </a>
+                  ・
+                  <a href={credit.source} target="_blank" rel="noreferrer" className="underline hover:text-sky-300">
+                    來源
+                  </a>
+                  （已縮圖）
+                </p>
               </>
             ) : (
               <div className="max-w-md rounded-2xl border border-dashed border-white/20 p-6 text-center">

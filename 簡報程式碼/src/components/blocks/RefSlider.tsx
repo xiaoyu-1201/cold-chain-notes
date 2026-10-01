@@ -1,6 +1,6 @@
 import { ArrowLeftRight } from 'lucide-react'
 import { useState } from 'react'
-import { ATM, pressureAt, REFRIGERANTS, temperatureAt, type RefrigerantId } from '../../data/refrigerants'
+import { ATM, isBlend, pressureAt, REFRIGERANTS, temperatureAt, type RefrigerantId } from '../../data/refrigerants'
 import { cn } from '../../lib/cn'
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
@@ -126,11 +126,16 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
             {t.toFixed(1)} <span className={cn('font-bold text-slate-400', small)}>°C</span>
           </p>
           <p className={cn('text-slate-300', small)}>絕對壓力 {pAbs.toFixed(2)} bar（錶壓＋1）</p>
+          {isBlend(id) && (
+            <p className={cn('text-amber-200/90', small)}>
+              混合冷媒：上面是露點（看低壓）；泡點 {temperatureAt(id, pAbs, 'bubble').toFixed(1)}°C（看高壓）
+            </p>
+          )}
         </button>
       </div>
 
       <p className={cn('text-slate-500', mobile ? 'text-[12px]' : 'text-[17px]')}>
-        資料：NIST Chemistry WebBook（SRD 69）飽和數據，每 5°C 內插；R404A、R410A 等混合冷媒之後依廠商 PT 表補上。
+        資料：R134a、R22、R32 為 NIST Chemistry WebBook；R404A、R410A 為 CoolProp 計算（與 NIST 交叉比對）；每 5°C 內插，僅供參考。
       </p>
     </div>
   )

@@ -11,6 +11,10 @@ export function QuizCards({ block }: { block: QuizBlock }) {
   const { goToId, numberOf } = useDeck()
   const [open, setOpen] = useState<number[]>([])
   const toggle = (i: number) => setOpen((o) => (o.includes(i) ? o.filter((x) => x !== i) : [...o, i]))
+  // 題目少（各步小測驗）用單欄大字；題目多（總複習）用兩欄
+  const big = block.items.length <= 4
+  const cols = big ? 1 : 2
+  const rows = Math.ceil(block.items.length / cols)
 
   return (
     <div className="flex h-full flex-col gap-3">
@@ -25,7 +29,10 @@ export function QuizCards({ block }: { block: QuizBlock }) {
           全部蓋回去
         </button>
       </div>
-      <ol className="grid min-h-0 flex-1 grid-cols-2 grid-rows-5 gap-3">
+      <ol
+        className="grid min-h-0 flex-1 gap-3"
+        style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))` }}
+      >
         {block.items.map((item, i) => {
           const shown = open.includes(i)
           return (
@@ -39,16 +46,17 @@ export function QuizCards({ block }: { block: QuizBlock }) {
                   if (e.key === 'Enter') toggle(i)
                 }}
                 className={cn(
-                  'flex h-full cursor-pointer gap-4 rounded-2xl border px-5 py-3 transition',
+                  'flex h-full cursor-pointer gap-4 rounded-2xl border transition',
+                  big ? 'items-center px-8 py-5' : 'px-5 py-3',
                   shown ? 'border-emerald-400/40 bg-emerald-400/[0.07]' : 'border-white/10 bg-white/[0.03] hover:border-sky-400/40',
                   focusRing,
                 )}
               >
-                <span className="font-mono text-[20px] font-black text-sky-300">{pad(i + 1)}</span>
+                <span className={cn('font-mono font-black text-sky-300', big ? 'text-[30px]' : 'text-[20px]')}>{pad(i + 1)}</span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[21px] font-bold leading-snug text-white">{item.q}</p>
+                  <p className={cn('font-bold leading-snug text-white', big ? 'text-[30px]' : 'text-[21px]')}>{item.q}</p>
                   {shown ? (
-                    <p className="mt-1 text-[18px] leading-snug text-emerald-100">
+                    <p className={cn('mt-1 leading-snug text-emerald-100', big ? 'text-[25px]' : 'text-[18px]')}>
                       {item.a}
                       {item.slide && (
                         <button

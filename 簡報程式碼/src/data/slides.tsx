@@ -2162,6 +2162,80 @@ const slideList: SlideData[] = [
     },
   },
 
+  /* ───────────────────────── 各步小測驗（每一步結尾，提取練習） ───────────────────────── */
+  ...(
+    [
+      {
+        id: 'check-1',
+        part: 'basics',
+        step: '① 原理',
+        items: [
+          { q: '冷凍是在「製造冷」嗎？那為什麼會涼？', a: '不是；是熱被吸走了——液體蒸發成氣體時要吸熱。', slide: 'cycle-lesson' },
+          { q: '四大金剛是哪四個？', a: '壓縮機、冷凝器（熱排）、膨脹閥、蒸發器（冷排）。', slide: 'cycle-lesson' },
+          { q: '壓縮機能壓縮液體嗎？哪個零件在保護它？', a: '不能；液氣分離器讓液態沉下去，只讓氣態回壓縮機。', slide: 'cycle-lesson' },
+        ],
+      },
+      {
+        id: 'check-2',
+        part: 'units',
+        step: '② 單位',
+        items: [
+          { q: '1 吋等於幾分？幾 mm？', a: '1 吋＝8 分＝25.4 mm，所以 1 分＝3.175 mm。', slide: 'units' },
+          { q: '銅管量起來 9.52 mm，是幾分？', a: '3 分（3 × 3.175 mm）。', slide: 'units' },
+          { q: '溫度和壓力的關係，要用什麼查？', a: '冷媒工具 App（Ref Tools），查資料就能幫客人排除故障。', slide: 'units' },
+        ],
+      },
+      {
+        id: 'check-3',
+        part: 'industry',
+        step: '③ 裝置',
+        items: [
+          { q: '我們在冷鏈產業鏈的哪個位置？做什麼？', a: '在代理商和工程行之間：備貨庫存、技術諮詢、急件調貨、規格替代。', slide: 'industry' },
+          { q: '客人說「我要幾坪的冷藏庫」，第一個要問什麼？', a: '冰什麼——才知道要多大的壓縮機。', slide: 'recording-2' },
+          { q: '為什麼要知道客人的裝置用在哪裡？', a: '才知道怎麼跟客人溝通、需要多大的壓縮機。', slide: 'recording-3' },
+        ],
+      },
+      {
+        id: 'check-4',
+        part: 'components',
+        step: '④ 元件',
+        items: [
+          { q: '壓縮機 1 馬，散熱器一般配幾馬？', a: '2 馬；膨脹閥閥芯、冷排大小也都跟著壓縮機配。', slide: 'recording-2' },
+          { q: '乾燥過濾器為什麼一定要裝？', a: '系統只能有冷媒、不能有水，水會結冰塞住管路；它吸水也濾雜質。', slide: 'handout' },
+          { q: '視液鏡變色代表什麼？', a: '系統裡含水（會變三種顏色）；冷媒夠時，液態流過像透明的水。', slide: 'handout' },
+        ],
+      },
+      {
+        id: 'check-5',
+        part: 'practice',
+        step: '⑤ 實務',
+        items: [
+          { q: '高壓過高，第一步先查什麼？', a: '冷凝器：摸出風溫度、看鰭片髒不髒、風扇轉向對不對。', slide: 'ch9' },
+          { q: '低壓過低，先看哪裡？', a: '蒸發器有沒有結霜、風扇有沒有轉，再看視液鏡有沒有氣泡。', slide: 'ch9' },
+          { q: '客人一進門就要補冷媒，你要先問什麼？', a: '漏在哪、補過幾次；反覆補代表有漏點，要先檢漏、修漏。', slide: 'sop' },
+        ],
+      },
+    ] as const
+  ).map(
+    ({ id, part, step, items }): SlideData => ({
+      id,
+      part,
+      chapter: '小測驗',
+      mark: 'CHECK',
+      title: `${step}｜小測驗`,
+      en: 'Checkpoint',
+      blocks: [{ type: 'quiz', items: items.map((item) => ({ ...item })) }],
+      conclusion: {
+        label: '小測驗',
+        text: (
+          <>
+            先自己說出答案再翻開；答不出來的點「P.xx」回去看，<Hl>全部答對再往下一步</Hl>。
+          </>
+        ),
+      },
+    }),
+  ),
+
   /* ───────────────────────── 自我檢測（提取練習） ───────────────────────── */
   {
     id: 'quiz',
@@ -2417,16 +2491,21 @@ const ORDER = [
   'cycle-lesson',
   'ch0',
   'ch1',
+  'check-1',
   'units',
+  'check-2',
   'industry',
+  'check-3',
   'products',
   'ch2',
   'ch3',
   'ch4',
   'ch5',
   'handout',
+  'check-4',
   'ch9',
   'sop',
+  'check-5',
   'recording',
   'recording-2',
   'recording-3',

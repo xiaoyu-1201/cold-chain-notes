@@ -1,5 +1,5 @@
 /** 蒸氣壓縮式冷凍循環示意圖（動態冷媒流向；可選擇開啟點選互動） */
-import type { KeyboardEvent, ReactElement } from 'react'
+import { useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactElement, type RefObject } from 'react'
 import type { CycleNodeId } from '../../data/cycleNotes'
 import { cn } from '../../lib/cn'
 
@@ -43,19 +43,14 @@ const PART_HITS: Record<'comp' | 'cond' | 'txv' | 'evap', { label: string; shape
     label: '壓縮機',
     shapes: (
       <>
-        <circle cx={680} cy={280} r={66} />
+        <circle cx={680} cy={280} r={62} />
         <rect x={466} y={250} width={148} height={60} rx={12} />
       </>
     ),
   },
   cond: {
     label: '冷凝器',
-    shapes: (
-      <>
-        <rect x={244} y={44} width={332} height={96} rx={16} />
-        <rect x={330} y={146} width={160} height={48} rx={10} />
-      </>
-    ),
+    shapes: <rect x={248} y={44} width={324} height={96} rx={16} />,
   },
   txv: {
     label: '膨脹閥',
@@ -68,13 +63,14 @@ const PART_HITS: Record<'comp' | 'cond' | 'txv' | 'evap', { label: string; shape
   },
   evap: {
     label: '蒸發器',
-    shapes: (
-      <>
-        <rect x={244} y={420} width={332} height={96} rx={16} />
-        <rect x={330} y={364} width={160} height={48} rx={10} />
-      </>
-    ),
+    shapes: <rect x={248} y={420} width={324} height={96} rx={16} />,
   },
+}
+
+/** 冷凝器、蒸發器的文字標籤點選框（量測前的預設值） */
+const LABEL_FALLBACK: Record<'cond' | 'evap', Box> = {
+  cond: { x: 330, y: 146, w: 160, h: 48 },
+  evap: { x: 330, y: 364, w: 160, h: 48 },
 }
 
 const PIPE_LABEL_HITS: Record<'discharge' | 'liquid' | 'mixture' | 'suction', { x: number; y: number; w: number; h: number }> = {
@@ -111,41 +107,60 @@ function SmallLabel({ x, y, text, anchor = 'start' }: { x: number; y: number; te
 function SmallParts() {
   return (
     <g>
+      {/* 每個 data-hit 群組會被量測，用來畫置中的點選虛線框 */}
       {/* 油分離器：排氣管上 */}
-      <rect x={670} y={168} width={20} height={34} rx={8} fill="#1f2937" stroke="#f87171" strokeWidth={2.5} />
-      <SmallLabel x={698} y={198} text="油分離器" />
+      <g data-hit="oub">
+        <rect x={670} y={168} width={20} height={34} rx={8} fill="#1f2937" stroke="#f87171" strokeWidth={2.5} />
+        <SmallLabel x={698} y={190} text="油分離器" />
+      </g>
       {/* 壓力開關：接壓縮機 */}
       <line x1={738} y1={280} x2={754} y2={280} stroke="#c4b5fd" strokeWidth={2} strokeDasharray="3 3" />
-      <rect x={754} y={268} width={44} height={24} rx={5} fill="#1e1b4b" stroke="#c4b5fd" strokeWidth={2} />
-      <text x={776} y={285} textAnchor="middle" fontSize={12} fontWeight={800} className="fill-violet-200">
-        KP
-      </text>
-      <SmallLabel x={776} y={309} text="壓力開關" anchor="middle" />
+      <g data-hit="kp15">
+        <rect x={754} y={268} width={44} height={24} rx={5} fill="#1e1b4b" stroke="#c4b5fd" strokeWidth={2} />
+        <text x={776} y={285} textAnchor="middle" fontSize={12} fontWeight={800} className="fill-violet-200">
+          KP
+        </text>
+        <SmallLabel x={776} y={309} text="壓力開關" anchor="middle" />
+      </g>
       {/* 儲液器、手閥：液管水平段 */}
-      <rect x={204} y={83} width={34} height={18} rx={8} fill="#1f2937" stroke="#fbbf24" strokeWidth={2.5} />
-      <SmallLabel x={221} y={74} text="儲液器" anchor="middle" />
-      <polygon points="164,85 172,92 164,99" fill="#1f2937" stroke="#fbbf24" strokeWidth={2} strokeLinejoin="round" />
-      <polygon points="180,85 172,92 180,99" fill="#1f2937" stroke="#fbbf24" strokeWidth={2} strokeLinejoin="round" />
-      <line x1={172} y1={92} x2={172} y2={81} stroke="#fbbf24" strokeWidth={2} />
-      <SmallLabel x={172} y={74} text="手閥" anchor="middle" />
+      <g data-hit="receiver">
+        <rect x={204} y={83} width={34} height={18} rx={8} fill="#1f2937" stroke="#fbbf24" strokeWidth={2.5} />
+        <SmallLabel x={221} y={74} text="儲液器" anchor="middle" />
+      </g>
+      <g data-hit="gbc">
+        <polygon points="164,85 172,92 164,99" fill="#1f2937" stroke="#fbbf24" strokeWidth={2} strokeLinejoin="round" />
+        <polygon points="180,85 172,92 180,99" fill="#1f2937" stroke="#fbbf24" strokeWidth={2} strokeLinejoin="round" />
+        <line x1={172} y1={92} x2={172} y2={81} stroke="#fbbf24" strokeWidth={2} />
+        <SmallLabel x={172} y={74} text="手閥" anchor="middle" />
+      </g>
       {/* 乾燥過濾器、視液鏡、電磁閥：液管垂直段 */}
-      <rect x={132} y={110} width={16} height={30} rx={6} fill="#1f2937" stroke="#fbbf24" strokeWidth={2.5} />
-      <SmallLabel x={156} y={130} text="乾燥過濾器" />
-      <circle cx={140} cy={161} r={9} fill="#0f172a" stroke="#fbbf24" strokeWidth={2.5} />
-      <circle cx={140} cy={161} r={4} fill="#fde68a" fillOpacity={0.7} />
-      <SmallLabel x={156} y={166} text="視液鏡" />
-      <rect x={134} y={186} width={12} height={8} rx={2} fill="#64748b" />
-      <rect x={131} y={194} width={18} height={18} rx={3} fill="#1f2937" stroke="#fbbf24" strokeWidth={2.5} />
-      <SmallLabel x={156} y={208} text="電磁閥" />
+      <g data-hit="dml">
+        <rect x={132} y={110} width={16} height={30} rx={6} fill="#1f2937" stroke="#fbbf24" strokeWidth={2.5} />
+        <SmallLabel x={156} y={130} text="乾燥過濾器" />
+      </g>
+      <g data-hit="sgi">
+        <circle cx={140} cy={161} r={9} fill="#0f172a" stroke="#fbbf24" strokeWidth={2.5} />
+        <circle cx={140} cy={161} r={4} fill="#fde68a" fillOpacity={0.7} />
+        <SmallLabel x={156} y={166} text="視液鏡" />
+      </g>
+      <g data-hit="evr">
+        <rect x={134} y={186} width={12} height={8} rx={2} fill="#64748b" />
+        <rect x={131} y={194} width={18} height={18} rx={3} fill="#1f2937" stroke="#fbbf24" strokeWidth={2.5} />
+        <SmallLabel x={156} y={208} text="電磁閥" />
+      </g>
       {/* 溫控器：控制電磁閥與壓縮機 */}
       <line x1={114} y1={210} x2={130} y2={204} stroke="#c4b5fd" strokeWidth={2} strokeDasharray="3 3" />
-      <rect x={34} y={198} width={80} height={24} rx={6} fill="#1e1b4b" stroke="#c4b5fd" strokeWidth={2} />
-      <text x={74} y={215} textAnchor="middle" fontSize={13} fontWeight={800} className="fill-violet-200">
-        溫控器
-      </text>
+      <g data-hit="tc">
+        <rect x={34} y={198} width={80} height={24} rx={6} fill="#1e1b4b" stroke="#c4b5fd" strokeWidth={2} />
+        <text x={74} y={215} textAnchor="middle" fontSize={13} fontWeight={800} className="fill-violet-200">
+          溫控器
+        </text>
+      </g>
       {/* 液氣分離器：吸氣管上 */}
-      <rect x={667} y={402} width={26} height={38} rx={9} fill="#1f2937" stroke="#38bdf8" strokeWidth={2.5} />
-      <SmallLabel x={700} y={440} text="液氣分離器" />
+      <g data-hit="acc">
+        <rect x={667} y={402} width={26} height={38} rx={9} fill="#1f2937" stroke="#38bdf8" strokeWidth={2.5} />
+        <SmallLabel x={700} y={426} text="液氣分離器" />
+      </g>
     </g>
   )
 }
@@ -163,17 +178,46 @@ function HeatArrow({ x, y, color }: { x: number; y: number; color: string }) {
   )
 }
 
-function Label({ x, y, title, sub }: { x: number; y: number; title: string; sub: string }) {
+function Label({ x, y, title, sub, hit }: { x: number; y: number; title: string; sub: string; hit?: string }) {
   return (
-    <>
+    <g data-hit={hit}>
       <text x={x} y={y} textAnchor="middle" fontSize={21} fontWeight={800} className="fill-slate-50">
         {title}
       </text>
       <text x={x} y={y + 22} textAnchor="middle" fontSize={14} className="fill-slate-400 font-mono" letterSpacing={1.5}>
         {sub}
       </text>
-    </>
+    </g>
   )
+}
+
+type Box = { x: number; y: number; w: number; h: number }
+
+/** 量測各 data-hit 群組的實際外框（不同電腦字型寬度不同），回傳加上留白後的點選框 */
+function useHitBoxes(svgRef: RefObject<SVGSVGElement | null>, enabled: boolean) {
+  const [boxes, setBoxes] = useState<Record<string, Box>>({})
+  useLayoutEffect(() => {
+    const svg = svgRef.current
+    if (!enabled || !svg) return
+    const measure = () => {
+      const next: Record<string, Box> = {}
+      svg.querySelectorAll<SVGGraphicsElement>('[data-hit]').forEach((el) => {
+        const id = el.dataset.hit
+        if (!id) return
+        const b = el.getBBox()
+        const [px, py] = id.endsWith('-label') ? [14, 6] : [7, 5]
+        next[id] = { x: b.x - px, y: b.y - py, w: b.width + px * 2, h: b.height + py * 2 }
+      })
+      setBoxes(next)
+    }
+    measure()
+    let alive = true
+    document.fonts?.ready.then(() => alive && measure())
+    return () => {
+      alive = false
+    }
+  }, [svgRef, enabled])
+  return boxes
 }
 
 function StateText({ x, y, lines, anchor, color }: { x: number; y: number; lines: string[]; anchor: 'start' | 'end'; color: string }) {
@@ -213,9 +257,12 @@ export function CycleDiagram({ className, interactive = false, selected = null, 
   })
 
   const selectedPipe = selected && selected in PIPE_PATHS ? PIPE_PATHS[selected as keyof typeof PIPE_PATHS] : null
+  const svgRef = useRef<SVGSVGElement>(null)
+  const boxes = useHitBoxes(svgRef, interactive)
 
   return (
     <svg
+      ref={svgRef}
       viewBox="0 0 820 560"
       className={className}
       role="img"
@@ -291,11 +338,11 @@ export function CycleDiagram({ className, interactive = false, selected = null, 
 
       {/* 冷凝器 */}
       <rect x="250" y="50" width="320" height="84" rx="14" fill="#f97316" fillOpacity="0.08" stroke="#fb923c" strokeOpacity="0.55" strokeWidth={2} />
-      <Label x={410} y={166} title="② 冷凝器" sub="CONDENSER" />
+      <Label x={410} y={166} title="② 冷凝器" sub="CONDENSER" hit="cond-label" />
 
       {/* 蒸發器 */}
       <rect x="250" y="426" width="320" height="84" rx="14" fill="#0ea5e9" fillOpacity="0.08" stroke="#38bdf8" strokeOpacity="0.55" strokeWidth={2} />
-      <Label x={410} y={384} title="④ 蒸發器" sub="EVAPORATOR" />
+      <Label x={410} y={384} title="④ 蒸發器" sub="EVAPORATOR" hit="evap-label" />
 
       {/* 壓縮機 */}
       <circle cx="680" cy="280" r="58" fill="url(#cycle-comp)" stroke="#cbd5e1" strokeWidth={3} />
@@ -323,15 +370,19 @@ export function CycleDiagram({ className, interactive = false, selected = null, 
               </g>
             )
           })}
-          {(Object.keys(PART_HITS) as (keyof typeof PART_HITS)[]).map((id) => (
-            <g key={id} {...hitProps(id, PART_HITS[id].label)} fill={selected === id ? 'rgba(251,191,36,0.12)' : 'transparent'} stroke={selected === id ? '#fbbf24' : 'transparent'} strokeWidth={3}>
-              {PART_HITS[id].shapes}
-            </g>
-          ))}
-                  {(Object.keys(SMALL_HITS) as SmallId[]).map((id) => {
-            const h = SMALL_HITS[id]
+          {(Object.keys(PART_HITS) as (keyof typeof PART_HITS)[]).map((id) => {
+            const labelBox = id === 'cond' || id === 'evap' ? (boxes[`${id}-label`] ?? LABEL_FALLBACK[id]) : null
             return (
-              <g key={id} {...hitProps(id, h.label)}>
+              <g key={id} {...hitProps(id, PART_HITS[id].label)} fill={selected === id ? 'rgba(251,191,36,0.12)' : 'transparent'} stroke={selected === id ? '#fbbf24' : 'transparent'} strokeWidth={3}>
+                {PART_HITS[id].shapes}
+                {labelBox && <rect x={labelBox.x} y={labelBox.y} width={labelBox.w} height={labelBox.h} rx={10} />}
+              </g>
+            )
+          })}
+          {(Object.keys(SMALL_HITS) as SmallId[]).map((id) => {
+            const h = boxes[id] ?? SMALL_HITS[id]
+            return (
+              <g key={id} {...hitProps(id, SMALL_HITS[id].label)}>
                 <rect
                   x={h.x}
                   y={h.y}

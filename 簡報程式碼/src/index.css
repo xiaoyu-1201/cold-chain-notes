@@ -169,3 +169,26 @@
     stroke-opacity: 0.35;
   }
 }
+
+/* 卡片 hover 凸顯：只亮游標所在的最內層卡片；可點的卡片再上浮一點 */
+.deck-hover :is([class*='rounded-xl'], [class*='rounded-2xl'], [class*='rounded-3xl'], [class*='rounded-['])[class~='border'] {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.deck-hover :is(button, [role='button'], [role='tab']):not(:disabled) {
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .deck-hover :is([class*='rounded-xl'], [class*='rounded-2xl'], [class*='rounded-3xl'], [class*='rounded-['])[class~='border']:hover:not(:has(:is([class*='rounded-xl'], [class*='rounded-2xl'], [class*='rounded-3xl'], [class*='rounded-['])[class~='border']:hover)) {
+    border-color: rgb(125 211 252 / 0.55);
+    box-shadow: 0 0 0 1px rgb(125 211 252 / 0.2), 0 18px 40px -22px rgb(56 189 248 / 0.65);
+  }
+  .deck-hover :is(button, [role='button'], [role='tab']):not(:disabled):is([class*='rounded-xl'], [class*='rounded-2xl'], [class*='rounded-3xl'], [class*='rounded-['])[class~='border']:hover {
+    transform: translateY(-3px);
+  }
+}
+@media (hover: none) {
+  .deck-hover :is(button, [role='button'], [role='tab']):not(:disabled):active {
+    border-color: rgb(125 211 252 / 0.6);
+    transform: scale(0.98);
+  }
+}

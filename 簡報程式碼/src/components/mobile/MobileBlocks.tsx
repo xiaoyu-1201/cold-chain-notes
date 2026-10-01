@@ -9,6 +9,7 @@ import { toneStyles } from '../../lib/tone'
 import { EstimatePractice } from '../blocks/Estimate'
 import { FenConverter } from '../blocks/FenConverter'
 import { Flashcards } from '../blocks/Flashcards'
+import { RefSlider } from '../blocks/RefSlider'
 import { BulbClock } from '../diagrams/BulbClock'
 import { CycleDiagram } from '../diagrams/CycleDiagram'
 
@@ -620,6 +621,9 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
 
     case 'flashcards':
       return <Flashcards block={block} mobile />
+
+    case 'refslider':
+      return <RefSlider mobile />
 
     case 'quiz':
       return <QuizMobile items={block.items} />

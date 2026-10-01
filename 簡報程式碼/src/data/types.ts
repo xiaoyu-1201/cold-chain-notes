@@ -375,6 +375,11 @@ export interface FlashcardsBlock {
   cards: { term: string; alias: string; en: string; tip: string }[]
 }
 
+/** 網頁版 Ref Tools 冷媒滑尺：溫度 ↔ 壓力 */
+export interface RefSliderBlock {
+  type: 'refslider'
+}
+
 /** 互動換算器：管徑「分」↔ mm（含考考我練習） */
 export interface FenBlock {
   type: 'fen'
@@ -419,6 +424,7 @@ export type Block =
   | FenBlock
   | EstimateBlock
   | FlashcardsBlock
+  | RefSliderBlock
 
 export interface CoverData {
   kicker: string

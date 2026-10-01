@@ -21,8 +21,6 @@ interface CycleExplorerProps {
   onSelect?: (id: CycleNodeId | null) => void
   /** 顯示放大按鈕 */
   expandable?: boolean
-  /** 顯示「可以點」提示 */
-  showHint?: boolean
   /** 放大檢視中的大尺寸版本 */
   large?: boolean
   className?: string
@@ -30,7 +28,7 @@ interface CycleExplorerProps {
 }
 
 /** 可點選的冷凍循環圖：點零件或管路 → 小視窗顯示講解，可播放錄音、可放大 */
-export function CycleExplorer({ selected, onSelect, expandable = true, large = false, showHint = true, className, style }: CycleExplorerProps) {
+export function CycleExplorer({ selected, onSelect, expandable = true, large = false, className, style }: CycleExplorerProps) {
   const [innerSelected, setInnerSelected] = useState<CycleNodeId | null>(null)
   const [expanded, setExpanded] = useState(false)
   const current = selected !== undefined ? selected : innerSelected
@@ -42,19 +40,6 @@ export function CycleExplorer({ selected, onSelect, expandable = true, large = f
   return (
     <div className={cn('relative', className)} style={{ aspectRatio: '820 / 560', ...style }}>
       <CycleDiagram className="absolute inset-0 h-full w-full" interactive selected={current} onSelect={(id) => select(current === id ? null : id)} />
-
-      {!current && showHint && (
-        <p
-          className={cn(
-            'pointer-events-none absolute flex items-center gap-1.5 whitespace-nowrap rounded-full border border-sky-400/30 bg-navy-950/85 px-3 py-1 font-semibold text-sky-200',
-            expandable ? 'right-[92px] top-2' : 'right-3 top-3',
-            large ? 'text-[20px]' : 'text-[14px]',
-          )}
-        >
-          <MousePointerClick className={large ? 'size-5' : 'size-4'} aria-hidden />
-          虛線框都可以點：零件、管路都有說明
-        </p>
-      )}
 
       {expandable && (
         <button

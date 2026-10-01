@@ -78,7 +78,7 @@ export function CyclePanel({ block }: { block: CycleBlock }) {
           <CycleExplorer style={{ width: 'min(100cqw, calc(100cqh * 820 / 560))' }} />
         </div>
         <p className="mt-2 text-center text-[16px] text-slate-400">
-          虛線為高低壓分界：<span className="text-slate-200">壓縮機</span>升壓、<span className="text-slate-200">膨脹閥</span>降壓
+          虛線框都可以點、會跳出說明；中間虛線為高低壓分界：<span className="text-slate-200">壓縮機</span>升壓、<span className="text-slate-200">膨脹閥</span>降壓
         </p>
       </div>
     </Panel>

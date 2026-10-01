@@ -87,7 +87,7 @@ export function CoverLayout({ slide, cover }: { slide: SlideData; cover: CoverDa
                 系統運轉中
               </span>
             </div>
-            <CycleExplorer className="w-full" showHint={false} />
+            <CycleExplorer className="w-full" />
           </div>
         </motion.div>
       </div>

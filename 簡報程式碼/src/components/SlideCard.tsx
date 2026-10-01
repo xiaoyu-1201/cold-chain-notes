@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion'
+import { Target } from 'lucide-react'
 import { parts } from '../data/parts'
+import { slides } from '../data/slides'
 import type { SlideData } from '../data/types'
+import { cn } from '../lib/cn'
+import { toneStyles } from '../lib/tone'
 import { BlockRenderer } from './blocks/BlockRenderer'
 import { CoverLayout } from './CoverLayout'
 import { Badge } from './ui/Badge'
@@ -13,6 +17,8 @@ export function SlideCard({ slide }: { slide: SlideData }) {
   if (slide.layout === 'cover' && slide.cover) return <CoverLayout slide={slide} cover={slide.cover} />
 
   const part = parts[slide.part]
+  const index = slides.indexOf(slide)
+  const firstOfPart = index <= 0 || slides[index - 1].part !== slide.part
 
   return (
     <motion.article
@@ -43,10 +49,19 @@ export function SlideCard({ slide }: { slide: SlideData }) {
             )}
             {slide.advanced && (
               <Badge tone="amber" size="lg">
-                進階・先不用學（計算不用）
+                進階・第二階段
               </Badge>
             )}
-            {slide.en && <span className="font-mono text-[16px] uppercase tracking-[0.2em] text-slate-400">{slide.en}</span>}
+            {firstOfPart && part.goal ? (
+              // 每一篇第一頁：先講清楚這一篇學完要會什麼
+              <span className="flex min-w-0 items-center gap-2 text-[19px] font-semibold text-slate-200">
+                <Target className={cn('size-5 shrink-0', toneStyles[part.tone].text)} aria-hidden />
+                <span className={toneStyles[part.tone].text}>學完你會</span>
+                <span className="truncate">{part.goal}</span>
+              </span>
+            ) : (
+              slide.en && <span className="font-mono text-[16px] uppercase tracking-[0.2em] text-slate-400">{slide.en}</span>
+            )}
           </div>
           <h2 className="mt-4 text-[56px] font-black leading-[1.1] tracking-tight text-white">{slide.title}</h2>
         </div>

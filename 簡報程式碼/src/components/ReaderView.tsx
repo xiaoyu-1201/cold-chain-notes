@@ -1,11 +1,12 @@
 import { MotionConfig } from 'framer-motion'
-import { Menu, Pin, Presentation, Store } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { Menu, Pin, Pointer, Presentation, Store } from 'lucide-react'
+import { Fragment, useMemo, useState } from 'react'
 import { DeckContext, type DeckApi } from '../context/deck'
 import { parts } from '../data/parts'
 import { slides } from '../data/slides'
 import type { SlideData } from '../data/types'
 import { cn, pad } from '../lib/cn'
+import { interactionHints } from '../lib/interactions'
 import { toneStyles } from '../lib/tone'
 import { ChapterDrawer } from './ChapterDrawer'
 import { MobileBlock } from './mobile/MobileBlocks'
@@ -46,9 +47,28 @@ export function ReaderView({ onExit }: { onExit: () => void }) {
             </button>
           </header>
           <main className="mx-auto max-w-[720px] pb-16">
-            {slides.map((slide, i) => (
-              <MobileSlide key={slide.id} slide={slide} index={i} />
-            ))}
+            {slides.map((slide, i) => {
+              const part = parts[slide.part]
+              const firstOfPart = i > 0 && slides[i - 1].part !== slide.part
+              return (
+                <Fragment key={slide.id}>
+                  {/* 篇章分段：先說這一篇學完要會什麼 */}
+                  {firstOfPart && (
+                    <div className={cn('mx-4 mt-8 rounded-2xl border-l-4 px-4 py-3', toneStyles[part.tone].soft, toneStyles[part.tone].border)}>
+                      <p className={cn('text-[14px] font-bold', toneStyles[part.tone].text)}>{part.ordinal}</p>
+                      <p className="text-[22px] font-black text-white">{part.title}</p>
+                      {part.goal && (
+                        <p className="mt-1 text-[15px] text-slate-300">
+                          <b className={cn('mr-2', toneStyles[part.tone].text)}>學完你會</b>
+                          {part.goal}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  <MobileSlide slide={slide} index={i} />
+                </Fragment>
+              )
+            })}
           </main>
         </div>
         <ChapterDrawer
@@ -68,6 +88,7 @@ export function ReaderView({ onExit }: { onExit: () => void }) {
 function MobileSlide({ slide, index }: { slide: SlideData; index: number }) {
   const part = parts[slide.part]
   const cover = slide.layout === 'cover' ? slide.cover : undefined
+  const hints = interactionHints(slide, true)
 
   return (
     <section id={`reader-${slide.id}`} className="border-b border-white/10 px-4 py-8" style={{ scrollMarginTop: 56 }}>
@@ -82,7 +103,12 @@ function MobileSlide({ slide, index }: { slide: SlideData; index: number }) {
           <p className="mt-2 text-emerald-300">{cover.audience}</p>
           <p className="mt-1 text-[14px] text-slate-400">{cover.source}</p>
           <p className="mt-4 rounded-xl bg-white/[0.05] px-4 py-3 text-[15px] text-slate-300">
-            往下滑閱讀；左上角「目錄」可以直接跳到想看的章節。循環圖、講義零件、錄音段落都可以點。
+            往下滑閱讀；左上角「目錄」可以直接跳到想看的章節。看到
+            <span className="mx-1 inline-flex items-center gap-1 rounded-md border border-dashed border-sky-400/50 bg-sky-400/10 px-1.5 text-sky-100">
+              <Pointer className="size-3.5" aria-hidden />
+              可以點
+            </span>
+            的地方都能互動。
           </p>
         </header>
       ) : (
@@ -91,9 +117,18 @@ function MobileSlide({ slide, index }: { slide: SlideData; index: number }) {
             <span className="font-mono text-slate-500">{pad(index + 1)}</span>
             <span className={cn('rounded-md border px-2 py-0.5 font-semibold', toneStyles[part.tone].chip)}>{part.short}</span>
             {slide.chapter && <span className="rounded-md border border-white/15 px-2 py-0.5 font-semibold text-slate-300">{slide.chapter}</span>}
-            {slide.advanced && <span className="rounded-md border border-amber-400/40 bg-amber-400/10 px-2 py-0.5 font-semibold text-amber-200">進階・先不用學</span>}
+            {slide.advanced && <span className="rounded-md border border-amber-400/40 bg-amber-400/10 px-2 py-0.5 font-semibold text-amber-200">進階</span>}
           </div>
           <h2 className="mt-2 text-[26px] font-black leading-[1.3] text-white">{slide.title}</h2>
+          {hints.length > 0 && (
+            <p className="mt-2 flex gap-1.5 rounded-lg border border-dashed border-sky-400/50 bg-sky-400/10 px-3 py-1.5 text-[15px] text-sky-100">
+              <Pointer className="mt-1 size-4 shrink-0 text-sky-300" aria-hidden />
+              <span>
+                <b className="mr-1 text-sky-300">可以點</b>
+                {hints.join('；')}
+              </span>
+            </p>
+          )}
         </header>
       )}
 

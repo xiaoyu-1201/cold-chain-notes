@@ -64,7 +64,8 @@ import { Danger, Em, Exp, Frac, Hl, Sub, Warn } from '../components/ui/rich'
 import { CLASS_AUDIO, CLASS_AUDIO_2, CLASS_AUDIO_3, CLASS_AUDIO_4, CLASS_AUDIO_5 } from './media'
 import type { SlideData } from './types'
 
-export const slides: SlideData[] = [
+/** 各頁定義（定義順序不等於顯示順序，顯示順序見檔案最後的 ORDER） */
+const slideList: SlideData[] = [
   /* ───────────────────────── 01 封面 ───────────────────────── */
   {
     id: 'cover',
@@ -157,7 +158,7 @@ export const slides: SlideData[] = [
             items: [
               { gen: '第 1 週', example: '認識品項與庫位', note: '貨架、料號、常用規格', tone: 'slate' },
               { gen: '第 1 個月', example: '會接單問診', note: '接單六問、開單不出錯', tone: 'teal' },
-              { gen: '第 3 個月', example: '看懂系統', note: '過熱 / 過冷、故障判讀', tone: 'ice' },
+              { gen: '第 3 個月', example: '看懂系統', note: '冷媒一圈、單位、故障判讀', tone: 'ice' },
               { gen: '半年', example: '協助選型報價', note: '新建庫房整套配料', tone: 'emerald' },
             ],
           },
@@ -178,69 +179,75 @@ export const slides: SlideData[] = [
   {
     id: 'overview',
     part: 'intro',
-    mark: 'INDEX',
-    title: '簡報架構與目錄導覽',
-    en: 'Course Overview',
+    mark: 'PATH',
+    title: '學習地圖：照這個順序學',
+    en: 'Learning Path',
     blocks: [
       {
         type: 'parts',
         items: [
           {
-            part: 'industry',
-            no: '00',
-            range: '產業 × 產品',
-            icon: Store,
-            summary: '材料行在冷鏈產業的位置與店內品項',
+            part: 'basics',
+            no: '01',
+            range: '先懂一圈',
+            icon: RefreshCw,
+            summary: '先看全貌，再補名詞與冷媒',
             chapters: [
-              { code: '產業', title: '冷鏈產業鏈與來店客戶', slide: 'industry' },
-              { code: '產品', title: '店內產品地圖', slide: 'products' },
+              { code: '圖解', title: '冷凍循環一圈', slide: 'cycle-lesson' },
+              { code: 'CH.00', title: '名詞與熱工物理', slide: 'ch0' },
+              { code: 'CH.01', title: '冷凍循環與冷媒', slide: 'ch1' },
             ],
           },
           {
-            part: 'basics',
-            no: '01',
-            range: '第 0 ~ 1 章',
-            icon: Thermometer,
-            summary: '熱工物理、P-T 關係與基本冷凍循環',
-            chapters: [
-              { code: 'CH.00', title: '冷凍名詞與熱工物理', slide: 'ch0' },
-              { code: 'CH.01', title: '基本冷凍循環與冷媒', slide: 'ch1' },
-            ],
+            part: 'units',
+            no: '02',
+            range: '管徑・溫壓',
+            icon: Ruler,
+            summary: '管徑「分」換算、溫度與壓力',
+            chapters: [{ code: '單位', title: '分、溫度壓力', slide: 'units' }],
+          },
+          {
+            part: 'industry',
+            no: '03',
+            range: '客人用在哪',
+            icon: Store,
+            summary: '產業鏈位置與應用場所',
+            chapters: [{ code: '產業', title: '產業鏈與客人的裝置', slide: 'industry' }],
           },
           {
             part: 'components',
-            no: '02',
-            range: '第 2 ~ 6 章',
+            no: '04',
+            range: '壓縮機 → 零件',
             icon: Cog,
-            summary: '五大核心元件的原理、選型與調校',
+            summary: '從貨架地圖出發，逐一認識元件',
             chapters: [
+              { code: '地圖', title: '店內產品地圖', slide: 'products' },
               { code: 'CH.02', title: '壓縮機', slide: 'ch2' },
               { code: 'CH.03', title: '冷凝器', slide: 'ch3' },
               { code: 'CH.04', title: '蒸發器', slide: 'ch4' },
-              { code: 'CH.05', title: '保護閥件', slide: 'ch5' },
-              { code: '錄音', title: '課堂錄音・講義・Insight', slide: 'recording' },
-              { code: 'CH.06', title: '過冷過熱調校', slide: 'ch6' },
+              { code: 'CH.05', title: '控制與保護', slide: 'ch5' },
+              { code: '講義', title: '零件總覽圖', slide: 'handout' },
             ],
           },
           {
             part: 'practice',
-            no: '03',
-            range: '第 7 ~ 9 章',
-            icon: Warehouse,
-            summary: '熱負荷、選型、故障診斷與門市接單',
+            no: '05',
+            range: '問診・故障',
+            icon: Stethoscope,
+            summary: '接單問診與常見故障',
             chapters: [
-              { code: 'CH.07', title: '熱負荷計算', slide: 'ch7-8' },
-              { code: 'CH.08', title: '選型原則', slide: 'ch7-8' },
-              { code: 'CH.09', title: '現場四大高頻故障', slide: 'ch9' },
-              { code: '實戰', title: '門市接單問診 SOP', slide: 'sop' },
+              { code: 'CH.09', title: '四大故障診斷', slide: 'ch9' },
+              { code: '實戰', title: '接單問診 SOP', slide: 'sop' },
             ],
           },
         ],
         finale: {
-          label: '結尾',
+          label: '學完之後',
           links: [
-            { title: '三大核心工程 Insight', slide: 'insights' },
-            { title: '互動問答與檢核清單', slide: 'qa' },
+            { title: '聽原音複習', slide: 'recording' },
+            { title: '自我檢測', slide: 'quiz' },
+            { title: '課後 Insight', slide: 'lesson-insights' },
+            { title: '第二階段：進階', slide: 'ch6' },
           ],
           note: (
             <>
@@ -253,10 +260,10 @@ export const slides: SlideData[] = [
       },
     ],
     conclusion: {
-      label: '核心 Insight',
+      label: '學習順序',
       text: (
         <>
-          <Hl>資深工程師的動態熱平衡思維</Hl>：看懂熱量從哪裡來、往哪裡去，每個元件與參數的判斷才有依據。
+          照老闆說的順序：<Hl>原理 → 單位 → 裝置 → 壓縮機 → 零配件</Hl>，每一步都踩在前一步上；計算與調校是第二階段（進階），基礎熟了再學。
         </>
       ),
     },
@@ -358,7 +365,7 @@ export const slides: SlideData[] = [
   /* ───────────────────────── 05 產品地圖 ───────────────────────── */
   {
     id: 'products',
-    part: 'industry',
+    part: 'components',
     chapter: '產品地圖',
     mark: 'PRODUCTS',
     title: '店內產品地圖：貨架對應冷凍循環',
@@ -534,7 +541,7 @@ export const slides: SlideData[] = [
             tone: 'ice',
             title: '過熱度 Superheat',
             en: 'SH · 防液擊',
-            badge: { label: '生命線 ①', tone: 'ice' },
+            badge: { label: '進階', tone: 'amber' },
             formula: { lhs: 'SH', rhs: '吸氣溫度 − 飽和蒸發溫度' },
             body: (
               <>
@@ -549,7 +556,7 @@ export const slides: SlideData[] = [
             tone: 'indigo',
             title: '過冷度 Subcooling',
             en: 'SC · 防閃發氣體',
-            badge: { label: '生命線 ②', tone: 'indigo' },
+            badge: { label: '進階', tone: 'amber' },
             formula: { lhs: 'SC', rhs: '飽和冷凝溫度 − 液管溫度' },
             body: (
               <>
@@ -564,7 +571,7 @@ export const slides: SlideData[] = [
     conclusion: {
       text: (
         <>
-          冷凍不是製造冷，而是「<Hl>熱量的搬運</Hl>」。過熱度與過冷度是評估系統健康度的<Hl>兩大生命線</Hl>。
+          冷凍不是製造冷，而是「<Hl>熱量的搬運</Hl>」：靠液態變氣態吸熱、壓力和溫度綁在一起。過熱度、過冷度在第二階段（進階）會再深入。
         </>
       ),
     },
@@ -1121,7 +1128,7 @@ export const slides: SlideData[] = [
   /* ───────────────────────── 1001 課堂錄音（本堂課主軸） ───────────────────────── */
   {
     id: 'recording',
-    part: 'components',
+    part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO',
     title: '錄音01｜冷凍循環與基本零件',
@@ -1160,7 +1167,7 @@ export const slides: SlideData[] = [
   /* ───────────────────────── 1001 課堂錄音 Part 2 ───────────────────────── */
   {
     id: 'recording-2',
-    part: 'components',
+    part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO 2',
     title: '錄音02｜循環修正、元件搭配與儲液器',
@@ -1173,18 +1180,18 @@ export const slides: SlideData[] = [
         en: 'Class Recording',
         duration: '21:08',
         chapters: [
-          { at: 0, title: '過冷、過熱先不用寫', summary: '比較深，一開始先不用研究，寫了反而會混在一起' },
+          { at: 0, title: '循環圖先不標過冷、過熱', summary: '比較深，放到進階再研究；一開始寫上去反而會混在一起' },
           { at: 40, title: '真正的低壓在哪裡', summary: '膨脹閥出來是液氣混合；完全蒸發後才是低溫低壓氣態' },
           { at: 186, title: '循環圖怎麼標', summary: '高溫高壓氣態 → 中溫中壓液態 → 液氣混合 → 低溫低壓氣態' },
           { at: 224, title: '室外與庫內', summary: '散熱器放室外；庫房要密閉，庫板保溫隔熱' },
           { at: 286, title: '四大元件要相輔相成', summary: '壓縮機 1 馬配散熱器 2 馬；膨脹閥、冷排跟著壓縮機選' },
-          { at: 367, title: '門市怎麼估一套冷凍庫', summary: '幾坪、冰什麼 → 選馬力 → 散熱器 → 冷排 → 配件，整套報價' },
+          { at: 367, title: '門市怎麼估一套冷凍庫', summary: '幾坪、冰什麼 → 選馬力 → 散熱器（有外箱／裸露型，台語叫「無穿衫」）→ 冷排 → 配件，整套報價' },
           { at: 575, title: '機組長什麼樣子', summary: '壓縮機、油分離器、乾燥器、視窗裝在一個基礎盤上' },
           { at: 617, title: '儲液器：源源不絕的液態', summary: '冰箱用毛細管不用裝；膨脹閥系統一定要裝' },
           { at: 953, title: '液氣分離器：回壓縮機一定是氣態', summary: '液態沉在下面、從上面取氣，保護壓縮機' },
           { at: 1077, title: '一對一系統與壓力開關', summary: '一壓縮機對一散熱器對一冷排；壓力開關一定要' },
           { at: 1118, title: '先懂物理現象，再講控制', summary: '控制：溫控、壓力開關、電磁閥；視窗看冷媒夠不夠' },
-          { at: 1202, title: '接下來先學什麼', summary: '原理要很熟、認識我們賣的零件；計算都不用' },
+          { at: 1202, title: '接下來先學什麼', summary: '原理要很熟、認識我們賣的零件；計算放到後面' },
         ],
       },
     ],
@@ -1192,7 +1199,7 @@ export const slides: SlideData[] = [
       label: '學習順序',
       text: (
         <>
-          先熟<Hl>物理現象（系統原理）</Hl>→ 再學<Hl>控制</Hl>→ 再認識<Hl>我們賣的零件</Hl>；計算不用學，「又不是要考工程師」。
+          先熟<Hl>物理現象（系統原理）</Hl>→ 再學<Hl>控制</Hl>→ 再認識<Hl>我們賣的零件</Hl>；計算放到後面，「又不是要考工程師」。
         </>
       ),
     },
@@ -1200,7 +1207,7 @@ export const slides: SlideData[] = [
   /* ───────────────────────── 1001 課堂錄音 Part 3–5 ───────────────────────── */
   {
     id: 'recording-3',
-    part: 'components',
+    part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO 3',
     title: '錄音03–05｜系統配置、擺放位置與單位',
@@ -1223,7 +1230,7 @@ export const slides: SlideData[] = [
           { track: 0, at: 156, title: '視液鏡會變色、電磁閥常閉', summary: '含水時視窗會變色（三種顏色），很多人不知道' },
           { track: 0, at: 208, title: '冷藏＋冷凍一對二很難做', summary: 'KVP 這類閥一年賣不到兩顆；一般一對一，同溫才一對二' },
           { track: 0, at: 259, title: '下一步：學單位，再看實品', summary: '冷藏、冷凍主要差在溫控：冷凍要除霜' },
-          { track: 1, at: 51, title: '散熱器擺哪裡很重要', summary: '放在鐵皮屋上，夏天環境溫度會到 50 度' },
+          { track: 1, at: 51, title: '散熱器擺哪裡很重要', summary: '裸露型（台語「無穿衫」）便宜，但放在鐵皮屋上，夏天環境溫度會到 50 度' },
           { track: 2, at: 0, title: '先把單位搞好', summary: '溫度壓力關係很多客戶也不懂；用 Ref Tools App 查' },
           { track: 2, at: 110, title: '先認識裝置，才會跟客人溝通', summary: '原理 → 單位 → 裝置 → 壓縮機 → 零配件' },
           { track: 2, at: 161, title: '管徑單位「分」', summary: '1 吋＝25.4 mm＝8 分；1 分＝3.175 mm，用游標卡尺量' },
@@ -1243,7 +1250,7 @@ export const slides: SlideData[] = [
   /* ───────────────────────── 核心圖解：冷凍循環（可持續擴充） ───────────────────────── */
   {
     id: 'cycle-lesson',
-    part: 'components',
+    part: 'basics',
     chapter: '核心圖解',
     mark: 'CYCLE',
     title: '核心圖解：冷凍循環一圈',
@@ -1547,7 +1554,7 @@ export const slides: SlideData[] = [
   /* ───────────────────────── 1001 單位與工具 ───────────────────────── */
   {
     id: 'units',
-    part: 'components',
+    part: 'units',
     chapter: '單位',
     mark: 'UNITS',
     title: '單位：管徑「分」與溫度壓力',
@@ -1564,20 +1571,7 @@ export const slides: SlideData[] = [
             title: '管徑換算：1 吋＝8 分＝25.4 mm',
             en: 'Pipe Size in “Fen”',
             className: 'grid-rows-1',
-            children: [
-              {
-                type: 'boundaries',
-                items: [
-                  { label: '1 分', value: '3.175 mm', note: '1/8″（25.4 ÷ 8）', tone: 'slate' },
-                  { label: '2 分', value: '6.35 mm', note: '1/4″', tone: 'amber' },
-                  { label: '3 分', value: '9.52 mm', note: '3/8″', tone: 'amber' },
-                  { label: '4 分', value: '12.7 mm', note: '1/2″', tone: 'amber' },
-                  { label: '5 分', value: '15.88 mm', note: '5/8″', tone: 'amber' },
-                  { label: '6 分', value: '19.05 mm', note: '3/4″（4 分之 3）', tone: 'amber' },
-                  { label: '7 分', value: '22.2 mm', note: '7/8″', tone: 'amber' },
-                ],
-              },
-            ],
+            children: [{ type: 'fen' }],
           },
           {
             type: 'grid',
@@ -1632,7 +1626,7 @@ export const slides: SlideData[] = [
   /* ───────────────────────── 1001 課後 Insight ───────────────────────── */
   {
     id: 'lesson-insights',
-    part: 'components',
+    part: 'summary',
     chapter: '課後 Insight',
     mark: 'TAKEAWAY',
     title: '學到現在，真正要學會的事',
@@ -1706,11 +1700,11 @@ export const slides: SlideData[] = [
             icon: GraduationCap,
             tone: 'amber',
             title: '學習順序',
-            subtitle: '計算不用，懂了才賣得出去',
+            subtitle: '先基礎、後進階，懂了才賣得出去',
             en: 'What to Learn First',
             body: (
               <>
-                「我們不是要考工程師」：手冊看得懂的就好，<Hl>計算、過冷過熱度先不用</Hl>。
+                「我們不是要考工程師」：先把基礎學熟，<Hl>計算、過冷過熱度放到第二階段</Hl>。
               </>
             ),
             children: [
@@ -1725,7 +1719,7 @@ export const slides: SlideData[] = [
                   { title: '② 單位：管徑幾分、溫度壓力' },
                   { title: '③ 裝置：客人用在哪裡' },
                   { title: '④ 壓縮機 → 零配件、控制' },
-                  { title: '先不用：計算、過冷過熱度', tone: 'slate' },
+                  { title: '第二階段（進階）：計算、過冷過熱度', tone: 'slate' },
                 ],
               },
             ],
@@ -1737,7 +1731,7 @@ export const slides: SlideData[] = [
       label: '課後一句話',
       text: (
         <>
-          冷凍就是搬熱：<Hl>追著冷媒走、四大元件相輔相成、先原理後控制再零件</Hl>；計算不用，懂了才有辦法賣。
+          冷凍就是搬熱：<Hl>追著冷媒走、四大元件相輔相成、先原理後控制再零件</Hl>；基礎熟了再進階，懂了才有辦法賣。
         </>
       ),
     },
@@ -1745,7 +1739,7 @@ export const slides: SlideData[] = [
   /* ───────────────────────── 12 第 6 章 ───────────────────────── */
   {
     id: 'ch6',
-    part: 'components',
+    part: 'advanced',
     advanced: true,
     chapter: '第 6 章',
     title: '熱力平衡與過冷 / 過熱度調校',
@@ -1860,7 +1854,7 @@ export const slides: SlideData[] = [
   /* ───────────────────────── 13 第 7–8 章 ───────────────────────── */
   {
     id: 'ch7-8',
-    part: 'practice',
+    part: 'advanced',
     advanced: true,
     chapter: '第 7 – 8 章',
     title: '熱負荷計算與選型原則',
@@ -2168,13 +2162,89 @@ export const slides: SlideData[] = [
     },
   },
 
+  /* ───────────────────────── 自我檢測（提取練習） ───────────────────────── */
+  {
+    id: 'quiz',
+    part: 'review',
+    chapter: '自我檢測',
+    mark: 'QUIZ',
+    title: '自我檢測：先想，再翻答案',
+    en: 'Self-Check',
+    blocks: [
+      {
+        type: 'quiz',
+        items: [
+          {
+            q: '冷媒一圈的四個狀態，依序是什麼？',
+            a: '高溫高壓氣態 → 中溫中壓液態 → 液氣混合 → 低溫低壓氣態。',
+            slide: 'cycle-lesson',
+          },
+          {
+            q: '膨脹閥出來，算不算真正的低壓？',
+            a: '不算；還是半液半氣，要進蒸發器完全蒸發後，才是真正的低溫低壓。',
+            slide: 'cycle-lesson',
+          },
+          {
+            q: '為什麼膨脹閥系統一定要裝儲液器？冰箱為什麼不用？',
+            a: '確保送到膨脹閥的是源源不絕的液態；冰箱用毛細管，小系統不用裝。',
+            slide: 'handout',
+          },
+          {
+            q: '液氣分離器裝在哪裡？在保護什麼？',
+            a: '冷排和壓縮機中間；只讓氣態回去，保護壓縮機不被液體打壞。',
+            slide: 'cycle-lesson',
+          },
+          {
+            q: '壓縮機 1 馬，散熱器一般配幾馬？',
+            a: '一般配 2 馬；膨脹閥閥芯、冷排大小也都跟著壓縮機配。',
+            slide: 'recording-2',
+          },
+          {
+            q: '溫控設 -20°C、溫差 4°C，壓縮機幾度停、幾度再啟動？',
+            a: '-20°C 停、-16°C 再啟動；溫差太小，壓縮機會開關太頻繁。',
+            slide: 'recording',
+          },
+          {
+            q: '電磁閥平常是開還是關？什麼情況一定要裝？',
+            a: '常閉，通電才開；散熱外移、管路很長時一定要裝。',
+            slide: 'cycle-lesson',
+          },
+          {
+            q: '2 分、4 分、6 分各是幾 mm？',
+            a: '6.35、12.7、19.05 mm（1 分＝25.4 ÷ 8＝3.175 mm）。',
+            slide: 'units',
+          },
+          {
+            q: '一台壓縮機可以同時帶冷藏和冷凍嗎？',
+            a: '很難，容易出問題；一般一對一，兩庫同溫（都冷藏或都冷凍）才一對二。',
+            slide: 'recording-3',
+          },
+          {
+            q: '學習順序是什麼？哪些放到第二階段（進階）？',
+            a: '原理 → 單位 → 裝置 → 壓縮機 → 零配件；計算、過冷過熱度放到第二階段（進階）。',
+            slide: 'overview',
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '為什麼要考自己',
+      text: (
+        <>
+          先自己想、再看答案，比重讀一次記得更牢；<Hl>隔 1 天、3 天、1 週</Hl>各做一次，效果最好。
+        </>
+      ),
+    },
+  },
+
   /* ───────────────────────── 16 三大 Insight ───────────────────────── */
   {
     id: 'insights',
-    part: 'summary',
-    chapter: '核心 Insight',
+    part: 'advanced',
+    advanced: true,
+    chapter: '進階 Insight',
     mark: 'INSIGHT',
-    title: '給新人的三大核心工程 Insight',
+    title: '進階：三大核心工程 Insight',
     en: 'Three Core Insights',
     blocks: [
       {
@@ -2291,17 +2361,17 @@ export const slides: SlideData[] = [
         children: [
           {
             type: 'checklist',
-            id: 'newcomer-checklist-v1',
-            title: '新人實務檢核清單',
+            id: 'newcomer-checklist-v2',
+            title: '新人實務檢核清單（照學習順序）',
             en: 'Readiness Checklist',
             items: [
-              '會正確查閱 P-T 表並計算當下過熱度與過冷度',
-              '會依管徑確認感溫包方位（1 ~ 3 點鐘）並緊貼保溫',
-              '會確認電熱化霜具備「終止溫度保護」與「風扇延遲」',
-              '遇到低壓低時，能先檢查蒸發器結霜與風扇狀況',
-              '能說出店內十大品項分類，以及它們在循環中的位置',
-              '會用「接單六問」完成一張規格正確的訂單',
-              '客人要補冷媒時，會先詢問漏點與補充次數',
+              '① 不看講義，畫出冷凍循環一圈並標出四個狀態',
+              '① 說得出四大金剛各在做什麼，國語、台語名稱都會',
+              '② 會換算管徑「分」（1 分＝3.175 mm），會用游標卡尺量銅管',
+              '③ 客人報坪數時，知道先問「冰什麼」再選馬力',
+              '④ 能說出店內各類品項，以及它們在循環中的位置',
+              '⑤ 會用「接單六問」完成一張規格正確的訂單',
+              '⑤ 客人要補冷媒時，會先詢問漏點與補充次數',
             ],
           },
           {
@@ -2312,13 +2382,14 @@ export const slides: SlideData[] = [
             en: 'Questions & Answers',
             prompts: ['最近門市最常被問倒的問題是什麼？', '哪一類品項的規格最容易搞混？', '現場異常數據該如何判讀？'],
             links: [
-              { label: '課堂錄音重點', slide: 'recording' },
+              { label: '核心圖解：循環一圈', slide: 'cycle-lesson' },
               { label: '單位：管徑「分」', slide: 'units' },
-              { label: '課後 Insight', slide: 'lesson-insights' },
               { label: '店內產品地圖', slide: 'products' },
-              { label: '現場量測黃金指標', slide: 'ch6' },
+              { label: '講義零件總覽', slide: 'handout' },
               { label: '四大故障診斷矩陣', slide: 'ch9' },
               { label: '門市接單問診 SOP', slide: 'sop' },
+              { label: '自我檢測', slide: 'quiz' },
+              { label: '聽原音複習', slide: 'recording' },
             ],
           },
         ],
@@ -2334,3 +2405,41 @@ export const slides: SlideData[] = [
     },
   },
 ]
+
+/**
+ * 顯示順序：先全貌再細節（核心圖解在前）、照錄音中的學習順序
+ * 原理 → 單位 → 裝置 → 壓縮機與零配件 → 門市實務，之後複習、結語；計算與調校為第二階段（進階）。
+ */
+const ORDER = [
+  'cover',
+  'owner',
+  'overview',
+  'cycle-lesson',
+  'ch0',
+  'ch1',
+  'units',
+  'industry',
+  'products',
+  'ch2',
+  'ch3',
+  'ch4',
+  'ch5',
+  'handout',
+  'ch9',
+  'sop',
+  'recording',
+  'recording-2',
+  'recording-3',
+  'quiz',
+  'lesson-insights',
+  'qa',
+  'ch6',
+  'ch7-8',
+  'insights',
+]
+
+export const slides: SlideData[] = ORDER.map((id) => {
+  const slide = slideList.find((s) => s.id === id)
+  if (!slide) throw new Error(`找不到投影片：${id}`)
+  return slide
+})

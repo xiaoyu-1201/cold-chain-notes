@@ -7,6 +7,7 @@ import { useDeckKeyboard } from '../hooks/useDeckKeyboard'
 import { useFitScale } from '../hooks/useFitScale'
 import { useFullscreen } from '../hooks/useFullscreen'
 import { useReaderMode } from '../hooks/useReaderMode'
+import { interactionHints } from '../lib/interactions'
 import { ReaderView } from './ReaderView'
 import { ChapterDrawer } from './ChapterDrawer'
 import { ProgressBar } from './ProgressBar'
@@ -174,6 +175,7 @@ export function SlideDeck() {
             back={showBack && returnTo !== null ? { number: returnTo + 1, title: slides[returnTo].title } : null}
             onBack={goBack}
             onReader={() => setReader(true)}
+            hints={interactionHints(slide)}
           />
 
           <ChapterDrawer

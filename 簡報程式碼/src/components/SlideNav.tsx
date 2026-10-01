@@ -1,4 +1,4 @@
-import { BookOpen, ChevronLeft, ChevronRight, CornerUpLeft, Maximize, Menu, Minimize } from 'lucide-react'
+import { BookOpen, ChevronLeft, ChevronRight, CornerUpLeft, Maximize, Menu, Minimize, Pointer } from 'lucide-react'
 import { useState, type MouseEvent, type ReactNode } from 'react'
 import { slides } from '../data/slides'
 import { cn, pad } from '../lib/cn'
@@ -19,6 +19,8 @@ interface SlideNavProps {
   back: { number: number; title: string } | null
   onBack: () => void
   onReader: () => void
+  /** 本頁可以點的東西（互動提示） */
+  hints: string[]
 }
 
 /** 滑鼠點擊不搶走焦點，避免之後按 Space 重複觸發按鈕 */
@@ -69,6 +71,7 @@ export function SlideNav({
   back,
   onBack,
   onReader,
+  hints,
 }: SlideNavProps) {
   return (
     <nav
@@ -92,13 +95,25 @@ export function SlideNav({
               <span className="ml-1.5 hidden font-medium text-amber-100/80 sm:inline">{back.title}</span>
             </span>
           </NavButton>
+        ) : null}
+        {hints.length > 0 ? (
+          <p
+            title={hints.join('；')}
+            className="hidden min-w-0 items-center gap-2 rounded-xl border border-dashed border-sky-400/50 bg-sky-400/10 px-3 py-1.5 text-sm font-semibold text-sky-100 lg:flex"
+          >
+            <Pointer className="size-4 shrink-0 animate-pulse text-sky-300" aria-hidden />
+            <span className="shrink-0 text-sky-300">本頁可以點</span>
+            <span className="truncate">{hints.join('；')}</span>
+          </p>
         ) : (
-          <div className="hidden min-w-0 lg:block">
-            <p className="truncate text-sm font-bold text-slate-100">氣冷式冷凍冷藏系統・新人培訓</p>
-            <p className="truncate text-xs text-slate-400">
-              {partLabel}・{title}
-            </p>
-          </div>
+          !back && (
+            <div className="hidden min-w-0 lg:block">
+              <p className="truncate text-sm font-bold text-slate-100">氣冷式冷凍冷藏系統・新人培訓</p>
+              <p className="truncate text-xs text-slate-400">
+                {partLabel}・{title}
+              </p>
+            </div>
+          )
         )}
       </div>
 

@@ -18,6 +18,29 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
   const pAbs = mode === 'temp' ? pressureAt(id, temp) : Math.min(gauge, maxGauge) + ATM
   const g = pAbs - ATM
 
+  /** 切換要拖的是錶壓還是溫度（數值接續目前的換算結果） */
+  const switchTo = (m: 'temp' | 'gauge') => {
+    if (m === mode) return
+    if (m === 'temp') setTemp(Math.round(t))
+    else setGauge(Math.round(g * 10) / 10)
+    setMode(m)
+  }
+
+  /** 結果卡片：點了就改成拖這一個 */
+  const cardClass = (m: 'temp' | 'gauge', tone: string) =>
+    cn(
+      'rounded-2xl border text-left transition',
+      mobile ? 'p-3' : 'p-5',
+      tone,
+      mode === m ? 'ring-2 ring-white/40' : 'border-dashed opacity-80 hover:opacity-100',
+      focusRing,
+    )
+  const cardTag = (m: 'temp' | 'gauge') => (
+    <span className={cn('ml-2 rounded-md px-1.5 py-0.5 font-semibold', mobile ? 'text-[11px]' : 'text-[14px]', mode === m ? 'bg-white/15 text-white' : 'border border-dashed border-white/30 text-slate-300')}>
+      {mode === m ? '拖動中' : '點這張改拖'}
+    </span>
+  )
+
   const big = mobile ? 'text-[30px]' : 'text-[54px]'
   const small = mobile ? 'text-[14px]' : 'text-[19px]'
 
@@ -49,11 +72,7 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
           <span className={cn('font-bold text-slate-400', small)}>② 拖動{mode === 'gauge' ? '錶壓' : '溫度'}</span>
           <button
             type="button"
-            onClick={() => {
-              if (mode === 'gauge') setTemp(Math.round(t))
-              else setGauge(Math.round(g * 10) / 10)
-              setMode(mode === 'gauge' ? 'temp' : 'gauge')
-            }}
+            onClick={() => switchTo(mode === 'gauge' ? 'temp' : 'gauge')}
             className={cn('flex items-center gap-1.5 rounded-lg border border-white/15 px-3 py-1 font-semibold text-slate-200 hover:border-sky-300/60', small, focusRing)}
           >
             <ArrowLeftRight className="size-4" aria-hidden />
@@ -86,22 +105,28 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
       </div>
 
       <div className={cn('grid grid-cols-2', mobile ? 'gap-2' : 'gap-4')}>
-        <div className={cn('rounded-2xl border border-sky-400/40 bg-sky-500/[0.08]', mobile ? 'p-3' : 'p-5')}>
-          <p className={cn('font-bold text-sky-300', small)}>錶壓（壓力錶讀數）</p>
+        <button type="button" aria-pressed={mode === 'gauge'} onClick={() => switchTo('gauge')} className={cardClass('gauge', 'border-sky-400/40 bg-sky-500/[0.08]')}>
+          <p className={cn('flex flex-wrap items-center font-bold text-sky-300', small)}>
+            錶壓（壓力錶讀數）
+            {cardTag('gauge')}
+          </p>
           <p className={cn('font-black text-white', big)}>
             {g.toFixed(1)} <span className={cn('font-bold text-slate-400', small)}>bar</span>
           </p>
           <p className={cn('text-slate-300', small)}>
             ≈ {(g * 14.5038).toFixed(0)} psi・{(g * 1.01972).toFixed(1)} kg/cm²
           </p>
-        </div>
-        <div className={cn('rounded-2xl border border-amber-400/40 bg-amber-500/[0.08]', mobile ? 'p-3' : 'p-5')}>
-          <p className={cn('font-bold text-amber-300', small)}>管內飽和溫度</p>
+        </button>
+        <button type="button" aria-pressed={mode === 'temp'} onClick={() => switchTo('temp')} className={cardClass('temp', 'border-amber-400/40 bg-amber-500/[0.08]')}>
+          <p className={cn('flex flex-wrap items-center font-bold text-amber-300', small)}>
+            管內飽和溫度
+            {cardTag('temp')}
+          </p>
           <p className={cn('font-black text-white', big)}>
             {t.toFixed(1)} <span className={cn('font-bold text-slate-400', small)}>°C</span>
           </p>
           <p className={cn('text-slate-300', small)}>絕對壓力 {pAbs.toFixed(2)} bar（錶壓＋1）</p>
-        </div>
+        </button>
       </div>
 
       <p className={cn('text-slate-500', mobile ? 'text-[12px]' : 'text-[15px]')}>

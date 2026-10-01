@@ -784,10 +784,12 @@ function CycleLessonMobile() {
             <p className="text-[21px] font-black text-white">{note.title}</p>
             <p className={cn('text-[15px] font-semibold', toneStyles[note.tone].text)}>{note.alias}</p>
             <p className={cn('mt-2 inline-flex rounded-lg border px-2.5 py-0.5 text-[15px] font-bold', toneStyles[note.tone].chip)}>{note.state}</p>
-            <blockquote className="mt-2 flex gap-2 rounded-xl bg-white/[0.04] px-3 py-2.5">
-              <Quote className="mt-1 size-4 shrink-0 text-emerald-300" aria-hidden />
-              <span>{note.quote}</span>
-            </blockquote>
+            {note.quote && (
+              <blockquote className="mt-2 flex gap-2 rounded-xl bg-white/[0.04] px-3 py-2.5">
+                <Quote className="mt-1 size-4 shrink-0 text-emerald-300" aria-hidden />
+                <span>{note.quote}</span>
+              </blockquote>
+            )}
             {note.analogy && (
               <p className="mt-2">
                 <b className="mr-2 text-amber-300">比喻</b>

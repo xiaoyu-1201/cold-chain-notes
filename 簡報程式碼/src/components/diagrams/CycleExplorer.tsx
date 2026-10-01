@@ -48,7 +48,7 @@ export function CycleExplorer({ selected, onSelect, expandable = true, large = f
           onClick={() => setExpanded(true)}
           title="放大檢視"
           className={cn(
-            'absolute right-2 top-2 flex items-center gap-1.5 rounded-lg border border-white/15 bg-navy-950/80 px-2.5 py-1.5 text-[14px] font-semibold text-slate-100 transition hover:border-sky-400/50 hover:text-white',
+            'absolute right-2 top-2 flex items-center gap-1.5 rounded-lg border border-white/15 bg-navy-950/80 px-2.5 py-1.5 text-[16px] font-semibold text-slate-100 transition hover:border-sky-400/50 hover:text-white',
             focusRing,
           )}
         >
@@ -101,7 +101,7 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
           <p className={cn('font-black leading-tight text-white', large ? 'text-[30px]' : 'text-[22px]')}>{note.title}</p>
-          <p className={cn('mt-0.5 font-semibold', t.text, large ? 'text-[18px]' : 'text-[14px]')}>{note.alias}</p>
+          <p className={cn('mt-0.5 font-semibold', t.text, large ? 'text-[18px]' : 'text-[16px]')}>{note.alias}</p>
         </div>
         <button
           type="button"
@@ -113,22 +113,22 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
         </button>
       </div>
 
-      <div className={cn('mt-3 inline-flex rounded-lg border px-2.5 py-1 font-mono font-bold', t.chip, large ? 'text-[18px]' : 'text-[14px]')}>{note.state}</div>
+      <div className={cn('mt-3 inline-flex rounded-lg border px-2.5 py-1 font-mono font-bold', t.chip, large ? 'text-[18px]' : 'text-[16px]')}>{note.state}</div>
 
       {note.quote && (
-        <blockquote className={cn('mt-3 flex gap-2 rounded-xl bg-white/[0.04] px-3 py-2.5 leading-snug text-slate-100', large ? 'text-[20px]' : 'text-[15px]')}>
+        <blockquote className={cn('mt-3 flex gap-2 rounded-xl bg-white/[0.04] px-3 py-2.5 leading-snug text-slate-100', large ? 'text-[20px]' : 'text-[17px]')}>
           <Quote className={cn('mt-0.5 shrink-0 text-emerald-300', large ? 'size-5' : 'size-4')} aria-hidden />
           <span>{note.quote}</span>
         </blockquote>
       )}
 
       {note.analogy && (
-        <p className={cn('mt-2.5 leading-snug text-slate-300', large ? 'text-[18px]' : 'text-[14px]')}>
+        <p className={cn('mt-2.5 leading-snug text-slate-300', large ? 'text-[18px]' : 'text-[16px]')}>
           <span className="mr-2 font-bold text-amber-300">比喻</span>
           {note.analogy}
         </p>
       )}
-      <p className={cn('mt-1.5 leading-snug text-slate-300', large ? 'text-[18px]' : 'text-[14px]')}>
+      <p className={cn('mt-1.5 leading-snug text-slate-300', large ? 'text-[18px]' : 'text-[16px]')}>
         <span className="mr-2 font-bold text-sky-300">重點</span>
         {note.point}
       </p>
@@ -142,7 +142,7 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
             onClick={() => goToId(note.slide!)}
             className={cn(
               'flex items-center gap-1 rounded-lg border border-white/15 font-semibold text-slate-100 transition hover:border-sky-400/50',
-              large ? 'px-3.5 py-2 text-[17px]' : 'px-2.5 py-1 text-[13px]',
+              large ? 'px-3.5 py-2 text-[17px]' : 'px-2.5 py-1 text-[16px]',
               focusRing,
             )}
           >
@@ -227,7 +227,7 @@ function ClipButton({ src, at, label, large }: { src: string; at: number; label:
     audio.play().catch(() => setError(true))
   }
 
-  if (error) return <span className="text-[13px] text-amber-200">錄音無法播放（請改用 Chrome 或 Edge）</span>
+  if (error) return <span className="text-[16px] text-amber-200">錄音無法播放（請改用 Chrome 或 Edge）</span>
   return (
     <>
       <audio ref={ref} src={src} preload="none" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => setError(true)} />
@@ -236,7 +236,7 @@ function ClipButton({ src, at, label, large }: { src: string; at: number; label:
         onClick={toggle}
         className={cn(
           'flex items-center gap-1.5 rounded-lg border border-emerald-400/40 bg-emerald-400/10 font-semibold text-emerald-100 transition hover:bg-emerald-400/20',
-          large ? 'px-3.5 py-2 text-[17px]' : 'px-2.5 py-1 text-[13px]',
+          large ? 'px-3.5 py-2 text-[17px]' : 'px-2.5 py-1 text-[16px]',
           focusRing,
         )}
       >

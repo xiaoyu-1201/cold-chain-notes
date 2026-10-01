@@ -36,7 +36,7 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
       focusRing,
     )
   const cardTag = (m: 'temp' | 'gauge') => (
-    <span className={cn('ml-2 rounded-md px-1.5 py-0.5 font-semibold', mobile ? 'text-[11px]' : 'text-[14px]', mode === m ? 'bg-white/15 text-white' : 'border border-dashed border-white/30 text-slate-300')}>
+    <span className={cn('ml-2 rounded-md px-1.5 py-0.5 font-semibold', mobile ? 'text-[11px]' : 'text-[16px]', mode === m ? 'bg-white/15 text-white' : 'border border-dashed border-white/30 text-slate-300')}>
       {mode === m ? '拖動中' : '點這張改拖'}
     </span>
   )
@@ -129,7 +129,7 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
         </button>
       </div>
 
-      <p className={cn('text-slate-500', mobile ? 'text-[12px]' : 'text-[15px]')}>
+      <p className={cn('text-slate-500', mobile ? 'text-[12px]' : 'text-[17px]')}>
         資料：NIST Chemistry WebBook（SRD 69）飽和數據，每 5°C 內插；R404A、R410A 等混合冷媒之後依廠商 PT 表補上。
       </p>
     </div>

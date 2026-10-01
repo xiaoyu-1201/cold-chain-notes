@@ -63,9 +63,9 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
                         focusRing,
                       )}
                     >
-                      <span className={cn('w-[52px] shrink-0 font-mono text-[14px] font-bold', t.text)}>{ch.code}</span>
+                      <span className={cn('w-[52px] shrink-0 font-mono text-[16px] font-bold', t.text)}>{ch.code}</span>
                       <span className="min-w-0 flex-1 text-[18px] font-semibold leading-snug text-slate-100">{ch.title}</span>
-                      <span className="font-mono text-[13px] text-slate-500">P.{pad(numberOf(ch.slide))}</span>
+                      <span className="font-mono text-[16px] text-slate-500">P.{pad(numberOf(ch.slide))}</span>
                       <ArrowUpRight className="size-4 shrink-0 text-slate-500 transition group-hover:text-sky-300" aria-hidden />
                     </button>
                   </li>
@@ -93,7 +93,7 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
             )}
           >
             {link.title}
-            <span className="font-mono text-[14px] text-slate-500">P.{pad(numberOf(link.slide))}</span>
+            <span className="font-mono text-[16px] text-slate-500">P.{pad(numberOf(link.slide))}</span>
             <ArrowUpRight className="size-4 text-slate-500 group-hover:text-emerald-300" aria-hidden />
           </button>
         ))}
@@ -124,16 +124,16 @@ export function ProductMap({ block }: { block: ProductsBlock }) {
             <span aria-hidden className={cn('absolute inset-x-0 top-0 h-1 bg-linear-to-r', t.gradient)} />
             <div className="flex items-start justify-between gap-2">
               <IconChip icon={item.icon} tone={item.tone} />
-              <span className="flex items-center gap-1 rounded-full border border-white/10 bg-navy-900/60 px-2.5 py-1 text-[14px] font-semibold text-slate-300 transition group-hover:border-sky-400/40 group-hover:text-sky-200">
+              <span className="flex items-center gap-1 rounded-full border border-white/10 bg-navy-900/60 px-2.5 py-1 text-[16px] font-semibold text-slate-300 transition group-hover:border-sky-400/40 group-hover:text-sky-200">
                 {item.chapter}
                 <span className="font-mono text-slate-500">P.{pad(numberOf(item.slide))}</span>
                 <ArrowUpRight className="size-3.5" aria-hidden />
               </span>
             </div>
             <h3 className="mt-4 text-[23px] font-black leading-tight text-white">{item.title}</h3>
-            <p className="mt-0.5 font-mono text-[13px] uppercase tracking-[0.14em] text-slate-400">{item.en}</p>
+            <p className="mt-0.5 font-mono text-[16px] uppercase tracking-[0.14em] text-slate-400">{item.en}</p>
             <p className="mt-3 text-[18px] leading-normal text-slate-300">{item.items}</p>
-            <span className={cn('mt-auto self-start rounded-md border px-2.5 py-0.5 text-[15px] font-semibold', t.chip)}>{item.side}</span>
+            <span className={cn('mt-auto self-start rounded-md border px-2.5 py-0.5 text-[17px] font-semibold', t.chip)}>{item.side}</span>
           </motion.button>
         )
       })}
@@ -156,7 +156,7 @@ export function ScenarioCard({ block }: { block: ScenarioBlock }) {
             type="button"
             onClick={() => goToId(block.slide!)}
             className={cn(
-              'flex items-center gap-1 rounded-full border border-white/10 px-2.5 py-0.5 text-[14px] font-semibold text-slate-400 transition hover:border-sky-400/40 hover:text-sky-200',
+              'flex items-center gap-1 rounded-full border border-white/10 px-2.5 py-0.5 text-[16px] font-semibold text-slate-400 transition hover:border-sky-400/40 hover:text-sky-200',
               focusRing,
             )}
           >
@@ -174,9 +174,9 @@ export function ScenarioCard({ block }: { block: ScenarioBlock }) {
         <span>{block.ask}</span>
       </p>
       <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-3">
-        <span className="mr-1 text-[15px] font-bold text-emerald-300">推薦</span>
+        <span className="mr-1 text-[17px] font-bold text-emerald-300">推薦</span>
         {block.recommend.map((r) => (
-          <span key={r} className="rounded-md border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 text-[15px] font-semibold text-emerald-100">
+          <span key={r} className="rounded-md border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 text-[17px] font-semibold text-emerald-100">
             {r}
           </span>
         ))}
@@ -229,7 +229,7 @@ export function QAPanel({ block }: { block: QABlock }) {
               )}
             >
               <span className="truncate">{link.label}</span>
-              <span className="flex shrink-0 items-center gap-1 font-mono text-[13px] text-slate-500 group-hover:text-sky-300">
+              <span className="flex shrink-0 items-center gap-1 font-mono text-[16px] text-slate-500 group-hover:text-sky-300">
                 P.{pad(numberOf(link.slide))}
                 <ArrowUpRight className="size-3.5" aria-hidden />
               </span>

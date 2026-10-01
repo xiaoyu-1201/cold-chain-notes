@@ -38,7 +38,7 @@ export function ConceptCard({ block }: { block: ConceptBlock }) {
                 <div key={pair.label} className={cn('rounded-xl border px-4 py-3', pt.border, pt.soft)}>
                   <div className="flex items-baseline gap-2">
                     <span className={cn('text-[22px] font-bold', pt.strong)}>{pair.label}</span>
-                    <span className="font-mono text-[14px] uppercase tracking-wider text-slate-400">{pair.en}</span>
+                    <span className="font-mono text-[16px] uppercase tracking-wider text-slate-400">{pair.en}</span>
                   </div>
                   <p className="mt-1 text-[19px] text-slate-200">{pair.desc}</p>
                 </div>

@@ -73,7 +73,7 @@ function ColFlow({ block }: { block: FlowBlock }) {
               <span
                 className={cn(
                   'flex shrink-0 items-center justify-center rounded-full border-2 font-mono font-bold',
-                  compact ? 'size-9 text-[15px]' : 'size-11 text-[18px]',
+                  compact ? 'size-9 text-[17px]' : 'size-11 text-[18px]',
                   t.border,
                   t.soft,
                   t.strong,
@@ -88,7 +88,7 @@ function ColFlow({ block }: { block: FlowBlock }) {
                 <h4 className={cn('font-bold leading-snug', compact ? 'text-[21px]' : 'text-[23px]', isLast && step.tone ? t.strong : 'text-slate-50')}>
                   {step.title}
                 </h4>
-                {step.en && <span className="font-mono text-[14px] uppercase tracking-wider text-slate-400">{step.en}</span>}
+                {step.en && <span className="font-mono text-[16px] uppercase tracking-wider text-slate-400">{step.en}</span>}
                 {step.tag && (
                   <Badge tone={tone} size="sm">
                     {step.tag}
@@ -113,7 +113,7 @@ function CompactRow({ block }: { block: FlowBlock }) {
         {block.icon && <IconChip icon={block.icon} tone={block.tone} />}
         <div>
           <h3 className="text-[25px] font-bold leading-tight text-slate-50">{block.title}</h3>
-          {block.en && <p className="mt-0.5 font-mono text-[14px] uppercase tracking-[0.18em] text-slate-400">{block.en}</p>}
+          {block.en && <p className="mt-0.5 font-mono text-[16px] uppercase tracking-[0.18em] text-slate-400">{block.en}</p>}
         </div>
       </div>
       <div className="h-12 w-px shrink-0 bg-white/10" aria-hidden />
@@ -122,7 +122,7 @@ function CompactRow({ block }: { block: FlowBlock }) {
           <Fragment key={i}>
             {i > 0 && <ArrowRight className="size-5 shrink-0 text-slate-500" aria-hidden />}
             <span className={cn('flex items-center gap-2 rounded-xl border px-3.5 py-2 text-[20px] font-semibold', t.chip)}>
-              <span className="font-mono text-[15px] opacity-70">{i + 1}</span>
+              <span className="font-mono text-[17px] opacity-70">{i + 1}</span>
               {step.title}
             </span>
           </Fragment>

@@ -65,7 +65,7 @@ export function QuizCards({ block }: { block: QuizBlock }) {
                             e.stopPropagation()
                             goToId(item.slide!)
                           }}
-                          className={cn('ml-2 inline-flex items-center gap-0.5 font-mono text-[14px] text-slate-400 hover:text-sky-300', focusRing)}
+                          className={cn('ml-2 inline-flex items-center gap-0.5 font-mono text-[16px] text-slate-400 hover:text-sky-300', focusRing)}
                         >
                           P.{pad(numberOf(item.slide))}
                           <ArrowUpRight className="size-3.5" aria-hidden />

@@ -37,7 +37,7 @@ export function Metrics({ block }: { block: MetricsBlock }) {
                   )}
                 </div>
                 <div className="mt-1 flex items-baseline gap-2">
-                  <span className={cn('font-mono font-extrabold tracking-tight', lg ? 'text-[64px] leading-[1.05]' : 'text-[44px] leading-tight', t.strong)}>
+                  <span className={cn('font-mono font-extrabold tracking-tight', lg ? 'text-[64px] leading-[1.05]' : 'text-[40px] leading-none', t.strong)}>
                     {item.value}
                   </span>
                   {item.unit && <span className={cn('font-mono text-slate-400', lg ? 'text-[26px]' : 'text-[22px]')}>{item.unit}</span>}

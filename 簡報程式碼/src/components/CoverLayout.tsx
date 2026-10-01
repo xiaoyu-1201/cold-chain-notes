@@ -81,8 +81,8 @@ export function CoverLayout({ slide, cover }: { slide: SlideData; cover: CoverDa
         <motion.div variants={fadeUp}>
           <div className="rounded-[28px] border border-white/10 bg-navy-900/70 p-6 shadow-[0_30px_80px_-30px_rgba(56,189,248,0.35)]">
             <div className="mb-3 flex items-center justify-between">
-              <span className="font-mono text-[14px] uppercase tracking-[0.2em] text-slate-400">Vapor-Compression Cycle</span>
-              <span className="flex items-center gap-2 text-[15px] font-semibold text-emerald-300">
+              <span className="font-mono text-[16px] uppercase tracking-[0.2em] text-slate-400">Vapor-Compression Cycle</span>
+              <span className="flex items-center gap-2 text-[17px] font-semibold text-emerald-300">
                 <span className="size-2 animate-pulse rounded-full bg-emerald-400" aria-hidden />
                 系統運轉中
               </span>

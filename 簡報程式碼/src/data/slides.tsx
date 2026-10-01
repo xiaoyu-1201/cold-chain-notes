@@ -194,6 +194,7 @@ const slideList: SlideData[] = [
             summary: '先看全貌，再補名詞與冷媒',
             chapters: [
               { code: '圖解', title: '冷凍循環一圈', slide: 'cycle-lesson' },
+              { code: '行程', title: '四大行程', slide: 'strokes' },
               { code: 'CH.00', title: '名詞與熱工物理', slide: 'ch0' },
               { code: 'CH.01', title: '冷凍循環與冷媒', slide: 'ch1' },
             ],
@@ -930,11 +931,11 @@ const slideList: SlideData[] = [
                 cols: 1,
                 items: [
                   { label: '冷藏庫', value: '4 ~ 6', unit: 'mm', tone: 'teal' },
-                  { label: '低溫庫', value: '6 ~ 9', unit: 'mm 以上', tone: 'indigo', note: '預留結霜風道空間' },
+                  { label: '低溫庫', value: '6 ~ 9', unit: 'mm 以上', tone: 'indigo' },
                 ],
                 footnote: (
                   <>
-                    手冊只說明蒸發器鰭片距離較大，並無具體數值。
+                    低溫庫間距大，是為了預留結霜的風道空間。手冊只說明蒸發器鰭片距離較大，並無具體數值。
                     <Exp />
                   </>
                 ),
@@ -2186,6 +2187,72 @@ const slideList: SlideData[] = [
     },
   },
 
+  /* ───────────────────────── 四大行程（冷媒一圈的四件事） ───────────────────────── */
+  {
+    id: 'strokes',
+    part: 'basics',
+    chapter: '四大行程',
+    mark: 'CYCLE',
+    title: '四大行程：冷媒一圈的四件事',
+    en: 'Four Processes',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-4',
+        children: [
+          {
+            type: 'concept',
+            icon: Cylinder,
+            tone: 'red',
+            title: '壓縮行程',
+            badge: { label: '① 壓縮機', tone: 'red' },
+            body: '低溫低壓的氣體被吸進壓縮機，壓縮成高溫高壓的氣體——壓力升高，溫度也跟著升高。',
+            chain: ['低溫低壓氣態', '高溫高壓氣態'],
+            points: ['術語：等熵升壓升溫', '只能壓氣體，不能壓液體'],
+          },
+          {
+            type: 'concept',
+            icon: Fan,
+            tone: 'amber',
+            title: '冷凝行程',
+            badge: { label: '② 冷凝器', tone: 'amber' },
+            body: '在高壓下把熱放掉，氣體凝結成液體；放出來的熱（潛熱）由風扇吹到室外大氣。',
+            chain: ['高溫高壓氣態', '中溫中壓液態'],
+            points: ['術語：高壓等壓放熱液化', '散熱不好，冷媒就液化不完全'],
+          },
+          {
+            type: 'concept',
+            icon: Droplets,
+            tone: 'teal',
+            title: '節流膨脹',
+            badge: { label: '③ 膨脹閥', tone: 'teal' },
+            body: '高壓常溫的液體通過窄小的閥口，壓力一下子降下來，變成低壓、很容易蒸發的液氣混合。',
+            chain: ['中溫中壓液態', '液氣混合（濕蒸汽）'],
+            points: ['術語：等焓降壓節流', '像洗車時按壓水管噴嘴'],
+          },
+          {
+            type: 'concept',
+            icon: Snowflake,
+            tone: 'ice',
+            title: '蒸發吸熱',
+            badge: { label: '④ 蒸發器', tone: 'ice' },
+            body: '在低壓下液體吸熱蒸發成氣體，把庫房和貨物的熱吸走——這就是我們要的「冷」。',
+            chain: ['液氣混合', '低溫低壓氣態'],
+            points: ['術語：等壓等溫吸熱汽化', '要完全蒸發才回壓縮機'],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          四大金剛各做一件事：壓縮機<Hl>升壓</Hl>、冷凝器<Hl>放熱</Hl>、膨脹閥<Hl>降壓</Hl>、蒸發器<Hl>吸熱</Hl>；吸熱就是我們要的「冷」。
+        </>
+      ),
+    },
+  },
+
   /* ───────────────────────── Ref Tools 網頁版（錄音05：溫度壓力用 App 查） ───────────────────────── */
   {
     id: 'reftools',
@@ -2663,6 +2730,7 @@ const ORDER = [
   'owner',
   'overview',
   'cycle-lesson',
+  'strokes',
   'ch0',
   'ch1',
   'check-1',

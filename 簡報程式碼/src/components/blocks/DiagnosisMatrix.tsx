@@ -40,7 +40,7 @@ export function DiagnosisMatrix({ block }: { block: MatrixBlock }) {
               )}
             >
               {f.label}
-              {f.hint && <span className="text-[15px] font-medium opacity-75">（{f.hint}）</span>}
+              {f.hint && <span className="text-[17px] font-medium opacity-75">（{f.hint}）</span>}
             </button>
           )
         })}
@@ -56,7 +56,7 @@ export function DiagnosisMatrix({ block }: { block: MatrixBlock }) {
                   <IconChip icon={col.icon} tone={col.tone} />
                   <div className="min-w-0">
                     <h3 className="text-[26px] font-black leading-tight text-white">{col.title}</h3>
-                    <p className="mt-0.5 font-mono text-[13px] uppercase tracking-[0.14em] text-slate-300/80">{col.en}</p>
+                    <p className="mt-0.5 font-mono text-[16px] uppercase tracking-[0.14em] text-slate-300/80">{col.en}</p>
                   </div>
                 </div>
                 {col.flag && (

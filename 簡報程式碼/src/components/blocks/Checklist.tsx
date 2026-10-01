@@ -50,7 +50,7 @@ export function Checklist({ block }: { block: ChecklistBlock }) {
           <button
             type="button"
             onClick={() => setChecked(Array.from({ length: total }, () => false))}
-            className="flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-[15px] font-semibold text-slate-400 transition hover:border-white/25 hover:text-slate-200 focus-visible:outline-2 focus-visible:outline-sky-300"
+            className="flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-[17px] font-semibold text-slate-400 transition hover:border-white/25 hover:text-slate-200 focus-visible:outline-2 focus-visible:outline-sky-300"
           >
             <RotateCcw className="size-4" aria-hidden />
             重設

@@ -17,13 +17,13 @@ export function StoreTipCard({ store }: { store: StoreTip }) {
         >
           <Store className="size-5" aria-hidden />
           門市實戰
-          <span className="font-mono text-[13px] font-semibold text-emerald-300/80">P.{pad(numberOf('products'))}</span>
+          <span className="font-mono text-[16px] font-semibold text-emerald-300/80">P.{pad(numberOf('products'))}</span>
           <ArrowUpRight className="size-4" aria-hidden />
         </button>
         {store.products.map((p) => (
           <span
             key={p}
-            className="rounded-md border border-emerald-300/25 bg-emerald-300/10 px-2.5 py-0.5 text-[15px] font-semibold text-emerald-100"
+            className="rounded-md border border-emerald-300/25 bg-emerald-300/10 px-2.5 py-0.5 text-[17px] font-semibold text-emerald-100"
           >
             {p}
           </span>

@@ -32,7 +32,7 @@ export function InsightCard({ block, renderChild }: { block: InsightBlock; rende
         </span>
       </div>
       <h3 className="mt-4 text-[32px] font-black leading-tight text-white">{block.title}</h3>
-      <p className={cn('mt-1 font-mono text-[14px] uppercase tracking-[0.2em]', t.text)}>{block.en}</p>
+      <p className={cn('mt-1 font-mono text-[16px] uppercase tracking-[0.2em]', t.text)}>{block.en}</p>
       {block.subtitle && <p className={cn('mt-3 text-[22px] font-bold', t.strong)}>{block.subtitle}</p>}
       {block.body && <p className="mt-3 text-[21px] leading-[1.6] text-slate-300">{block.body}</p>}
       {block.children && <div className="mt-5 min-h-0 flex-1">{block.children.map(renderChild)}</div>}
@@ -47,7 +47,7 @@ export function TxvPanel({ block }: { block: TxvBlock }) {
       <div className="grid h-full grid-cols-[250px_minmax(0,1fr)] items-center gap-5">
         <figure className="small-fig">
           <BulbClock className="w-full" />
-          <figcaption className="mt-1 text-center text-[15px] text-slate-400">吸氣管截面・感溫包方位</figcaption>
+          <figcaption className="mt-1 text-center text-[17px] text-slate-400">吸氣管截面・感溫包方位</figcaption>
         </figure>
         <ul className="flex flex-col gap-3">
           {block.rules.map((rule, i) => {
@@ -85,28 +85,28 @@ export function CyclePanel({ block }: { block: CycleBlock }) {
   )
 }
 
-const LESSON_GROUPS: { label: string; ids: CycleNodeId[] }[] = [
-  { label: '四大金剛（點選看說明）', ids: ['comp', 'cond', 'txv', 'evap'] },
-  { label: '四段管路：冷媒狀態', ids: ['discharge', 'liquid', 'mixture', 'suction'] },
-  { label: '管路上的小零件', ids: ['oub', 'kp15', 'receiver', 'gbc', 'dml', 'sgi', 'evr', 'tc', 'acc'] },
+const LESSON_GROUPS: { label: string; ids: CycleNodeId[]; cols: number }[] = [
+  { label: '四大金剛（點選看說明）', ids: ['comp', 'cond', 'txv', 'evap'], cols: 2 },
+  { label: '四段管路：冷媒狀態', ids: ['discharge', 'liquid', 'mixture', 'suction'], cols: 2 },
+  { label: '管路上的小零件', ids: ['oub', 'kp15', 'receiver', 'gbc', 'dml', 'sgi', 'evr', 'tc', 'acc'], cols: 3 },
 ]
 
-/** 核心圖解：大張可點選的循環圖 + 項目清單 */
+/** 核心圖解：大張可點選的循環圖 + 項目清單（圖的面板寬度貼合圖比例，其餘空間給清單） */
 export function CycleLesson() {
   const [selected, setSelected] = useState<CycleNodeId | null>(null)
   return (
-    <div className="grid h-full grid-cols-[minmax(0,1fr)_430px] gap-6">
+    <div className="cq-box flex h-full gap-6" style={{ containerType: 'size' }}>
       <div
-        className="cq-box relative flex min-h-0 items-center justify-center rounded-[22px] border border-white/10 bg-navy-900/60 p-3"
-        style={{ containerType: 'size' }}
+        className="cq-box relative flex h-full shrink-0 items-center justify-center rounded-[22px] border border-white/10 bg-navy-900/60 p-3"
+        style={{ containerType: 'size', width: 'min(calc(100cqh * 820 / 560 + 26px), 64cqw)' }}
       >
         <CycleExplorer className="cq-fit" selected={selected} onSelect={setSelected} style={{ width: 'min(100cqw, calc(100cqh * 820 / 560))' }} />
       </div>
-      <section className="flex min-h-0 flex-col gap-3">
+      <section className="flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-4">
         {LESSON_GROUPS.map((group) => (
           <div key={group.label}>
-            <p className="mb-1.5 text-[15px] font-bold text-slate-400">{group.label}</p>
-            <div className="grid grid-cols-2 gap-1.5">
+            <p className="mb-2 text-[19px] font-bold text-slate-300">{group.label}</p>
+            <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${group.cols}, minmax(0, 1fr))` }}>
               {group.ids.map((id) => {
                 const note = cycleNotes[id]
                 const t = toneStyles[note.tone]
@@ -118,14 +118,14 @@ export function CycleLesson() {
                     onClick={() => setSelected(active ? null : id)}
                     aria-pressed={active}
                     className={cn(
-                      'flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300',
+                      'flex items-center gap-2.5 rounded-xl border px-3 py-2 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300',
                       active ? 'border-amber-400 bg-amber-400/15' : 'border-white/[0.08] bg-navy-900/50 hover:border-white/25',
                     )}
                   >
-                    <span aria-hidden className={cn('h-6 w-1 shrink-0 rounded-full', t.dot)} />
+                    <span aria-hidden className={cn('h-8 w-1 shrink-0 rounded-full', t.dot)} />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[16px] font-bold leading-snug text-slate-50">{note.title}</span>
-                      <span className="block truncate text-[12px] text-slate-400">{note.kind === 'pipe' ? note.state : note.alias}</span>
+                      <span className="block truncate text-[20px] font-bold leading-snug text-slate-50">{note.title}</span>
+                      <span className="block truncate text-[17px] leading-snug text-slate-300">{note.kind === 'pipe' ? note.state : note.alias.replace('講義型號 ', '')}</span>
                     </span>
                   </button>
                 )

@@ -12,7 +12,9 @@ import { FlowSteps } from './FlowSteps'
 import { AudioChapters, HotspotDiagram } from './Media'
 import { Boundaries, Metrics, StatCard } from './Metrics'
 import { PartsOverview, ProductMap, QAPanel, QuoteCard, ScenarioCard } from './Navigational'
+import { EstimatePractice } from './Estimate'
 import { FenConverter } from './FenConverter'
+import { Flashcards } from './Flashcards'
 import { QuizCards } from './Quiz'
 import { AlertPanel, SizingPanel, TrapPanel } from './Warnings'
 
@@ -99,5 +101,9 @@ function Leaf({ block }: { block: Exclude<Block, GridBlock> }) {
       return <QuizCards block={block} />
     case 'fen':
       return <FenConverter />
+    case 'estimate':
+      return <EstimatePractice block={block} />
+    case 'flashcards':
+      return <Flashcards block={block} />
   }
 }

@@ -2162,6 +2162,54 @@ const slideList: SlideData[] = [
     },
   },
 
+  /* ───────────────────────── Ref Tools 網頁版（錄音05：溫度壓力用 App 查） ───────────────────────── */
+  {
+    id: 'reftools',
+    part: 'units',
+    chapter: 'Ref Tools',
+    mark: 'P-T',
+    title: 'Ref Tools 網頁版：冷媒溫度 ↔ 壓力',
+    en: 'Refrigerant Slider',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]',
+        children: [
+          {
+            type: 'section',
+            icon: Gauge,
+            tone: 'ice',
+            title: '在這裡直接試：錶壓 → 管內溫度',
+            className: 'grid-rows-1',
+            children: [{ type: 'refslider' }],
+          },
+          {
+            type: 'flow',
+            direction: 'col',
+            tone: 'teal',
+            icon: Plug,
+            title: '真的 App 怎麼用（Danfoss Ref Tools，免費）',
+            steps: [
+              { title: '下載並打開 Ref Tools', desc: 'App Store／Google Play 搜尋「Ref Tools」，開啟後選「Refrigerant Slider」（冷媒滑尺）' },
+              { title: '選冷媒', desc: '看機器銘牌或冷媒鋼瓶上寫的型號，例如 R134a、R404A' },
+              { title: '輸入或拖動壓力', desc: '把壓力錶讀數（錶壓）輸入，就會跳出對應的飽和溫度' },
+              { title: '對照看看', desc: '例：R134a 錶壓 1.0 bar ≈ 管內 -10°C（左邊拖到 1.0 試試）' },
+              { title: '其他功能之後再學', desc: '故障排除（Troubleshooter）、膨脹閥過熱度調整、產品查詢', tone: 'slate' },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          <Hl>冷媒種類＋錶壓＝管內溫度</Hl>：溫度和壓力綁在一起，這就是 Ref Tools 最常用的功能；客人拿錶來問，先問冷媒再查。
+        </>
+      ),
+    },
+  },
+
   /* ───────────────────────── 估價練習（只用錄音講過的規則） ───────────────────────── */
   {
     id: 'estimate',
@@ -2595,6 +2643,7 @@ const ORDER = [
   'ch1',
   'check-1',
   'units',
+  'reftools',
   'check-2',
   'industry',
   'check-3',

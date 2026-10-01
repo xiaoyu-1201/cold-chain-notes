@@ -16,6 +16,7 @@ import { EstimatePractice } from './Estimate'
 import { FenConverter } from './FenConverter'
 import { Flashcards } from './Flashcards'
 import { QuizCards } from './Quiz'
+import { RefSlider } from './RefSlider'
 import { AlertPanel, SizingPanel, TrapPanel } from './Warnings'
 
 const renderChild = (child: Block, index: number) => <BlockRenderer key={index} block={child} />
@@ -105,5 +106,7 @@ function Leaf({ block }: { block: Exclude<Block, GridBlock> }) {
       return <EstimatePractice block={block} />
     case 'flashcards':
       return <Flashcards block={block} />
+    case 'refslider':
+      return <RefSlider />
   }
 }

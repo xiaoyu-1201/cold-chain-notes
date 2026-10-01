@@ -46,7 +46,7 @@ export function ReaderView({ onExit }: { onExit: () => void }) {
               簡報
             </button>
           </header>
-          <main className="mx-auto max-w-[720px] pb-16">
+          <main className="deck-hover mx-auto max-w-[720px] pb-16">
             {slides.map((slide, i) => {
               const part = parts[slide.part]
               const firstOfPart = i > 0 && slides[i - 1].part !== slide.part

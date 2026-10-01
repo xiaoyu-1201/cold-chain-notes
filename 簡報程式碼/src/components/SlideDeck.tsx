@@ -133,7 +133,7 @@ export function SlideDeck() {
               style={{ width: STAGE_W * scale, height: STAGE_H * scale, transform: 'translate(-50%, -50%)' }}
             >
               <div
-                className="blueprint-grid relative origin-top-left bg-navy-900"
+                className="blueprint-grid deck-hover relative origin-top-left bg-navy-900"
                 style={{ width: STAGE_W, height: STAGE_H, transform: `scale(${scale})` }}
               >
                 <div

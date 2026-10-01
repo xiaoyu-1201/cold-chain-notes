@@ -6,6 +6,8 @@ import { slides } from '../data/slides'
 import { useDeckKeyboard } from '../hooks/useDeckKeyboard'
 import { useFitScale } from '../hooks/useFitScale'
 import { useFullscreen } from '../hooks/useFullscreen'
+import { useReaderMode } from '../hooks/useReaderMode'
+import { ReaderView } from './ReaderView'
 import { ChapterDrawer } from './ChapterDrawer'
 import { ProgressBar } from './ProgressBar'
 import { SlideCard } from './SlideCard'
@@ -30,6 +32,7 @@ const slideVariants: Variants = {
 }
 
 export function SlideDeck() {
+  const [reader, setReader] = useReaderMode()
   const [page, setPage] = useState(() => ({ index: indexFromHash(), dir: 0 }))
   const [drawerOpen, setDrawerOpen] = useState(false)
   /** 從頁內連結跳轉前所在的頁，用來顯示「返回」按鈕 */
@@ -114,6 +117,8 @@ export function SlideDeck() {
   const slide = slides[page.index]
   const part = parts[slide.part]
 
+  if (reader) return <ReaderView onExit={() => setReader(false)} />
+
   return (
     <MotionConfig reducedMotion="user">
       <DeckContext.Provider value={api}>
@@ -168,6 +173,7 @@ export function SlideDeck() {
             onToggleFullscreen={toggleFullscreen}
             back={showBack && returnTo !== null ? { number: returnTo + 1, title: slides[returnTo].title } : null}
             onBack={goBack}
+            onReader={() => setReader(true)}
           />
 
           <ChapterDrawer

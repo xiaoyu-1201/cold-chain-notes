@@ -359,6 +359,22 @@ export interface QuizBlock {
   items: { q: ReactNode; a: ReactNode; slide?: string }[]
 }
 
+/** 估價練習：情境題，一題一題配出整套 */
+export interface EstimateBlock {
+  type: 'estimate'
+  scenarios: {
+    title: string
+    story: ReactNode
+    questions: { q: string; options: string[]; answer: number; why: ReactNode; slide?: string }[]
+  }[]
+}
+
+/** 名詞翻卡：國語／台語／英文／型號 */
+export interface FlashcardsBlock {
+  type: 'flashcards'
+  cards: { term: string; alias: string; en: string; tip: string }[]
+}
+
 /** 互動換算器：管徑「分」↔ mm（含考考我練習） */
 export interface FenBlock {
   type: 'fen'
@@ -401,6 +417,8 @@ export type Block =
   | CycleLessonBlock
   | QuizBlock
   | FenBlock
+  | EstimateBlock
+  | FlashcardsBlock
 
 export interface CoverData {
   kicker: string

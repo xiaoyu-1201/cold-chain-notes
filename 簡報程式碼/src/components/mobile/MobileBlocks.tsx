@@ -6,7 +6,9 @@ import { CLASS_AUDIO, CLASS_AUDIO_2 } from '../../data/media'
 import type { AudioBlock, Block, HotspotsBlock, MatrixBlock, Tone } from '../../data/types'
 import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
+import { EstimatePractice } from '../blocks/Estimate'
 import { FenConverter } from '../blocks/FenConverter'
+import { Flashcards } from '../blocks/Flashcards'
 import { BulbClock } from '../diagrams/BulbClock'
 import { CycleDiagram } from '../diagrams/CycleDiagram'
 
@@ -612,6 +614,12 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
 
     case 'fen':
       return <FenConverter mobile />
+
+    case 'estimate':
+      return <EstimatePractice block={block} mobile />
+
+    case 'flashcards':
+      return <Flashcards block={block} mobile />
 
     case 'quiz':
       return <QuizMobile items={block.items} />

@@ -2162,6 +2162,108 @@ const slideList: SlideData[] = [
     },
   },
 
+  /* ───────────────────────── 估價練習（只用錄音講過的規則） ───────────────────────── */
+  {
+    id: 'estimate',
+    part: 'practice',
+    chapter: '估價練習',
+    mark: 'QUOTE',
+    title: '估價練習：幫客人配一整套',
+    en: 'Quoting Practice',
+    blocks: [
+      {
+        type: 'estimate',
+        scenarios: [
+          {
+            title: '便利商店冷藏',
+            story: '便利商店要做冷藏櫃，散熱器要掛在外牆、管子拉很長；用膨脹閥系統，壓縮機選 2 馬。',
+            questions: [
+              { q: '散熱器要配幾馬？', options: ['2 馬', '4 馬', '6 馬'], answer: 1, why: '一般 1 馬壓縮機配 2 馬散熱器，2 馬就配 4 馬。〔錄音02 04:46〕', slide: 'recording-2' },
+              { q: '散熱器選哪一種？', options: ['有外箱的', '無穿衫（裸露型）'], answer: 0, why: '掛外牆要耐風吹雨淋，像 7-11 都用有外箱的。〔錄音02 06:07〕', slide: 'recording-2' },
+              { q: '電磁閥要不要裝？', options: ['要', '不用'], answer: 0, why: '散熱外移、管子越長冷媒越多，停機時要把冷媒關在液管。〔錄音01 21:28〕', slide: 'cycle-lesson' },
+              { q: '儲液器要不要裝？', options: ['要', '不用'], answer: 0, why: '膨脹閥系統一定要裝，確保送到膨脹閥的是源源不絕的液態。〔錄音02 10:17〕', slide: 'handout' },
+              { q: '乾燥過濾器、壓力開關呢？', options: ['兩個都要', '看情況'], answer: 0, why: '乾燥過濾器一定要（系統不能有水）；壓力開關一定要（保護壓縮機）。〔錄音01 03:12〕〔錄音02 17:57〕', slide: 'handout' },
+            ],
+          },
+          {
+            title: '餐廳冷凍庫',
+            story: '餐廳要做一間冷凍庫，機器想放在鐵皮屋頂上，老闆想省錢。',
+            questions: [
+              { q: '第一個要先問什麼？', options: ['要幾馬', '冰什麼', '預算多少'], answer: 1, why: '先問冰什麼，才知道要多大的壓縮機。〔錄音02 06:07〕', slide: 'recording-2' },
+              { q: '想省錢用「無穿衫」散熱器，要提醒什麼？', options: ['沒差，直接裝', '鐵皮屋上夏天會到 50°C，散熱很差'], answer: 1, why: '裸露型比較便宜，但擺放位置很重要。〔錄音04 00:51〕', slide: 'recording-3' },
+              { q: '溫控器的溫差一般抓幾度？', options: ['1°C', '4°C', '10°C'], answer: 1, why: '溫差太小，壓縮機開關太頻繁、影響壽命。〔錄音01 14:46〕', slide: 'recording' },
+              { q: '冷凍庫的溫控跟冷藏有什麼不同？', options: ['冷凍要除霜', '沒有差別'], answer: 0, why: '冷藏和冷凍主要差在溫控：冷凍要除霜，冷藏不用。〔錄音03 03:28〕', slide: 'recording-3' },
+              { q: '客人想用同一台壓縮機，順便帶隔壁的冷藏庫？', options: ['可以，比較省', '建議一對一'], answer: 1, why: '一藏一凍很難控制，還可能把壓縮機搞壞；一般一對一。〔錄音03 03:28〕', slide: 'recording-3' },
+            ],
+          },
+          {
+            title: '小冰箱維修',
+            story: '客人拿小冰箱來修，系統用毛細管、沒有膨脹閥。',
+            questions: [
+              { q: '要不要加儲液器？', options: ['要', '不用'], answer: 1, why: '毛細管的小系統可以不裝；用膨脹閥的系統才一定要。〔錄音02 10:17〕', slide: 'handout' },
+              { q: '電磁閥呢？', options: ['一定要', '小冰箱可以不裝'], answer: 1, why: '散熱外移、管路長才一定要；小冰箱可以不裝。〔錄音01 21:28〕', slide: 'cycle-lesson' },
+              { q: '乾燥過濾器呢？', options: ['一定要', '可以省'], answer: 0, why: '系統只能有冷媒、不能有水，乾燥過濾器一定要。〔錄音01 03:12〕', slide: 'cycle-lesson' },
+              { q: '只賣維修零件，對門市來說？', options: ['是主要生意', '利潤低，整套輸出才是主要生意'], answer: 1, why: '每天的工作是估冷凍庫；整套輸出金額才大。〔錄音02 06:53〕', slide: 'recording-2' },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '估價心法',
+      text: (
+        <>
+          先問<Hl>冰什麼</Hl>，壓縮機決定一切；散熱器配 2 倍，<Hl>乾燥過濾器、壓力開關一定要</Hl>，膨脹閥系統加儲液器，散熱外移加電磁閥。
+        </>
+      ),
+    },
+  },
+
+  /* ───────────────────────── 名詞翻卡（間隔重複） ───────────────────────── */
+  {
+    id: 'glossary',
+    part: 'review',
+    chapter: '名詞翻卡',
+    mark: 'WORDS',
+    title: '名詞翻卡：國語・台語・英文・型號',
+    en: 'Flashcards',
+    blocks: [
+      {
+        type: 'flashcards',
+        cards: [
+          { term: '壓縮機', alias: '系統心臟', en: 'Compressor', tip: '不能壓縮液體；其他元件都跟著它配' },
+          { term: '冷凝器', alias: '散熱器、熱排（台語）', en: 'Condenser', tip: '把熱排到室外，氣態冷凝成液態' },
+          { term: '裸露型散熱器', alias: '無穿衫（台語：沒穿衣服）', en: 'Open-type Condenser', tip: '馬達外露、便宜；別放鐵皮屋上' },
+          { term: '蒸發器', alias: '冷排（台語）', en: 'Evaporator', tip: '在庫內吸熱，液態蒸發成氣態' },
+          { term: '膨脹閥', alias: '降壓節流', en: 'Expansion Valve（TE）', tip: '閥芯大小看壓縮機配' },
+          { term: '毛細管', alias: '小系統用', en: 'Capillary Tube', tip: '冰箱用來代替膨脹閥，便宜但不能調' },
+          { term: '儲液器', alias: '高壓儲液器', en: 'Receiver', tip: '確保送出去的是液態；膨脹閥系統一定要' },
+          { term: '液氣分離器', alias: '低壓儲液器', en: 'Accumulator', tip: '確保回壓縮機的是氣態' },
+          { term: '乾燥過濾器', alias: '乾燥器', en: 'Filter Drier（DML）', tip: '吸水、濾雜質，一定要裝' },
+          { term: '視液鏡', alias: '視窗', en: 'Sight Glass（SGI）', tip: '看冷媒夠不夠；變色代表含水' },
+          { term: '電磁閥', alias: '水龍頭（常閉）', en: 'Solenoid Valve（EVR）', tip: '通電才開；散熱外移一定要裝' },
+          { term: '壓力開關', alias: '高低壓開關', en: 'Pressure Switch（KP 15）', tip: '一定要裝，保護壓縮機' },
+          { term: '手閥', alias: '球閥', en: 'Ball Valve（GBC）', tip: '換零件時前後關起來' },
+          { term: '油分離器', alias: '分油器', en: 'Oil Separator（OUB）', tip: '把跟著跑出去的冷凍油拉回壓縮機' },
+          { term: '機組', alias: '壓縮機＋配件', en: 'Condensing Unit', tip: '壓縮機、油分離器、配件裝在一個基礎盤上' },
+          { term: '液管', alias: '講義上的黃色線', en: 'Liquid Line', tip: '中溫中壓液態' },
+          { term: '高壓氣管', alias: '講義上的紅色線', en: 'Discharge Line', tip: '高溫高壓氣態' },
+          { term: '吸氣管', alias: '講義上的藍色線', en: 'Suction Line', tip: '低溫低壓氣態回到壓縮機' },
+          { term: '馬', alias: '馬力（口語）', en: 'HP（正確單位是 BTU）', tip: '客人都講幾馬' },
+          { term: '分', alias: '管徑單位', en: '1/8 inch', tip: '1 吋＝8 分＝25.4 mm，1 分＝3.175 mm' },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '為什麼要翻卡',
+      text: (
+        <>
+          門市裡國語、台語、英文、型號混著講；<Hl>先自己說出來再翻面</Hl>，還不熟的會一直回來，直到記住。
+        </>
+      ),
+    },
+  },
+
   /* ───────────────────────── 各步小測驗（每一步結尾，提取練習） ───────────────────────── */
   ...(
     [
@@ -2503,12 +2605,14 @@ const ORDER = [
   'ch5',
   'handout',
   'check-4',
+  'estimate',
   'ch9',
   'sop',
   'check-5',
   'recording',
   'recording-2',
   'recording-3',
+  'glossary',
   'quiz',
   'lesson-insights',
   'qa',

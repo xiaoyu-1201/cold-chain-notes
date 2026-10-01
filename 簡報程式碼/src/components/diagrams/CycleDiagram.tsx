@@ -220,9 +220,9 @@ function useHitBoxes(svgRef: RefObject<SVGSVGElement | null>, enabled: boolean) 
   return boxes
 }
 
-function StateText({ x, y, lines, anchor, color }: { x: number; y: number; lines: string[]; anchor: 'start' | 'end'; color: string }) {
+function StateText({ x, y, lines, anchor, color, hit }: { x: number; y: number; lines: string[]; anchor: 'start' | 'end'; color: string; hit: string }) {
   return (
-    <text x={x} y={y} textAnchor={anchor} fontSize={16} fontWeight={700} fill={color}>
+    <text data-hit={hit} x={x} y={y} textAnchor={anchor} fontSize={16} fontWeight={700} fill={color}>
       {lines.map((line, i) => (
         <tspan key={line} x={x} dy={i === 0 ? 0 : 20}>
           {line}
@@ -331,10 +331,10 @@ export function CycleDiagram({ className, interactive = false, selected = null, 
       <Arrow x={625} y={468} rotate={0} color={COLORS.suction} />
 
       {/* 管路狀態 */}
-      <StateText x={700} y={116} lines={['高溫高壓', '氣態']} anchor="start" color="#fca5a5" />
-      <StateText x={122} y={160} lines={['中溫中壓', '液態']} anchor="end" color="#fcd34d" />
-      <StateText x={122} y={378} lines={['液氣', '混合']} anchor="end" color="#a5f3fc" />
-      <StateText x={700} y={358} lines={['低溫低壓', '氣態']} anchor="start" color="#7dd3fc" />
+      <StateText x={700} y={116} lines={['高溫高壓', '氣態']} anchor="start" color="#fca5a5" hit="discharge-label" />
+      <StateText x={122} y={160} lines={['中溫中壓', '液態']} anchor="end" color="#fcd34d" hit="liquid-label" />
+      <StateText x={122} y={378} lines={['液氣', '混合']} anchor="end" color="#a5f3fc" hit="mixture-label" />
+      <StateText x={700} y={358} lines={['低溫低壓', '氣態']} anchor="start" color="#7dd3fc" hit="suction-label" />
 
       {/* 冷凝器 */}
       <rect x="250" y="50" width="320" height="84" rx="14" fill="#f97316" fillOpacity="0.08" stroke="#fb923c" strokeOpacity="0.55" strokeWidth={2} />
@@ -362,7 +362,7 @@ export function CycleDiagram({ className, interactive = false, selected = null, 
       {interactive && (
         <g>
           {(Object.keys(PIPE_PATHS) as (keyof typeof PIPE_PATHS)[]).map((id) => {
-            const box = PIPE_LABEL_HITS[id]
+            const box = boxes[`${id}-label`] ?? PIPE_LABEL_HITS[id]
             return (
               <g key={id} {...hitProps(id, { discharge: '高壓氣管', liquid: '液管', mixture: '液氣混合段', suction: '吸氣管' }[id])}>
                 <path d={PIPE_PATHS[id]} fill="none" stroke="transparent" strokeWidth={34} strokeLinecap="round" pointerEvents="stroke" />

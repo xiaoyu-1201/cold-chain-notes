@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowUpRight, Headphones, Maximize2, Pause, Quote, X } from 'lucide-react'
+import { ArrowUpRight, Box, Headphones, Maximize2, Pause, Quote, X } from 'lucide-react'
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 import { useDeck } from '../../context/deck'
@@ -7,6 +7,8 @@ import { cycleNotes, type CycleNodeId } from '../../data/cycleNotes'
 import { CLASS_AUDIO, CLASS_AUDIO_2 } from '../../data/media'
 import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
+import { part3DFor } from '../three/ids'
+import { PartViewer } from '../three/PartViewer'
 import { CycleDiagram } from './CycleDiagram'
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
@@ -69,6 +71,8 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
   const note = cycleNotes[id]
   const t = toneStyles[note.tone]
   const { goToId, numberOf } = useDeck()
+  const model = part3DFor(id)
+  const [view, setView] = useState(false)
 
   const { x, y, place } = note.anchor
   const width = large ? 520 : 380
@@ -134,6 +138,20 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
       </p>
 
       <div className="mt-3 flex flex-wrap gap-2">
+        {model && (
+          <button
+            type="button"
+            onClick={() => setView(true)}
+            className={cn(
+              'flex items-center gap-1.5 rounded-lg border border-sky-400/50 bg-sky-400/15 font-semibold text-sky-100 transition hover:bg-sky-400/25',
+              large ? 'px-3.5 py-2 text-[17px]' : 'px-2.5 py-1 text-[16px]',
+              focusRing,
+            )}
+          >
+            <Box className="size-4" aria-hidden />
+            3D 看構造
+          </button>
+        )}
         {note.audioAt !== undefined && <ClipButton src={CLASS_AUDIO} at={note.audioAt} label="錄音01" large={large} />}
         {note.audio2At !== undefined && <ClipButton src={CLASS_AUDIO_2} at={note.audio2At} label="錄音02" large={large} />}
         {note.slide && (
@@ -151,6 +169,7 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
           </button>
         )}
       </div>
+      {view && model && <PartViewer id={model} title={note.title.replace(/^[①-④]\s*/, '')} alias={note.alias} onClose={() => setView(false)} />}
     </motion.div>
   )
 }

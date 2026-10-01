@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight, Check, CheckCircle2, ExternalLink, Headphones, Pause, Quote, TriangleAlert } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Box, Check, CheckCircle2, ExternalLink, Headphones, Pause, Quote, TriangleAlert } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useDeck } from '../../context/deck'
 import { cycleNotes, CYCLE_ORDER, type CycleNodeId } from '../../data/cycleNotes'
@@ -12,6 +12,8 @@ import { Flashcards } from '../blocks/Flashcards'
 import { RefSlider } from '../blocks/RefSlider'
 import { BulbClock } from '../diagrams/BulbClock'
 import { CycleDiagram } from '../diagrams/CycleDiagram'
+import { part3DFor } from '../three/ids'
+import { PartViewer } from '../three/PartViewer'
 
 /* 手機閱讀版：不縮放、實際字級（內文 17px），單欄、最多一層卡片 */
 
@@ -772,8 +774,11 @@ function CycleLessonMobile() {
     if (scroll) requestAnimationFrame(() => noteRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }))
   }
   const note = selected ? cycleNotes[selected] : null
+  const [viewId, setViewId] = useState<string | null>(null)
+  const viewModel = viewId ? part3DFor(viewId) : null
   return (
     <div className="space-y-3">
+      {viewModel && note && <PartViewer id={viewModel} title={note.title.replace(/^[①-④]\s*/, '')} alias={note.alias} onClose={() => setViewId(null)} />}
       <p className="text-[15px] text-slate-300">點圖上的虛線框或下面的按鈕，看說明、聽錄音。</p>
       <div className="relative rounded-2xl border border-white/10 bg-navy-900" style={{ aspectRatio: '820 / 560' }}>
         <CycleDiagram className="absolute inset-0 h-full w-full" interactive selected={selected} onSelect={(id) => pick(id, false)} />
@@ -801,6 +806,16 @@ function CycleLessonMobile() {
               {note.point}
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
+              {part3DFor(note.id) && (
+                <button
+                  type="button"
+                  onClick={() => setViewId(note.id)}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-sky-400/50 bg-sky-400/15 px-3 py-1.5 text-[15px] font-semibold text-sky-100 active:bg-sky-400/25"
+                >
+                  <Box className="size-4" aria-hidden />
+                  3D 看構造
+                </button>
+              )}
               {note.audioAt !== undefined && <Clip key={`${note.id}-1`} src={CLASS_AUDIO} at={note.audioAt} label="錄音01" />}
               {note.audio2At !== undefined && <Clip key={`${note.id}-2`} src={CLASS_AUDIO_2} at={note.audio2At} label="錄音02" />}
               {note.slide && <PageLink slide={note.slide}>{note.chapter}</PageLink>}
@@ -834,8 +849,11 @@ function CycleLessonMobile() {
 
 function HotspotsMobile({ block }: { block: HotspotsBlock }) {
   const groups = Object.entries(block.groups) as [keyof HotspotsBlock['groups'], { label: string; tone: Tone }][]
+  const [view, setView] = useState<{ id: string; title: string; code: string } | null>(null)
+  const viewModel = view ? part3DFor(view.id) : null
   return (
     <div className="space-y-4">
+      {view && viewModel && <PartViewer id={viewModel} title={view.title} alias={`講義型號 ${view.code}`} onClose={() => setView(null)} />}
       <a href={block.image} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-2xl border border-white/10 bg-white">
         <img src={block.image} alt={block.alt} className="w-full" />
       </a>
@@ -858,8 +876,18 @@ function HotspotsMobile({ block }: { block: HotspotsBlock }) {
                     <b className="text-white">{item.name}</b>
                   </p>
                   <p className="mt-1 text-[15px] text-slate-300">{item.func}</p>
-                  {(item.audioAt !== undefined || item.audioAt2 !== undefined || item.slide) && (
+                  {(item.audioAt !== undefined || item.audioAt2 !== undefined || item.slide || part3DFor(item.id)) && (
                     <div className="mt-2 flex flex-wrap gap-2">
+                      {part3DFor(item.id) && (
+                        <button
+                          type="button"
+                          onClick={() => setView({ id: item.id, title: item.name, code: item.code })}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-sky-400/50 bg-sky-400/15 px-3 py-1.5 text-[15px] font-semibold text-sky-100 active:bg-sky-400/25"
+                        >
+                          <Box className="size-4" aria-hidden />
+                          3D 看構造
+                        </button>
+                      )}
                       {item.audioAt !== undefined && block.audioSrc && <Clip src={block.audioSrc} at={item.audioAt} label="錄音01" />}
                       {item.audioAt2 !== undefined && block.audioSrc2 && <Clip src={block.audioSrc2} at={item.audioAt2} label="錄音02" />}
                       {item.slide && <PageLink slide={item.slide}>{item.chapter ?? '相關章節'}</PageLink>}

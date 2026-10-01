@@ -173,13 +173,13 @@ const groupLabel = (p: PartId) => {
 function DockDots({ index, onGoTo }: { index: number; onGoTo: (index: number) => void }) {
   const [hover, setHover] = useState<number | null>(null)
   return (
-    <div className="hidden h-12 items-end gap-2.5 md:flex" onMouseLeave={() => setHover(null)}>
+    <div className="hidden h-14 items-end gap-3 md:flex" onMouseLeave={() => setHover(null)}>
       {dotGroups.map((group) => {
         const tone = toneStyles[parts[group.part].tone]
         const current = group.items.includes(index)
         return (
           <div key={group.part} className="flex min-w-max flex-col items-center">
-            <span className={cn('text-[10px] font-bold leading-3 whitespace-nowrap', current ? tone.text : 'text-slate-500')}>{groupLabel(group.part)}</span>
+            <span className={cn('whitespace-nowrap text-[13px] font-bold leading-4', current ? tone.text : 'text-slate-300')}>{groupLabel(group.part)}</span>
             <div className="flex items-end">
               {group.items.map((i) => {
                 const s = slides[i]

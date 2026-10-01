@@ -55,7 +55,7 @@ export function EstimatePractice({ block, mobile = false }: { block: EstimateBlo
               <button
                 type="button"
                 onClick={reset}
-                className={cn('flex items-center gap-1 rounded-lg border border-white/15 px-2.5 py-1 text-[14px] font-semibold text-slate-200', focusRing)}
+                className={cn('flex items-center gap-1 rounded-lg border border-white/15 px-2.5 py-1 text-[16px] font-semibold text-slate-200', focusRing)}
               >
                 <RotateCcw className="size-3.5" aria-hidden />
                 重來
@@ -104,7 +104,7 @@ export function EstimatePractice({ block, mobile = false }: { block: EstimateBlo
                         <button
                           type="button"
                           onClick={() => goToId(q.slide!)}
-                          className={cn('ml-2 font-mono text-[14px] text-slate-400 hover:text-sky-300', focusRing)}
+                          className={cn('ml-2 font-mono text-[16px] text-slate-400 hover:text-sky-300', focusRing)}
                         >
                           P.{pad(numberOf(q.slide))}↗
                         </button>

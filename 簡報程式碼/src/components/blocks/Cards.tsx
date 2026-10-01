@@ -14,7 +14,7 @@ export function InfoCard({ block }: { block: InfoBlock }) {
         <IconChip icon={block.icon} tone={block.tone} />
         <div className="min-w-0 flex-1">
           <h4 className="text-[23px] font-bold leading-tight text-slate-50">{block.title}</h4>
-          {block.en && <p className="mt-1 font-mono text-[14px] uppercase tracking-[0.14em] text-slate-400">{block.en}</p>}
+          {block.en && <p className="mt-1 font-mono text-[16px] uppercase tracking-[0.14em] text-slate-400">{block.en}</p>}
         </div>
         {block.tag && (
           <Badge tone={block.tone} size="sm">
@@ -32,7 +32,7 @@ export function InfoCard({ block }: { block: InfoBlock }) {
             </div>
           )}
           {block.meta && (
-            <span className="inline-flex items-center gap-1.5 self-start rounded-full border border-slate-400/25 bg-slate-400/10 px-3 py-1 text-[15px] font-semibold text-slate-300">
+            <span className="inline-flex items-center gap-1.5 self-start rounded-full border border-slate-400/25 bg-slate-400/10 px-3 py-1 text-[17px] font-semibold text-slate-300">
               <MapPin className="size-4" aria-hidden />
               {block.meta}
             </span>
@@ -153,7 +153,7 @@ export function Timeline({ block }: { block: TimelineBlock }) {
             <li key={item.gen} className="relative flex flex-col items-center text-center">
               <span
                 className={cn(
-                  'relative z-10 flex size-9 items-center justify-center rounded-full border-2 bg-navy-900 font-mono text-[15px] font-bold',
+                  'relative z-10 flex size-9 items-center justify-center rounded-full border-2 bg-navy-900 font-mono text-[17px] font-bold',
                   t.border,
                   t.text,
                 )}

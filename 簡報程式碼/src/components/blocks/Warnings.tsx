@@ -22,7 +22,7 @@ export function AlertPanel({ block }: { block: AlertBlock }) {
         </span>
         <div>
           <h3 className="text-[28px] font-black leading-tight text-red-50">{block.title}</h3>
-          {block.en && <p className="mt-1 font-mono text-[14px] uppercase tracking-[0.2em] text-red-300/80">{block.en}</p>}
+          {block.en && <p className="mt-1 font-mono text-[16px] uppercase tracking-[0.2em] text-red-300/80">{block.en}</p>}
         </div>
       </header>
       <div className="flex min-h-0 flex-1 flex-col gap-4">
@@ -63,7 +63,7 @@ export function TrapPanel({ block }: { block: TrapBlock }) {
         </span>
         <div>
           <h3 className="text-[26px] font-black leading-tight text-amber-50">{block.title}</h3>
-          {block.en && <p className="mt-1 font-mono text-[14px] uppercase tracking-[0.2em] text-amber-300/80">{block.en}</p>}
+          {block.en && <p className="mt-1 font-mono text-[16px] uppercase tracking-[0.2em] text-amber-300/80">{block.en}</p>}
         </div>
       </header>
       <div className="mt-5 flex items-center gap-4">
@@ -119,7 +119,7 @@ export function SizingPanel({ block }: { block: SizingBlock }) {
         </span>
         <div className="min-w-0 flex-1">
           <h3 className="text-[25px] font-black leading-tight text-amber-50">{block.title}</h3>
-          {block.en && <p className="mt-1 font-mono text-[14px] uppercase tracking-[0.2em] text-amber-300/80">{block.en}</p>}
+          {block.en && <p className="mt-1 font-mono text-[16px] uppercase tracking-[0.2em] text-amber-300/80">{block.en}</p>}
         </div>
         {block.badge && (
           <span className="rounded-full border border-red-400/50 bg-red-500/15 px-3 py-1 text-[16px] font-bold text-red-200">
@@ -127,20 +127,20 @@ export function SizingPanel({ block }: { block: SizingBlock }) {
           </span>
         )}
       </header>
-      <ul className="mt-4 space-y-1.5">
+      <ul className="mt-3 space-y-1">
         {block.points.map((point, i) => (
-          <li key={i} className="flex gap-2.5 text-[20px] leading-normal text-amber-50/90">
+          <li key={i} className="flex gap-2.5 text-[19px] leading-snug text-amber-50/90">
             <TriangleAlert className="mt-1 size-5 shrink-0 text-amber-300" aria-hidden />
             <span>{point}</span>
           </li>
         ))}
       </ul>
-      <div className="mt-4 flex items-center justify-center rounded-xl border border-amber-300/30 bg-black/30 px-6 py-3 font-mono text-[27px] font-bold text-amber-50">
+      <div className="mt-3 flex items-center justify-center rounded-xl border border-amber-300/30 bg-black/30 px-6 py-2 font-mono text-[24px] font-bold text-amber-50">
         <span>{block.formula}</span>
       </div>
       {block.example && (
-        <div className="mt-auto pt-4">
-          <p className="mb-2 font-mono text-[15px] text-amber-200/80">{block.example.caption}</p>
+        <div className="mt-auto pt-3">
+          <p className="mb-2 font-mono text-[17px] text-amber-200/80">{block.example.caption}</p>
           <div className="grid grid-cols-2 gap-3">
             {block.example.rows.map((row) => {
               const t = toneStyles[row.tone]

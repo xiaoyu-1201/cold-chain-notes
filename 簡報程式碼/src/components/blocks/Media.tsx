@@ -17,7 +17,7 @@ function formatTime(sec: number) {
 
 function MissingAudio() {
   return (
-    <p className="rounded-lg border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-[15px] leading-snug text-amber-100">
+    <p className="rounded-lg border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-[17px] leading-snug text-amber-100">
       錄音無法播放：請改用 Chrome 或 Edge 開啟這個簡報檔。
     </p>
   )
@@ -72,7 +72,7 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
             )
           }),
         )}
-        <figcaption className="absolute bottom-3 left-3 flex items-center gap-2 rounded-lg bg-navy-950/80 px-3 py-1.5 text-[15px] font-semibold text-slate-100">
+        <figcaption className="absolute bottom-3 left-3 flex items-center gap-2 rounded-lg bg-navy-950/80 px-3 py-1.5 text-[17px] font-semibold text-slate-100">
           <MousePointerClick className="size-4 text-sky-300" aria-hidden />
           點圖上的藍點或右側型號查看說明
         </figcaption>
@@ -87,7 +87,7 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
             </Badge>
           </div>
           <h4 className="mt-2 text-[24px] font-bold leading-tight text-slate-50">{selected.name}</h4>
-          <p className="mt-0.5 font-mono text-[13px] uppercase tracking-[0.14em] text-slate-400">{selected.en}</p>
+          <p className="mt-0.5 font-mono text-[16px] uppercase tracking-[0.14em] text-slate-400">{selected.en}</p>
           <p className="mt-3 text-[19px] leading-normal text-slate-200">{selected.func}</p>
           <div className="mt-4 flex flex-wrap gap-2">
             {selected.slide && (
@@ -99,7 +99,7 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
                   focusRing,
                 )}
               >
-                {selected.chapter} <span className="font-mono text-[13px] text-slate-400">P.{pad(numberOf(selected.slide))}</span>
+                {selected.chapter} <span className="font-mono text-[16px] text-slate-400">P.{pad(numberOf(selected.slide))}</span>
                 <ArrowUpRight className="size-4" aria-hidden />
               </button>
             )}
@@ -138,7 +138,7 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
           </div>
           {block.audioSrc2 && <audio ref={audio2Ref} src={block.audioSrc2} preload="none" controls={false} />}
         </div>
-        {block.note && <p className="-mt-1 text-[15px] leading-snug text-amber-200/90">{block.note}</p>}
+        {block.note && <p className="-mt-1 text-[17px] leading-snug text-amber-200/90">{block.note}</p>}
 
         <div className="flex min-h-0 flex-1 flex-col justify-between gap-2.5">
           {GROUP_ORDER.map((g) => {
@@ -146,7 +146,7 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
             const t = toneStyles[meta.tone]
             return (
               <div key={g}>
-                <p className="mb-1.5 flex items-center gap-2 text-[15px] font-bold text-slate-400">
+                <p className="mb-1.5 flex items-center gap-2 text-[17px] font-bold text-slate-400">
                   <span aria-hidden className={cn('h-1 w-5 rounded-full', t.dot)} />
                   {meta.label}
                 </p>
@@ -163,7 +163,7 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
                           aria-pressed={active}
                           title={item.audioAt !== undefined || item.audioAt2 !== undefined ? '錄音中有講解' : '錄音未講解'}
                           className={cn(
-                            'flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[15px] font-semibold transition',
+                            'flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[17px] font-semibold transition',
                             focusRing,
                             active ? 'border-amber-400 bg-amber-400/20 text-amber-50' : cn(t.chip, 'hover:brightness-125'),
                           )}
@@ -181,7 +181,7 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
 
         {block.audioSrc && (
           <div className="rounded-xl border border-white/10 bg-navy-900/60 px-3 py-2.5">
-            <p className="mb-1.5 flex items-center gap-2 text-[14px] font-semibold text-slate-400">
+            <p className="mb-1.5 flex items-center gap-2 text-[16px] font-semibold text-slate-400">
               <AudioLines className="size-4 text-emerald-300" aria-hidden />
               課堂錄音 01
               <span className="ml-auto flex items-center gap-1 font-normal">
@@ -234,7 +234,7 @@ export function AudioChapters({ block }: { block: AudioBlock }) {
           </span>
           <div>
             <h3 className="text-[28px] font-black leading-tight text-white">{block.title}</h3>
-            {block.en && <p className="mt-1 font-mono text-[14px] uppercase tracking-[0.18em] text-emerald-300/80">{block.en}</p>}
+            {block.en && <p className="mt-1 font-mono text-[16px] uppercase tracking-[0.18em] text-emerald-300/80">{block.en}</p>}
           </div>
         </div>
         {block.tracks && (
@@ -251,7 +251,7 @@ export function AudioChapters({ block }: { block: AudioBlock }) {
                 )}
               >
                 {tr.label}
-                <span className="ml-1.5 font-mono text-[13px] font-normal opacity-70">{tr.duration}</span>
+                <span className="ml-1.5 font-mono text-[16px] font-normal opacity-70">{tr.duration}</span>
               </button>
             ))}
           </div>
@@ -276,7 +276,7 @@ export function AudioChapters({ block }: { block: AudioBlock }) {
           )}
         </div>
         <div className="mt-auto rounded-2xl border border-white/10 bg-navy-900/60 p-4">
-          <p className="text-[15px] font-semibold text-slate-400">目前段落</p>
+          <p className="text-[17px] font-semibold text-slate-400">目前段落</p>
           <p className="mt-1 text-[22px] font-bold leading-snug text-emerald-100">{current >= 0 ? block.chapters[current].title : '—'}</p>
           <p className="mt-2 text-[16px] leading-snug text-slate-400">點右側任一段落，就會從該處開始播放。</p>
         </div>
@@ -305,7 +305,7 @@ export function AudioChapters({ block }: { block: AudioBlock }) {
                   )}
                 >
                   <Play className="size-4" aria-hidden />
-                  {block.tracks && <span className="text-[14px] opacity-80">{tracks[t].label}</span>}
+                  {block.tracks && <span className="text-[16px] opacity-80">{tracks[t].label}</span>}
                   {formatTime(c.at)}
                 </span>
                 <span className="min-w-0 flex-1">

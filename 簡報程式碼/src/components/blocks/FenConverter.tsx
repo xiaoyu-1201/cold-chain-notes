@@ -57,7 +57,7 @@ export function FenConverter({ mobile = false }: { mobile?: boolean }) {
             )}
           >
             {s.fen}
-            <span className={cn('font-bold', mobile ? 'text-[11px]' : 'text-[15px]')}>分</span>
+            <span className={cn('font-bold', mobile ? 'text-[11px]' : 'text-[17px]')}>分</span>
           </button>
         ))}
       </div>

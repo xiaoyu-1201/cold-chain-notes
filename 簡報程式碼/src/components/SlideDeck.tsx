@@ -4,7 +4,7 @@ import { DeckContext, type DeckApi } from '../context/deck'
 import { parts } from '../data/parts'
 import { slides } from '../data/slides'
 import { useDeckKeyboard } from '../hooks/useDeckKeyboard'
-import { useFitScale } from '../hooks/useFitScale'
+import { useFitStage } from '../hooks/useFitScale'
 import { useFullscreen } from '../hooks/useFullscreen'
 import { useReaderMode } from '../hooks/useReaderMode'
 import { interactionHints } from '../lib/interactions'
@@ -14,9 +14,10 @@ import { ProgressBar } from './ProgressBar'
 import { SlideCard } from './SlideCard'
 import { SlideNav } from './SlideNav'
 
-/** 設計畫布尺寸：所有投影片以 1920×1080 排版後等比例縮放 */
-const STAGE_W = 1920
+/** 設計畫布：高度固定 1080，寬度依螢幕比例在 1920～2240 之間調整後等比例縮放 */
 const STAGE_H = 1080
+const STAGE_MIN_W = 1920
+const STAGE_MAX_W = 2240
 const TOTAL = slides.length
 
 const clamp = (n: number) => Math.min(Math.max(n, 0), TOTAL - 1)
@@ -41,7 +42,7 @@ export function SlideDeck() {
   const indexRef = useRef(page.index)
   const { isFullscreen, toggleFullscreen } = useFullscreen()
   const stageRef = useRef<HTMLDivElement>(null)
-  const scale = useFitScale(stageRef, STAGE_W, STAGE_H)
+  const { width: STAGE_W, scale } = useFitStage(stageRef, STAGE_H, STAGE_MIN_W, STAGE_MAX_W)
   const touchStart = useRef<{ x: number; y: number } | null>(null)
 
   const goTo = useCallback((target: number) => {

@@ -174,7 +174,7 @@ export const cycleNotes: Record<CycleNodeId, CycleNote> = {
     id: 'receiver',
     kind: 'small',
     title: '儲液器',
-    alias: '高壓儲液器（講義右下角小圓，沒標名稱）',
+    alias: '高壓・講義右下小圓',
     tone: 'amber',
     state: '確保送出去的是液態',
     quote: '「你今天有膨脹閥系統，這個一定要裝，因為它確保說源源不絕的液態來」',

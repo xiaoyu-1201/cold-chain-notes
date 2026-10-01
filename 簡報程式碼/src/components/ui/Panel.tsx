@@ -30,7 +30,7 @@ export function Panel({ icon, title, en, tone = 'ice', right, className, bodyCla
           <div className="min-w-0 flex-1">
             {title && <h3 className="text-[26px] font-bold leading-tight text-slate-50">{title}</h3>}
             {en && (
-              <p className="mt-1 truncate font-mono text-[14px] uppercase tracking-[0.18em] text-slate-400">{en}</p>
+              <p className="mt-1 truncate font-mono text-[16px] uppercase tracking-[0.18em] text-slate-400">{en}</p>
             )}
           </div>
           {right}

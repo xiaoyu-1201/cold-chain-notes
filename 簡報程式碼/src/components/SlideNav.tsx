@@ -110,7 +110,7 @@ export function SlideNav({
           </p>
         ) : (
           !back && (
-            <div className="hidden min-w-0 lg:block">
+            <div className="hidden min-w-0 min-[1700px]:block">
               <p className="truncate text-sm font-bold text-slate-100">氣冷式冷凍冷藏系統・新人培訓</p>
               <p className="truncate text-xs text-slate-400">
                 {partLabel}・{title}

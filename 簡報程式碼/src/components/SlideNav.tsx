@@ -102,11 +102,11 @@ export function SlideNav({
         {hints.length > 0 ? (
           <p
             title={hints.join('；')}
-            className="hidden min-w-0 items-center gap-2 rounded-xl border border-dashed border-sky-400/50 bg-sky-400/10 px-3 py-1.5 text-sm font-semibold text-sky-100 lg:flex"
+            className="hidden items-center gap-2 overflow-hidden rounded-xl border border-dashed border-sky-400/50 bg-sky-400/10 px-3 py-1.5 text-sm font-semibold text-sky-100 xl:flex"
           >
             <Pointer className="size-4 shrink-0 animate-pulse text-sky-300" aria-hidden />
             <span className="shrink-0 text-sky-300">本頁可以點</span>
-            <span className="truncate">{hints.join('；')}</span>
+            <span className="min-w-0 truncate">{hints.join('；')}</span>
           </p>
         ) : (
           !back && (

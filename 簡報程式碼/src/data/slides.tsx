@@ -218,7 +218,7 @@ export const slides: SlideData[] = [
               { code: 'CH.03', title: '冷凝器', slide: 'ch3' },
               { code: 'CH.04', title: '蒸發器', slide: 'ch4' },
               { code: 'CH.05', title: '保護閥件', slide: 'ch5' },
-              { code: '1001', title: '課堂錄音・講義・Insight', slide: 'recording' },
+              { code: '錄音', title: '課堂錄音・講義・Insight', slide: 'recording' },
               { code: 'CH.06', title: '過冷過熱調校', slide: 'ch6' },
             ],
           },
@@ -1122,16 +1122,16 @@ export const slides: SlideData[] = [
   {
     id: 'recording',
     part: 'components',
-    chapter: '1001 課堂錄音',
+    chapter: '課堂錄音',
     mark: 'AUDIO',
-    title: '課堂錄音重點：系統圖講解',
-    en: 'Class Recording · Part 1',
+    title: '錄音01｜冷凍循環與基本零件',
+    en: 'Recording 01',
     blocks: [
       {
         type: 'audio',
         src: CLASS_AUDIO,
-        title: '10-1 上課 Part 1',
-        en: 'Recorded on 2026 / 10 / 01',
+        title: '錄音01',
+        en: 'Class Recording',
         duration: '27:15',
         chapters: [
           { at: 0, title: '散熱器＝冷凝器＝熱排', summary: '把熱排掉、氣體冷凝成液體，出風四、五十度；國台語名稱都要會' },
@@ -1161,16 +1161,16 @@ export const slides: SlideData[] = [
   {
     id: 'recording-2',
     part: 'components',
-    chapter: '1001 課堂錄音',
+    chapter: '課堂錄音',
     mark: 'AUDIO 2',
-    title: '課堂錄音 Part 2：搭配、儲液器與學習順序',
-    en: 'Class Recording · Part 2',
+    title: '錄音02｜循環修正、元件搭配與儲液器',
+    en: 'Recording 02',
     blocks: [
       {
         type: 'audio',
         src: CLASS_AUDIO_2,
-        title: '10-1 上課 Part 2',
-        en: 'Recorded on 2026 / 10 / 01',
+        title: '錄音02',
+        en: 'Class Recording',
         duration: '21:08',
         chapters: [
           { at: 0, title: '過冷、過熱先不用寫', summary: '比較深，一開始先不用研究，寫了反而會混在一起' },
@@ -1201,21 +1201,21 @@ export const slides: SlideData[] = [
   {
     id: 'recording-3',
     part: 'components',
-    chapter: '1001 課堂錄音',
+    chapter: '課堂錄音',
     mark: 'AUDIO 3',
-    title: '課堂錄音 Part 3–5：檢查筆記與單位',
-    en: 'Class Recording · Part 3–5',
+    title: '錄音03–05｜系統配置、擺放位置與單位',
+    en: 'Recording 03–05',
     blocks: [
       {
         type: 'audio',
         src: CLASS_AUDIO_3,
-        title: '10-1 上課 Part 3–5',
-        en: 'Recorded on 2026 / 10 / 01',
+        title: '錄音03–05',
+        en: 'Class Recording',
         duration: '06:48',
         tracks: [
-          { label: 'P3', src: CLASS_AUDIO_3, duration: '06:48' },
-          { label: 'P4', src: CLASS_AUDIO_4, duration: '01:53' },
-          { label: 'P5', src: CLASS_AUDIO_5, duration: '04:31' },
+          { label: '03', src: CLASS_AUDIO_3, duration: '06:48' },
+          { label: '04', src: CLASS_AUDIO_4, duration: '01:53' },
+          { label: '05', src: CLASS_AUDIO_5, duration: '04:31' },
         ],
         chapters: [
           { track: 0, at: 0, title: '檢查筆記：先記住每個零件做什麼', summary: '壓縮機、油分離器這些先搞懂；寫的內容大致都對' },
@@ -1262,7 +1262,7 @@ export const slides: SlideData[] = [
   {
     id: 'handout',
     part: 'components',
-    chapter: '1001 課堂講義',
+    chapter: '講義',
     title: '講義：系統零件總覽圖',
     en: 'Class Handout · Danfoss',
     store: {
@@ -1548,7 +1548,7 @@ export const slides: SlideData[] = [
   {
     id: 'units',
     part: 'components',
-    chapter: '1001 單位',
+    chapter: '單位',
     mark: 'UNITS',
     title: '單位：管徑「分」與溫度壓力',
     en: 'Units & Tools',
@@ -1633,10 +1633,10 @@ export const slides: SlideData[] = [
   {
     id: 'lesson-insights',
     part: 'components',
-    chapter: '1001 課後 Insight',
+    chapter: '課後 Insight',
     mark: 'TAKEAWAY',
-    title: '上完這堂課，真正要學會的事',
-    en: 'Takeaways from Class 1',
+    title: '學到現在，真正要學會的事',
+    en: 'Key Takeaways',
     blocks: [
       {
         type: 'grid',
@@ -2314,7 +2314,7 @@ export const slides: SlideData[] = [
             links: [
               { label: '課堂錄音重點', slide: 'recording' },
               { label: '單位：管徑「分」', slide: 'units' },
-              { label: '1001 課後 Insight', slide: 'lesson-insights' },
+              { label: '課後 Insight', slide: 'lesson-insights' },
               { label: '店內產品地圖', slide: 'products' },
               { label: '現場量測黃金指標', slide: 'ch6' },
               { label: '四大故障診斷矩陣', slide: 'ch9' },

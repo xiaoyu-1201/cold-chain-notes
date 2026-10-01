@@ -44,6 +44,7 @@ export function CycleExplorer({ selected, onSelect, expandable = true, large = f
       {expandable && (
         <button
           type="button"
+          data-expand
           onClick={() => setExpanded(true)}
           title="放大檢視"
           className={cn(
@@ -133,8 +134,8 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
       </p>
 
       <div className="mt-3 flex flex-wrap gap-2">
-        {note.audioAt !== undefined && <ClipButton src={CLASS_AUDIO} at={note.audioAt} label="聽講 P1" large={large} />}
-        {note.audio2At !== undefined && <ClipButton src={CLASS_AUDIO_2} at={note.audio2At} label="聽講 P2" large={large} />}
+        {note.audioAt !== undefined && <ClipButton src={CLASS_AUDIO} at={note.audioAt} label="錄音01" large={large} />}
+        {note.audio2At !== undefined && <ClipButton src={CLASS_AUDIO_2} at={note.audio2At} label="錄音02" large={large} />}
         {note.slide && (
           <button
             type="button"

@@ -45,7 +45,7 @@ export function TxvPanel({ block }: { block: TxvBlock }) {
   return (
     <Panel icon={block.icon} title={block.title} en={block.en} tone={block.tone}>
       <div className="grid h-full grid-cols-[250px_minmax(0,1fr)] items-center gap-5">
-        <figure>
+        <figure className="small-fig">
           <BulbClock className="w-full" />
           <figcaption className="mt-1 text-center text-[15px] text-slate-400">吸氣管截面・感溫包方位</figcaption>
         </figure>
@@ -74,8 +74,8 @@ export function CyclePanel({ block }: { block: CycleBlock }) {
   return (
     <Panel icon={block.icon} title={block.title} en={block.en} tone={block.tone}>
       <div className="flex h-full flex-col">
-        <div className="relative flex min-h-0 flex-1 items-center justify-center" style={{ containerType: 'size' }}>
-          <CycleExplorer style={{ width: 'min(100cqw, calc(100cqh * 820 / 560))' }} />
+        <div className="cq-box relative flex min-h-0 flex-1 items-center justify-center" style={{ containerType: 'size' }}>
+          <CycleExplorer className="cq-fit" style={{ width: 'min(100cqw, calc(100cqh * 820 / 560))' }} />
         </div>
         <p className="mt-2 text-center text-[16px] text-slate-400">
           虛線框都可以點、會跳出說明；中間虛線為高低壓分界：<span className="text-slate-200">壓縮機</span>升壓、<span className="text-slate-200">膨脹閥</span>降壓
@@ -97,10 +97,10 @@ export function CycleLesson() {
   return (
     <div className="grid h-full grid-cols-[minmax(0,1fr)_430px] gap-6">
       <div
-        className="relative flex min-h-0 items-center justify-center rounded-[22px] border border-white/10 bg-navy-900/60 p-3"
+        className="cq-box relative flex min-h-0 items-center justify-center rounded-[22px] border border-white/10 bg-navy-900/60 p-3"
         style={{ containerType: 'size' }}
       >
-        <CycleExplorer selected={selected} onSelect={setSelected} style={{ width: 'min(100cqw, calc(100cqh * 820 / 560))' }} />
+        <CycleExplorer className="cq-fit" selected={selected} onSelect={setSelected} style={{ width: 'min(100cqw, calc(100cqh * 820 / 560))' }} />
       </div>
       <section className="flex min-h-0 flex-col gap-3">
         {LESSON_GROUPS.map((group) => (

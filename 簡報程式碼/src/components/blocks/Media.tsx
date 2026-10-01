@@ -43,7 +43,7 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
   }
 
   return (
-    <div className="flex h-full items-center gap-6">
+    <div className="hotspot-wrap flex h-full items-center gap-6">
       <figure
         className="relative w-[960px] shrink-0 overflow-hidden rounded-[20px] border border-white/15 bg-white shadow-[0_20px_60px_-30px_rgba(0,0,0,0.9)]"
         style={{ aspectRatio: String(block.ratio) }}
@@ -113,7 +113,7 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
                 )}
               >
                 <Headphones className="size-4" aria-hidden />
-                聽講 P1 <span className="font-mono">{formatTime(selected.audioAt)}</span>
+                錄音01 <span className="font-mono">{formatTime(selected.audioAt)}</span>
               </button>
             )}
             {selected.audioAt2 !== undefined && block.audioSrc2 && (
@@ -132,7 +132,7 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
                 )}
               >
                 <Headphones className="size-4" aria-hidden />
-                聽講 P2 <span className="font-mono">{formatTime(selected.audioAt2)}</span>
+                錄音02 <span className="font-mono">{formatTime(selected.audioAt2)}</span>
               </button>
             )}
           </div>
@@ -183,7 +183,7 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
           <div className="rounded-xl border border-white/10 bg-navy-900/60 px-3 py-2.5">
             <p className="mb-1.5 flex items-center gap-2 text-[14px] font-semibold text-slate-400">
               <AudioLines className="size-4 text-emerald-300" aria-hidden />
-              課堂錄音 10-1（part 1）
+              課堂錄音 01
               <span className="ml-auto flex items-center gap-1 font-normal">
                 <Headphones className="size-3.5" aria-hidden />= 錄音中有講解
               </span>

@@ -22,7 +22,7 @@ export function FlowSteps({ block }: { block: FlowBlock }) {
 /** 水平流程卡片 */
 function RowFlow({ block }: { block: FlowBlock }) {
   return (
-    <div className="flex h-full items-stretch gap-2">
+    <div className="flow-row flex h-full items-stretch gap-2">
       {block.steps.map((step, i) => {
         const tone = step.tone ?? block.tone
         const t = toneStyles[tone]
@@ -30,7 +30,7 @@ function RowFlow({ block }: { block: FlowBlock }) {
         return (
           <Fragment key={i}>
             {i > 0 && (
-              <div className="flex shrink-0 items-center" aria-hidden>
+              <div className="flow-arrow flex shrink-0 items-center" aria-hidden>
                 <ChevronRight className="size-7 text-slate-500" />
               </div>
             )}
@@ -108,7 +108,7 @@ function ColFlow({ block }: { block: FlowBlock }) {
 function CompactRow({ block }: { block: FlowBlock }) {
   const t = toneStyles[block.tone]
   return (
-    <section className="flex h-full items-center gap-6 rounded-[22px] border border-white/10 bg-linear-to-r from-white/[0.055] to-white/[0.015] px-6 py-4">
+    <section className="flow-row flex h-full items-center gap-6 rounded-[22px] border border-white/10 bg-linear-to-r from-white/[0.055] to-white/[0.015] px-6 py-4">
       <div className="flex shrink-0 items-center gap-4">
         {block.icon && <IconChip icon={block.icon} tone={block.tone} />}
         <div>

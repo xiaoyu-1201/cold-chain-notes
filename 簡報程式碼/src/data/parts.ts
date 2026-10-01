@@ -84,7 +84,7 @@ export const parts: Record<PartId, Part> = {
     label: '第二階段：進階（計算與調校）',
     short: '進階',
     tone: 'slate',
-    goal: '基礎熟了之後，學會量測、計算與選型，從賣零件進階到幫客人看系統',
+    goal: '基礎熟了之後，學會量測、計算與選型',
   },
 }
 

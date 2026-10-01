@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowUpRight, Headphones, Maximize2, MousePointerClick, Pause, Quote, X } from 'lucide-react'
+import { ArrowUpRight, Headphones, Maximize2, Pause, Quote, X } from 'lucide-react'
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 import { useDeck } from '../../context/deck'

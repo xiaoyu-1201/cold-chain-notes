@@ -101,6 +101,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 02 老闆開場 ───────────────────────── */
   {
     id: 'owner',
+    source: 'extra',
     part: 'intro',
     mark: 'WELCOME',
     title: '老闆開場：新人要懂的三件事',
@@ -273,6 +274,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 04 產業全景 ───────────────────────── */
   {
     id: 'industry',
+    source: 'extra',
     part: 'industry',
     chapter: '產業全景',
     mark: 'INDUSTRY',
@@ -366,6 +368,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 05 產品地圖 ───────────────────────── */
   {
     id: 'products',
+    source: 'extra',
     part: 'components',
     chapter: '產品地圖',
     mark: 'PRODUCTS',
@@ -490,6 +493,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 06 第 0 章 ───────────────────────── */
   {
     id: 'ch0',
+    source: 'handbook',
     part: 'basics',
     chapter: '第 0 章',
     title: '冷凍名詞與熱工物理',
@@ -581,6 +585,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 07 第 1 章 ───────────────────────── */
   {
     id: 'ch1',
+    source: 'handbook',
     part: 'basics',
     chapter: '第 1 章',
     title: '基本冷凍循環與冷媒',
@@ -653,6 +658,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 08 第 2 章 ───────────────────────── */
   {
     id: 'ch2',
+    source: 'handbook',
     part: 'components',
     chapter: '第 2 章',
     title: '系統心臟——壓縮機',
@@ -774,6 +780,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 09 第 3 章 ───────────────────────── */
   {
     id: 'ch3',
+    source: 'handbook',
     part: 'components',
     chapter: '第 3 章',
     title: '散熱之肺——氣冷式冷凝器',
@@ -872,6 +879,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 10 第 4 章 ───────────────────────── */
   {
     id: 'ch4',
+    source: 'handbook',
     part: 'components',
     chapter: '第 4 章',
     title: '吸熱核心——蒸發器與除霜',
@@ -997,6 +1005,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 11 第 5 章 ───────────────────────── */
   {
     id: 'ch5',
+    source: 'handbook',
     part: 'components',
     chapter: '第 5 章',
     title: '神經與防護——控制與保護閥件',
@@ -1764,6 +1773,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 12 第 6 章 ───────────────────────── */
   {
     id: 'ch6',
+    source: 'handbook',
     part: 'advanced',
     advanced: true,
     chapter: '第 6 章',
@@ -1879,6 +1889,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 13 第 7–8 章 ───────────────────────── */
   {
     id: 'ch7-8',
+    source: 'handbook',
     part: 'advanced',
     advanced: true,
     chapter: '第 7 – 8 章',
@@ -1996,6 +2007,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 14 第 9 章 ───────────────────────── */
   {
     id: 'ch9',
+    source: 'handbook',
     part: 'practice',
     chapter: '第 9 章',
     title: '現場四大高頻故障診斷矩陣',
@@ -2093,6 +2105,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 15 門市接單 SOP ───────────────────────── */
   {
     id: 'sop',
+    source: 'extra',
     part: 'practice',
     chapter: '門市實戰',
     mark: 'COUNTER',
@@ -2555,6 +2568,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 16 三大 Insight ───────────────────────── */
   {
     id: 'insights',
+    source: 'handbook',
     part: 'advanced',
     advanced: true,
     chapter: '進階 Insight',

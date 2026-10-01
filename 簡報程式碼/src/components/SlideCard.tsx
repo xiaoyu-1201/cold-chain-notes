@@ -12,6 +12,13 @@ import { ConclusionCallout } from './ui/ConclusionCallout'
 import { fadeUp, staggerParent } from './ui/motion'
 import { StoreTipCard } from './ui/StoreTipCard'
 
+/** 內容來源標示（沒標＝課堂錄音／講義，最優先學） */
+export const SOURCE_LABEL = { handbook: '手冊延伸', extra: '延伸補充' } as const
+export const SOURCE_TIP = {
+  handbook: '整理自一丞工程手冊，比課堂更深；先以課堂錄音為主',
+  extra: '依業界常識補充，課堂沒講到；先以課堂錄音為主',
+} as const
+
 /** 單張投影片：標題列 + 內容區塊 + 📌 本章小結論 */
 export function SlideCard({ slide }: { slide: SlideData }) {
   if (slide.layout === 'cover' && slide.cover) return <CoverLayout slide={slide} cover={slide.cover} />
@@ -46,6 +53,13 @@ export function SlideCard({ slide }: { slide: SlideData }) {
               <Badge tone="slate" size="lg">
                 {slide.chapter}
               </Badge>
+            )}
+            {slide.source && (
+              <span title={SOURCE_TIP[slide.source]}>
+                <Badge tone="slate" size="lg">
+                  {SOURCE_LABEL[slide.source]}
+                </Badge>
+              </span>
             )}
             {slide.advanced && (
               <Badge tone="amber" size="lg">

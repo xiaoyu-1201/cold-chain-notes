@@ -14,7 +14,8 @@ export interface CycleNote {
   /** 冷媒狀態變化（依課堂用語：不寫過冷、過熱） */
   state: string
   /** 原話（錄音） */
-  quote: string
+  /** 錄音原話：有教學價值才放，沒有就不放 */
+  quote?: string
   analogy?: string
   point: string
   /** 錄音時間（秒）：Part 1 / Part 2 */
@@ -98,8 +99,7 @@ export const cycleNotes: Record<CycleNodeId, CycleNote> = {
     alias: '講義上的紅色線',
     tone: 'red',
     state: '高溫高壓氣態',
-    quote: '「高溫高壓的氣體，過熱拿掉」',
-    point: '從壓縮機出來、送進冷凝器散熱，摸起來很燙。',
+    point: '從壓縮機出來、送進冷凝器散熱，是整個系統最燙的一段，摸到會燙傷；油分離器就裝在這段，把跟著跑出來的冷凍油送回壓縮機。',
     audioAt: 1 * 60 + 57,
     audio2At: 3 * 60 + 6,
     anchor: { x: 80, y: 28, place: 'left' },
@@ -111,8 +111,7 @@ export const cycleNotes: Record<CycleNodeId, CycleNote> = {
     alias: '講義上的黃色線',
     tone: 'amber',
     state: '中溫中壓液態（純液態）',
-    quote: '「這邊寫中壓的液態……中溫中壓都沒關係，就是中壓啦」',
-    point: '液管上有儲液器、乾燥過濾器、視液鏡、電磁閥；儲液器確保送出去的是液態。',
+    point: '冷凝器出來到膨脹閥之前都是液管，是零件最多的一段：儲液器 → 手閥 → 乾燥過濾器 → 視液鏡 → 電磁閥。這段一定要是純液態，膨脹閥才能正常降壓。',
     audioAt: 2 * 60 + 24,
     audio2At: 3 * 60 + 8,
     slide: 'handout',
@@ -175,7 +174,7 @@ export const cycleNotes: Record<CycleNodeId, CycleNote> = {
     id: 'receiver',
     kind: 'small',
     title: '儲液器',
-    alias: '高壓儲液器（講義上沒有畫）',
+    alias: '高壓儲液器（講義右下角小圓，沒標名稱）',
     tone: 'amber',
     state: '確保送出去的是液態',
     quote: '「你今天有膨脹閥系統，這個一定要裝，因為它確保說源源不絕的液態來」',
@@ -217,7 +216,7 @@ export const cycleNotes: Record<CycleNodeId, CycleNote> = {
     alias: '講義型號 SGI',
     tone: 'amber',
     state: '看冷媒夠不夠',
-    quote: '「你液態冷媒在那邊跑，你會看得出來」',
+    quote: '「這個變色，很多人不知道」',
     point: '冷媒夠的話，液態流過像透明的水、好像沒在動；含水時視窗會變色（三種顏色）。',
     audioAt: 5 * 60 + 27,
     audio2At: 19 * 60 + 5,

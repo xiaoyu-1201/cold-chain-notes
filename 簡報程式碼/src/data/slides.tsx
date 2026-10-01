@@ -1226,7 +1226,7 @@ const slideList: SlideData[] = [
         ],
         chapters: [
           { track: 0, at: 0, title: '檢查筆記：先記住每個零件做什麼', summary: '壓縮機、油分離器這些先搞懂；寫的內容大致都對' },
-          { track: 0, at: 105, title: '散熱器、儲液器、乾燥過濾器', summary: '散熱器會吸灰塵；儲液器講義沒畫；乾燥過濾器一定要' },
+          { track: 0, at: 105, title: '散熱器、儲液器、乾燥過濾器', summary: '散熱器會吸灰塵；儲液器講義有畫但沒標名稱；乾燥過濾器一定要' },
           { track: 0, at: 156, title: '視液鏡會變色、電磁閥常閉', summary: '含水時視窗會變色（三種顏色），很多人不知道' },
           { track: 0, at: 208, title: '冷藏＋冷凍一對二很難做', summary: 'KVP 這類閥一年賣不到兩顆；一般一對一，同溫才一對二' },
           { track: 0, at: 259, title: '下一步：學單位，再看實品', summary: '冷藏、冷凍主要差在溫控：冷凍要除霜' },
@@ -1288,7 +1288,7 @@ const slideList: SlideData[] = [
         ratio: 2446 / 1714,
         audioSrc: CLASS_AUDIO,
         audioSrc2: CLASS_AUDIO_2,
-        note: '講義上沒有畫儲液器（Danfoss 沒有賣），但膨脹閥系統一定要裝：保證送到膨脹閥的是液態。',
+        note: '儲液器有畫但沒標名稱：右下角那顆小圓（Danfoss 沒賣儲液器）；液氣分離器講義沒畫，但店裡有賣。',
         defaultId: 'te',
         groups: {
           liquid: { label: '液管（高壓液體・黃色線）', tone: 'amber' },
@@ -1297,6 +1297,30 @@ const slideList: SlideData[] = [
           control: { label: '電控與保護', tone: 'violet' },
         },
         items: [
+          {
+            id: 'receiver',
+            code: '小圓',
+            name: '儲液器（沒標名稱）',
+            en: 'Liquid Receiver',
+            group: 'liquid',
+            points: [{ x: 77.5, y: 67.9 }],
+            func: '右下角這顆小圓就是儲液器：講義有畫但沒寫名稱（Danfoss 沒賣儲液器）。散熱器太小或沒保養時冷媒可能沒完全液化，儲液器讓液態沉在下面、從下面取液，確保送到膨脹閥的是液態；膨脹閥系統一定要裝。',
+            slide: 'cycle-lesson',
+            chapter: '核心圖解',
+            audioAt2: 11 * 60 + 2,
+          },
+          {
+            id: 'acc',
+            code: '講義沒畫',
+            name: '液氣分離器（低壓儲液器）',
+            en: 'Suction Accumulator',
+            group: 'suction',
+            points: [],
+            func: '裝在冷排和壓縮機中間：液態沉在下面、只從上面取氣態回壓縮機，保護壓縮機不被液體打壞。講義沒畫，但店裡有賣。',
+            slide: 'cycle-lesson',
+            chapter: '核心圖解',
+            audioAt2: 15 * 60 + 53,
+          },
           {
             id: 'gbc',
             code: 'GBC',

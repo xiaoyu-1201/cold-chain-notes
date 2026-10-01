@@ -115,12 +115,12 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
 
       <div className={cn('mt-3 inline-flex rounded-lg border px-2.5 py-1 font-mono font-bold', t.chip, large ? 'text-[18px]' : 'text-[14px]')}>{note.state}</div>
 
-      <blockquote className={cn('mt-3 flex gap-2 rounded-xl bg-white/[0.04] px-3 py-2.5 leading-snug text-slate-100', large ? 'text-[20px]' : 'text-[15px]')}>
-        <Quote className={cn('mt-0.5 shrink-0 text-emerald-300', large ? 'size-5' : 'size-4')} aria-hidden />
-        <span>
-          {note.quote}
-        </span>
-      </blockquote>
+      {note.quote && (
+        <blockquote className={cn('mt-3 flex gap-2 rounded-xl bg-white/[0.04] px-3 py-2.5 leading-snug text-slate-100', large ? 'text-[20px]' : 'text-[15px]')}>
+          <Quote className={cn('mt-0.5 shrink-0 text-emerald-300', large ? 'size-5' : 'size-4')} aria-hidden />
+          <span>{note.quote}</span>
+        </blockquote>
+      )}
 
       {note.analogy && (
         <p className={cn('mt-2.5 leading-snug text-slate-300', large ? 'text-[18px]' : 'text-[14px]')}>

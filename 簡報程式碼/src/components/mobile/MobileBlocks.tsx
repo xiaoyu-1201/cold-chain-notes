@@ -6,6 +6,7 @@ import { CLASS_AUDIO, CLASS_AUDIO_2 } from '../../data/media'
 import type { AudioBlock, Block, HotspotsBlock, MatrixBlock, Tone } from '../../data/types'
 import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
+import { FenConverter } from '../blocks/FenConverter'
 import { BulbClock } from '../diagrams/BulbClock'
 import { CycleDiagram } from '../diagrams/CycleDiagram'
 
@@ -608,7 +609,50 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
 
     case 'audio':
       return <AudioMobile block={block} />
+
+    case 'fen':
+      return <FenConverter mobile />
+
+    case 'quiz':
+      return <QuizMobile items={block.items} />
   }
+}
+
+function QuizMobile({ items }: { items: { q: ReactNode; a: ReactNode; slide?: string }[] }) {
+  const [open, setOpen] = useState<number[]>([])
+  return (
+    <ol className="space-y-2.5">
+      {items.map((item, i) => {
+        const shown = open.includes(i)
+        return (
+          <li key={i}>
+            <button
+              type="button"
+              aria-expanded={shown}
+              onClick={() => setOpen((o) => (shown ? o.filter((x) => x !== i) : [...o, i]))}
+              className={cn(
+                'w-full rounded-2xl border p-4 text-left',
+                shown ? 'border-emerald-400/40 bg-emerald-400/[0.07]' : 'border-dashed border-white/20 bg-white/[0.03]',
+              )}
+            >
+              <span className="flex gap-2.5">
+                <span className="font-mono font-black text-sky-300">{pad(i + 1)}</span>
+                <span className="font-bold text-white">{item.q}</span>
+              </span>
+              <span className={cn('mt-1.5 block pl-8', shown ? 'text-emerald-100' : 'text-[15px] text-slate-500')}>
+                {shown ? item.a : '先想一想，點一下看答案'}
+              </span>
+            </button>
+            {shown && item.slide && (
+              <div className="mt-1.5 pl-8">
+                <PageLink slide={item.slide}>回去複習</PageLink>
+              </div>
+            )}
+          </li>
+        )
+      })}
+    </ol>
+  )
 }
 
 function Chain({ items }: { items: ReactNode[] }) {

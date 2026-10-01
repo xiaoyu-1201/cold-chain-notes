@@ -85,6 +85,7 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
                     <span aria-hidden className={cn('size-2 rounded-full', toneStyles[group.part.tone].dot)} />
                     {group.part.label}
                   </h3>
+                  {group.part.goal && <p className="-mt-1 mb-2 px-2 text-xs leading-relaxed text-slate-500">學完你會：{group.part.goal}</p>}
                   <ul className="space-y-1">
                     {group.items.map(({ slide, index: i }) => {
                       const active = i === index
@@ -107,7 +108,7 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
                               {slide.chapter && (
                                 <span className="block text-xs text-slate-400">
                                   {slide.chapter}
-                                  {slide.advanced && <span className="ml-1.5 font-bold text-amber-300">進階・先不用學</span>}
+                                  {slide.advanced && <span className="ml-1.5 font-bold text-amber-300">進階</span>}
                                 </span>
                               )}
                             </span>

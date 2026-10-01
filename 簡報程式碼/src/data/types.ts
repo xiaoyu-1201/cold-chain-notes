@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 
 export type Tone = 'ice' | 'teal' | 'indigo' | 'violet' | 'emerald' | 'amber' | 'red' | 'slate'
 
-export type PartId = 'intro' | 'industry' | 'basics' | 'components' | 'practice' | 'summary'
+export type PartId = 'intro' | 'basics' | 'units' | 'industry' | 'components' | 'practice' | 'review' | 'summary' | 'advanced'
 
 export interface Part {
   id: PartId
@@ -12,6 +12,10 @@ export interface Part {
   label: string
   short: string
   tone: Tone
+  /** 學習路徑第幾步（1–5）；導覽、複習、附錄沒有 */
+  step?: number
+  /** 這一篇學完要會的事（學習目標） */
+  goal?: string
 }
 
 /** 帶標題的卡片共用欄位 */
@@ -349,6 +353,17 @@ export interface CycleBlock extends Heading {
   type: 'cycle'
 }
 
+/** 自我檢測：先自己回想，再點開看答案（提取練習） */
+export interface QuizBlock {
+  type: 'quiz'
+  items: { q: ReactNode; a: ReactNode; slide?: string }[]
+}
+
+/** 互動換算器：管徑「分」↔ mm（含考考我練習） */
+export interface FenBlock {
+  type: 'fen'
+}
+
 /** 核心圖解：大張可點選循環圖 + 項目清單 */
 export interface CycleLessonBlock {
   type: 'cycleLesson'
@@ -384,6 +399,8 @@ export type Block =
   | HotspotsBlock
   | AudioBlock
   | CycleLessonBlock
+  | QuizBlock
+  | FenBlock
 
 export interface CoverData {
   kicker: string
@@ -413,7 +430,7 @@ export interface SlideData {
   cover?: CoverData
   store?: StoreTip
   blocks: Block[]
-  /** 進階內容：標示「先不用學」 */
+  /** 第二階段（進階）內容 */
   advanced?: boolean
   /** 每頁底部「📌 本章小結論」 */
   conclusion: { label?: string; text: ReactNode }

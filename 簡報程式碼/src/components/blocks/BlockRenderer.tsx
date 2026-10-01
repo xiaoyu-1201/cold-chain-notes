@@ -12,6 +12,8 @@ import { FlowSteps } from './FlowSteps'
 import { AudioChapters, HotspotDiagram } from './Media'
 import { Boundaries, Metrics, StatCard } from './Metrics'
 import { PartsOverview, ProductMap, QAPanel, QuoteCard, ScenarioCard } from './Navigational'
+import { FenConverter } from './FenConverter'
+import { QuizCards } from './Quiz'
 import { AlertPanel, SizingPanel, TrapPanel } from './Warnings'
 
 const renderChild = (child: Block, index: number) => <BlockRenderer key={index} block={child} />
@@ -93,5 +95,9 @@ function Leaf({ block }: { block: Exclude<Block, GridBlock> }) {
       return <AudioChapters block={block} />
     case 'cycleLesson':
       return <CycleLesson />
+    case 'quiz':
+      return <QuizCards block={block} />
+    case 'fen':
+      return <FenConverter />
   }
 }

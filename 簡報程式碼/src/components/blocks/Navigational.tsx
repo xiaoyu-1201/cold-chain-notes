@@ -1,4 +1,4 @@
-import { ArrowUpRight, CornerDownRight, Flag, MessageCircle, Quote } from 'lucide-react'
+import { ArrowUpRight, ChevronRight, CornerDownRight, Flag, MessageCircle, Quote } from 'lucide-react'
 import { motion } from 'framer-motion'
 import type { PartsBlock, ProductsBlock, QABlock, QuoteBlock, ScenarioBlock } from '../../data/types'
 import { parts } from '../../data/parts'
@@ -17,31 +17,41 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
   const { goToId, numberOf } = useDeck()
   return (
     <div className="grid h-full grid-rows-[minmax(0,1fr)_auto] gap-5">
-      <motion.div variants={staggerParent} className="grid min-h-0 grid-cols-4 gap-5">
-        {block.items.map((item) => {
+      <motion.div
+        variants={staggerParent}
+        className="grid min-h-0 gap-6"
+        style={{ gridTemplateColumns: `repeat(${block.items.length}, minmax(0, 1fr))` }}
+      >
+        {block.items.map((item, index) => {
           const part = parts[item.part]
           const t = toneStyles[part.tone]
           return (
-            <motion.section
-              key={item.part}
-              variants={fadeUp}
-              className="relative flex min-h-0 flex-col overflow-hidden rounded-[24px] border border-white/10 bg-linear-to-b from-white/[0.06] to-white/[0.015] p-6"
-            >
+            <motion.div key={item.part} variants={fadeUp} className="relative min-h-0">
+              {/* 步驟之間的箭頭：提示學習先後順序 */}
+              {index < block.items.length - 1 && (
+                <ChevronRight aria-hidden className="absolute -right-[23px] top-[86px] z-10 size-6 text-slate-500" />
+              )}
+            <section className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-[24px] border border-white/10 bg-linear-to-b from-white/[0.06] to-white/[0.015] p-5">
               <span aria-hidden className={cn('absolute inset-x-0 top-0 h-1 bg-linear-to-r', t.gradient)} />
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-[16px] font-bold tracking-[0.25em] text-slate-400">PART {item.no}</span>
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-mono text-[16px] font-bold tracking-[0.2em] text-slate-400">STEP {item.no}</span>
                 <Badge tone={part.tone} size="sm">
                   {item.range}
                 </Badge>
               </div>
-              <div className="mt-4 flex items-center gap-4">
-                <IconChip icon={item.icon} tone={part.tone} size="lg" />
+              <div className="mt-4 flex items-center gap-3">
+                <IconChip icon={item.icon} tone={part.tone} />
                 <div className="min-w-0">
-                  <p className={cn('text-[17px] font-bold', t.text)}>{part.ordinal}</p>
-                  <h3 className="text-[29px] font-black leading-tight text-white">{part.title}</h3>
+                  <p className={cn('text-[16px] font-bold', t.text)}>{part.ordinal}</p>
+                  <h3 className="text-[25px] font-black leading-tight text-white">{part.title}</h3>
                 </div>
               </div>
-              <p className="mt-3 text-[18px] leading-snug text-slate-400">{item.summary}</p>
+              {part.goal && (
+                <p className="mt-3 text-[17px] leading-snug text-slate-300">
+                  <span className={cn('mr-1.5 font-bold', t.text)}>學完你會</span>
+                  {part.goal}
+                </p>
+              )}
               <ul className="mt-4 flex flex-1 flex-col gap-2">
                 {item.chapters.map((ch) => (
                   <li key={ch.code + ch.title}>
@@ -53,15 +63,16 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
                         focusRing,
                       )}
                     >
-                      <span className={cn('w-[58px] shrink-0 font-mono text-[15px] font-bold', t.text)}>{ch.code}</span>
-                      <span className="min-w-0 flex-1 text-[19px] font-semibold leading-snug text-slate-100">{ch.title}</span>
-                      <span className="font-mono text-[14px] text-slate-500">P.{pad(numberOf(ch.slide))}</span>
+                      <span className={cn('w-[52px] shrink-0 font-mono text-[14px] font-bold', t.text)}>{ch.code}</span>
+                      <span className="min-w-0 flex-1 text-[18px] font-semibold leading-snug text-slate-100">{ch.title}</span>
+                      <span className="font-mono text-[13px] text-slate-500">P.{pad(numberOf(ch.slide))}</span>
                       <ArrowUpRight className="size-4 shrink-0 text-slate-500 transition group-hover:text-sky-300" aria-hidden />
                     </button>
                   </li>
                 ))}
               </ul>
-            </motion.section>
+            </section>
+            </motion.div>
           )
         })}
       </motion.div>

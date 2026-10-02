@@ -1,6 +1,6 @@
 import { Box, Check, ChevronLeft, ChevronRight, Repeat, RotateCcw, Shuffle, Volume2 } from 'lucide-react'
 import { useMemo, useState, type KeyboardEvent, type MouseEvent } from 'react'
-import { CLASS_AUDIO, CLASS_AUDIO_2 } from '../../data/media'
+import { CLASS_AUDIO, CLASS_AUDIO_2, loadPlayable } from '../../data/media'
 import type { FlashCard, FlashcardsBlock } from '../../data/types'
 import { useStickyState } from '../../hooks/useStickyState'
 import { cn } from '../../lib/cn'
@@ -53,9 +53,11 @@ function playClip(tw: NonNullable<FlashCard['tw']>) {
   // 換錄音檔要等讀到長度才能跳到指定秒數
   if (clipSrc !== src) {
     clipSrc = src
-    audio.src = src
-    audio.addEventListener('loadedmetadata', start, { once: true })
-    audio.load()
+    void loadPlayable(src).then((url) => {
+      audio.src = url
+      audio.addEventListener('loadedmetadata', start, { once: true })
+      audio.load()
+    })
   } else start()
 }
 const mmss = (s: number) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`

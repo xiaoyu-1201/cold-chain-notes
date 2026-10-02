@@ -61,7 +61,7 @@ import {
 import handoutImg from '../assets/1001-handout.jpg'
 import refrigerantTableImg from '../assets/refrigerant-table.jpg'
 import { Danger, Em, Exp, Frac, Hl, Sub, Warn } from '../components/ui/rich'
-import { CLASS_AUDIO, CLASS_AUDIO_2, CLASS_AUDIO_3, CLASS_AUDIO_4, CLASS_AUDIO_5, CLASS_AUDIO_6 } from './media'
+import { CLASS_AUDIO, CLASS_AUDIO_10, CLASS_AUDIO_11, CLASS_AUDIO_2, CLASS_AUDIO_3, CLASS_AUDIO_4, CLASS_AUDIO_5, CLASS_AUDIO_6, CLASS_AUDIO_7, CLASS_AUDIO_8, CLASS_AUDIO_9 } from './media'
 import type { SlideData } from './types'
 
 /** 各頁定義（定義順序不等於顯示順序，顯示順序見檔案最後的 ORDER） */
@@ -229,6 +229,8 @@ const slideList: SlideData[] = [
               { code: '地圖', title: '店內產品地圖', slide: 'products' },
               { code: 'CH.02', title: '壓縮機', slide: 'ch2' },
               { code: 'CH.03', title: '冷凝器', slide: 'ch3' },
+              { code: '規格', title: '散熱器排×支', slide: 'coil-spec' },
+              { code: '實務', title: '冷凝器配多大', slide: 'cond-practice' },
               { code: 'CH.04', title: '蒸發器', slide: 'ch4' },
               { code: 'CH.05', title: '控制與保護', slide: 'ch5' },
               { code: '講義', title: '零件總覽圖', slide: 'handout' },
@@ -241,6 +243,7 @@ const slideList: SlideData[] = [
             icon: Stethoscope,
             summary: '接單問診與常見故障',
             chapters: [
+              { code: '門市', title: '客人來問散熱器', slide: 'coil-store' },
               { code: 'CH.09', title: '四大故障診斷', slide: 'ch9' },
               { code: '實戰', title: '接單問診 SOP', slide: 'sop' },
             ],
@@ -830,7 +833,7 @@ const slideList: SlideData[] = [
                 title: '溫度強制終止',
                 desc: (
                   <>
-                    蒸發器回溫到設定值（如 8～10°C），感溫器就切斷電熱管；感溫器要裝在結霜最厚、離電熱管遠的地方
+                    蒸發器回溫到 8～10°C，感溫器就切斷電熱管；感溫器裝在結霜最厚、離電熱管遠處
                     <Exp />
                   </>
                 ),
@@ -840,7 +843,7 @@ const slideList: SlideData[] = [
                 title: '風扇延遲 Fan Delay',
                 desc: (
                   <>
-                    除霜後風扇延遲啟動（如 2 ~ 3 分鐘），防止蒸發器的熱被吹進庫內
+                    除霜後風扇晚 2～3 分鐘才轉，熱不會被吹進庫內
                     <Exp />
                   </>
                 ),
@@ -1127,7 +1130,127 @@ const slideList: SlideData[] = [
         </>
       ),
     },
-  },  /* ───────────────────────── 核心圖解：冷凍循環（可持續擴充） ───────────────────────── */
+  },
+  /* ───────────────────────── 1002 下午 錄音07～11 ───────────────────────── */
+  {
+    id: 'recording-5',
+    part: 'review',
+    chapter: '課堂錄音',
+    mark: 'AUDIO 5',
+    title: '錄音07–08｜老闆看簡報、散熱器配多大與排×支',
+    en: 'Recording 07–08',
+    blocks: [
+      {
+        type: 'audio',
+        src: CLASS_AUDIO_7,
+        title: '錄音07–08',
+        en: 'Class Recording',
+        duration: '17:19',
+        tracks: [
+          { label: '07', src: CLASS_AUDIO_7, duration: '17:19' },
+          { label: '08', src: CLASS_AUDIO_8, duration: '08:02' },
+        ],
+        chapters: [
+          { track: 0, at: 90, title: '儲液器要「進去再出來」', summary: '老闆看簡報的 3D：冷媒要進到儲液器桶子裡，液體沉在底部再取出來，不是從旁邊經過' },
+          { track: 0, at: 165, title: '膨脹閥裝在蒸發器旁', summary: '很多師傅做「內膨」，把膨脹閥鎖在蒸發器箱子裡（會結冰、滴水）；電磁閥也拉到膨脹閥附近' },
+          { track: 0, at: 230, title: '冷凝器上進下出', summary: '銅管在裡面左去右回；高溫高壓氣體進去，出來變中溫中壓液體' },
+          { track: 0, at: 300, title: '摸出口判斷散熱好不好', summary: '出口是溫的＝正常；還很燙＝鰭片髒或風扇壞，要清洗' },
+          { track: 0, at: 363, title: '冷凝溫度 40～45°C', summary: '用摸的大概知道；最準是用錶組量壓力，R22 在 210 psig 約 40°C' },
+          { track: 0, at: 628, title: '擺放環境影響散熱', summary: '太陽直射、鐵皮屋、防火巷裡冷氣熱風繞回來，都會讓散熱變差；可以裝導風罩' },
+          { track: 0, at: 740, title: '水冷 vs 氣冷、散熱越好能力越大', summary: '型錄冷凝溫度水冷抓 37.8°C、氣冷抓 49°C；冷凝溫度越低，壓縮機能力越大' },
+          { track: 1, at: 0, title: '散熱器＝壓縮機 ×2', summary: '1 馬壓縮機配 2 馬散熱器是標準；放在熱的廚房要加大，外移到通風好的地方可以小一點' },
+          { track: 1, at: 258, title: '排怎麼數', summary: '排是一層一層的；跨到下一排的彎頭是斜的' },
+          { track: 1, at: 310, title: '支怎麼數', summary: '沿著同一排畫一條線，數線上有幾個孔，例如 5 排 11 支' },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          儲液器要<Hl>進去再出來</Hl>、膨脹閥裝在<Hl>蒸發器旁</Hl>；散熱器先抓<Hl>壓縮機 ×2</Hl>，摸出口溫的才正常。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'recording-6',
+    part: 'review',
+    chapter: '課堂錄音',
+    mark: 'AUDIO 6',
+    title: '錄音09｜實內、封底與散熱器測漏',
+    en: 'Recording 09',
+    blocks: [
+      {
+        type: 'audio',
+        src: CLASS_AUDIO_9,
+        title: '錄音09',
+        en: 'Class Recording',
+        duration: '20:37',
+        chapters: [
+          { at: 50, title: '找平的彎頭就分得出排和支', summary: '平的彎頭一定在同一排裡，順著它的方向數就是支；排沒有平的彎頭' },
+          { at: 120, title: '鏡面＝實內＝有效長度', summary: '規格的第三個數字是有鰭片的長度（例如 330 mm）；老闆叫「實內」，客人比較聽得懂' },
+          { at: 260, title: '散熱器沒有充灌閥', summary: '工廠灌氣泡水抓漏後就把管口壓死；冷排單價高才有充灌閥' },
+          { at: 354, title: '先進先出、施工前先測', summary: '進貨寫日期、先進先出；請客人施工前先折開聽有沒有氣，有問題馬上換新' },
+          { at: 470, title: '買賣說斷斷', summary: '東西沒有百分之百不漏，話要先講在前頭，保護客人也保護自己' },
+          { at: 510, title: '抓漏＝站壓', summary: '師傅可以從充灌閥灌氮氣、泡水找漏點再焊起來；店裡盡量直接換新，不讓客人折騰' },
+          { at: 700, title: '風斗：風只吹得到鰭片', summary: '外面包一層風斗，風車才裝得上去；只有銅管、沒有鰭片的地方幫助散熱很少' },
+          { at: 886, title: '基板 vs 封底', summary: '基板是放壓縮機的板子；沒有基板就要把底封起來，風才會照路線穿過鰭片' },
+          { at: 1091, title: '庫存只做兩種', summary: '附基板、封底（不附基板）兩種就好；只換散熱器的，拆掉封底板就能裝' },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          鏡面就是<Hl>實內</Hl>（有鰭片的長度）；散熱器沒有充灌閥，<Hl>先進先出、施工前先折開測</Hl>，有問題馬上換。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'recording-7',
+    part: 'review',
+    chapter: '課堂錄音',
+    mark: 'AUDIO 7',
+    title: '錄音10–11｜規格對照、配對與室外機',
+    en: 'Recording 10–11',
+    blocks: [
+      {
+        type: 'audio',
+        src: CLASS_AUDIO_10,
+        title: '錄音10–11',
+        en: 'Class Recording',
+        duration: '40:51',
+        tracks: [
+          { label: '10', src: CLASS_AUDIO_10, duration: '40:51' },
+          { label: '11', src: CLASS_AUDIO_11, duration: '12:41' },
+        ],
+        chapters: [
+          { track: 0, at: 60, title: '換壓縮機先問熱排、冷排', summary: '四大金剛要配對；很多壓縮機燒掉，是原本就配錯、散熱不良' },
+          { track: 0, at: 152, title: '機組也要配得上設備', summary: '冰箱用的機組裝到大冰箱，溫度到不了、壓縮機停不下來，很耗電' },
+          { track: 0, at: 461, title: '請客人拍穿管面', summary: '拍全部都是彎頭的那一面，數得出幾排幾支；焊接面不用看' },
+          { track: 0, at: 563, title: '長度：實內或含彎頭', summary: '客人怎麼量都可以；量實內最準，含兩側彎頭大約多 6 公分' },
+          { track: 0, at: 974, title: '支數看高度', summary: '11 支配 10 吋風車、高約 29 公分；14 支配 12 吋、高 36.5 公分' },
+          { track: 0, at: 1604, title: '屋外型（室外機）', summary: '有外殼、馬達在裡面：好看、安靜、不怕風吹雨淋；一般散熱器馬達外露' },
+          { track: 0, at: 2169, title: '選室外機：安靜、重量、實際能力', summary: '吵到鄰居會被檢舉；壁掛要吊上去，太重搬不動；同樣標 10 馬，實際能力可能差一級' },
+          { track: 1, at: 52, title: '機上型冰箱', summary: '散熱器放在冰箱頂上；冰箱約 2 公尺高，只能用 11 支的散熱器' },
+          { track: 1, at: 255, title: '冰箱種類與保溫', summary: '70% 是上凍下藏；玻璃門保溫比 PU 發泡差，壓縮機要加大' },
+          { track: 1, at: 561, title: '含壓縮機的室外機像冷氣', summary: '只拉兩支管：液管和低壓管；冷氣做外膨，冷凍做內膨' },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          客人只說「四排十四支」不夠，還要<Hl>長度</Hl>；換壓縮機一定先問<Hl>熱排、冷排多大</Hl>。
+        </>
+      ),
+    },
+  },
+  /* ───────────────────────── 核心圖解：冷凍循環（可持續擴充） ───────────────────────── */
   {
     id: 'cycle-lesson',
     part: 'basics',
@@ -1468,6 +1591,154 @@ const slideList: SlideData[] = [
       text: (
         <>
           <Hl>1 分＝3.175 mm</Hl>：英吋分母換成 8，分子就是幾分；卡尺量外徑 ÷ 3.175 就是幾分。溫度和壓力怎麼換算，下一頁用 Ref Tools 練習。
+        </>
+      ),
+    },
+  },
+  /* ───────────────────────── 1002 錄音08～10：散熱器規格 排×支×鏡面 ───────────────────────── */
+  {
+    id: 'coil-spec',
+    part: 'components',
+    chapter: '散熱器規格',
+    mark: 'COIL',
+    title: '看懂散熱器規格：排×支×實內',
+    en: 'Reading Coil Specs',
+    blocks: [{ type: 'coilreader' }],
+    conclusion: {
+      label: '材料行的 know-how',
+      text: (
+        <>
+          規格寫<Hl>排×支×鏡面</Hl>：排＝深度（一層一層）、支＝高度、鏡面＝有鰭片的長度（老闆叫「實內」）。找到一個<Em>平的彎頭</Em>，順著它數就是支。
+        </>
+      ),
+    },
+  },
+  /* ───────────────────────── 1002 錄音07、08、11：冷凝器實務 ───────────────────────── */
+  {
+    id: 'cond-practice',
+    part: 'components',
+    chapter: '冷凝器實務',
+    mark: 'COND',
+    title: '冷凝器實務：配多大、好不好、擺哪裡',
+    en: 'Condenser in Practice',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-3',
+        children: [
+          {
+            type: 'list',
+            icon: Scale,
+            tone: 'amber',
+            title: '配多大：壓縮機 ×2，再看環境',
+            en: 'Sizing',
+            items: [
+              { icon: Calculator, title: '標準', desc: '壓縮機 1 馬配散熱器 2 馬；估價先用 ×2', badge: { label: '先記這個', tone: 'amber' } },
+              { icon: TrendingUp, title: '要加大', desc: '散熱器放在廚房、室內這種很熱的地方，沒有拉到外面' },
+              { icon: TrendingDown, title: '可以小一點', desc: '散熱器拉到通風好的地方、店在山上（外氣比較涼）；銅管拉長也會幫忙散熱' },
+              { icon: MessagesSquare, title: '訂貨時再提醒', desc: '客人要訂的時候，再問一次要加大還是減少，讓客人自己決定' },
+            ],
+          },
+          {
+            type: 'list',
+            icon: Stethoscope,
+            tone: 'red',
+            title: '好不好：摸出口、看壓力',
+            en: 'Field Check',
+            items: [
+              { icon: Flame, title: '上進下出', desc: '高溫氣體從上方進去；進口接近 100°C，不能摸' },
+              { icon: ThermometerSun, title: '出口是溫的＝正常', desc: '出口還很燙＝散熱不好：鰭片髒了或風扇壞了，要清洗或檢修' },
+              { icon: Gauge, title: '冷凝溫度 40～45°C', desc: '用錶組量壓力最準：R22 在 210 psig 約等於 40°C（Ref Tools 查得到）' },
+              { icon: Zap, title: '散熱好，壓縮機才有力', desc: '型錄上同一台壓縮機，冷凝溫度越低，冷凍能力越大' },
+            ],
+          },
+          {
+            type: 'list',
+            icon: Building2,
+            tone: 'teal',
+            title: '擺哪裡：環境決定散熱',
+            en: 'Location',
+            items: [
+              { icon: ThermometerSun, title: '太陽直射、鐵皮屋頂', desc: '環境本身就很熱，散熱器要加大' },
+              { icon: Route, title: '防火巷', desc: '旁邊多了冷氣，熱風在巷子裡繞回來，散熱變差；可以裝導風罩把熱風導走' },
+              { icon: Droplets, title: '水冷式比較穩', desc: '水不太受天氣影響：型錄冷凝溫度水冷抓 37.8°C，氣冷抓 49°C' },
+              { icon: DoorOpen, title: '玻璃門、大門冰箱', desc: '玻璃保溫比 PU 發泡差、門越大開門升溫越快，壓縮機要加大' },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          散熱器先抓<Hl>壓縮機 ×2</Hl>，再依擺放環境加減；摸出口<Em>溫的才正常</Em>，燙就要清洗或檢查風扇。
+        </>
+      ),
+    },
+  },
+  /* ───────────────────────── 1002 錄音09～11：門市接散熱器的問題 ───────────────────────── */
+  {
+    id: 'coil-store',
+    part: 'practice',
+    chapter: '門市：散熱器',
+    mark: 'STORE',
+    title: '客人來問散熱器：先問對，再拿對',
+    en: 'Condenser at the Counter',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]',
+        children: [
+          {
+            type: 'flow',
+            direction: 'col',
+            tone: 'emerald',
+            icon: ClipboardList,
+            title: '接電話、客人來問：四步問清楚',
+            en: 'Ask First',
+            steps: [
+              { title: '有沒有散熱外移？', desc: '放冰箱頂上（機上型）一定是 11 支、高約 29 公分；14 支高 36.5 公分，放冰箱頂會太高（冰箱本身約 2 公尺）', icon: Warehouse },
+              { title: '請客人拍「穿管面」', desc: '全部都是彎頭的那一面，一看就數得出幾排幾支；不要拍焊接面', icon: Camera },
+              { title: '量長度', desc: '最好量實內（有鰭片的長度）；客人連兩側彎頭一起量也可以，大約多 6 公分', icon: Ruler },
+              { title: '換壓縮機，先問熱排、冷排多大', desc: '四大金剛要配對；很多壓縮機燒掉，是原本就配錯、散熱不良', icon: Cog },
+            ],
+          },
+          {
+            type: 'grid',
+            className: 'grid-rows-[minmax(0,1.15fr)_minmax(0,1fr)]',
+            children: [
+              {
+                type: 'list',
+                icon: MessagesSquare,
+                tone: 'ice',
+                title: '聽懂客人的說法',
+                en: 'Customer Words',
+                items: [
+                  { icon: Layers, title: '「底板」', desc: '多半是「封底板」（把底封住，風才會穿過鰭片），不是放壓縮機的「基板」；問「要放壓縮機嗎？」' },
+                  { icon: Package, title: '庫存只做兩種', desc: '附基板、封底（不附基板）；只換散熱器的，拆掉封底板就能裝' },
+                  { icon: Fan, title: '「室外機散熱器」', desc: '問「馬達在外面還是裡面？」馬達外露＝一般散熱器（無穿衫，要加遮雨板）；有外殼＝屋外型' },
+                ],
+              },
+              {
+                type: 'info',
+                icon: ShieldCheck,
+                tone: 'amber',
+                title: '出貨前、選室外機',
+                en: 'Before It Leaves',
+                body: '散熱器沒有充灌閥，工廠泡水抓漏後就封死：進貨寫日期、先進先出，請客人施工前先折開聽有沒有氣。屋外型看三件事：安靜、重量（壁掛要吊上去）、實際能力。',
+                warn: '話先講在前頭（買賣說斷斷）：有問題馬上換新，不要讓客人到現場才發現。',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          先問<Hl>有沒有外移</Hl>，再請客人拍<Hl>穿管面</Hl>數排×支、量實內；聽到「底板」「室外機」先問用途，再拿貨。
         </>
       ),
     },
@@ -2731,11 +3002,14 @@ const ORDER = [
   'products',
   'ch2',
   'ch3',
+  'coil-spec',
+  'cond-practice',
   'ch4',
   'ch5',
   'handout',
   'check-4',
   'estimate',
+  'coil-store',
   'ch9',
   'sop',
   'check-5',
@@ -2743,6 +3017,9 @@ const ORDER = [
   'recording-2',
   'recording-3',
   'recording-4',
+  'recording-5',
+  'recording-6',
+  'recording-7',
   'glossary',
   'quiz',
   'lesson-insights',

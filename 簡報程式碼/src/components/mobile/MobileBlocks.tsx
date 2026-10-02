@@ -2,13 +2,14 @@ import { ArrowRight, ArrowUpRight, Box, Check, CheckCircle2, ExternalLink, Headp
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useDeck } from '../../context/deck'
 import { cycleNotes, CYCLE_ORDER, type CycleNodeId } from '../../data/cycleNotes'
-import { CLASS_AUDIO, CLASS_AUDIO_2 } from '../../data/media'
+import { CLASS_AUDIO, CLASS_AUDIO_2, usePlayable } from '../../data/media'
 import type { AudioBlock, Block, HotspotsBlock, MatrixBlock, Tone } from '../../data/types'
 import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
 import { Segmented } from '../ui/Segmented'
 import { DataTable } from '../blocks/DataTable'
 import { EstimatePractice } from '../blocks/Estimate'
+import { CoilReader } from '../blocks/CoilReader'
 import { FenConverter } from '../blocks/FenConverter'
 import { ProductShowcase } from '../three/ProductShowcase'
 import { Flashcards } from '../blocks/Flashcards'
@@ -77,6 +78,7 @@ export function PageLink({ slide, children }: { slide: string; children: ReactNo
 function Clip({ src, at, label }: { src: string; at: number; label: string }) {
   const ref = useRef<HTMLAudioElement>(null)
   const [playing, setPlaying] = useState(false)
+  const url = usePlayable(src)
   useEffect(() => {
     const audio = ref.current
     return () => audio?.pause()
@@ -90,7 +92,7 @@ function Clip({ src, at, label }: { src: string; at: number; label: string }) {
   }
   return (
     <>
-      <audio ref={ref} src={src} preload="none" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} />
+      <audio ref={ref} src={url} preload="none" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} />
       <button
         type="button"
         onClick={toggle}
@@ -622,6 +624,8 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
 
     case 'fen':
       return <FenConverter mobile />
+    case 'coilreader':
+      return <CoilReader mobile />
     case 'showcase':
       return <ProductShowcase parts={block.parts} mobile />
 
@@ -955,6 +959,9 @@ function AudioMobile({ block }: { block: AudioBlock }) {
   const tracks = block.tracks ?? [{ label: '', src: block.src, duration: block.duration }]
   const [track, setTrack] = useState(0)
   const [active, setActive] = useState<number | null>(null)
+  const trackUrl = usePlayable(tracks[track].src)
+  // 換段：等新的錄音讀到長度，再跳到那一段
+  const pendingSeek = useRef<number | null>(null)
 
   const play = (i: number) => {
     const audio = ref.current
@@ -962,16 +969,13 @@ function AudioMobile({ block }: { block: AudioBlock }) {
     const chapter = block.chapters[i]
     const t = chapter.track ?? 0
     setActive(i)
-    const seek = () => {
+    if (t !== track) {
+      pendingSeek.current = chapter.at
+      setTrack(t)
+    } else {
       audio.currentTime = chapter.at
       audio.play().catch(() => {})
     }
-    if (t !== track) {
-      setTrack(t)
-      audio.src = tracks[t].src
-      audio.load()
-      audio.addEventListener('loadedmetadata', seek, { once: true })
-    } else seek()
   }
 
   return (
@@ -981,7 +985,19 @@ function AudioMobile({ block }: { block: AudioBlock }) {
           {block.title}
           {tracks.length > 1 && <span className="ml-2 text-[15px] font-semibold text-slate-400">第 {tracks[track].label} 段</span>}
         </Title>
-        <audio ref={ref} src={tracks[track].src} controls preload="metadata" className="mt-3 w-full" />
+        <audio
+          ref={ref}
+          src={trackUrl}
+          controls
+          preload="metadata"
+          onLoadedMetadata={(e) => {
+            if (pendingSeek.current === null) return
+            e.currentTarget.currentTime = pendingSeek.current
+            pendingSeek.current = null
+            e.currentTarget.play().catch(() => {})
+          }}
+          className="mt-3 w-full"
+        />
         <p className="mt-2 text-[14px] text-slate-400">點下面的段落，直接從那裡開始播。</p>
       </div>
       <ol className="divide-y divide-white/[0.07] rounded-2xl border border-white/10">

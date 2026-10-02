@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowUpRight, Box, Headphones, Maximize2, Pause, Quote, X } from 'lucide-react'
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useDismiss } from '../../hooks/useDismiss'
 import { createPortal } from 'react-dom'
 import { useDeck } from '../../context/deck'
 import { cycleNotes, type CycleNodeId } from '../../data/cycleNotes'
@@ -73,6 +74,9 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
   const { goToId, numberOf } = useDeck()
   const model = part3DFor(id)
   const [view, setView] = useState(false)
+  const boxRef = useRef<HTMLDivElement>(null)
+  // 點旁邊空白處或按 Esc 關閉（打開 3D 視窗時先不關）
+  useDismiss(boxRef, onClose, !view)
 
   const { x, y, place } = note.anchor
   const width = large ? 520 : 380
@@ -89,6 +93,7 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
 
   return (
     <motion.div
+      ref={boxRef}
       role="dialog"
       aria-label={`${note.title} 說明`}
       initial={{ opacity: 0, scale: 0.94, y: 6 }}

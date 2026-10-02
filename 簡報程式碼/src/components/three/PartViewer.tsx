@@ -58,7 +58,11 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
       // 事件不往簡報傳：避免在 3D 上滑動時被當成換頁
       onTouchStart={(e) => e.stopPropagation()}
       onTouchEnd={(e) => e.stopPropagation()}
-      onClick={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        e.stopPropagation()
+        // 點視窗外的暗色背景就關閉
+        if (e.target === e.currentTarget) onClose()
+      }}
     >
       <div className="flex h-full max-h-[900px] w-full max-w-[1400px] flex-col overflow-hidden rounded-3xl border border-white/10 bg-navy-900">
         <header className="flex flex-wrap items-center gap-3 border-b border-white/10 px-4 py-3 sm:px-6">

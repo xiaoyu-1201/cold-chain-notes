@@ -10,6 +10,7 @@ import { Segmented } from '../ui/Segmented'
 import { DataTable } from '../blocks/DataTable'
 import { EstimatePractice } from '../blocks/Estimate'
 import { CoilReader } from '../blocks/CoilReader'
+import { InView } from '../ui/InView'
 import { FenConverter } from '../blocks/FenConverter'
 import { ProductShowcase } from '../three/ProductShowcase'
 import { Flashcards } from '../blocks/Flashcards'
@@ -823,9 +824,11 @@ function CycleLessonMobile() {
         </div>
       ) : (
         <div className="relative h-[420px] overflow-hidden rounded-2xl bg-white/[0.04]">
-          <Suspense fallback={<p className="absolute inset-0 flex items-center justify-center text-[15px] text-slate-400">3D 載入中…</p>}>
-            <CycleSystem3D selected={selected} onSelect={(id) => id && pick(id, true)} cut={cut} compact />
-          </Suspense>
+          <InView fallback={<p className="absolute inset-0 flex items-center justify-center text-[15px] text-slate-400">3D 載入中…</p>}>
+            <Suspense fallback={<p className="absolute inset-0 flex items-center justify-center text-[15px] text-slate-400">3D 載入中…</p>}>
+              <CycleSystem3D selected={selected} onSelect={(id) => id && pick(id, true)} cut={cut} compact />
+            </Suspense>
+          </InView>
         </div>
       )}
       <div ref={noteRef} style={{ scrollMarginTop: 64 }}>

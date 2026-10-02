@@ -27,6 +27,15 @@ const TOTAL = slides.length
 
 const clamp = (n: number) => Math.min(Math.max(n, 0), TOTAL - 1)
 
+/** 手指下面（或上層）有可以左右捲動的東西（表格、橫向清單）：在那裡滑是要捲動，不是換頁 */
+function hasHorizontalScroll(el: HTMLElement | null) {
+  for (let n = el; n && n !== document.body; n = n.parentElement) {
+    const ox = getComputedStyle(n).overflowX
+    if ((ox === 'auto' || ox === 'scroll') && n.scrollWidth > n.clientWidth + 2) return true
+  }
+  return false
+}
+
 function indexFromHash() {
   const match = /^#\/(\d+)$/.exec(window.location.hash)
   return match ? clamp(Number(match[1]) - 1) : 0
@@ -48,7 +57,7 @@ export function SlideDeck() {
   const { isFullscreen, toggleFullscreen } = useFullscreen()
   const stageRef = useRef<HTMLDivElement>(null)
   const { width: STAGE_W, scale } = useFitStage(stageRef, STAGE_H, STAGE_MIN_W, STAGE_MAX_W)
-  const touchStart = useRef<{ x: number; y: number } | null>(null)
+  const touchStart = useRef<{ x: number; y: number; t: number; multi: boolean } | null>(null)
 
   const goTo = useCallback((target: number) => {
     setPage((prev) => {
@@ -106,19 +115,34 @@ export function SlideDeck() {
     [goTo],
   )
 
+  /**
+   * 手機、平板左右滑換頁：只有「明確、夠長、快速的單指橫向滑動」才算。
+   * 不算：兩指縮放、畫面放大中、在 3D／滑桿／輸入框／可橫向捲動的地方滑、滑得太短、斜著滑、慢慢拖。
+   */
   const onTouchStart = (e: TouchEvent) => {
     const t = e.touches[0]
-    touchStart.current = { x: t.clientX, y: t.clientY }
+    const target = e.target as HTMLElement
+    const blocked =
+      e.touches.length > 1 ||
+      (window.visualViewport?.scale ?? 1) > 1.05 ||
+      !!target.closest('input, textarea, select, canvas, [role="slider"], .touch-none, [data-no-swipe]') ||
+      hasHorizontalScroll(target)
+    touchStart.current = blocked ? null : { x: t.clientX, y: t.clientY, t: Date.now(), multi: false }
   }
-
+  const onTouchMove = (e: TouchEvent) => {
+    if (touchStart.current && e.touches.length > 1) touchStart.current.multi = true
+  }
   const onTouchEnd = (e: TouchEvent) => {
     const start = touchStart.current
     touchStart.current = null
-    if (!start) return
+    if (!start || start.multi || (window.visualViewport?.scale ?? 1) > 1.05) return
     const t = e.changedTouches[0]
     const dx = t.clientX - start.x
     const dy = t.clientY - start.y
-    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1)
+    const far = Math.abs(dx) > Math.max(110, window.innerWidth * 0.22)
+    const straight = Math.abs(dx) > Math.abs(dy) * 2.5
+    const quick = Date.now() - start.t < 650
+    if (far && straight && quick) step(dx < 0 ? 1 : -1)
   }
 
   const slide = slides[page.index]
@@ -132,7 +156,7 @@ export function SlideDeck() {
         <div className="flex h-dvh w-full flex-col bg-navy-950 text-slate-100">
           <ProgressBar index={page.index} total={TOTAL} />
 
-          <main className="relative min-h-0 flex-1" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+          <main className="relative min-h-0 flex-1" onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
             <div ref={stageRef} className="absolute inset-2 sm:inset-3" />
             <div
               className="absolute left-1/2 top-1/2 overflow-clip rounded-[14px] shadow-[0_40px_120px_-40px_rgba(0,0,0,0.8)]"

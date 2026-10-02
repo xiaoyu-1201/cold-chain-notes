@@ -6,7 +6,7 @@ import { useStickyState } from '../../hooks/useStickyState'
 import { cn } from '../../lib/cn'
 import { part3DFor } from '../three/ids'
 import { PartViewer } from '../three/PartViewer'
-import { Segmented } from './CycleLesson'
+import { Segmented } from '../ui/Segmented'
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
 type Status = 'known' | 'learning'

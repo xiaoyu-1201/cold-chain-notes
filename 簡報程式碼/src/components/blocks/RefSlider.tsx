@@ -3,7 +3,7 @@ import { useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type 
 import { ATM, isBlend, KG_PER_BAR, PSI_PER_BAR, pressureAt, PT_TEMPS, REFRIGERANTS, temperatureAt, type RefrigerantId } from '../../data/refrigerants'
 import { useStickyState } from '../../hooks/useStickyState'
 import { cn } from '../../lib/cn'
-import { Segmented } from './CycleLesson'
+import { Segmented } from '../ui/Segmented'
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
 const IDS = Object.keys(REFRIGERANTS) as RefrigerantId[]

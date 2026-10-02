@@ -1,9 +1,10 @@
 import { Box, Camera, Layers, RotateCw, X } from 'lucide-react'
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { photoCredits } from '../../data/photoCredits'
 import { cn } from '../../lib/cn'
-import type { LegendItem, Part3DId } from './models'
+import { Segmented } from '../ui/Segmented'
+import type { LegendItem, Part3DId, PartControl } from './models'
 
 const Part3D = lazy(() => import('./Part3D'))
 
@@ -28,6 +29,17 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
   const [cut, setCut] = useState(false)
   const [spin, setSpin] = useState(true)
   const [legend, setLegend] = useState<LegendItem[]>([])
+  const [control, setControl] = useState<PartControl | undefined>()
+  const [op, setOp] = useState(0)
+  const onControl = useCallback((c: PartControl | undefined) => {
+    setControl(c)
+    setOp(c?.initial ?? 0)
+  }, [])
+  /** 動手操作：機構在外殼裡的，第一次操作就自動剖開 */
+  const operate = (v: number) => {
+    if (control?.needsCut && !cut) setCut(true)
+    setOp(v)
+  }
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -44,8 +56,8 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
 
   const toggle = (on: boolean) =>
     cn(
-      'flex items-center gap-1.5 rounded-xl border px-3 py-2 text-[15px] font-bold transition',
-      on ? 'border-sky-300 bg-sky-400/20 text-sky-100' : 'border-dashed border-white/25 text-slate-200 hover:border-sky-300/60',
+      'flex items-center gap-1.5 rounded-full px-4 py-2 text-[15px] font-semibold transition',
+      on ? 'bg-sky-400 text-navy-950' : 'bg-white/[0.1] text-slate-100 hover:bg-white/[0.16]',
       focusRing,
     )
 
@@ -89,7 +101,7 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
           <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
             <div className="relative min-h-[280px] flex-1 bg-[radial-gradient(ellipse_at_center,rgba(56,189,248,0.12),transparent_70%)]">
               <Suspense fallback={<p className="absolute inset-0 flex items-center justify-center text-[16px] text-slate-400">3D 模型載入中…</p>}>
-                <Part3D id={id} cut={cut} spin={spin} onLegend={setLegend} />
+                <Part3D id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} />
               </Suspense>
               <div className="absolute bottom-3 left-3 flex flex-wrap gap-2">
                 <button type="button" aria-pressed={cut} onClick={() => setCut((c) => !c)} className={toggle(cut)}>
@@ -104,6 +116,25 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
               <p className="pointer-events-none absolute right-3 top-3 rounded-lg bg-navy-950/70 px-2.5 py-1 text-[13px] text-slate-300">拖曳旋轉・滾輪／雙指縮放</p>
             </div>
             <aside className="max-h-[42%] overflow-y-auto border-t border-white/10 p-4 lg:max-h-none lg:w-[380px] lg:border-l lg:border-t-0">
+              {control && (
+                <section className="mb-4 rounded-2xl bg-sky-400/[0.1] p-4">
+                  <p className="text-[15px] font-bold text-sky-200">動手試試：{control.label}</p>
+                  {control.kind === 'slider' ? (
+                    <>
+                      <input type="range" min={0} max={1} step={0.01} value={op} onChange={(e) => operate(Number(e.target.value))} aria-label={control.label} className="mt-3 w-full accent-sky-400" />
+                      <div className="flex justify-between text-[13px] text-slate-400">
+                        <span>{control.off}</span>
+                        <span>{control.on}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="mt-3">
+                      <Segmented size="sm" value={op > 0.5 ? 'on' : 'off'} onChange={(v) => operate(v === 'on' ? 1 : 0)} options={[{ value: 'off', label: control.off }, { value: 'on', label: control.on }]} />
+                    </div>
+                  )}
+                  <p className="mt-2 text-[15px] leading-snug text-slate-100">{control.describe(op)}</p>
+                </section>
+              )}
               <p className="mb-2 text-[15px] font-bold text-slate-400">構造說明{cut ? '' : '（按「剖開看內部」看裡面）'}</p>
               <ul className="space-y-2.5">
                 {legend.map((item) => (

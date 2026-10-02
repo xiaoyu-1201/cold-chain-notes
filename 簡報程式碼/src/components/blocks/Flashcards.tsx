@@ -1,6 +1,6 @@
 import { Box, Check, ChevronLeft, ChevronRight, Repeat, RotateCcw, Shuffle, Volume2 } from 'lucide-react'
 import { useMemo, useState, type KeyboardEvent, type MouseEvent } from 'react'
-import { CLASS_AUDIO, CLASS_AUDIO_2, loadPlayable } from '../../data/media'
+import { CLASS_AUDIO, loadPlayable, RECORDINGS } from '../../data/media'
 import type { FlashCard, FlashcardsBlock } from '../../data/types'
 import { useStickyState } from '../../hooks/useStickyState'
 import { cn } from '../../lib/cn'
@@ -40,7 +40,7 @@ let clipStop: (() => void) | null = null
 function playClip(tw: NonNullable<FlashCard['tw']>) {
   if (!clipAudio) clipAudio = new Audio()
   const audio = clipAudio
-  const src = tw.rec === 1 ? CLASS_AUDIO : CLASS_AUDIO_2
+  const src = RECORDINGS[tw.rec - 1] ?? CLASS_AUDIO
   if (clipStop) audio.removeEventListener('timeupdate', clipStop)
   clipStop = () => {
     if (audio.currentTime >= tw.to) audio.pause()
@@ -150,9 +150,9 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
       <button type="button" onClick={(e) => {
         stop(e)
         playClip(c.tw!)
-      }} className={cn(pill, 'bg-amber-400/15 text-amber-200 hover:bg-amber-400/25')} title={`錄音0${c.tw.rec} ${mmss(c.tw.from)}：「${c.tw.say}」`}>
+      }} className={cn(pill, 'bg-amber-400/15 text-amber-200 hover:bg-amber-400/25')} title={`錄音${String(c.tw.rec).padStart(2, '0')} ${mmss(c.tw.from)}：「${c.tw.say}」`}>
         <Volume2 className="size-4" aria-hidden />
-        老闆說（錄音0{c.tw.rec} {mmss(c.tw.from)}）
+        老闆說（錄音{String(c.tw.rec).padStart(2, '0')} {mmss(c.tw.from)}）
       </button>
     )
 

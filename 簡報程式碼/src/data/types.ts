@@ -383,7 +383,8 @@ export interface FlashCard {
   tip: string
   group: string
   /** 上課錄音裡講台語的片段（錄音編號、起訖秒數；已用逐字對時確認） */
-  tw?: { rec: 1 | 2; from: number; to: number; say: string }
+  /** 上課錄音裡老闆講台語的片段：rec＝錄音編號（1～11），from／to＝秒 */
+  tw?: { rec: number; from: number; to: number; say: string }
   /** 有 3D 模型／照片的零件 id（three/ids 的 part3DFor） */
   part?: string
 }

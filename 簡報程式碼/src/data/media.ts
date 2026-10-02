@@ -31,6 +31,9 @@ export const CLASS_AUDIO_9 = part9Url
 export const CLASS_AUDIO_10 = part10Url
 export const CLASS_AUDIO_11 = part11Url
 
+/** 依錄音編號排好（RECORDINGS[0]＝錄音01）；名詞翻卡的台語片段用 */
+export const RECORDINGS = [part1Url, part2Url, part3Url, part4Url, part5Url, part6Url, part7Url, part8Url, part9Url, part10Url, part11Url]
+
 const ready = new Map<string, string>()
 const pending = new Map<string, Promise<string>>()
 
@@ -70,7 +73,7 @@ export function usePlayable(url: string | undefined) {
 }
 
 // 打開簡報後閒下來，就在背景把錄音一段一段先轉好（點下去馬上能播）
-const ALL = [part1Url, part2Url, part3Url, part4Url, part5Url, part6Url, part7Url, part8Url, part9Url, part10Url, part11Url]
+const ALL = RECORDINGS
 if (typeof window !== 'undefined' && ALL.some((u) => u.startsWith('data:'))) {
   const idle = (fn: () => void) => (typeof window.requestIdleCallback === 'function' ? window.requestIdleCallback(fn, { timeout: 4000 }) : setTimeout(fn, 1500))
   const warm = (i: number) => {

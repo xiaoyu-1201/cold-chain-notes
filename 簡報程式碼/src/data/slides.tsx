@@ -576,7 +576,7 @@ const slideList: SlideData[] = [
                 ],
                 footnote: (
                   <>
-                    管內氣體流速要夠快，才能把冷凍油帶回壓縮機的曲軸箱。
+                    流速夠快，冷凍油才回得了壓縮機。
                     <Exp />
                   </>
                 ),
@@ -833,7 +833,7 @@ const slideList: SlideData[] = [
                 title: '溫度強制終止',
                 desc: (
                   <>
-                    蒸發器回溫到 8～10°C，感溫器就切斷電熱管；感溫器裝在結霜最厚、離電熱管遠處
+                    回溫到 8～10°C 就停止加熱；感溫器裝在結霜最厚處
                     <Exp />
                   </>
                 ),
@@ -2637,13 +2637,13 @@ const slideList: SlideData[] = [
           { group: '小零件', term: '溫控器', alias: '感溫棒（放庫內）', en: 'Thermostat', tip: '庫內到溫就停機，回溫再啟動', part: 'tc' },
           { group: '小零件', term: '除霜電熱管', alias: '除霜', en: 'Defrost Heater', tip: '冷凍庫的冷排會結霜，要定時除霜' },
           { group: '散熱器', term: '排×支×鏡面', alias: '散熱器規格', en: 'Rows × Tubes × Fin Length', tip: '例 4×11×330：4 排、每排 11 支、鏡面 330 mm' },
-          { group: '散熱器', term: '鏡面', alias: '實內（老闆的叫法）', en: 'Fin Length', tip: '有鰭片、風吹得到的有效長度；含兩側彎頭大約多 6 公分' },
-          { group: '散熱器', term: '穿管面', alias: '全部都是彎頭的那一面', en: 'Return-bend Side', tip: '請客人拍這一面，數得出幾排幾支；找平的彎頭，順著數就是支' },
-          { group: '散熱器', term: '封底', alias: '封底板（客人常說「底板」）', en: 'Bottom Cover', tip: '把底封住，風才會穿過鰭片；跟放壓縮機的基板不一樣' },
+          { group: '散熱器', term: '鏡面', alias: '實內（老闆的叫法）', en: 'Fin Length', tip: '有鰭片、風吹得到的有效長度；含兩側彎頭大約多 6 公分', tw: { rec: 9, from: 130.7, to: 138.7, say: '他們都講鏡面，那我習慣講實內，實際的內部，就是有效的' } },
+          { group: '散熱器', term: '穿管面', alias: '全部都是彎頭的那一面', en: 'Return-bend Side', tip: '請客人拍這一面，數得出幾排幾支；找平的彎頭，順著數就是支', tw: { rec: 9, from: 51.9, to: 60.1, say: '你看到有一個彎頭是平的……只要有平的地方，就一定是支' } },
+          { group: '散熱器', term: '封底', alias: '封底板（客人常說「底板」）', en: 'Bottom Cover', tip: '把底封住，風才會穿過鰭片；跟放壓縮機的基板不一樣', tw: { rec: 10, from: 805.0, to: 813.1, say: '這叫封底……這不是基板，這叫封底板' } },
           { group: '散熱器', term: '基板', alias: '附基板', en: 'Base Plate', tip: '放壓縮機的板子；機上型冰箱用，最大到 2 馬半' },
           { group: '散熱器', term: '機上型', alias: '散熱器放冰箱頂上', en: 'Top-mount', tip: '冰箱約 2 公尺高，只能用 11 支（高約 29 公分）' },
-          { group: '散熱器', term: '屋外型', alias: '室外機（有外殼）', en: 'Outdoor Unit', tip: '馬達在裡面：好看、安靜、防風雨；一般散熱器馬達外露' },
-          { group: '散熱器', term: '站壓', alias: '抓漏', en: 'Pressure Test', tip: '從充灌閥灌氮氣、泡水找漏點；散熱器沒有充灌閥' },
+          { group: '散熱器', term: '屋外型', alias: '室外機（有外殼）', en: 'Outdoor Unit', tip: '馬達在裡面：好看、安靜、防風雨；一般散熱器馬達外露', tw: { rec: 10, from: 1642.4, to: 1646.8, say: '有人說這有穿衣服的，散熱器就沒有穿衣服' } },
+          { group: '散熱器', term: '站壓', alias: '抓漏', en: 'Pressure Test', tip: '從充灌閥灌氮氣、泡水找漏點；散熱器沒有充灌閥', tw: { rec: 9, from: 569.8, to: 578.1, say: '這叫抓漏，自己站壓……站壓或是抓漏' } },
           { group: '散熱器', term: '內膨', alias: '膨脹閥鎖在蒸發器箱內', en: 'Internal TXV Mounting', tip: '冷凍做內膨（膨脹閥會結冰滴水）；冷氣是外膨' },
           { group: '管路', term: '液管', alias: '講義上的黃色線', en: 'Liquid Line', tip: '中溫中壓液態' },
           { group: '管路', term: '高壓氣管', alias: '講義上的紅色線', en: 'Discharge Line', tip: '高溫高壓氣態' },

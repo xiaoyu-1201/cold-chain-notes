@@ -56,8 +56,8 @@ const PIPES: { id: PipeId; color: number; points: V3[]; label: string; labelPos:
 /** 啟動後的導覽：冷媒從壓縮機出發，一段一段跑完一圈 */
 const STAGES: { node: CycleNodeId; title: string; text: string }[] = [
   { node: 'comp', title: '① 壓縮機啟動', text: '把低溫低壓氣體壓成高溫高壓氣體' },
-  { node: 'discharge', title: '高壓氣管', text: '高溫高壓氣體從壓縮機流到冷凝器' },
-  { node: 'cond', title: '② 冷凝器放熱', text: '冷媒上進下出；風扇把熱吹到室外，冷媒凝結成液體' },
+  { node: 'discharge', title: '高壓氣管', text: '高溫高壓氣體從壓縮機流到冷凝器；管子接近 100°C，不能摸' },
+  { node: 'cond', title: '② 冷凝器放熱', text: '冷媒上進下出；風扇把熱吹到室外，冷媒凝結成液體，出口摸起來是溫的' },
   { node: 'liquid', title: '液管', text: '液態冷媒先進儲液器再出來，經過乾燥過濾器、視液鏡、電磁閥，流到膨脹閥' },
   { node: 'txv', title: '③ 膨脹閥降壓', text: '膨脹閥裝在蒸發器旁；液態冷媒擠過小孔，壓力和溫度一起下降' },
   { node: 'mixture', title: '液氣混合段', text: '低溫的液氣混合冷媒流進蒸發器' },

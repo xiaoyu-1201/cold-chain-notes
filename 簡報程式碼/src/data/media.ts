@@ -8,6 +8,7 @@ import part2Url from '../assets/class-0101-part2.m4a'
 import part3Url from '../assets/class-0101-part3.m4a'
 import part4Url from '../assets/class-0101-part4.m4a'
 import part5Url from '../assets/class-0101-part5.m4a'
+import part6Url from '../assets/class-1002-part1.m4a'
 
 function toPlayable(url: string) {
   if (!url.startsWith('data:')) return url
@@ -24,3 +25,5 @@ export const CLASS_AUDIO_2 = toPlayable(part2Url)
 export const CLASS_AUDIO_3 = toPlayable(part3Url)
 export const CLASS_AUDIO_4 = toPlayable(part4Url)
 export const CLASS_AUDIO_5 = toPlayable(part5Url)
+/** 錄音06（10-2 上課-part1） */
+export const CLASS_AUDIO_6 = toPlayable(part6Url)

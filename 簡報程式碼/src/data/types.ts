@@ -421,6 +421,11 @@ export interface FenBlock {
   type: 'fen'
 }
 
+/** 看懂散熱器／冷排規格「排×支×鏡面」（錄音08～10） */
+export interface CoilReaderBlock {
+  type: 'coilreader'
+}
+
 /** 核心圖解：大張可點選循環圖 + 項目清單 */
 export interface CycleLessonBlock {
   type: 'cycleLesson'
@@ -458,6 +463,7 @@ export type Block =
   | CycleLessonBlock
   | QuizBlock
   | FenBlock
+  | CoilReaderBlock
   | ShowcaseBlock
   | EstimateBlock
   | FlashcardsBlock

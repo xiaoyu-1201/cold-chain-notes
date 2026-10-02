@@ -5,7 +5,7 @@ import { useDismiss } from '../../hooks/useDismiss'
 import { createPortal } from 'react-dom'
 import { useDeck } from '../../context/deck'
 import { cycleNotes, type CycleNodeId } from '../../data/cycleNotes'
-import { CLASS_AUDIO, CLASS_AUDIO_2 } from '../../data/media'
+import { CLASS_AUDIO, CLASS_AUDIO_2, usePlayable } from '../../data/media'
 import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
 import { part3DFor } from '../three/ids'
@@ -240,6 +240,7 @@ export function ClipButton({ src, at, label, large }: { src: string; at: number;
   const ref = useRef<HTMLAudioElement>(null)
   const [playing, setPlaying] = useState(false)
   const [error, setError] = useState(false)
+  const url = usePlayable(src)
 
   useEffect(() => {
     const audio = ref.current
@@ -260,7 +261,7 @@ export function ClipButton({ src, at, label, large }: { src: string; at: number;
   if (error) return <span className="text-[16px] text-amber-200">錄音無法播放（請改用 Chrome 或 Edge）</span>
   return (
     <>
-      <audio ref={ref} src={src} preload="none" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => setError(true)} />
+      <audio ref={ref} src={url} preload="none" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => setError(true)} />
       <button
         type="button"
         onClick={toggle}

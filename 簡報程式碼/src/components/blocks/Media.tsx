@@ -1,6 +1,7 @@
 import { ArrowUpRight, AudioLines, Box, Headphones, MousePointerClick, Play } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { useDeck } from '../../context/deck'
+import { loadPlayable, usePlayable } from '../../data/media'
 import type { AudioBlock, HotspotGroup, HotspotsBlock } from '../../data/types'
 import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
@@ -32,6 +33,8 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
   const [audioError, setAudioError] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
   const audio2Ref = useRef<HTMLAudioElement>(null)
+  const audioUrl = usePlayable(block.audioSrc)
+  const audio2Url = usePlayable(block.audioSrc2)
   const selected = block.items.find((i) => i.id === selectedId) ?? block.items[0]
   const group = block.groups[selected.group]
   const gt = toneStyles[group.tone]
@@ -153,7 +156,7 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
               </button>
             )}
           </div>
-          {block.audioSrc2 && <audio ref={audio2Ref} src={block.audioSrc2} preload="none" controls={false} />}
+          {block.audioSrc2 && <audio ref={audio2Ref} src={audio2Url} preload="none" controls={false} />}
           {view && model && <PartViewer id={model} title={selected.name} alias={`講義型號 ${selected.code}`} onClose={() => setView(false)} />}
         </div>
         {block.note && <p className="-mt-1 text-[17px] leading-snug text-amber-200/90">{block.note}</p>}
@@ -209,7 +212,7 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
             {audioError ? (
               <MissingAudio />
             ) : (
-              <audio ref={audioRef} controls preload="metadata" src={block.audioSrc} onError={() => setAudioError(true)} className="h-9 w-full" />
+              <audio ref={audioRef} controls preload="metadata" src={audioUrl} onError={() => setAudioError(true)} className="h-9 w-full" />
             )}
           </div>
         )}
@@ -222,6 +225,7 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
 export function AudioChapters({ block }: { block: AudioBlock }) {
   const tracks = block.tracks ?? [{ label: '', src: block.src, duration: block.duration }]
   const audioRef = useRef<HTMLAudioElement>(null)
+  const firstUrl = usePlayable(tracks[0].src)
   const [track, setTrack] = useState(0)
   const [time, setTime] = useState(0)
   const [audioError, setAudioError] = useState(false)
@@ -235,11 +239,13 @@ export function AudioChapters({ block }: { block: AudioBlock }) {
       audio.play().catch(() => setAudioError(true))
     }
     if (t !== track) {
-      audio.src = tracks[t].src
       setTrack(t)
       setTime(sec)
-      audio.addEventListener('loadedmetadata', go, { once: true })
-      audio.load()
+      loadPlayable(tracks[t].src).then((url) => {
+        audio.src = url
+        audio.addEventListener('loadedmetadata', go, { once: true })
+        audio.load()
+      })
     } else go()
   }
 
@@ -286,7 +292,7 @@ export function AudioChapters({ block }: { block: AudioBlock }) {
               ref={audioRef}
               controls
               preload="metadata"
-              src={tracks[0].src}
+              src={firstUrl}
               onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
               onError={() => setAudioError(true)}
               className="w-full"

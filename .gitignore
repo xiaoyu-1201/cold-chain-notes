@@ -7,3 +7,7 @@
 /氣冷式冷凍冷藏系統簡報.html
 /上課資料/講義/*.pdf
 .claude/
+# Word／Excel 開著檔案時產生的暫存鎖定檔
+~$*
+# 第三方 App 的截圖只留在本機（公開 repo 不放）
+/上課資料/講義/Ref Tools*.jpg

@@ -51,7 +51,7 @@ function NavButton({
       onMouseDown={keepFocus}
       disabled={disabled}
       className={cn(
-        'flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-white/10 bg-white/[0.04] px-3 text-slate-200 transition hover:border-sky-400/40 hover:bg-sky-400/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 disabled:pointer-events-none disabled:opacity-30',
+        'flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-white/[0.07] px-3.5 text-slate-200 transition hover:bg-white/[0.14] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 disabled:pointer-events-none disabled:opacity-30',
         className,
       )}
     >
@@ -79,7 +79,7 @@ export function SlideNav({
   return (
     <nav
       aria-label="簡報控制"
-      className="flex h-16 shrink-0 items-center gap-4 border-t border-white/10 bg-navy-900/85 px-3 backdrop-blur sm:px-5"
+      className="flex h-16 shrink-0 items-center gap-4 bg-[#0b1626]/90 px-3 backdrop-blur sm:px-5"
     >
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <NavButton label="章節目錄 (M)" onClick={onOpenMenu}>
@@ -90,7 +90,7 @@ export function SlideNav({
           <NavButton
             label={`返回 P.${pad(back.number)} ${back.title}（Backspace）`}
             onClick={onBack}
-            className="min-w-0 border-amber-400/50 bg-amber-400/15 text-amber-50 hover:border-amber-300 hover:bg-amber-400/25"
+            className="min-w-0 bg-amber-400/20 text-amber-50 hover:bg-amber-400/30"
           >
             <CornerUpLeft className="size-5 shrink-0" aria-hidden />
             <span className="truncate text-sm font-bold">
@@ -102,7 +102,7 @@ export function SlideNav({
         {hints.length > 0 ? (
           <p
             title={hints.join('；')}
-            className="hidden items-center gap-2 overflow-hidden rounded-xl border border-dashed border-sky-400/50 bg-sky-400/10 px-3 py-1.5 text-sm font-semibold text-sky-100 xl:flex"
+            className="hidden items-center gap-2 overflow-hidden rounded-full bg-sky-400/10 px-3.5 py-1.5 text-sm font-semibold text-sky-100 min-[1600px]:flex"
           >
             <Pointer className="size-4 shrink-0 animate-pulse text-sky-300" aria-hidden />
             <span className="shrink-0 text-sky-300">本頁可以點</span>
@@ -124,9 +124,9 @@ export function SlideNav({
         <NavButton label="上一頁 (←)" onClick={onPrev} disabled={index === 0}>
           <ChevronLeft className="size-5" aria-hidden />
         </NavButton>
-        <DockDots index={index} onGoTo={onGoTo} />
-        <span className="min-w-[124px] text-center font-mono text-sm font-bold tracking-wider text-slate-300" aria-live="polite">
-          Slide <span className="text-sky-300">{pad(index + 1)}</span> / {pad(total)}
+        <ChapterBar index={index} onGoTo={onGoTo} />
+        <span className="min-w-[72px] text-center font-mono text-sm font-bold tracking-wider text-slate-300" aria-live="polite">
+          <span className="text-sky-300">{pad(index + 1)}</span> / {pad(total)}
         </span>
         <NavButton label="下一頁 (→ / Space)" onClick={onNext} disabled={index === total - 1}>
           <ChevronRight className="size-5" aria-hidden />
@@ -169,59 +169,74 @@ const groupLabel = (p: PartId) => {
   return part.step ? part.short.replace(' ', '') : part.short
 }
 
-/** 頁碼點：依篇章分組分色；滑鼠靠近時像 Mac Dock 放大，並立即浮出「頁碼・篇章・頁名」 */
-function DockDots({ index, onGoTo }: { index: number; onGoTo: (index: number) => void }) {
-  const [hover, setHover] = useState<number | null>(null)
+/**
+ * 篇章列（取代頁碼點）：九篇名稱一直看得到；目前這篇展開成頁碼膠囊，
+ * 滑鼠移上去浮出「頁碼・篇章・頁名」；點篇名跳到該篇第一頁。
+ */
+function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) => void }) {
+  const [tip, setTip] = useState<number | null>(null)
   return (
-    <div className="hidden h-14 items-end gap-3 md:flex" onMouseLeave={() => setHover(null)}>
+    <div className="hidden items-center rounded-full bg-white/[0.06] p-1 lg:flex" onMouseLeave={() => setTip(null)}>
       {dotGroups.map((group) => {
-        const tone = toneStyles[parts[group.part].tone]
+        const part = parts[group.part]
+        const tone = toneStyles[part.tone]
         const current = group.items.includes(index)
+        if (!current)
+          return (
+            <button
+              key={group.part}
+              type="button"
+              onClick={() => onGoTo(group.items[0])}
+              onMouseDown={keepFocus}
+              onMouseEnter={() => setTip(group.items[0])}
+              onFocus={() => setTip(group.items[0])}
+              aria-label={`${part.short}：${group.items.length} 頁，跳到第一頁`}
+              className="relative whitespace-nowrap rounded-full px-3 py-1.5 text-[14px] font-semibold text-slate-400 transition hover:bg-white/[0.08] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
+            >
+              {groupLabel(group.part)}
+              {tip === group.items[0] && <Tip i={group.items[0]} />}
+            </button>
+          )
         return (
-          <div key={group.part} className="flex min-w-max flex-col items-center">
-            <span className={cn('whitespace-nowrap text-[13px] font-bold leading-4', current ? tone.text : 'text-slate-300')}>{groupLabel(group.part)}</span>
-            <div className="flex items-end">
-              {group.items.map((i) => {
-                const s = slides[i]
-                const d = hover === null ? 99 : Math.abs(i - hover)
-                const scale = d === 0 ? 2.4 : d === 1 ? 1.75 : d === 2 ? 1.3 : 1
-                const active = i === index
-                const size = 9 * scale
-                return (
-                  <button
-                    key={s.id}
-                    type="button"
-                    aria-label={`第 ${i + 1} 頁：${s.title}`}
-                    aria-current={active ? 'page' : undefined}
-                    onClick={() => onGoTo(i)}
-                    onMouseDown={keepFocus}
-                    onMouseEnter={() => setHover(i)}
-                    onFocus={() => setHover(i)}
-                    className="relative flex h-9 items-end justify-center px-[3px] pb-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
-                  >
-                    {hover === i && (
-                      <span className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-3 -translate-x-1/2 whitespace-nowrap rounded-lg border border-white/15 bg-navy-800 px-2.5 py-1 text-xs font-semibold text-slate-100 shadow-lg">
-                        <span className="font-mono text-sky-300">P.{pad(i + 1)}</span>
-                        <span className={cn('mx-1.5', tone.text)}>{parts[s.part].short}</span>
-                        {s.title}
-                      </span>
-                    )}
-                    <span
-                      className={cn(
-                        'flex items-center justify-center rounded-full font-mono font-bold leading-none text-navy-950 transition-all duration-150 ease-out',
-                        active ? 'bg-sky-300' : d === 0 ? 'bg-slate-100' : cn(tone.dot, 'opacity-60'),
-                      )}
-                      style={{ width: active ? Math.max(size, 22) : size, height: size, fontSize: scale >= 1.75 ? 10 + (scale - 1.75) * 4 : 0 }}
-                    >
-                      {scale >= 1.75 ? i + 1 : ''}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
+          <div key={group.part} className="flex items-center gap-1 rounded-full bg-white/[0.1] py-0.5 pl-3 pr-1">
+            <span className={cn('mr-1 whitespace-nowrap text-[14px] font-bold', tone.text)}>{groupLabel(group.part)}</span>
+            {group.items.map((i, k) => {
+              const active = i === index
+              return (
+                <button
+                  key={slides[i].id}
+                  type="button"
+                  aria-label={`第 ${i + 1} 頁：${slides[i].title}`}
+                  aria-current={active ? 'page' : undefined}
+                  onClick={() => onGoTo(i)}
+                  onMouseDown={keepFocus}
+                  onMouseEnter={() => setTip(i)}
+                  onFocus={() => setTip(i)}
+                  className={cn(
+                    'relative flex size-7 items-center justify-center rounded-full font-mono text-[13px] font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300',
+                    active ? 'bg-sky-300 text-navy-950' : 'text-slate-300 hover:bg-white/[0.14] hover:text-white',
+                  )}
+                >
+                  {k + 1}
+                  {tip === i && <Tip i={i} />}
+                </button>
+              )
+            })}
           </div>
         )
       })}
     </div>
+  )
+}
+
+/** 篇章列的浮出說明 */
+function Tip({ i }: { i: number }) {
+  const s = slides[i]
+  return (
+    <span className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-3 -translate-x-1/2 whitespace-nowrap rounded-xl bg-navy-800/95 px-3 py-1.5 text-[13px] font-semibold text-slate-100 shadow-lg backdrop-blur">
+      <span className="font-mono text-sky-300">P.{pad(i + 1)}</span>
+      <span className={cn('mx-1.5', toneStyles[parts[s.part].tone].text)}>{parts[s.part].short}</span>
+      {s.title}
+    </span>
   )
 }

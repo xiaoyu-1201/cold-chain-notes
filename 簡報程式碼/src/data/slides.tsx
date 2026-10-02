@@ -60,6 +60,7 @@ import {
   Zap,
 } from 'lucide-react'
 import handoutImg from '../assets/1001-handout.jpg'
+import refrigerantTableImg from '../assets/refrigerant-table.jpg'
 import { Danger, Em, Exp, Frac, Hl, Sub, Warn } from '../components/ui/rich'
 import { CLASS_AUDIO, CLASS_AUDIO_2, CLASS_AUDIO_3, CLASS_AUDIO_4, CLASS_AUDIO_5 } from './media'
 import type { SlideData } from './types'
@@ -206,7 +207,11 @@ const slideList: SlideData[] = [
             range: '管徑・溫壓',
             icon: Ruler,
             summary: '管徑「分」換算、溫度與壓力',
-            chapters: [{ code: '單位', title: '分、溫度壓力', slide: 'units' }],
+            chapters: [
+              { code: '單位', title: '分、溫度壓力', slide: 'units' },
+              { code: 'App', title: 'Ref Tools 網頁版', slide: 'reftools' },
+              { code: '速查', title: '常用冷媒速查表', slide: 'reftable' },
+            ],
           },
           {
             part: 'industry',
@@ -2297,7 +2302,7 @@ const slideList: SlideData[] = [
               { title: '下載並打開 Ref Tools', desc: 'App Store／Google Play 搜尋「Ref Tools」，開啟後選「Refrigerant Slider」（冷媒滑尺）' },
               { title: '選冷媒', desc: '看機器銘牌或冷媒鋼瓶上寫的型號，例如 R134a、R404A' },
               { title: '輸入或拖動壓力', desc: '把壓力錶讀數（錶壓）輸入，就會跳出對應的飽和溫度' },
-              { title: '對照看看', desc: '例：R134a 錶壓 1.0 bar ≈ 管內 -10°C（左邊拖到 1.0 試試）' },
+              { title: '對照看看', desc: '例：R22 高壓 210 psig ≈ 管內 40.4°C（在左邊輸入 210 試試）' },
               { title: '其他功能之後再學', desc: '故障排除（Troubleshooter）、膨脹閥過熱度調整、產品查詢', tone: 'slate' },
             ],
           },
@@ -2309,6 +2314,53 @@ const slideList: SlideData[] = [
       text: (
         <>
           <Hl>冷媒種類＋錶壓＝管內溫度</Hl>：溫度和壓力綁在一起，這就是 Ref Tools 最常用的功能；客人拿錶來問，先問冷媒再查。
+        </>
+      ),
+    },
+  },
+
+  /* ───────────────────────── 常用冷媒速查表（老闆用 Ref Tools 整理的手寫表） ───────────────────────── */
+  {
+    id: 'reftable',
+    part: 'units',
+    chapter: '冷媒速查',
+    mark: 'R22',
+    title: '常用冷媒速查表：同樣溫度，高壓差多少',
+    en: 'Common Refrigerants at a Glance',
+    blocks: [
+      {
+        type: 'table',
+        tone: 'emerald',
+        head: ['R22', 'R417A', 'R438A', 'R408A', 'R404A', 'R507'],
+        highlight: [
+          { col: 0, label: '基準' },
+          { col: 2, label: '最接近 R22' },
+        ],
+        rows: [
+          { label: '高壓（psig）', cells: ['210', '183.2', '201.7', '233', '251.2', '259'] },
+          { label: '高壓比 R22', cells: ['基準', '↓ 12.8%', '↓ 4%', '↑ 11%', '↑ 19.6%', '↑ 23.3%'] },
+          { label: '冷凍油', cells: ['POE、礦物油', 'POE、礦物油', 'POE、礦物油', 'POE、礦物油', '只能 POE', '只能 POE'] },
+          { label: '用途', cells: ['冷凍、冷藏、空調', '空調、冷藏（稍差）', '冷凍、冷藏', '冷凍、冷藏', '冷凍、冷藏', '冷凍、冷藏'] },
+        ],
+        notes: [
+          <>
+            比較條件：冷凝溫度都是 <Hl>40.42°C</Hl>，看同一溫度下的高壓。<Hl>R22 是基準</Hl>：資深師傅常拿 R22 的 210 psig 當標竿。
+          </>,
+          <>
+            舊的 R22 壓縮機換成用 <Em>POE 油</Em>的壓縮機時，要先清洗系統，避免兩種冷凍油混在一起。
+          </>,
+          <>
+            6 種冷媒都能用 POE 油的壓縮機，但高壓不同：R404A、R507 高壓比 R22 高約 2 成，<Hl>散熱器要選大一點</Hl>。
+          </>,
+        ],
+        image: { src: refrigerantTableImg, label: '看老闆手寫原稿' },
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          <Hl>R22 是基準（40.42°C 冷凝 ≈ 210 psig）</Hl>；R438A 最接近 R22，R404A、R507 高壓高約 2 成，散熱器要配大一點。
         </>
       ),
     },
@@ -2750,6 +2802,7 @@ const ORDER = [
   'check-1',
   'units',
   'reftools',
+  'reftable',
   'check-2',
   'industry',
   'check-3',

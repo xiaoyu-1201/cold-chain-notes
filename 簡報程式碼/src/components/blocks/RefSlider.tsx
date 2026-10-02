@@ -1,48 +1,73 @@
-import { ArrowLeftRight } from 'lucide-react'
+import { ArrowLeftRight, Keyboard } from 'lucide-react'
 import { useState } from 'react'
-import { ATM, isBlend, pressureAt, REFRIGERANTS, temperatureAt, type RefrigerantId } from '../../data/refrigerants'
+import { ATM, isBlend, KG_PER_BAR, PSI_PER_BAR, pressureAt, PT_TEMPS, REFRIGERANTS, temperatureAt, type RefrigerantId } from '../../data/refrigerants'
 import { cn } from '../../lib/cn'
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
 const IDS = Object.keys(REFRIGERANTS) as RefrigerantId[]
 
-/** 網頁版 Ref Tools「冷媒滑尺」：選冷媒，拖溫度或錶壓，互相換算 */
+type Field = 'psig' | 'kg' | 'temp'
+const fmt = (n: number) => n.toFixed(2)
+
+/** 網頁版 Ref Tools「冷媒滑尺」：選冷媒，拖滑桿或直接輸入 psig／公斤／溫度，互相換算 */
 export function RefSlider({ mobile = false }: { mobile?: boolean }) {
-  const [id, setId] = useState<RefrigerantId>('R134a')
-  const [mode, setMode] = useState<'temp' | 'gauge'>('gauge')
-  const [temp, setTemp] = useState(-10)
-  const [gauge, setGauge] = useState(1)
+  const [id, setId] = useState<RefrigerantId>('R22')
+  /** 目前以哪個欄位為準（使用者最後輸入或拖動的） */
+  const [src, setSrc] = useState<{ field: Field; value: number }>({ field: 'psig', value: 30 })
+  const [editing, setEditing] = useState<{ field: Field; text: string } | null>(null)
+  const [drag, setDrag] = useState<'psig' | 'temp'>('psig')
 
-  const maxGauge = Math.floor(pressureAt(id, 60) - ATM)
-  const t = mode === 'temp' ? temp : temperatureAt(id, Math.min(gauge, maxGauge) + ATM)
-  const pAbs = mode === 'temp' ? pressureAt(id, temp) : Math.min(gauge, maxGauge) + ATM
-  const g = pAbs - ATM
+  // 資料範圍：-40～60°C 的飽和壓力
+  const tMin = PT_TEMPS[0]
+  const tMax = PT_TEMPS[PT_TEMPS.length - 1]
+  const gMin = pressureAt(id, tMin) - ATM
+  const gMax = pressureAt(id, tMax) - ATM
+  const clampG = (g: number) => Math.min(Math.max(g, gMin), gMax)
 
-  /** 切換要拖的是錶壓還是溫度（數值接續目前的換算結果） */
-  const switchTo = (m: 'temp' | 'gauge') => {
-    if (m === mode) return
-    if (m === 'temp') setTemp(Math.round(t))
-    else setGauge(Math.round(g * 10) / 10)
-    setMode(m)
-  }
+  const gauge =
+    src.field === 'psig' ? clampG(src.value / PSI_PER_BAR) : src.field === 'kg' ? clampG(src.value / KG_PER_BAR) : pressureAt(id, Math.min(Math.max(src.value, tMin), tMax)) - ATM
+  const temp = src.field === 'temp' ? Math.min(Math.max(src.value, tMin), tMax) : temperatureAt(id, gauge + ATM)
+  const values: Record<Field, number> = { psig: gauge * PSI_PER_BAR, kg: gauge * KG_PER_BAR, temp }
 
-  /** 結果卡片：點了就改成拖這一個 */
-  const cardClass = (m: 'temp' | 'gauge', tone: string) =>
-    cn(
-      'rounded-2xl border text-left transition',
-      mobile ? 'p-3' : 'p-5',
-      tone,
-      mode === m ? 'ring-2 ring-white/40' : 'border-dashed opacity-80 hover:opacity-100',
-      focusRing,
-    )
-  const cardTag = (m: 'temp' | 'gauge') => (
-    <span className={cn('ml-2 rounded-md px-1.5 py-0.5 font-semibold', mobile ? 'text-[11px]' : 'text-[16px]', mode === m ? 'bg-white/15 text-white' : 'border border-dashed border-white/30 text-slate-300')}>
-      {mode === m ? '拖動中' : '點這張改拖'}
-    </span>
-  )
-
-  const big = mobile ? 'text-[30px]' : 'text-[54px]'
   const small = mobile ? 'text-[14px]' : 'text-[19px]'
+
+  /** 可直接輸入的數值卡（用函式產生，不當元件，避免每次輸入都重建而失去焦點） */
+  const renderInput = (field: Field, label: string, unit: string, tone: string) => {
+    const shown = editing?.field === field ? editing.text : fmt(values[field])
+    return (
+      <label key={field} className={cn('block rounded-2xl border transition', mobile ? 'p-3' : 'p-4', tone, src.field === field ? 'ring-2 ring-white/40' : 'border-dashed')}>
+        <span className={cn('flex items-center gap-1.5 font-bold', small)}>
+          {label}
+          <Keyboard className="size-4 opacity-70" aria-hidden />
+        </span>
+        <span className="mt-1 flex items-baseline gap-2">
+          <input
+            type="number"
+            inputMode="decimal"
+            step="0.01"
+            value={shown}
+            aria-label={`${label}（${unit}）`}
+            onFocus={(e) => {
+              setEditing({ field, text: fmt(values[field]) })
+              e.currentTarget.select()
+            }}
+            onChange={(e) => {
+              const text = e.target.value
+              setEditing({ field, text })
+              const n = Number(text)
+              if (text.trim() !== '' && Number.isFinite(n)) setSrc({ field, value: n })
+            }}
+            onBlur={() => setEditing(null)}
+            className={cn(
+              'w-full min-w-0 rounded-lg border border-white/15 bg-navy-950/60 px-2 font-black text-white outline-none focus:border-sky-300',
+              mobile ? 'py-1 text-[24px]' : 'py-1 text-[40px]',
+            )}
+          />
+          <span className={cn('shrink-0 font-bold text-slate-300', small)}>{unit}</span>
+        </span>
+      </label>
+    )
+  }
 
   return (
     <div className={cn('flex flex-col', mobile ? 'gap-3' : 'h-full gap-4')}>
@@ -53,10 +78,14 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
             key={r}
             type="button"
             aria-pressed={id === r}
-            onClick={() => setId(r)}
+            onClick={() => {
+              // 換冷媒時保留目前的錶壓，重新換算溫度
+              if (src.field === 'temp') setSrc({ field: 'psig', value: values.psig })
+              setId(r)
+            }}
             className={cn(
               'rounded-xl border font-black transition',
-              mobile ? 'px-3 py-1.5 text-[15px]' : 'px-5 py-2 text-[22px]',
+              mobile ? 'px-3 py-1.5 text-[15px]' : 'px-4 py-1.5 text-[20px]',
               id === r ? 'border-sky-300 bg-sky-400/20 text-sky-100' : 'border-dashed border-white/25 text-slate-300 hover:border-sky-300/60',
               focusRing,
             )}
@@ -64,78 +93,64 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
             {r}
           </button>
         ))}
-        <span className={cn('text-slate-500', small)}>{REFRIGERANTS[id].use}</span>
       </div>
+      <p className={cn('-mt-1 text-slate-400', small)}>{REFRIGERANTS[id].use}</p>
 
-      <div className={cn('rounded-2xl border border-white/10 bg-white/[0.03]', mobile ? 'p-3' : 'p-5')}>
+      <div className={cn('rounded-2xl border border-white/10 bg-white/[0.03]', mobile ? 'p-3' : 'px-5 py-3')}>
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className={cn('font-bold text-slate-400', small)}>② 拖動{mode === 'gauge' ? '錶壓' : '溫度'}</span>
+          <span className={cn('font-bold text-slate-400', small)}>② 拖滑桿，或直接在下面輸入數字</span>
           <button
             type="button"
-            onClick={() => switchTo(mode === 'gauge' ? 'temp' : 'gauge')}
+            onClick={() => setDrag(drag === 'psig' ? 'temp' : 'psig')}
             className={cn('flex items-center gap-1.5 rounded-lg border border-white/15 px-3 py-1 font-semibold text-slate-200 hover:border-sky-300/60', small, focusRing)}
           >
             <ArrowLeftRight className="size-4" aria-hidden />
-            改成拖{mode === 'gauge' ? '溫度' : '錶壓'}
+            改成拖{drag === 'psig' ? '溫度' : '錶壓'}
           </button>
         </div>
-        {mode === 'gauge' ? (
+        {drag === 'psig' ? (
           <input
             type="range"
-            min={0}
-            max={maxGauge}
-            step={0.1}
-            value={Math.min(gauge, maxGauge)}
-            onChange={(e) => setGauge(Number(e.target.value))}
-            aria-label="錶壓（bar）"
-            className="mt-3 w-full accent-sky-400"
+            min={Math.ceil(gMin * PSI_PER_BAR)}
+            max={Math.floor(gMax * PSI_PER_BAR)}
+            step={0.5}
+            value={values.psig}
+            onChange={(e) => setSrc({ field: 'psig', value: Number(e.target.value) })}
+            aria-label="錶壓（psig）"
+            className="mt-2 w-full accent-sky-400"
           />
         ) : (
           <input
             type="range"
-            min={-40}
-            max={60}
-            step={1}
+            min={tMin}
+            max={tMax}
+            step={0.1}
             value={temp}
-            onChange={(e) => setTemp(Number(e.target.value))}
+            onChange={(e) => setSrc({ field: 'temp', value: Number(e.target.value) })}
             aria-label="飽和溫度（°C）"
-            className="mt-3 w-full accent-amber-400"
+            className="mt-2 w-full accent-amber-400"
           />
         )}
       </div>
 
-      <div className={cn('grid grid-cols-2', mobile ? 'gap-2' : 'gap-4')}>
-        <button type="button" aria-pressed={mode === 'gauge'} onClick={() => switchTo('gauge')} className={cardClass('gauge', 'border-sky-400/40 bg-sky-500/[0.08]')}>
-          <p className={cn('flex flex-wrap items-center font-bold text-sky-300', small)}>
-            錶壓（壓力錶讀數）
-            {cardTag('gauge')}
-          </p>
-          <p className={cn('font-black text-white', big)}>
-            {g.toFixed(1)} <span className={cn('font-bold text-slate-400', small)}>bar</span>
-          </p>
-          <p className={cn('text-slate-300', small)}>
-            ≈ {(g * 14.5038).toFixed(0)} psi・{(g * 1.01972).toFixed(1)} kg/cm²
-          </p>
-        </button>
-        <button type="button" aria-pressed={mode === 'temp'} onClick={() => switchTo('temp')} className={cardClass('temp', 'border-amber-400/40 bg-amber-500/[0.08]')}>
-          <p className={cn('flex flex-wrap items-center font-bold text-amber-300', small)}>
-            管內飽和溫度
-            {cardTag('temp')}
-          </p>
-          <p className={cn('font-black text-white', big)}>
-            {t.toFixed(1)} <span className={cn('font-bold text-slate-400', small)}>°C</span>
-          </p>
-          <p className={cn('text-slate-300', small)}>絕對壓力 {pAbs.toFixed(2)} bar（錶壓＋1）</p>
-          {isBlend(id) && (
-            <p className={cn('text-amber-200/90', small)}>
-              混合冷媒：上面是露點（看低壓）；泡點 {temperatureAt(id, pAbs, 'bubble').toFixed(1)}°C（看高壓）
-            </p>
-          )}
-        </button>
+      <div className={cn('grid', mobile ? 'grid-cols-1 gap-2' : 'grid-cols-3 gap-3')}>
+        {renderInput('psig', '錶壓', 'psig', 'border-sky-400/40 bg-sky-500/[0.08] text-sky-300')}
+        {renderInput('kg', '錶壓（公斤）', 'kg/cm²', 'border-sky-400/40 bg-sky-500/[0.08] text-sky-300')}
+        {renderInput('temp', '管內飽和溫度', '°C', 'border-amber-400/40 bg-amber-500/[0.08] text-amber-300')}
       </div>
 
-      <p className={cn('text-slate-500', mobile ? 'text-[12px]' : 'text-[17px]')}>
-        資料：R134a、R22、R32 為 NIST Chemistry WebBook；R404A、R410A 為 CoolProp 計算（與 NIST 交叉比對）；每 5°C 內插，僅供參考。
+      <div className={cn('text-slate-300', small)}>
+        <p>
+          ＝ 錶壓 {fmt(gauge)} bar・絕對壓力 {fmt(gauge + ATM)} bar（錶壓＋1 大氣壓）
+          {gauge < 0 && <span className="ml-2 text-amber-200">錶壓是負的＝真空</span>}
+        </p>
+        {isBlend(id) && (
+          <p className="text-amber-200/90">混合冷媒：上面溫度是露點（看低壓）；泡點 {fmt(temperatureAt(id, gauge + ATM, 'bubble'))}°C（看高壓）</p>
+        )}
+      </div>
+
+      <p className={cn('text-slate-500', mobile ? 'text-[12px]' : 'text-[16px]')}>
+        資料：R134a、R22、R32 為 NIST Chemistry WebBook；R404A、R410A、R507A 為 CoolProp 計算（與 NIST 交叉比對）；範圍 -40～60°C，每 5°C 內插，僅供參考。
       </p>
     </div>
   )

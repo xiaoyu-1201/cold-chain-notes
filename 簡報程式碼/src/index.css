@@ -104,9 +104,9 @@
   background: rgb(251 191 36 / 0.85);
 }
 
-/* 主題「冷凍庫玻璃」：面板像霧面玻璃，透出後面的霜（上緣一條細亮線像玻璃反光） */
+/* 主題「冷凍庫玻璃」：面板上緣一條細亮線像玻璃反光。
+   不用 backdrop-filter 模糊：換頁滑動時每一格都要重算模糊，舊電腦會卡；背景很暗，有沒有模糊幾乎看不出來 */
 .deck-hover :is(section, aside)[class*='bg-white/'] {
-  backdrop-filter: blur(8px);
   box-shadow: inset 0 1px 0 rgb(186 230 253 / 0.08);
 }
 

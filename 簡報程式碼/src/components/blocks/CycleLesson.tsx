@@ -11,9 +11,11 @@ import { CycleDiagram } from '../diagrams/CycleDiagram'
 import { ClipButton } from '../diagrams/CycleExplorer'
 import { part3DFor } from '../three/ids'
 import { PartViewer } from '../three/PartViewer'
+import { Deferred } from '../ui/Deferred'
 import { Segmented } from '../ui/Segmented'
 
 const CycleSystem3D = lazy(() => import('../three/CycleSystem3D'))
+const loading3D = <p className="absolute inset-0 flex items-center justify-center text-[20px] text-slate-400">3D 載入中…</p>
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
 
@@ -194,9 +196,15 @@ function Inspector({ selected, onSelect, faults }: { selected: CycleNodeId | nul
       <p className="mt-4 text-[38px] font-bold leading-tight text-white">{note.title}</p>
       <p className={cn('mt-1 text-[20px] font-semibold', toneStyles[note.tone].text)}>{note.alias}</p>
       <p className="mt-4 self-start rounded-full bg-white/[0.07] px-4 py-1.5 text-[18px] font-semibold text-slate-100">{note.state}</p>
-      <div className="mt-5 min-h-0 flex-1 space-y-4 text-[21px] leading-relaxed text-slate-200">
+      <div className="mt-5 min-h-0 flex-1 space-y-4 overflow-y-auto text-[21px] leading-relaxed text-slate-200">
         {note.quote && <p className="text-slate-100">{note.quote}</p>}
         <p>{note.point}</p>
+        {note.field && (
+          <p className="text-slate-200">
+            <span className="mr-2 font-semibold text-emerald-300">現場</span>
+            {note.field}
+          </p>
+        )}
         {note.analogy && (
           <p className="text-slate-300">
             <span className="mr-2 font-semibold text-amber-300">比喻</span>
@@ -304,9 +312,11 @@ export function CycleLesson() {
               <CycleDiagram className="h-full w-full" interactive selected={selected} onSelect={(id) => setSelected(selected === id ? null : id)} />
             </div>
           ) : (
-            <Suspense fallback={<p className="absolute inset-0 flex items-center justify-center text-[20px] text-slate-400">3D 載入中…</p>}>
-              <CycleSystem3D selected={selected} onSelect={setSelected} cut={cut} fault={fault?.steps[faultStep].fx ?? null} faultLabel={fault?.label} onExitFault={() => setFaultId(null)} />
-            </Suspense>
+            <Deferred fallback={loading3D}>
+              <Suspense fallback={loading3D}>
+                <CycleSystem3D selected={selected} onSelect={setSelected} cut={cut} fault={fault?.steps[faultStep].fx ?? null} faultLabel={fault?.label} onExitFault={() => setFaultId(null)} />
+              </Suspense>
+            </Deferred>
           )}
         </div>
         <div className="min-w-0 flex-1">

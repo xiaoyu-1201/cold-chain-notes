@@ -1,5 +1,5 @@
 import { RotateCcw } from 'lucide-react'
-import { useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type WheelEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type WheelEvent } from 'react'
 import { ATM, isBlend, KG_PER_BAR, PSI_PER_BAR, pressureAt, PT_TEMPS, REFRIGERANTS, temperatureAt, type RefrigerantId } from '../../data/refrigerants'
 import { useStickyState } from '../../hooks/useStickyState'
 import { cn } from '../../lib/cn'
@@ -19,13 +19,64 @@ const unitLabel = (u: Unit, abs: boolean) => (u === 'psig' ? (abs ? 'psia' : 'ps
 /** 刻度間距只用這些「好讀的數字」 */
 const NICE = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 25, 50, 100]
 
+/** 按住不放會一直重複（先等一下再加速），放開就停 */
+function useRepeat() {
+  const timer = useRef<number | undefined>(undefined)
+  const stop = () => window.clearTimeout(timer.current)
+  useEffect(() => stop, [])
+  return (fn: () => void) => ({
+    onPointerDown: (e: PointerEvent) => {
+      e.preventDefault()
+      fn()
+      const loop = (delay: number) => {
+        timer.current = window.setTimeout(() => {
+          fn()
+          loop(Math.max(delay * 0.8, 40))
+        }, delay)
+      }
+      loop(380)
+    },
+    onPointerUp: stop,
+    onPointerLeave: stop,
+    onPointerCancel: stop,
+    // 鍵盤（Enter／空白鍵）也能按
+    onKeyDown: (e: KeyboardEvent) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return
+      e.preventDefault()
+      fn()
+    },
+  })
+}
+
+const snap = (t: number, step: number) => Math.round(t / step) * step
+
 /** 跟 Ref Tools「冷媒尺」一樣的直式雙刻度尺：左紅＝壓力（不等距）、右藍＝溫度；尺在中間細線下面上下滑 */
-function Ruler({ id, curve, unit, abs, temp, onTemp, mobile }: { id: RefrigerantId; curve: Curve; unit: Unit; abs: boolean; temp: number; onTemp: (t: number) => void; mobile: boolean }) {
+function Ruler({
+  id,
+  curve,
+  unit,
+  abs,
+  temp,
+  onTemp,
+  onJump,
+  mobile,
+}: {
+  id: RefrigerantId
+  curve: Curve
+  unit: Unit
+  abs: boolean
+  temp: number
+  onTemp: (t: number) => void
+  /** 平滑地跳到某個溫度（點尺、按按鈕） */
+  onJump: (t: number) => void
+  mobile: boolean
+}) {
   const PX = mobile ? 6 : 8 // 每 1°C 幾 px
   const W = mobile ? 150 : 280
   const H = (T_MAX - T_MIN) * PX
   const viewRef = useRef<HTMLDivElement>(null)
-  const drag = useRef<{ y: number; t: number } | null>(null)
+  const drag = useRef<{ y: number; t: number; moved: boolean } | null>(null)
+  const repeat = useRepeat()
   const yOf = (t: number) => (t - T_MIN) * PX
   const spineP = W * 0.46
   const spineT = W * 0.54
@@ -57,32 +108,52 @@ function Ruler({ id, curve, unit, abs, temp, onTemp, mobile }: { id: Refrigerant
     return ticks
   }, [id, curve, unit, abs, PX, mobile])
 
+  // 畫布有縮放：用實際高度換算回設計 px
+  const scaleOf = () => {
+    const el = viewRef.current
+    return el ? el.getBoundingClientRect().height / el.offsetHeight : 1
+  }
   const onDown = (e: PointerEvent) => {
-    drag.current = { y: e.clientY, t: temp }
+    drag.current = { y: e.clientY, t: temp, moved: false }
     e.currentTarget.setPointerCapture(e.pointerId)
   }
   const onMove = (e: PointerEvent) => {
-    if (!drag.current) return
-    // 畫布有縮放：用實際高度換算回設計 px
-    const el = viewRef.current
-    const scale = el ? el.getBoundingClientRect().height / el.offsetHeight : 1
-    onTemp(clampT(drag.current.t + (drag.current.y - e.clientY) / (PX * scale)))
+    const d = drag.current
+    if (!d) return
+    if (!d.moved && Math.abs(e.clientY - d.y) < 4) return
+    d.moved = true
+    // 拖曳時對齊 0.1°C，讀數比較好看
+    onTemp(clampT(snap(d.t + (d.y - e.clientY) / (PX * scaleOf()), 0.1)))
   }
-  const onUp = () => {
+  const onUp = (e: PointerEvent) => {
+    const d = drag.current
     drag.current = null
+    if (!d || d.moved) return
+    // 沒拖曳＝點一下：跳到點的那一格（對齊 0.5°C）
+    const rect = e.currentTarget.getBoundingClientRect()
+    const dy = (e.clientY - (rect.top + rect.height / 2)) / scaleOf()
+    onJump(clampT(snap(temp + dy / PX, 0.5)))
   }
   const onWheel = (e: WheelEvent) => {
     e.stopPropagation()
-    onTemp(clampT(temp + e.deltaY / (PX * 4)))
+    // 滾一格（約 100）＝0.5°C；按住 Shift＝0.1°C
+    onTemp(clampT(snap(temp + e.deltaY * (e.shiftKey ? 0.001 : 0.005), 0.1)))
   }
   const onKey = (e: KeyboardEvent) => {
     const step = e.shiftKey ? 1 : 0.1
-    if (e.key === 'ArrowUp') onTemp(clampT(temp - step))
-    else if (e.key === 'ArrowDown') onTemp(clampT(temp + step))
+    if (e.key === 'ArrowUp') onTemp(clampT(snap(temp - step, 0.1)))
+    else if (e.key === 'ArrowDown') onTemp(clampT(snap(temp + step, 0.1)))
     else return
     e.preventDefault()
     e.stopPropagation()
   }
+  // 微調按鈕用最新的溫度（按住時溫度一直在變）
+  const tempRef = useRef(temp)
+  tempRef.current = temp
+  const nudge = (d: number) => () => onTemp(clampT(snap(tempRef.current + d, 0.1)))
+  const STEPS: [string, number][] = mobile
+    ? [['−1', -1], ['−0.1', -0.1], ['+0.1', 0.1], ['+1', 1]]
+    : [['−1°C', -1], ['−0.1', -0.1], ['+0.1', 0.1], ['+1°C', 1]]
 
   const font = mobile ? 12 : 16
   return (
@@ -141,9 +212,37 @@ function Ruler({ id, curve, unit, abs, temp, onTemp, mobile }: { id: Refrigerant
           <div className="absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 bg-white" />
         </div>
       </div>
+      {/* 微調：按一下動一格，按住不放會一直動 */}
+      <div className={cn('grid grid-cols-4', mobile ? 'mt-1.5 gap-1' : 'mt-2.5 gap-1.5')} role="group" aria-label="微調溫度">
+        {STEPS.map(([label, d]) => (
+          <button
+            key={label}
+            type="button"
+            aria-label={`溫度 ${d > 0 ? '加' : '減'} ${Math.abs(d)}°C`}
+            {...repeat(nudge(d))}
+            className={cn(
+              'touch-none select-none rounded-xl bg-white/[0.08] font-bold tabular-nums text-slate-100 transition hover:bg-white/[0.14] active:bg-white/[0.2]',
+              mobile ? 'py-1.5 text-[12px]' : 'py-2 text-[16px]',
+              focusRing,
+            )}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
+
+/** 常用溫度：一鍵跳過去（冷凝 40–45°C 是錄音07 老闆說的範圍） */
+const QUICK: { t: number; label: string }[] = [
+  { t: -30, label: '−30' },
+  { t: -20, label: '−20' },
+  { t: -10, label: '−10' },
+  { t: 0, label: '0' },
+  { t: 40, label: '冷凝 40' },
+  { t: 45, label: '冷凝 45' },
+]
 
 /** 網頁版 Ref Tools「冷媒尺」：選冷媒，滑動尺或直接輸入壓力／溫度；下面是冷媒資料 */
 export function RefSlider({ mobile = false }: { mobile?: boolean }) {
@@ -159,9 +258,27 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
   const info = REFRIGERANTS[id].info
 
   const t = clampT(typeof temp === 'number' ? temp : 40.417)
+  // 跳到某個溫度時用 0.3 秒滑過去，看得出尺往哪邊走；手動拖曳會中斷動畫
+  const tween = useRef(0)
+  useEffect(() => () => cancelAnimationFrame(tween.current), [])
+  const setTempNow = (v: number) => {
+    cancelAnimationFrame(tween.current)
+    setTemp(v)
+  }
+  const jumpTo = (target: number) => {
+    cancelAnimationFrame(tween.current)
+    const from = t
+    const start = performance.now()
+    const step = (now: number) => {
+      const k = Math.min((now - start) / 300, 1)
+      setTemp(from + (target - from) * (1 - (1 - k) ** 3))
+      if (k < 1) tween.current = requestAnimationFrame(step)
+    }
+    tween.current = requestAnimationFrame(step)
+  }
   const pAbs = pressureAt(id, t, curve)
   const pShown = (abs ? pAbs : pAbs - ATM) * UNIT_PER_BAR[unit]
-  const setPressure = (v: number) => setTemp(clampT(temperatureAt(id, v / UNIT_PER_BAR[unit] + (abs ? 0 : ATM), curve)))
+  const setPressure = (v: number) => setTempNow(clampT(temperatureAt(id, v / UNIT_PER_BAR[unit] + (abs ? 0 : ATM), curve)))
 
   const s = mobile
     ? { small: 'text-[13px]', value: 'text-[24px]', chip: 'px-3 py-1.5 text-[14px]', card: 'p-3' }
@@ -185,7 +302,7 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
           const n = Number(text)
           if (text.trim() === '' || !Number.isFinite(n)) return
           if (field === 'p') setPressure(n)
-          else setTemp(clampT(n))
+          else setTempNow(clampT(n))
         }}
         onBlur={() => setEditing(null)}
         className={cn('w-full min-w-0 bg-transparent text-right font-black tabular-nums text-white outline-none', s.value)}
@@ -206,7 +323,7 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
   return (
     <div className={cn('grid min-h-0', mobile ? 'grid-cols-[150px_minmax(0,1fr)] gap-3' : 'h-full grid-cols-[280px_minmax(0,1fr)] gap-6')}>
       <div className={mobile ? 'h-[460px]' : 'min-h-0'}>
-        <Ruler id={id} curve={curve} unit={unit} abs={abs} temp={t} onTemp={setTemp} mobile={mobile} />
+        <Ruler id={id} curve={curve} unit={unit} abs={abs} temp={t} onTemp={setTempNow} onJump={jumpTo} mobile={mobile} />
       </div>
 
       <div className={cn('flex min-w-0 flex-col', mobile ? 'gap-2.5' : 'gap-3.5')}>
@@ -237,6 +354,26 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
         </div>
         {!abs && pShown < 0 && <p className={cn('text-amber-200', s.small)}>錶壓是負的＝真空（低於 1 大氣壓）</p>}
 
+        <div className={cn('flex flex-wrap items-center', mobile ? 'gap-1.5' : 'gap-2')} role="group" aria-label="跳到常用溫度">
+          <span className={cn('font-semibold text-slate-400', s.small)}>跳到（°C）</span>
+          {QUICK.map((q) => (
+            <button
+              key={q.t}
+              type="button"
+              onClick={() => jumpTo(q.t)}
+              aria-pressed={Math.abs(t - q.t) < 0.005}
+              className={cn(
+                'rounded-full font-semibold tabular-nums transition',
+                mobile ? 'px-2.5 py-1 text-[13px]' : 'px-3.5 py-1 text-[17px]',
+                Math.abs(t - q.t) < 0.005 ? 'bg-sky-400/25 text-sky-100' : 'bg-white/[0.06] text-slate-200 hover:bg-white/[0.12]',
+                focusRing,
+              )}
+            >
+              {q.label}
+            </button>
+          ))}
+        </div>
+
         <dl className={cn('rounded-2xl bg-white/[0.05]', mobile ? 'p-3 text-[13px]' : 'px-5 py-3 text-[17px]')}>
           {infoRows.map(([k, v, color]) => (
             <div key={k} className="flex items-center justify-between gap-3 py-0.5">
@@ -256,7 +393,7 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
               setId('R22')
               setUnit('psig')
               setAbs(false)
-              setTemp(temperatureAt('R22', 210 / PSI_PER_BAR + ATM))
+              setTempNow(temperatureAt('R22', 210 / PSI_PER_BAR + ATM))
             }}
             className={cn('flex items-center gap-1.5 rounded-full bg-sky-400/15 font-semibold text-sky-200 transition hover:bg-sky-400/25', s.chip, focusRing)}
           >

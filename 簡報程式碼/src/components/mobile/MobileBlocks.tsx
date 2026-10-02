@@ -846,6 +846,12 @@ function CycleLessonMobile() {
               <b className="mr-2 text-sky-300">重點</b>
               {note.point}
             </p>
+            {note.field && (
+              <p className="mt-1.5">
+                <b className="mr-2 text-emerald-300">現場</b>
+                {note.field}
+              </p>
+            )}
             <div className="mt-3 flex flex-wrap gap-2">
               {part3DFor(note.id) && (
                 <button

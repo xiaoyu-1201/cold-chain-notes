@@ -21,6 +21,8 @@ export interface CycleNote {
   quote?: string
   analogy?: string
   point: string
+  /** 現場判斷／安裝位置（老闆在錄音07 補充的實務） */
+  field?: string
   /** 錄音時間（秒）：錄音01 / 錄音02 */
   audioAt?: number
   audio2At?: number
@@ -56,6 +58,7 @@ export const cycleNotes: Record<CycleNodeId, CycleNote> = {
     state: '高溫高壓氣態 → 中溫中壓液態（放熱到室外）',
     analogy: '下雨前特別悶熱，是因為水氣凝結成水時會放熱；冷媒在冷凝器裡也是凝結放熱。',
     point: '冷凝器把冷媒的熱排到室外，風扇吹出的風有四、五十度。一般 1 馬壓縮機配 2 馬散熱器。裸露型（台語「無穿衫」）便宜，但別放鐵皮屋頂：夏天會到 50°C、散熱變差。散熱器太小或太髒，冷媒就液化不完全。',
+    field: '冷媒從冷凝器上方進去、下方出來，銅管在裡面左右來回跑。進口接近 100°C，不能摸；出口應該是溫的（冷凝溫度 40–45°C）。出口摸起來還很燙，表示散熱不好：鰭片髒了或風扇壞了，要清洗或檢修。要準確判斷就用錶組量壓力，例如 R22 在 210 psig 約等於 40°C。',
     audioAt: 0,
     audio2At: 11 * 60 + 41,
     slide: 'ch3',
@@ -72,6 +75,7 @@ export const cycleNotes: Record<CycleNodeId, CycleNote> = {
     quote: '「膨脹閥就是降壓節流」',
     analogy: '像洗車時用手壓住水管口：水被擠成細小水滴、噴得又快又遠。冷媒變成細小的液氣混合，就很容易蒸發。',
     point: '膨脹閥的閥芯有大小，要依壓縮機大小選配。冰箱這類小系統用毛細管代替膨脹閥：便宜，但流量不能調。',
+    field: '膨脹閥裝在蒸發器旁邊，離得很近。很多師傅做「內膨」：把膨脹閥鎖在蒸發器的箱子裡面，因為膨脹閥會結冰、滴水。',
     audioAt: 5 * 60 + 47,
     audio2At: 10 * 60 + 52,
     slide: 'ch5',
@@ -177,6 +181,7 @@ export const cycleNotes: Record<CycleNodeId, CycleNote> = {
     state: '確保送出去的是液態',
     analogy: '像水塔：水沉在底下，水龍頭一開就源源不絕地來。',
     point: '儲液器是裝在冷凝器後面的筒子：液態冷媒比較重、沉在底部，從底部取液送往膨脹閥，確保膨脹閥一直拿到液態。用膨脹閥的系統一定要裝；冰箱這類用毛細管的小系統可以不裝。',
+    field: '冷媒要「進去再出來」：液管從冷凝器下方接進儲液器，液體沉在桶底，再從底部取液出來；不是從儲液器旁邊經過。儲液器上的閥可以接錶組，量高壓側壓力。',
     audio2At: 10 * 60 + 17,
     anchor: { x: 27, y: 16, place: 'right' },
   },
@@ -227,6 +232,7 @@ export const cycleNotes: Record<CycleNodeId, CycleNote> = {
     state: '通電才開；停機時關住液管',
     quote: '「冷媒的特性就是它往冷的地方跑」',
     point: '電磁閥平常是關的（常閉），通電才打開。庫溫到了，電磁閥跟壓縮機一起斷電關閉，把冷媒關在液管、不讓它流進冷的蒸發器；否則下次啟動時壓縮機負擔很大。散熱器裝得遠、管路很長時一定要裝。',
+    field: '電磁閥一般拉到膨脹閥附近，裝在蒸發器旁；有些甚至裝在蒸發器的箱子裡。',
     audioAt: 17 * 60 + 17,
     audio2At: 19 * 60 + 5,
     anchor: { x: 17, y: 36, place: 'right' },

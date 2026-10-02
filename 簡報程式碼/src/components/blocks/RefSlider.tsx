@@ -1,171 +1,273 @@
-import { ArrowLeftRight, Keyboard } from 'lucide-react'
-import { useState } from 'react'
-import { useStickyState } from '../../hooks/useStickyState'
+import { RotateCcw } from 'lucide-react'
+import { useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type WheelEvent } from 'react'
 import { ATM, isBlend, KG_PER_BAR, PSI_PER_BAR, pressureAt, PT_TEMPS, REFRIGERANTS, temperatureAt, type RefrigerantId } from '../../data/refrigerants'
+import { useStickyState } from '../../hooks/useStickyState'
 import { cn } from '../../lib/cn'
+import { Segmented } from './CycleLesson'
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
 const IDS = Object.keys(REFRIGERANTS) as RefrigerantId[]
-
-type Field = 'psig' | 'kg' | 'temp'
+const T_MIN = PT_TEMPS[0]
+const T_MAX = PT_TEMPS[PT_TEMPS.length - 1]
+const clampT = (t: number) => Math.min(Math.max(t, T_MIN), T_MAX)
 const fmt = (n: number) => n.toFixed(2)
 
-/** 網頁版 Ref Tools「冷媒滑尺」：選冷媒，拖滑桿或直接輸入 psig／公斤／溫度，互相換算 */
-export function RefSlider({ mobile = false }: { mobile?: boolean }) {
-  const [stickyId, setId] = useStickyState<RefrigerantId>('refslider:id', 'R22')
-  // 舊版存的冷媒如果已移除，退回 R22
-  const id: RefrigerantId = stickyId in REFRIGERANTS ? stickyId : 'R22'
-  /** 目前以哪個欄位為準（使用者最後輸入或拖動的） */
-  const [src, setSrc] = useStickyState<{ field: Field; value: number }>('refslider:src', { field: 'psig', value: 30 })
-  const [editing, setEditing] = useState<{ field: Field; text: string } | null>(null)
-  const [drag, setDrag] = useStickyState<'psig' | 'temp'>('refslider:drag', 'psig')
+type Unit = 'psig' | 'kg' | 'bar'
+type Curve = 'dew' | 'bubble'
+const UNIT_PER_BAR: Record<Unit, number> = { psig: PSI_PER_BAR, kg: KG_PER_BAR, bar: 1 }
+const unitLabel = (u: Unit, abs: boolean) => (u === 'psig' ? (abs ? 'psia' : 'psig') : u === 'kg' ? (abs ? 'kg/cm²(a)' : 'kg/cm²') : abs ? 'bar(a)' : 'bar(g)')
+/** 刻度間距只用這些「好讀的數字」 */
+const NICE = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 25, 50, 100]
 
-  // 資料範圍：-40～60°C 的飽和壓力
-  const tMin = PT_TEMPS[0]
-  const tMax = PT_TEMPS[PT_TEMPS.length - 1]
-  const gMin = pressureAt(id, tMin) - ATM
-  const gMax = pressureAt(id, tMax) - ATM
-  const clampG = (g: number) => Math.min(Math.max(g, gMin), gMax)
+/** 跟 Ref Tools「冷媒尺」一樣的直式雙刻度尺：左紅＝壓力（不等距）、右藍＝溫度；尺在中間細線下面上下滑 */
+function Ruler({ id, curve, unit, abs, temp, onTemp, mobile }: { id: RefrigerantId; curve: Curve; unit: Unit; abs: boolean; temp: number; onTemp: (t: number) => void; mobile: boolean }) {
+  const PX = mobile ? 6 : 8 // 每 1°C 幾 px
+  const W = mobile ? 150 : 280
+  const H = (T_MAX - T_MIN) * PX
+  const viewRef = useRef<HTMLDivElement>(null)
+  const drag = useRef<{ y: number; t: number } | null>(null)
+  const yOf = (t: number) => (t - T_MIN) * PX
+  const spineP = W * 0.46
+  const spineT = W * 0.54
 
-  const gauge =
-    src.field === 'psig' ? clampG(src.value / PSI_PER_BAR) : src.field === 'kg' ? clampG(src.value / KG_PER_BAR) : pressureAt(id, Math.min(Math.max(src.value, tMin), tMax)) - ATM
-  const temp = src.field === 'temp' ? Math.min(Math.max(src.value, tMin), tMax) : temperatureAt(id, gauge + ATM)
-  const values: Record<Field, number> = { psig: gauge * PSI_PER_BAR, kg: gauge * KG_PER_BAR, temp }
+  const pressureTicks = useMemo(() => {
+    // 顯示單位的壓力 ↔ 溫度
+    const toUnit = (pAbs: number) => (abs ? pAbs : pAbs - ATM) * UNIT_PER_BAR[unit]
+    const fromUnit = (v: number) => v / UNIT_PER_BAR[unit] + (abs ? 0 : ATM)
+    const yv = (v: number) => (temperatureAt(id, fromUnit(v), curve) - T_MIN) * PX
+    const vMin = toUnit(pressureAt(id, T_MIN, curve))
+    const vMax = toUnit(pressureAt(id, T_MAX, curve))
+    const stepFor = (v: number, gapPx: number) => {
+      const d = Math.max((vMax - vMin) / 2000, 0.01)
+      const pxPerUnit = Math.max((yv(v + d) - yv(v)) / d, 1e-6)
+      return NICE.find((s) => s * pxPerUnit >= gapPx) ?? 100
+    }
+    const ticks: { y: number; label?: string }[] = []
+    let v = Math.ceil(vMin / stepFor(vMin, 6)) * stepFor(vMin, 6)
+    let lastLabel = -Infinity
+    for (let guard = 0; v <= vMax && guard < 2000; guard++) {
+      const tick = stepFor(v, 6)
+      const label = stepFor(v, mobile ? 24 : 30)
+      const y = yv(v)
+      const isLabel = Math.abs(v / label - Math.round(v / label)) < 1e-6 && y - lastLabel >= (mobile ? 20 : 26)
+      if (isLabel) lastLabel = y
+      ticks.push({ y, label: isLabel ? String(Math.round(v * 10) / 10) : undefined })
+      v = Math.round((Math.floor(v / tick + 1e-6) + 1) * tick * 1000) / 1000
+    }
+    return ticks
+  }, [id, curve, unit, abs, PX, mobile])
 
-  const small = mobile ? 'text-[14px]' : 'text-[19px]'
-
-  /** 可直接輸入的數值卡（用函式產生，不當元件，避免每次輸入都重建而失去焦點） */
-  const renderInput = (field: Field, label: string, unit: string, tone: string) => {
-    const shown = editing?.field === field ? editing.text : fmt(values[field])
-    return (
-      <label key={field} className={cn('block rounded-2xl border transition', mobile ? 'p-3' : 'p-4', tone, src.field === field ? 'ring-2 ring-white/40' : 'border-dashed')}>
-        <span className={cn('flex items-center gap-1.5 font-bold', small)}>
-          {label}
-          <Keyboard className="size-4 opacity-70" aria-hidden />
-        </span>
-        <span className="mt-1 flex items-baseline gap-2">
-          <input
-            type="number"
-            inputMode="decimal"
-            step="0.01"
-            value={shown}
-            aria-label={`${label}（${unit}）`}
-            onFocus={(e) => {
-              setEditing({ field, text: fmt(values[field]) })
-              e.currentTarget.select()
-            }}
-            onChange={(e) => {
-              const text = e.target.value
-              setEditing({ field, text })
-              const n = Number(text)
-              if (text.trim() !== '' && Number.isFinite(n)) setSrc({ field, value: n })
-            }}
-            onBlur={() => setEditing(null)}
-            className={cn(
-              'w-full min-w-0 rounded-lg border border-white/15 bg-navy-950/60 px-2 font-black text-white outline-none focus:border-sky-300',
-              mobile ? 'py-1 text-[24px]' : 'py-1 text-[40px]',
-            )}
-          />
-          <span className={cn('shrink-0 font-bold text-slate-300', small)}>{unit}</span>
-        </span>
-      </label>
-    )
+  const onDown = (e: PointerEvent) => {
+    drag.current = { y: e.clientY, t: temp }
+    e.currentTarget.setPointerCapture(e.pointerId)
+  }
+  const onMove = (e: PointerEvent) => {
+    if (!drag.current) return
+    // 畫布有縮放：用實際高度換算回設計 px
+    const el = viewRef.current
+    const scale = el ? el.getBoundingClientRect().height / el.offsetHeight : 1
+    onTemp(clampT(drag.current.t + (drag.current.y - e.clientY) / (PX * scale)))
+  }
+  const onUp = () => {
+    drag.current = null
+  }
+  const onWheel = (e: WheelEvent) => {
+    e.stopPropagation()
+    onTemp(clampT(temp + e.deltaY / (PX * 4)))
+  }
+  const onKey = (e: KeyboardEvent) => {
+    const step = e.shiftKey ? 1 : 0.1
+    if (e.key === 'ArrowUp') onTemp(clampT(temp - step))
+    else if (e.key === 'ArrowDown') onTemp(clampT(temp + step))
+    else return
+    e.preventDefault()
+    e.stopPropagation()
   }
 
+  const font = mobile ? 12 : 16
   return (
-    <div className={cn('flex flex-col', mobile ? 'gap-3' : 'h-full gap-4')}>
-      <div className="flex flex-wrap items-center gap-2" role="group" aria-label="選冷媒">
-        <span className={cn('font-bold text-slate-400', small)}>① 選冷媒</span>
-        {IDS.map((r) => (
-          <button
-            key={r}
-            type="button"
-            aria-pressed={id === r}
-            onClick={() => {
-              // 換冷媒時保留目前的錶壓，重新換算溫度
-              if (src.field === 'temp') setSrc({ field: 'psig', value: values.psig })
-              setId(r)
-            }}
-            className={cn(
-              'rounded-xl border font-black transition',
-              mobile ? 'px-3 py-1.5 text-[15px]' : 'px-4 py-1.5 text-[20px]',
-              id === r ? 'border-sky-300 bg-sky-400/20 text-sky-100' : 'border-dashed border-white/25 text-slate-300 hover:border-sky-300/60',
-              focusRing,
-            )}
-          >
-            {r}
-          </button>
-        ))}
+    <div className="flex h-full flex-col">
+      <div className={cn('flex justify-between px-3 pb-1 font-bold', mobile ? 'text-[13px]' : 'text-[18px]')}>
+        <span className="text-red-300">{unitLabel(unit, abs)}</span>
+        <span className="text-sky-300">°C</span>
       </div>
-      <p className={cn('-mt-1 text-slate-400', small)}>{REFRIGERANTS[id].use}</p>
-
-      <div className={cn('rounded-2xl border border-white/10 bg-white/[0.03]', mobile ? 'p-3' : 'px-5 py-3')}>
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className={cn('font-bold text-slate-400', small)}>② 拖滑桿，或直接在下面輸入數字</span>
-          <button
-            type="button"
-            onClick={() => setDrag(drag === 'psig' ? 'temp' : 'psig')}
-            className={cn('flex items-center gap-1.5 rounded-lg border border-white/15 px-3 py-1 font-semibold text-slate-200 hover:border-sky-300/60', small, focusRing)}
-          >
-            <ArrowLeftRight className="size-4" aria-hidden />
-            改成拖{drag === 'psig' ? '溫度' : '錶壓'}
-          </button>
-        </div>
-        {drag === 'psig' ? (
-          <input
-            type="range"
-            min={Math.ceil(gMin * PSI_PER_BAR)}
-            max={Math.floor(gMax * PSI_PER_BAR)}
-            step={0.5}
-            value={values.psig}
-            onChange={(e) => setSrc({ field: 'psig', value: Number(e.target.value) })}
-            aria-label="錶壓（psig）"
-            className="mt-2 w-full accent-sky-400"
-          />
-        ) : (
-          <input
-            type="range"
-            min={tMin}
-            max={tMax}
-            step={0.1}
-            value={temp}
-            onChange={(e) => setSrc({ field: 'temp', value: Number(e.target.value) })}
-            aria-label="飽和溫度（°C）"
-            className="mt-2 w-full accent-amber-400"
-          />
-        )}
-      </div>
-
-      <div className={cn('grid', mobile ? 'grid-cols-1 gap-2' : 'grid-cols-3 gap-3')}>
-        {renderInput('psig', '錶壓', 'psig', 'border-sky-400/40 bg-sky-500/[0.08] text-sky-300')}
-        {renderInput('kg', '錶壓（公斤）', 'kg/cm²', 'border-sky-400/40 bg-sky-500/[0.08] text-sky-300')}
-        {renderInput('temp', '管內飽和溫度', '°C', 'border-amber-400/40 bg-amber-500/[0.08] text-amber-300')}
-      </div>
-
-      <div className={cn('text-slate-300', small)}>
-        <p>
-          ＝ 錶壓 {fmt(gauge)} bar・絕對壓力 {fmt(gauge + ATM)} bar（錶壓＋1 大氣壓）
-          {gauge < 0 && <span className="ml-2 text-amber-200">錶壓是負的＝真空</span>}
-        </p>
-        {isBlend(id) && (
-          <p className="text-amber-200/90">混合冷媒：上面溫度是露點（看低壓）；泡點 {fmt(temperatureAt(id, gauge + ATM, 'bubble'))}°C（看高壓）</p>
-        )}
-      </div>
-
-      <button
-        type="button"
-        onClick={() => {
-          setId('R22')
-          setSrc({ field: 'psig', value: 210 })
-        }}
-        className={cn('self-start rounded-full bg-sky-400/15 font-semibold text-sky-200 transition hover:bg-sky-400/25', mobile ? 'px-3 py-1.5 text-[14px]' : 'px-5 py-2 text-[18px]', focusRing)}
+      <div
+        ref={viewRef}
+        role="slider"
+        tabIndex={0}
+        aria-label="冷媒尺：上下滑動調整溫度"
+        aria-valuemin={T_MIN}
+        aria-valuemax={T_MAX}
+        aria-valuenow={Math.round(temp * 100) / 100}
+        onPointerDown={onDown}
+        onPointerMove={onMove}
+        onPointerUp={onUp}
+        onPointerCancel={onUp}
+        onWheel={onWheel}
+        onKeyDown={onKey}
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchEnd={(e) => e.stopPropagation()}
+        className={cn('relative min-h-0 flex-1 cursor-ns-resize touch-none select-none overflow-hidden rounded-2xl bg-white/[0.05]', focusRing)}
       >
-        對照老闆的手寫表：R22 210 psig → 40.42°C
-      </button>
+        {/* 尺：讓目前溫度永遠在中間細線 */}
+        <svg width={W} height={H + 40} className="absolute left-1/2 -translate-x-1/2" style={{ top: `calc(50% - ${yOf(temp) + 20}px)` }} aria-hidden>
+          <g transform="translate(0 20)">
+            <line x1={spineP} x2={spineP} y1={0} y2={H} stroke="#f87171" strokeOpacity={0.5} />
+            <line x1={spineT} x2={spineT} y1={0} y2={H} stroke="#7dd3fc" strokeOpacity={0.5} />
+            {pressureTicks.map((p, i) => (
+              <g key={i}>
+                <line x1={spineP - (p.label ? 16 : 7)} x2={spineP} y1={p.y} y2={p.y} stroke="#f87171" strokeWidth={p.label ? 1.6 : 1} />
+                {p.label && (
+                  <text x={spineP - 22} y={p.y} fill="#fca5a5" fontSize={font} fontWeight={600} textAnchor="end" dominantBaseline="middle">
+                    {p.label}
+                  </text>
+                )}
+              </g>
+            ))}
+            {PT_TEMPS.map((t) => (
+              <g key={t}>
+                <line x1={spineT} x2={spineT + (t % 10 === 0 ? 16 : t % 5 === 0 ? 11 : 6)} y1={yOf(t)} y2={yOf(t)} stroke="#7dd3fc" strokeWidth={t % 10 === 0 ? 1.6 : 1} />
+                {t % 10 === 0 && (
+                  <text x={spineT + 22} y={yOf(t)} fill="#bae6fd" fontSize={font} fontWeight={600} dominantBaseline="middle">
+                    {t}
+                  </text>
+                )}
+              </g>
+            ))}
+          </g>
+        </svg>
+        {/* 中間的讀數線（像 App 的透明遊標） */}
+        <div className={cn('pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 bg-white/[0.1]', mobile ? 'h-8' : 'h-11')} aria-hidden>
+          <div className="absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 bg-white" />
+        </div>
+      </div>
+    </div>
+  )
+}
 
-      <p className={cn('text-slate-500', mobile ? 'text-[12px]' : 'text-[16px]')}>
-        資料：CoolProp 計算（R22、R134a、R32 與 NIST 交叉比對），-40～60°C 每 1°C 一筆；跟 Ref Tools 一樣，混合冷媒以露點為準。R438A、R408A 還沒收錄，請用 Ref Tools App。
-      </p>
+/** 網頁版 Ref Tools「冷媒尺」：選冷媒，滑動尺或直接輸入壓力／溫度；下面是冷媒資料 */
+export function RefSlider({ mobile = false }: { mobile?: boolean }) {
+  const [stickyId, setId] = useStickyState<RefrigerantId>('refslider:id', 'R22')
+  const id: RefrigerantId = stickyId in REFRIGERANTS ? stickyId : 'R22'
+  const [temp, setTemp] = useStickyState('refslider:temp', 40.417)
+  const [unit, setUnit] = useStickyState<Unit>('refslider:unit', 'psig')
+  const [abs, setAbs] = useStickyState('refslider:abs', false)
+  const [curveSel, setCurve] = useStickyState<Curve>('refslider:curve', 'dew')
+  const [editing, setEditing] = useState<{ field: 'p' | 't'; text: string } | null>(null)
+  const blend = isBlend(id)
+  const curve: Curve = blend ? curveSel : 'dew'
+  const info = REFRIGERANTS[id].info
+
+  const t = clampT(typeof temp === 'number' ? temp : 40.417)
+  const pAbs = pressureAt(id, t, curve)
+  const pShown = (abs ? pAbs : pAbs - ATM) * UNIT_PER_BAR[unit]
+  const setPressure = (v: number) => setTemp(clampT(temperatureAt(id, v / UNIT_PER_BAR[unit] + (abs ? 0 : ATM), curve)))
+
+  const s = mobile
+    ? { small: 'text-[13px]', value: 'text-[24px]', chip: 'px-3 py-1.5 text-[14px]', card: 'p-3' }
+    : { small: 'text-[17px]', value: 'text-[40px]', chip: 'px-4 py-1.5 text-[19px]', card: 'px-5 py-3' }
+
+  const valueCard = (field: 'p' | 't', value: number, unitText: string, tone: string) => (
+    <label className={cn('block rounded-2xl', s.card, tone)}>
+      <input
+        type="number"
+        inputMode="decimal"
+        step="0.01"
+        value={editing?.field === field ? editing.text : fmt(value)}
+        aria-label={field === 'p' ? `壓力（${unitText}）` : '飽和溫度（°C）'}
+        onFocus={(e) => {
+          setEditing({ field, text: fmt(value) })
+          e.currentTarget.select()
+        }}
+        onChange={(e) => {
+          const text = e.target.value
+          setEditing({ field, text })
+          const n = Number(text)
+          if (text.trim() === '' || !Number.isFinite(n)) return
+          if (field === 'p') setPressure(n)
+          else setTemp(clampT(n))
+        }}
+        onBlur={() => setEditing(null)}
+        className={cn('w-full min-w-0 bg-transparent text-right font-black tabular-nums text-white outline-none', s.value)}
+      />
+      <span className={cn('block text-right font-semibold text-slate-300', s.small)}>{unitText}</span>
+    </label>
+  )
+
+  const infoRows: [string, string, string?][] = [
+    ['安全類別', info.safety === 'A2L' ? 'A2L（微燃）' : info.safety],
+    ['全球暖化潛勢 GWP（AR4）', String(info.gwp)],
+    ['臭氧層破壞潛勢 ODP', String(info.odp)],
+    ['臨界溫度', info.tcrit !== null ? `${fmt(info.tcrit)} °C` : '—'],
+    ['沸點（錶壓 0）', `${fmt(info.nbp)} °C`],
+    ['鋼瓶／標籤顏色', info.colorName ?? '—', info.color ?? undefined],
+  ]
+
+  return (
+    <div className={cn('grid min-h-0', mobile ? 'grid-cols-[150px_minmax(0,1fr)] gap-3' : 'h-full grid-cols-[280px_minmax(0,1fr)] gap-6')}>
+      <div className={mobile ? 'h-[460px]' : 'min-h-0'}>
+        <Ruler id={id} curve={curve} unit={unit} abs={abs} temp={t} onTemp={setTemp} mobile={mobile} />
+      </div>
+
+      <div className={cn('flex min-w-0 flex-col', mobile ? 'gap-2.5' : 'gap-3.5')}>
+        <div className="flex flex-wrap gap-1.5" role="group" aria-label="選冷媒">
+          {IDS.map((r) => (
+            <button
+              key={r}
+              type="button"
+              aria-pressed={id === r}
+              onClick={() => setId(r)}
+              className={cn('rounded-full font-bold transition', s.chip, id === r ? 'bg-sky-400 text-navy-950' : 'bg-white/[0.08] text-slate-200 hover:bg-white/[0.14]', focusRing)}
+            >
+              {r}
+            </button>
+          ))}
+        </div>
+        <p className={cn('text-slate-400', s.small)}>{REFRIGERANTS[id].use}</p>
+
+        <div className={cn('flex flex-wrap items-center', mobile ? 'gap-2' : 'gap-3')}>
+          <Segmented size={mobile ? 'sm' : 'md'} value={abs ? 'abs' : 'gauge'} onChange={(v) => setAbs(v === 'abs')} options={[{ value: 'gauge', label: '錶壓' }, { value: 'abs', label: '絕對壓力' }]} />
+          <Segmented size={mobile ? 'sm' : 'md'} value={unit} onChange={setUnit} options={[{ value: 'psig', label: 'psi' }, { value: 'kg', label: '公斤' }, { value: 'bar', label: 'bar' }]} />
+          {blend && <Segmented size={mobile ? 'sm' : 'md'} value={curve} onChange={setCurve} options={[{ value: 'dew', label: '露點' }, { value: 'bubble', label: '泡點' }]} />}
+        </div>
+
+        <div className={cn('grid', mobile ? 'grid-cols-1 gap-2' : 'grid-cols-2 gap-3')}>
+          {valueCard('p', pShown, unitLabel(unit, abs), 'bg-red-400/[0.1]')}
+          {valueCard('t', t, blend ? `°C（${curve === 'dew' ? '露點' : '泡點'}）` : '°C', 'bg-sky-400/[0.1]')}
+        </div>
+        {!abs && pShown < 0 && <p className={cn('text-amber-200', s.small)}>錶壓是負的＝真空（低於 1 大氣壓）</p>}
+
+        <dl className={cn('rounded-2xl bg-white/[0.05]', mobile ? 'p-3 text-[13px]' : 'px-5 py-3 text-[17px]')}>
+          {infoRows.map(([k, v, color]) => (
+            <div key={k} className="flex items-center justify-between gap-3 py-0.5">
+              <dt className="text-slate-300">{k}</dt>
+              <dd className="flex items-center gap-2 font-semibold tabular-nums text-white">
+                {v}
+                {color && <span className="size-4 rounded-full" style={{ background: color }} aria-hidden />}
+              </dd>
+            </div>
+          ))}
+        </dl>
+
+        <div className={cn('flex flex-wrap items-center gap-3', !mobile && 'mt-auto')}>
+          <button
+            type="button"
+            onClick={() => {
+              setId('R22')
+              setUnit('psig')
+              setAbs(false)
+              setTemp(temperatureAt('R22', 210 / PSI_PER_BAR + ATM))
+            }}
+            className={cn('flex items-center gap-1.5 rounded-full bg-sky-400/15 font-semibold text-sky-200 transition hover:bg-sky-400/25', s.chip, focusRing)}
+          >
+            <RotateCcw className="size-4" aria-hidden />
+            預設
+          </button>
+          <p className={cn('min-w-0 flex-1 text-slate-500', mobile ? 'text-[12px]' : 'text-[16px]')}>
+            CoolProp 計算（與 NIST 交叉比對）；混合冷媒預設露點，跟 Ref Tools 相同。R438A、R408A 請用 App。
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

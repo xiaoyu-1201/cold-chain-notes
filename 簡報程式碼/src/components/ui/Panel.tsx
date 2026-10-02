@@ -2,11 +2,12 @@ import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import type { Tone } from '../../data/types'
 import { cn } from '../../lib/cn'
-import { IconChip } from './IconChip'
+import { toneStyles } from '../../lib/tone'
 
 interface PanelProps {
   icon?: LucideIcon
   title?: ReactNode
+  /** 英文副標（Apple 風格不顯示，保留欄位相容） */
   en?: string
   tone?: Tone
   right?: ReactNode
@@ -15,24 +16,14 @@ interface PanelProps {
   children: ReactNode
 }
 
-/** 標準內容卡片：圖示 + 標題 + 英文副標 */
-export function Panel({ icon, title, en, tone = 'ice', right, className, bodyClassName, children }: PanelProps) {
+/** 標準內容卡片：填色底、無框、大圓角；圖示直接上色 */
+export function Panel({ icon: Icon, title, tone = 'ice', right, className, bodyClassName, children }: PanelProps) {
   return (
-    <section
-      className={cn(
-        'relative flex h-full min-h-0 flex-col rounded-[22px] border border-white/10 bg-linear-to-b from-white/[0.055] to-white/[0.015] p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]',
-        className,
-      )}
-    >
-      {(title || icon) && (
-        <header className="mb-4 flex items-center gap-4">
-          {icon && <IconChip icon={icon} tone={tone} />}
-          <div className="min-w-0 flex-1">
-            {title && <h3 className="text-[26px] font-bold leading-tight text-slate-50">{title}</h3>}
-            {en && (
-              <p className="mt-1 truncate font-mono text-[16px] uppercase tracking-[0.18em] text-slate-400">{en}</p>
-            )}
-          </div>
+    <section className={cn('relative flex h-full min-h-0 flex-col rounded-[28px] bg-white/[0.045] p-7', className)}>
+      {(title || Icon) && (
+        <header className="mb-4 flex items-center gap-3">
+          {Icon && <Icon className={cn('size-7 shrink-0', toneStyles[tone].text)} aria-hidden />}
+          <div className="min-w-0 flex-1">{title && <h3 className="text-[26px] font-semibold leading-tight text-white">{title}</h3>}</div>
           {right}
         </header>
       )}

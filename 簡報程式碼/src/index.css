@@ -93,21 +93,23 @@
   }
 }
 
-/* 工程藍圖格線背景 */
-.blueprint-grid {
-  background-image:
-    linear-gradient(rgb(148 163 184 / 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(148 163 184 / 0.055) 1px, transparent 1px);
-  background-size: 48px 48px;
-}
-
-/* 警戒斜紋 */
+/* 警示卡頂端的細色條（Apple 風格：一條安靜的色線，取代斜紋） */
 .hazard-red {
-  background: repeating-linear-gradient(-45deg, rgb(239 68 68 / 0.9) 0 14px, rgb(0 0 0 / 0.25) 14px 28px);
+  height: 4px;
+  background: rgb(248 113 113 / 0.85);
 }
 
 .hazard-amber {
-  background: repeating-linear-gradient(-45deg, rgb(251 191 36 / 0.9) 0 14px, rgb(0 0 0 / 0.25) 14px 28px);
+  height: 4px;
+  background: rgb(251 191 36 / 0.85);
+}
+
+/* Apple 風格（只作用在投影片畫布與閱讀模式）：不顯示英文 mono 小標；中性外框改無框，靠填色分區 */
+.deck-hover .font-mono.uppercase {
+  display: none;
+}
+.deck-hover :is(div, section, aside, li, figure, article)[class*='border-white/'] {
+  border-color: transparent;
 }
 
 /* 冷媒流動動畫 */

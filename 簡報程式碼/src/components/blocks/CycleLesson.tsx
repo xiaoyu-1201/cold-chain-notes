@@ -1,5 +1,6 @@
 import { ArrowUpRight, Box, ChevronLeft, Layers } from 'lucide-react'
 import { lazy, Suspense, useState } from 'react'
+import { useStickyState } from '../../hooks/useStickyState'
 import { useDeck } from '../../context/deck'
 import { cycleNotes, type CycleNodeId } from '../../data/cycleNotes'
 import { CLASS_AUDIO, CLASS_AUDIO_2 } from '../../data/media'
@@ -130,8 +131,8 @@ function Inspector({ selected, onSelect }: { selected: CycleNodeId | null; onSel
 
 /** 核心圖解：左邊 2D／3D 循環圖，右邊檢視面板 */
 export function CycleLesson() {
-  const [selected, setSelected] = useState<CycleNodeId | null>(null)
-  const [view, setView] = useState<'2d' | '3d'>('2d')
+  const [selected, setSelected] = useStickyState<CycleNodeId | null>('cycle:selected', null)
+  const [view, setView] = useStickyState<'2d' | '3d'>('cycle:view', '2d')
   const [cut, setCut] = useState(false)
 
   return (
@@ -145,7 +146,7 @@ export function CycleLesson() {
             { value: '3d', label: '3D 立體' },
           ]}
         />
-        <p className="text-[19px] text-slate-400">{view === '2d' ? '點圖上的零件或管路，右邊就會出現說明' : '拖曳旋轉、滾輪縮放；點零件或名稱看說明，管內光點是冷媒流向'}</p>
+        <p className="text-[19px] text-slate-400">{view === '2d' ? '點圖上的零件或管路，右邊就會出現說明' : '按下方「啟動冷凍系統」看冷媒跑一圈；拖曳旋轉、滾輪縮放，點零件看說明'}</p>
         {view === '3d' && (
           <button
             type="button"

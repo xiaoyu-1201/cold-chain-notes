@@ -1,4 +1,4 @@
-import { AnimatePresence, MotionConfig, motion, type Variants } from 'framer-motion'
+import { AnimatePresence, MotionConfig, MotionGlobalConfig, motion, type Variants } from 'framer-motion'
 import { useCallback, useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
 import { DeckContext, type DeckApi } from '../context/deck'
 import { parts } from '../data/parts'
@@ -13,6 +13,10 @@ import { ChapterDrawer } from './ChapterDrawer'
 import { ProgressBar } from './ProgressBar'
 import { SlideCard } from './SlideCard'
 import { SlideNav } from './SlideNav'
+
+/** 排版檢查模式（網址加 ?audit）：不播換頁動畫，視窗在背景時量測也準 */
+const AUDIT = typeof location !== 'undefined' && new URLSearchParams(location.search).has('audit')
+if (AUDIT) MotionGlobalConfig.skipAnimations = true
 
 /** 設計畫布：高度固定 1080，寬度依螢幕比例在 1920～2240 之間調整後等比例縮放 */
 const STAGE_H = 1080
@@ -122,7 +126,7 @@ export function SlideDeck() {
   if (reader) return <ReaderView onExit={() => setReader(false)} />
 
   return (
-    <MotionConfig reducedMotion="user">
+    <MotionConfig reducedMotion={AUDIT ? 'always' : 'user'}>
       <DeckContext.Provider value={api}>
         <div className="flex h-dvh w-full flex-col bg-navy-950 text-slate-100">
           <ProgressBar index={page.index} total={TOTAL} />
@@ -130,32 +134,39 @@ export function SlideDeck() {
           <main className="relative min-h-0 flex-1" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
             <div ref={stageRef} className="absolute inset-2 sm:inset-3" />
             <div
-              className="absolute left-1/2 top-1/2 overflow-hidden rounded-[14px] border border-white/[0.06] shadow-[0_40px_120px_-40px_rgba(0,0,0,0.8)]"
+              className="absolute left-1/2 top-1/2 overflow-clip rounded-[14px] shadow-[0_40px_120px_-40px_rgba(0,0,0,0.8)]"
               style={{ width: STAGE_W * scale, height: STAGE_H * scale, transform: 'translate(-50%, -50%)' }}
+              // 畫布是縮放過的，瀏覽器會誤以為下方按鈕在可視範圍外而捲動；overflow-clip 不能捲，這裡再保險歸零
+              onScroll={(e) => {
+                e.currentTarget.scrollTop = 0
+                e.currentTarget.scrollLeft = 0
+              }}
             >
               <div
-                className="blueprint-grid deck-hover relative origin-top-left bg-navy-900"
+                className="deck-hover relative origin-top-left bg-[#0d1117]"
                 style={{ width: STAGE_W, height: STAGE_H, transform: `scale(${scale})` }}
               >
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_85%_-10%,rgba(56,189,248,0.16),transparent_55%),radial-gradient(ellipse_at_-5%_110%,rgba(99,102,241,0.12),transparent_50%)]"
-                />
-                <AnimatePresence initial={false} custom={page.dir}>
-                  <motion.div
-                    key={slide.id}
-                    custom={page.dir}
-                    variants={slideVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    className="absolute inset-0"
-                    aria-roledescription="slide"
-                    aria-label={`第 ${page.index + 1} 頁，共 ${TOTAL} 頁：${slide.title}`}
-                  >
-                    <SlideCard slide={slide} />
-                  </motion.div>
-                </AnimatePresence>
+                {AUDIT ? (
+                  <div className="absolute inset-0">
+                    <SlideCard key={slide.id} slide={slide} />
+                  </div>
+                ) : (
+                  <AnimatePresence initial={false} custom={page.dir}>
+                    <motion.div
+                      key={slide.id}
+                      custom={page.dir}
+                      variants={slideVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      className="absolute inset-0"
+                      aria-roledescription="slide"
+                      aria-label={`第 ${page.index + 1} 頁，共 ${TOTAL} 頁：${slide.title}`}
+                    >
+                      <SlideCard slide={slide} />
+                    </motion.div>
+                  </AnimatePresence>
+                )}
                 {/* 投影片內的放大檢視等覆蓋層（跟著畫布等比例縮放） */}
                 <div id="canvas-overlay" className="pointer-events-none absolute inset-0 z-40" />
               </div>

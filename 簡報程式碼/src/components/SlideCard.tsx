@@ -7,7 +7,6 @@ import { cn } from '../lib/cn'
 import { toneStyles } from '../lib/tone'
 import { BlockRenderer } from './blocks/BlockRenderer'
 import { CoverLayout } from './CoverLayout'
-import { Badge } from './ui/Badge'
 import { ConclusionCallout } from './ui/ConclusionCallout'
 import { fadeUp, staggerParent } from './ui/motion'
 import { StoreTipCard } from './ui/StoreTipCard'
@@ -26,6 +25,9 @@ export function SlideCard({ slide }: { slide: SlideData }) {
   const part = parts[slide.part]
   const index = slides.indexOf(slide)
   const firstOfPart = index <= 0 || slides[index - 1].part !== slide.part
+  // 在本篇的第幾頁（方便知道自己在哪）
+  const siblings = slides.filter((s) => s.part === slide.part)
+  const position = siblings.indexOf(slide) + 1
 
   return (
     <motion.article
@@ -34,50 +36,30 @@ export function SlideCard({ slide }: { slide: SlideData }) {
       variants={staggerParent}
       className="absolute inset-0 flex flex-col px-[88px] pb-[44px] pt-[52px]"
     >
-      {slide.mark && !slide.store && (
-        <div
-          aria-hidden
-          className="pointer-events-none absolute right-[72px] top-[22px] select-none font-mono text-[150px] font-extrabold leading-none tracking-tighter text-white/[0.035]"
-        >
-          {slide.mark}
-        </div>
-      )}
-
       <motion.header variants={fadeUp} className="relative flex items-end justify-between gap-10">
         <div className="min-w-0">
-          <div className="flex items-center gap-3">
-            <Badge tone={part.tone} size="lg">
-              {part.short}
-            </Badge>
-            {slide.chapter && (
-              <Badge tone="slate" size="lg">
-                {slide.chapter}
-              </Badge>
-            )}
+          {/* 眉標：篇章・小節・本篇第幾頁（安靜的一行字，取代一排標籤） */}
+          <p className="flex min-w-0 items-center gap-2.5 text-[20px] font-semibold">
+            <span className={toneStyles[part.tone].text}>{part.short}</span>
+            {slide.chapter && <span className="text-slate-300">· {slide.chapter}</span>}
+            <span className="text-slate-500">
+              · {position}／{siblings.length}
+            </span>
             {slide.source && (
-              <span title={SOURCE_TIP[slide.source]}>
-                <Badge tone="slate" size="lg">
-                  {SOURCE_LABEL[slide.source]}
-                </Badge>
+              <span title={SOURCE_TIP[slide.source]} className="text-slate-500">
+                · {SOURCE_LABEL[slide.source]}
               </span>
             )}
-            {slide.advanced && (
-              <Badge tone="amber" size="lg">
-                進階・第二階段
-              </Badge>
-            )}
-            {firstOfPart && part.goal ? (
-              // 每一篇第一頁：先講清楚這一篇學完要會什麼
-              <span className="flex min-w-0 items-center gap-2 text-[19px] font-semibold text-slate-200">
-                <Target className={cn('size-5 shrink-0', toneStyles[part.tone].text)} aria-hidden />
-                <span className={toneStyles[part.tone].text}>學完你會</span>
-                <span className="truncate">{part.goal}</span>
-              </span>
-            ) : (
-              slide.en && <span className="font-mono text-[16px] uppercase tracking-[0.2em] text-slate-400">{slide.en}</span>
-            )}
-          </div>
-          <h2 className="mt-4 text-[56px] font-black leading-[1.1] tracking-tight text-white">{slide.title}</h2>
+            {slide.advanced && <span className="text-amber-300">· 進階</span>}
+          </p>
+          <h2 className="mt-2 text-[60px] font-bold leading-[1.1] tracking-tight text-white">{slide.title}</h2>
+          {firstOfPart && part.goal && (
+            // 每一篇第一頁：先講清楚這一篇學完要會什麼
+            <p className="mt-2 flex min-w-0 items-center gap-2 text-[21px] text-slate-400">
+              <Target className={cn('size-5 shrink-0', toneStyles[part.tone].text)} aria-hidden />
+              <span className="truncate">學完你會：{part.goal}</span>
+            </p>
+          )}
         </div>
         {slide.store && <StoreTipCard store={slide.store} />}
       </motion.header>

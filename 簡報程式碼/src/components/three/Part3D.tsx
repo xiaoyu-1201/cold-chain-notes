@@ -10,13 +10,15 @@ interface Part3DProps {
   cut: boolean
   /** 自動旋轉 */
   spin: boolean
+  /** 運轉：風扇轉、活塞動（models.ts 用 userData.anim 標記的零件） */
+  run?: boolean
   onLegend?: (legend: LegendItem[]) => void
 }
 
 /** 零件 3D 檢視：拖曳旋轉、滾輪／雙指縮放 */
-export default function Part3D({ id, cut, spin, onLegend }: Part3DProps) {
+export default function Part3D({ id, cut, spin, run = false, onLegend }: Part3DProps) {
   const hostRef = useRef<HTMLDivElement>(null)
-  const api = useRef<{ setCut: (c: boolean) => void; setSpin: (s: boolean) => void } | null>(null)
+  const api = useRef<{ setCut: (c: boolean) => void; setSpin: (s: boolean) => void; setRun: (r: boolean) => void } | null>(null)
   const legendRef = useRef(onLegend)
   legendRef.current = onLegend
 
@@ -44,6 +46,12 @@ export default function Part3D({ id, cut, spin, onLegend }: Part3DProps) {
     const radius = box.getSize(new THREE.Vector3()).length() / 2
     model.group.position.sub(center)
     scene.add(model.group)
+    const moving: { o: THREE.Object3D; kind: 'spin' | 'slide'; speed: number; amp: number; base: number }[] = []
+    model.group.traverse((o) => {
+      const a = o.userData.anim as { kind: 'spin' | 'slide'; speed: number; amp?: number } | undefined
+      if (a) moving.push({ o, kind: a.kind, speed: a.speed, amp: a.amp ?? 0, base: a.kind === 'slide' ? o.position.x : o.rotation.z })
+    })
+    let running = false
 
     const camera = new THREE.PerspectiveCamera(35, 1, 0.01, 100)
     camera.position.set(radius * 1.6, radius * 1.1, radius * 2.6)
@@ -63,7 +71,10 @@ export default function Part3D({ id, cut, spin, onLegend }: Part3DProps) {
     const setSpin = (s: boolean) => {
       controls.autoRotate = s
     }
-    api.current = { setCut, setSpin }
+    const setRun = (r: boolean) => {
+      running = r
+    }
+    api.current = { setCut, setSpin, setRun }
 
     const resize = () => {
       const w = Math.max(host.clientWidth, 1)
@@ -79,7 +90,15 @@ export default function Part3D({ id, cut, spin, onLegend }: Part3DProps) {
     resize()
 
     let raf = 0
+    const clock = new THREE.Clock()
     const tick = () => {
+      const dt = Math.min(clock.getDelta(), 0.05)
+      const t = clock.elapsedTime
+      if (running)
+        for (const m of moving) {
+          if (m.kind === 'spin') m.o.rotation.z += m.speed * dt
+          else m.o.position.x = m.base + Math.sin(t * m.speed) * m.amp
+        }
       controls.update()
       renderer.render(scene, camera)
       raf = requestAnimationFrame(tick)
@@ -113,6 +132,10 @@ export default function Part3D({ id, cut, spin, onLegend }: Part3DProps) {
   useEffect(() => {
     api.current?.setSpin(spin)
   }, [spin, id])
+
+  useEffect(() => {
+    api.current?.setRun(run)
+  }, [run, id])
 
   return <div ref={hostRef} className="h-full w-full cursor-grab touch-none active:cursor-grabbing" />
 }

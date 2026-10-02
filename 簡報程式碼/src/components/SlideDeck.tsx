@@ -13,6 +13,7 @@ import { ChapterDrawer } from './ChapterDrawer'
 import { ProgressBar } from './ProgressBar'
 import { SlideCard } from './SlideCard'
 import { SlideNav } from './SlideNav'
+import { FrostBackground } from './ui/FrostBackground'
 
 /** 排版檢查模式（網址加 ?audit）：不播換頁動畫，視窗在背景時量測也準 */
 const AUDIT = typeof location !== 'undefined' && new URLSearchParams(location.search).has('audit')
@@ -143,9 +144,10 @@ export function SlideDeck() {
               }}
             >
               <div
-                className="deck-hover relative origin-top-left bg-[#0d1117]"
+                className="deck-hover relative origin-top-left bg-[#081526]"
                 style={{ width: STAGE_W, height: STAGE_H, transform: `scale(${scale})` }}
               >
+                <FrostBackground />
                 {AUDIT ? (
                   <div className="absolute inset-0">
                     <SlideCard key={slide.id} slide={slide} />

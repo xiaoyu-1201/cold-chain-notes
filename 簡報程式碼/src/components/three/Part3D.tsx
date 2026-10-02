@@ -64,9 +64,19 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
     camera.position.set(radius * 1.6, radius * 1.1, radius * 2.6)
     const controls = new OrbitControls(camera, renderer.domElement)
     controls.enableDamping = true
-    controls.minDistance = radius * 1.2
+    controls.minDistance = radius * 0.6
     controls.maxDistance = radius * 6
     controls.autoRotateSpeed = 1.4
+    // 滾輪往游標放大（想看哪裡就指哪裡）；右鍵／雙指拖曳平移；雙擊回到原本的角度
+    controls.zoomToCursor = true
+    controls.screenSpacePanning = true
+    const home = { pos: camera.position.clone(), target: new THREE.Vector3() }
+    let fly: { p0: THREE.Vector3; t0: THREE.Vector3; start: number } | null = null
+    const onDbl = () => {
+      fly = { p0: camera.position.clone(), t0: controls.target.clone(), start: performance.now() }
+    }
+    controls.addEventListener('start', () => (fly = null))
+    renderer.domElement.addEventListener('dblclick', onDbl)
 
     const plane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0)
     const setCut = (c: boolean) =>
@@ -114,6 +124,13 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
           if (m.kind === 'spin') m.o.rotation.z += m.speed * dt
           else m.o.position.x = m.base + Math.sin(t * m.speed) * m.amp
         }
+      if (fly) {
+        const k = Math.min((performance.now() - fly.start) / 600, 1)
+        const s = k * k * (3 - 2 * k)
+        camera.position.lerpVectors(fly.p0, home.pos, s)
+        controls.target.lerpVectors(fly.t0, home.target, s)
+        if (k >= 1) fly = null
+      }
       controls.update()
       renderer.render(scene, camera)
       raf = requestAnimationFrame(tick)
@@ -123,6 +140,7 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
     return () => {
       cancelAnimationFrame(raf)
       ro.disconnect()
+      renderer.domElement.removeEventListener('dblclick', onDbl)
       controls.dispose()
       scene.traverse((o) => {
         const mesh = o as THREE.Mesh

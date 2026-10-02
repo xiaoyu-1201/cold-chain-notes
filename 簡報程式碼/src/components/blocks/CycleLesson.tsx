@@ -288,7 +288,7 @@ export function CycleLesson() {
             { value: '3d', label: '3D 立體' },
           ]}
         />
-        <p className="text-[19px] text-slate-400">{view === '2d' ? '點圖上的零件或管路，右邊就會出現說明' : '按下方「啟動冷凍系統」看冷媒跑一圈；拖曳旋轉、滾輪縮放，點零件看說明'}</p>
+        <p className="text-[19px] text-slate-400">{view === '2d' ? '點圖上的零件或管路，右邊就會出現說明' : '按下方「啟動冷凍系統」看冷媒跑一圈；點零件看說明，雙擊零件放大'}</p>
         {view === '3d' && (
           <button
             type="button"

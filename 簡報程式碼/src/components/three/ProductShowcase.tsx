@@ -99,7 +99,7 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
                 自動旋轉
               </button>
             </div>
-            <p className={cn('pointer-events-none absolute right-3 top-3 rounded-full bg-black/40 px-3 py-1 text-slate-300', t.small)}>拖曳旋轉・滾輪縮放</p>
+            <p className={cn('pointer-events-none absolute right-3 top-3 rounded-full bg-black/40 px-3 py-1 text-slate-300', t.small)}>拖曳旋轉・滾輪往游標放大・雙擊還原</p>
           </div>
 
           {control && (

@@ -113,7 +113,7 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
                   自動旋轉
                 </button>
               </div>
-              <p className="pointer-events-none absolute right-3 top-3 rounded-lg bg-navy-950/70 px-2.5 py-1 text-[13px] text-slate-300">拖曳旋轉・滾輪／雙指縮放</p>
+              <p className="pointer-events-none absolute right-3 top-3 rounded-lg bg-navy-950/70 px-2.5 py-1 text-[13px] text-slate-300">拖曳旋轉・滾輪往游標放大・雙擊還原</p>
             </div>
             <aside className="max-h-[42%] overflow-y-auto border-t border-white/10 p-4 lg:max-h-none lg:w-[380px] lg:border-l lg:border-t-0">
               {control && (

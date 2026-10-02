@@ -16,6 +16,7 @@ import { Boundaries, Metrics, StatCard } from './Metrics'
 import { PartsOverview, ProductMap, QAPanel, QuoteCard, ScenarioCard } from './Navigational'
 import { EstimatePractice } from './Estimate'
 import { FenConverter } from './FenConverter'
+import { ProductShowcase } from '../three/ProductShowcase'
 import { Flashcards } from './Flashcards'
 import { QuizCards } from './Quiz'
 import { RefSlider } from './RefSlider'
@@ -104,6 +105,8 @@ function Leaf({ block }: { block: Exclude<Block, GridBlock> }) {
       return <QuizCards block={block} />
     case 'fen':
       return <FenConverter />
+    case 'showcase':
+      return <ProductShowcase parts={block.parts} />
     case 'estimate':
       return <EstimatePractice block={block} />
     case 'flashcards':

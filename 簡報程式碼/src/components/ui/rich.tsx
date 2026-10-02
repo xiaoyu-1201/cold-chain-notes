@@ -38,7 +38,7 @@ export function Exp() {
 
 /** 下標，例如 Q<sub>o</sub> */
 export function Sub({ children }: Props) {
-  return <sub className="relative top-[0.28em] ml-px align-baseline text-[0.62em] leading-none">{children}</sub>
+  return <sub className="relative top-[0.28em] ml-px align-baseline text-[max(0.62em,16px)] leading-none">{children}</sub>
 }
 
 /** 分數式 */

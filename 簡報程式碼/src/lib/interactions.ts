@@ -15,6 +15,7 @@ const HINTS: Partial<Record<Block['type'], [string, string]>> = {
   flashcards: ['點卡片翻面、聽英文和台語；‹ › 換卡，右邊點名詞直接跳', '點卡片翻面、聽發音；‹ › 換卡，下面「全部名詞」直接跳'],
   products: ['點品項，跳到對應章節', '點章節按鈕，跳到對應章節'],
   parts: ['點章節，直接跳過去', '點章節按鈕，直接跳過去'],
+  showcase: ['左邊 3D 可以轉、剖開，還能「動手試試」；也能切到實物照片', '3D 可以轉、剖開、動手試試；也能切到實物照片'],
 }
 
 function collect(blocks: Block[], out: Set<Block['type']>) {

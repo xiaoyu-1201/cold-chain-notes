@@ -1,5 +1,4 @@
-import { useState, type ReactNode } from 'react'
-import { cycleNotes, type CycleNodeId } from '../../data/cycleNotes'
+import type { ReactNode } from 'react'
 import type { Block, CycleBlock, InsightBlock, SectionBlock, TxvBlock } from '../../data/types'
 import { cn } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
@@ -85,55 +84,3 @@ export function CyclePanel({ block }: { block: CycleBlock }) {
   )
 }
 
-const LESSON_GROUPS: { label: string; ids: CycleNodeId[]; cols: number }[] = [
-  { label: '四大金剛（點選看說明）', ids: ['comp', 'cond', 'txv', 'evap'], cols: 2 },
-  { label: '四段管路：冷媒狀態', ids: ['discharge', 'liquid', 'mixture', 'suction'], cols: 2 },
-  { label: '管路上的小零件', ids: ['oub', 'kp15', 'receiver', 'gbc', 'dml', 'sgi', 'evr', 'tc', 'acc'], cols: 3 },
-]
-
-/** 核心圖解：大張可點選的循環圖 + 項目清單（圖的面板寬度貼合圖比例，其餘空間給清單） */
-export function CycleLesson() {
-  const [selected, setSelected] = useState<CycleNodeId | null>(null)
-  return (
-    <div className="cq-box flex h-full gap-6" style={{ containerType: 'size' }}>
-      <div
-        className="cq-box relative flex h-full shrink-0 items-center justify-center rounded-[22px] border border-white/10 bg-navy-900/60 p-3"
-        style={{ containerType: 'size', width: 'min(calc(100cqh * 820 / 560 + 26px), 64cqw)' }}
-      >
-        <CycleExplorer className="cq-fit" selected={selected} onSelect={setSelected} style={{ width: 'min(100cqw, calc(100cqh * 820 / 560))' }} />
-      </div>
-      <section className="flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-4">
-        {LESSON_GROUPS.map((group) => (
-          <div key={group.label}>
-            <p className="mb-2 text-[19px] font-bold text-slate-300">{group.label}</p>
-            <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${group.cols}, minmax(0, 1fr))` }}>
-              {group.ids.map((id) => {
-                const note = cycleNotes[id]
-                const t = toneStyles[note.tone]
-                const active = selected === id
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => setSelected(active ? null : id)}
-                    aria-pressed={active}
-                    className={cn(
-                      'flex items-center gap-2.5 rounded-xl border px-3 py-2 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300',
-                      active ? 'border-amber-400 bg-amber-400/15' : 'border-white/[0.08] bg-navy-900/50 hover:border-white/25',
-                    )}
-                  >
-                    <span aria-hidden className={cn('h-8 w-1 shrink-0 rounded-full', t.dot)} />
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[20px] font-bold leading-snug text-slate-50">{note.title}</span>
-                      <span className="block truncate text-[17px] leading-snug text-slate-300">{note.kind === 'pipe' ? note.state : note.alias.replace('講義型號 ', '')}</span>
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-        ))}
-      </section>
-    </div>
-  )
-}

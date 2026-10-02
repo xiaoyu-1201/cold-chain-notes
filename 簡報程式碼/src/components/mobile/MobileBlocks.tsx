@@ -1,11 +1,12 @@
 import { ArrowRight, ArrowUpRight, Box, Check, CheckCircle2, ExternalLink, Headphones, Pause, Quote, TriangleAlert } from 'lucide-react'
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useDeck } from '../../context/deck'
 import { cycleNotes, CYCLE_ORDER, type CycleNodeId } from '../../data/cycleNotes'
 import { CLASS_AUDIO, CLASS_AUDIO_2 } from '../../data/media'
 import type { AudioBlock, Block, HotspotsBlock, MatrixBlock, Tone } from '../../data/types'
 import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
+import { Segmented } from '../blocks/CycleLesson'
 import { DataTable } from '../blocks/DataTable'
 import { EstimatePractice } from '../blocks/Estimate'
 import { FenConverter } from '../blocks/FenConverter'
@@ -17,6 +18,8 @@ import { part3DFor } from '../three/ids'
 import { PartViewer } from '../three/PartViewer'
 
 /* 手機閱讀版：不縮放、實際字級（內文 17px），單欄、最多一層卡片 */
+
+const CycleSystem3D = lazy(() => import('../three/CycleSystem3D'))
 
 const formatTime = (sec: number) => `${pad(Math.floor(sec / 60))}:${pad(Math.floor(sec % 60))}`
 
@@ -780,13 +783,44 @@ function CycleLessonMobile() {
   const note = selected ? cycleNotes[selected] : null
   const [viewId, setViewId] = useState<string | null>(null)
   const viewModel = viewId ? part3DFor(viewId) : null
+  const [view, setView] = useState<'2d' | '3d'>('2d')
+  const [cut, setCut] = useState(false)
   return (
     <div className="space-y-3">
       {viewModel && note && <PartViewer id={viewModel} title={note.title.replace(/^[①-④]\s*/, '')} alias={note.alias} onClose={() => setViewId(null)} />}
-      <p className="text-[15px] text-slate-300">點圖上的虛線框或下面的按鈕，看說明、聽錄音。</p>
-      <div className="relative rounded-2xl border border-white/10 bg-navy-900" style={{ aspectRatio: '820 / 560' }}>
-        <CycleDiagram className="absolute inset-0 h-full w-full" interactive selected={selected} onSelect={(id) => pick(id, false)} />
+      <div className="flex flex-wrap items-center gap-2">
+        <Segmented
+          size="sm"
+          value={view}
+          onChange={setView}
+          options={[
+            { value: '2d', label: '2D 圖解' },
+            { value: '3d', label: '3D 立體' },
+          ]}
+        />
+        {view === '3d' && (
+          <button
+            type="button"
+            aria-pressed={cut}
+            onClick={() => setCut((c) => !c)}
+            className={cn('rounded-full px-3 py-1.5 text-[14px] font-semibold', cut ? 'bg-sky-400 text-navy-950' : 'bg-white/[0.08] text-sky-300')}
+          >
+            {cut ? '合起來' : '剖開看內部'}
+          </button>
+        )}
       </div>
+      <p className="text-[15px] text-slate-300">{view === '2d' ? '點圖上的虛線框或下面的按鈕，看說明、聽錄音。' : '用手指拖曳旋轉、兩指縮放；點零件名稱看說明。'}</p>
+      {view === '2d' ? (
+        <div className="relative rounded-2xl border border-white/10 bg-navy-900" style={{ aspectRatio: '820 / 560' }}>
+          <CycleDiagram className="absolute inset-0 h-full w-full" interactive selected={selected} onSelect={(id) => pick(id, false)} />
+        </div>
+      ) : (
+        <div className="relative h-[340px] overflow-hidden rounded-2xl bg-navy-900">
+          <Suspense fallback={<p className="absolute inset-0 flex items-center justify-center text-[15px] text-slate-400">3D 載入中…</p>}>
+            <CycleSystem3D selected={selected} onSelect={(id) => id && pick(id, true)} cut={cut} />
+          </Suspense>
+        </div>
+      )}
       <div ref={noteRef} style={{ scrollMarginTop: 64 }}>
         {note && (
           <div className={cn('rounded-2xl border bg-navy-900 p-4', toneStyles[note.tone].border)}>

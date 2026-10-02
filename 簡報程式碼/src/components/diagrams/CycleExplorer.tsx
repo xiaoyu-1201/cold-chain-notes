@@ -225,7 +225,7 @@ function ExpandedView({ initial, onClose }: { initial: CycleNodeId | null; onClo
 }
 
 /** 播放某段錄音的按鈕（各自擁有播放器，關閉小視窗時自動停止） */
-function ClipButton({ src, at, label, large }: { src: string; at: number; label: string; large: boolean }) {
+export function ClipButton({ src, at, label, large }: { src: string; at: number; label: string; large: boolean }) {
   const ref = useRef<HTMLAudioElement>(null)
   const [playing, setPlaying] = useState(false)
   const [error, setError] = useState(false)

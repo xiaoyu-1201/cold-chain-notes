@@ -17,8 +17,15 @@ const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-
 
 const GROUPS: { label: string; ids: CycleNodeId[] }[] = [
   { label: '四大金剛', ids: ['comp', 'cond', 'txv', 'evap'] },
-  { label: '四段管路', ids: ['discharge', 'liquid', 'mixture', 'suction'] },
   { label: '管路上的小零件', ids: ['oub', 'kp15', 'receiver', 'gbc', 'dml', 'sgi', 'evr', 'tc', 'acc'] },
+]
+
+/** 冷媒一圈的四個狀態（顏色跟圖上的管路一樣） */
+const STATES: { id: CycleNodeId; color: string; state: string; where: string }[] = [
+  { id: 'discharge', color: '#f87171', state: '高溫高壓氣態', where: '高壓氣管：壓縮機 → 冷凝器' },
+  { id: 'liquid', color: '#fbbf24', state: '中溫中壓液態', where: '液管：冷凝器 → 膨脹閥' },
+  { id: 'mixture', color: '#5eead4', state: '液氣混合', where: '液氣混合段：膨脹閥 → 蒸發器' },
+  { id: 'suction', color: '#38bdf8', state: '低溫低壓氣態', where: '吸氣管：蒸發器 → 壓縮機' },
 ]
 
 /** Apple 風格分段切換 */
@@ -53,10 +60,29 @@ function Inspector({ selected, onSelect }: { selected: CycleNodeId | null; onSel
 
   if (!selected) {
     return (
-      <div className="flex h-full flex-col justify-center gap-7 rounded-[28px] bg-white/[0.04] px-8 py-7">
+      <div className="flex h-full flex-col gap-6 rounded-[28px] bg-white/[0.04] px-8 py-7">
         <div>
-          <p className="text-[30px] font-bold text-white">點圖上的零件</p>
-          <p className="mt-1 text-[20px] text-slate-400">或從下面選一個：看說明、聽錄音、看 3D 構造。</p>
+          <p className="text-[28px] font-bold text-white">冷媒一圈的四個狀態</p>
+          <p className="mt-1 text-[19px] text-slate-400">顏色跟圖上的管路一樣；點一下看說明、聽錄音。</p>
+          <ol className="mt-4 grid grid-cols-2 gap-3">
+            {STATES.map((s, i) => (
+              <li key={s.id}>
+                <button
+                  type="button"
+                  onClick={() => onSelect(s.id)}
+                  className={cn('flex h-full w-full items-start gap-3 rounded-2xl bg-white/[0.05] px-4 py-3 text-left transition hover:bg-white/[0.09]', focusRing)}
+                >
+                  <span className="mt-1.5 h-9 w-2 shrink-0 rounded-full" style={{ background: s.color }} aria-hidden />
+                  <span className="min-w-0">
+                    <span className="block text-[21px] font-bold" style={{ color: s.color }}>
+                      {i + 1}. {s.state}
+                    </span>
+                    <span className="block text-[17px] text-slate-300">{s.where}</span>
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ol>
         </div>
         {GROUPS.map((g) => (
           <div key={g.label}>
@@ -164,7 +190,7 @@ export function CycleLesson() {
         )}
       </div>
       <div className="cq-box flex min-h-0 flex-1 gap-6" style={{ containerType: 'size' }}>
-        <div className="relative h-full shrink-0 overflow-hidden rounded-[28px] bg-white/[0.03]" style={{ width: 'min(calc(100cqh * 820 / 560), 62cqw)' }}>
+        <div className="relative h-full shrink-0 overflow-hidden rounded-[28px] bg-white/[0.03]" style={{ width: view === '2d' ? 'min(calc(100cqh * 820 / 560), 62cqw)' : '58cqw' }}>
           {view === '2d' ? (
             <div className="absolute inset-4">
               <CycleDiagram className="h-full w-full" interactive selected={selected} onSelect={(id) => setSelected(selected === id ? null : id)} />

@@ -1404,57 +1404,13 @@ const slideList: SlideData[] = [
     part: 'units',
     chapter: '單位',
     mark: 'UNITS',
-    title: '單位：管徑「分」與溫度壓力',
+    title: '管徑：聽懂「幾分」，對得上單子',
     en: 'Units & Tools',
-    blocks: [
-      {
-        type: 'grid',
-        className: 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
-        children: [
-          {
-            type: 'section',
-            icon: Ruler,
-            tone: 'amber',
-            title: '管徑換算：1 吋＝8 分＝25.4 mm',
-            en: 'Pipe Size in “Fen”',
-            className: 'grid-rows-1',
-            children: [{ type: 'fen' }],
-          },
-          {
-            type: 'grid',
-            className: 'grid-rows-2 gap-4',
-            children: [
-              {
-                type: 'info',
-                icon: Calculator,
-                tone: 'amber',
-                title: '不用背，記一個算法',
-                body: (
-                  <>
-                    1 吋＝25.4 mm，分成 8 等分，<Hl>1 分＝3.175 mm</Hl>；幾分就乘幾。例：4 分之 3 吋＝6 分。
-                  </>
-                ),
-              },
-              {
-                type: 'info',
-                icon: Ruler,
-                tone: 'teal',
-                title: '游標卡尺量管徑',
-                body: (
-                  <>
-                    壓縮機和零件的規格都會寫接管大小，例如<Hl>高壓幾分、低壓幾分</Hl>；看單子、用游標卡尺量管子，都要一眼看懂。
-                  </>
-                ),
-              },
-            ],
-          },
-        ],
-      },
-    ],
+    blocks: [{ type: 'fen' }],
     conclusion: {
       text: (
         <>
-          先把單位搞好：<Hl>1 吋＝8 分＝25.4 mm</Hl>；高壓、低壓幾分要能一眼看懂。溫度和壓力怎麼換算，下一頁用 Ref Tools 練習。
+          <Hl>1 分＝3.175 mm</Hl>：英吋分母換成 8，分子就是幾分；卡尺量外徑 ÷ 3.175 就是幾分。溫度和壓力怎麼換算，下一頁用 Ref Tools 練習。
         </>
       ),
     },
@@ -2335,26 +2291,36 @@ const slideList: SlideData[] = [
       {
         type: 'flashcards',
         cards: [
-          { term: '壓縮機', alias: '系統心臟', en: 'Compressor', tip: '不能壓縮液體；其他元件都跟著它配' },
-          { term: '冷凝器', alias: '散熱器、熱排（台語）', en: 'Condenser', tip: '把熱排到室外，氣態冷凝成液態' },
-          { term: '裸露型散熱器', alias: '無穿衫（台語：沒穿衣服）', en: 'Open-type Condenser', tip: '馬達外露、便宜；別放鐵皮屋上' },
-          { term: '蒸發器', alias: '冷排（台語）', en: 'Evaporator', tip: '在庫內吸熱，液態蒸發成氣態' },
-          { term: '膨脹閥', alias: '降壓節流', en: 'Expansion Valve（TE）', tip: '閥芯大小看壓縮機配' },
-          { term: '毛細管', alias: '小系統用', en: 'Capillary Tube', tip: '冰箱用來代替膨脹閥，便宜但不能調' },
-          { term: '儲液器', alias: '高壓儲液器', en: 'Receiver', tip: '確保送出去的是液態；膨脹閥系統一定要' },
-          { term: '液氣分離器', alias: '低壓儲液器', en: 'Accumulator', tip: '確保回壓縮機的是氣態' },
-          { term: '乾燥過濾器', alias: '乾燥器', en: 'Filter Drier（DML）', tip: '吸水、濾雜質，一定要裝' },
-          { term: '視液鏡', alias: '視窗', en: 'Sight Glass（SGI）', tip: '看冷媒夠不夠；指示環變黃代表含水' },
-          { term: '電磁閥', alias: '水龍頭（常閉）', en: 'Solenoid Valve（EVR）', tip: '通電才開；散熱外移一定要裝' },
-          { term: '壓力開關', alias: '高低壓開關', en: 'Pressure Switch（KP 15）', tip: '一定要裝，保護壓縮機' },
-          { term: '手閥', alias: '球閥', en: 'Ball Valve（GBC）', tip: '換零件時前後關起來' },
-          { term: '油分離器', alias: '分油器', en: 'Oil Separator（OUB）', tip: '把跟著跑出去的冷凍油拉回壓縮機' },
-          { term: '機組', alias: '壓縮機＋配件', en: 'Condensing Unit', tip: '壓縮機、油分離器等配件裝在同一個底座上' },
-          { term: '液管', alias: '講義上的黃色線', en: 'Liquid Line', tip: '中溫中壓液態' },
-          { term: '高壓氣管', alias: '講義上的紅色線', en: 'Discharge Line', tip: '高溫高壓氣態' },
-          { term: '吸氣管', alias: '講義上的藍色線', en: 'Suction Line', tip: '低溫低壓氣態回到壓縮機' },
-          { term: '馬', alias: '馬力（口語）', en: 'HP（正確單位是 BTU）', tip: '客人都講幾馬' },
-          { term: '分', alias: '管徑單位', en: '1/8 inch', tip: '1 吋＝8 分＝25.4 mm，1 分＝3.175 mm' },
+          { group: '四大元件', term: '壓縮機', alias: '系統心臟', en: 'Compressor', tip: '不能壓縮液體；其他元件都跟著它配', part: 'comp' },
+          { group: '四大元件', term: '冷凝器', alias: '散熱器、熱排（台語）', en: 'Condenser', tip: '把熱排到室外，氣態冷凝成液態', part: 'cond', tw: { rec: 1, from: 109.4, to: 113, say: '換這個台語叫做熱排' } },
+          { group: '四大元件', term: '裸露型散熱器', alias: '無穿衫（台語：沒穿衣服）', en: 'Open-type Condenser', tip: '馬達外露、便宜；別放鐵皮屋上', part: 'cond', tw: { rec: 2, from: 408.2, to: 410.4, say: '人說無穿衫，就是這個' } },
+          { group: '四大元件', term: '蒸發器', alias: '冷排（台語）', en: 'Evaporator', tip: '在庫內吸熱，液態蒸發成氣態', part: 'evap', tw: { rec: 1, from: 513.9, to: 518.5, say: '吸熱、冷排……因為這些是台語' } },
+          { group: '四大元件', term: '膨脹閥', alias: '降壓節流', en: 'Expansion Valve（TE）', tip: '閥芯大小看壓縮機配', part: 'txv' },
+          { group: '四大元件', term: '毛細管', alias: '小系統用', en: 'Capillary Tube', tip: '冰箱用來代替膨脹閥：便宜、可剪長短，但不能調；冷排大、能力大的改用膨脹閥' },
+          { group: '四大元件', term: '機組', alias: '壓縮機＋配件', en: 'Condensing Unit', tip: '壓縮機、油分離器等配件裝在同一個底座上' },
+          { group: '小零件', term: '儲液器', alias: '高壓儲液器', en: 'Receiver', tip: '確保送出去的是液態；膨脹閥系統一定要', part: 'receiver' },
+          { group: '小零件', term: '液氣分離器', alias: '低壓儲液器', en: 'Accumulator', tip: '確保回壓縮機的是氣態', part: 'acc' },
+          { group: '小零件', term: '乾燥過濾器', alias: '乾燥器', en: 'Filter Drier（DML）', tip: '吸水、濾雜質，一定要裝', part: 'dml' },
+          { group: '小零件', term: '視液鏡', alias: '視窗', en: 'Sight Glass（SGI）', tip: '看冷媒夠不夠；指示環變黃代表含水', part: 'sgi' },
+          { group: '小零件', term: '電磁閥', alias: '水龍頭（常閉）', en: 'Solenoid Valve（EVR）', tip: '通電才開；散熱外移一定要裝', part: 'evr' },
+          { group: '小零件', term: '壓力開關', alias: '高低壓開關', en: 'Pressure Switch（KP 15）', tip: '一定要裝，保護壓縮機', part: 'kp15' },
+          { group: '小零件', term: '手閥', alias: '球閥', en: 'Ball Valve（GBC）', tip: '換零件時前後關起來', part: 'gbc' },
+          { group: '小零件', term: '油分離器', alias: '分油器', en: 'Oil Separator（OUB）', tip: '把跟著跑出去的冷凍油拉回壓縮機', part: 'oub' },
+          { group: '小零件', term: '溫控器', alias: '感溫棒（放庫內）', en: 'Thermostat', tip: '庫內到溫就停機，回溫再啟動', part: 'tc' },
+          { group: '小零件', term: '除霜電熱管', alias: '除霜', en: 'Defrost Heater', tip: '冷凍庫的冷排會結霜，要定時除霜' },
+          { group: '管路', term: '液管', alias: '講義上的黃色線', en: 'Liquid Line', tip: '中溫中壓液態' },
+          { group: '管路', term: '高壓氣管', alias: '講義上的紅色線', en: 'Discharge Line', tip: '高溫高壓氣態' },
+          { group: '管路', term: '吸氣管', alias: '講義上的藍色線', en: 'Suction Line', tip: '低溫低壓氣態回到壓縮機' },
+          { group: '管路', term: '高壓幾分、低壓幾分', alias: '接管規格', en: 'Discharge／Suction Size', tip: '壓縮機和零件都會寫：高壓（排氣）、低壓（吸氣）接管各幾分' },
+          { group: '單位與冷媒', term: '馬', alias: '馬力（口語）', en: 'HP（正確單位是 BTU）', tip: '客人都講幾馬', tw: { rec: 2, from: 304.2, to: 306.3, say: '口語的話就講幾馬' } },
+          { group: '單位與冷媒', term: '分', alias: '管徑單位', en: '1/8 inch', tip: '1 吋＝8 分＝25.4 mm，1 分＝3.175 mm' },
+          { group: '單位與冷媒', term: '游標卡尺', alias: '卡尺', en: 'Vernier Caliper', tip: '量銅管外徑，÷ 3.175 就是幾分' },
+          { group: '單位與冷媒', term: '喇叭口', alias: '擴管接頭', en: 'Flare（SAE）', tip: 'Danfoss 型號尾巴沒有 S＝喇叭口；有 S＝焊接' },
+          { group: '單位與冷媒', term: '錶壓', alias: '公斤（kg/cm²）', en: 'psig（Gauge Pressure）', tip: '壓力錶讀到的數字；絕對壓力＝錶壓＋1 大氣壓' },
+          { group: '單位與冷媒', term: '飽和溫度', alias: '管內溫度', en: 'Saturation Temperature', tip: '知道冷媒和錶壓，就能用 Ref Tools 查出來' },
+          { group: '單位與冷媒', term: 'R22 210 psig', alias: '資深師傅的標竿', en: '≈ 40.42°C 冷凝', tip: '同一個溫度，拿來比其他冷媒的高壓' },
+          { group: '單位與冷媒', term: '冷凍油', alias: 'POE、礦物油', en: 'Refrigeration Oil', tip: 'HFC 冷媒用 POE；不同的油不能混' },
+          { group: '單位與冷媒', term: '混合冷媒', alias: 'R404A、R410A、R417A', en: 'Blend Refrigerant', tip: '有露點、泡點兩個溫度；Ref Tools 預設看露點' },
         ],
       },
     ],

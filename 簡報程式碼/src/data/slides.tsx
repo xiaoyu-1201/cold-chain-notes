@@ -20,13 +20,16 @@ import {
   Gauge,
   GraduationCap,
   Handshake,
+  HeartHandshake,
   HardHat,
   History,
   Layers,
   Lightbulb,
+  MapPin,
   MessagesSquare,
   Package,
   Plug,
+  Refrigerator,
   PowerOff,
   RefreshCw,
   Route,
@@ -54,6 +57,7 @@ import {
   UtensilsCrossed,
   Warehouse,
   Waypoints,
+  Wind,
   Workflow,
   Wrench,
   Zap,
@@ -217,7 +221,10 @@ const slideList: SlideData[] = [
             range: '客人用在哪',
             icon: Store,
             summary: '產業鏈位置與應用場所',
-            chapters: [{ code: '產業', title: '產業鏈與客人的裝置', slide: 'industry' }],
+            chapters: [
+              { code: '產業', title: '產業鏈與客人的裝置', slide: 'industry' },
+              { code: '冰箱', title: '冰箱與機上型', slide: 'fridge-types' },
+            ],
           },
           {
             part: 'components',
@@ -231,6 +238,7 @@ const slideList: SlideData[] = [
               { code: 'CH.03', title: '冷凝器', slide: 'ch3' },
               { code: '規格', title: '散熱器排×支', slide: 'coil-spec' },
               { code: '實務', title: '冷凝器配多大', slide: 'cond-practice' },
+              { code: '種類', title: '散熱器三種', slide: 'outdoor-units' },
               { code: 'CH.04', title: '蒸發器', slide: 'ch4' },
               { code: 'CH.05', title: '控制與保護', slide: 'ch5' },
               { code: '講義', title: '零件總覽圖', slide: 'handout' },
@@ -244,6 +252,7 @@ const slideList: SlideData[] = [
             summary: '接單問診與常見故障',
             chapters: [
               { code: '門市', title: '客人來問散熱器', slide: 'coil-store' },
+              { code: '心法', title: '材料行的服務心法', slide: 'store-mindset' },
               { code: 'CH.09', title: '四大故障診斷', slide: 'ch9' },
               { code: '實戰', title: '接單問診 SOP', slide: 'sop' },
             ],
@@ -1743,6 +1752,187 @@ const slideList: SlideData[] = [
       ),
     },
   },
+  /* ───────────────────────── 1002 錄音10、11：冰箱與機上型 ───────────────────────── */
+  {
+    id: 'fridge-types',
+    part: 'industry',
+    chapter: '冰箱與機組',
+    mark: 'FRIDGE',
+    title: '客人的冰箱：先看裝置，再配機組',
+    en: 'Fridges & Matching',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
+        children: [
+          {
+            type: 'list',
+            icon: Refrigerator,
+            tone: 'ice',
+            title: '認識客人的冰箱',
+            en: 'Fridge Types',
+            items: [
+              { icon: UtensilsCrossed, title: '工作臺冰箱', desc: '廚房切菜的檯面下面就是冰箱；餐廳幾乎都有' },
+              { icon: DoorOpen, title: '兩門、四門、六門', desc: '寬度有兩尺、兩尺半、四尺，四尺最多；本體約 2 公尺高，最上面是放散熱器的機房' },
+              { icon: Snowflake, title: '上凍下藏', desc: '大約七成是上面冷凍、下面冷藏' },
+              { icon: ThermometerSun, title: '玻璃門要加大', desc: '玻璃保溫比 PU 發泡差；門越大，一開門溫度升得越快，壓縮機都要配大一點' },
+            ],
+          },
+          {
+            type: 'grid',
+            className: 'grid-rows-[minmax(0,1fr)_minmax(0,1fr)]',
+            children: [
+              {
+                type: 'metrics',
+                icon: Ruler,
+                tone: 'teal',
+                title: '機上型：散熱器放冰箱頂上',
+                en: 'Top-mount',
+                cols: 2,
+                items: [
+                  { label: '只能用', value: '11', unit: '支', tone: 'teal', note: '高約 29 公分、配 10 吋風車；14 支高 36.5 公分，放上去會太高' },
+                  { label: '附基板最大到', value: '2.5', unit: '馬', tone: 'amber', note: '3 馬以上散熱器太高，要改成散熱外移' },
+                ],
+              },
+              {
+                type: 'list',
+                icon: Scale,
+                tone: 'amber',
+                title: '機組要配得上設備',
+                en: 'Match the Box',
+                items: [
+                  { icon: Zap, title: '小機組裝大冰箱', desc: '溫度一直到不了，壓縮機停不下來，很耗電' },
+                  { icon: Thermometer, title: '溫差抓 4°C', desc: '溫度到了讓壓縮機休息，回升 4°C 再啟動' },
+                  { icon: Cog, title: '換壓縮機先問熱排、冷排', desc: '原本就配錯的話，換一顆新的還是會壞' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          客人說「冰箱」，先問<Hl>幾門、玻璃還是不鏽鋼、上凍下藏</Hl>；散熱器放冰箱頂上的（機上型）<Em>只能用 11 支</Em>。
+        </>
+      ),
+    },
+  },
+  /* ───────────────────────── 1002 錄音10、11：散熱器三種 ───────────────────────── */
+  {
+    id: 'outdoor-units',
+    part: 'components',
+    chapter: '散熱器種類',
+    mark: 'UNITS',
+    title: '散熱器三種：一般、屋外型、含壓縮機的室外機',
+    en: 'Condenser Types',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-3',
+        children: [
+          {
+            type: 'list',
+            icon: Fan,
+            tone: 'amber',
+            title: '一般散熱器',
+            en: 'Open Type',
+            items: [
+              { icon: Fan, title: '馬達外露', desc: '台語叫「無穿衫」；便宜，店裡最常賣', badge: { label: '最常見', tone: 'amber' } },
+              { icon: Refrigerator, title: '兩種用法都行', desc: '放冰箱頂上（機上型），或拉到外面（散熱外移）' },
+              { icon: ShieldAlert, title: '放室外要加遮雨板', desc: '不然馬達會淋到雨；聲音也比屋外型大' },
+            ],
+          },
+          {
+            type: 'list',
+            icon: Building2,
+            tone: 'teal',
+            title: '屋外型（室外機）',
+            en: 'Outdoor Unit',
+            items: [
+              { icon: ShieldCheck, title: '有外殼、馬達在裡面', desc: '好看、安靜、不怕風吹雨淋' },
+              { icon: Building2, title: '常吊在牆上', desc: '用 N 字形的壁掛架；太重的話搬不上去' },
+              { icon: Scale, title: '選購看三件事', desc: '安靜（吵到鄰居會被檢舉）、重量、實際能力（同樣標 10 馬，實際可能差一級）' },
+            ],
+          },
+          {
+            type: 'list',
+            icon: Package,
+            tone: 'indigo',
+            title: '含壓縮機的室外機',
+            en: 'Condensing Unit',
+            items: [
+              { icon: Package, title: '像冷氣的室外機', desc: '壓縮機、散熱器、乾燥器都裝在裡面' },
+              { icon: Waypoints, title: '只拉兩支管', desc: '液管和低壓管接到冷排；冷氣做外膨，冷凍做內膨（膨脹閥在冷排旁）' },
+              { icon: Wind, title: '大台的上吹', desc: '小台多半側吹；大台的上吹式放在大樓屋頂' },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          分辨的關鍵是<Hl>馬達在外面還是裡面</Hl>：外面＝一般散熱器，包在外殼裡＝屋外型；連壓縮機都裝在裡面的，就是像冷氣的室外機。
+        </>
+      ),
+    },
+  },
+  /* ───────────────────────── 1002 錄音06、09、10：材料行的服務心法 ───────────────────────── */
+  {
+    id: 'store-mindset',
+    part: 'practice',
+    chapter: '服務心法',
+    mark: 'MINDSET',
+    title: '材料行的服務心法：多問一句，客人就會回來',
+    en: 'How We Serve',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]',
+        children: [
+          {
+            type: 'flow',
+            direction: 'col',
+            tone: 'emerald',
+            icon: HeartHandshake,
+            title: '老闆怎麼對客人',
+            en: 'With Customers',
+            steps: [
+              { title: '多關心一點', desc: '客人只問壓縮機多少錢，我們還會問熱排、冷排、裝在什麼設備；讓客人拿材料去賺錢，不是再賠一顆', icon: HeartHandshake },
+              { title: '話先講在前頭', desc: '東西沒有百分之百不會漏；請客人施工前先測，有問題馬上換（買賣說斷斷）', icon: ShieldCheck },
+              { title: '講結論，不要繞彎', desc: '客人不是來上課的；講他聽得懂的結論就好', icon: MessagesSquare },
+              { title: '先懂客人在說什麼', desc: '客人說的「底板」「室外機」不一定是我們想的；先問用途，再拿貨', icon: Lightbulb },
+            ],
+          },
+          {
+            type: 'list',
+            icon: Store,
+            tone: 'ice',
+            title: '店裡每天要做到',
+            en: 'In the Store',
+            items: [
+              { icon: MapPin, title: '一個蘿蔔一個坑', desc: '每樣東西都有固定位置；用完、整理完放回原位' },
+              { icon: Package, title: '進貨寫日期、先進先出', desc: '散熱器出貨前先確認；請客人施工前先折開聽有沒有氣' },
+              { icon: Truck, title: '送貨排順序', desc: '一次送三家以上，先排好先後，順路就好' },
+              { icon: Cylinder, title: '認得貨架', desc: '壓縮機看型號；冷媒鋼瓶看標籤；冷凍油一罐 4 公升，店裡叫「一加侖」' },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          客人跟我們買，是因為我們<Hl>比別人多關心他</Hl>：多問一句配對、把話講在前頭，客人就不會賠錢，也會再回來。
+        </>
+      ),
+    },
+  },
   /* ───────────────────────── 1001 課後 Insight ───────────────────────── */
   {
     id: 'lesson-insights',
@@ -3009,18 +3199,21 @@ const ORDER = [
   'refrigerants',
   'check-2',
   'industry',
+  'fridge-types',
   'check-3',
   'products',
   'ch2',
   'ch3',
   'coil-spec',
   'cond-practice',
+  'outdoor-units',
   'ch4',
   'ch5',
   'handout',
   'check-4',
   'estimate',
   'coil-store',
+  'store-mindset',
   'ch9',
   'sop',
   'check-5',

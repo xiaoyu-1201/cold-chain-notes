@@ -13,10 +13,29 @@ export interface LegendItem {
   desc: string
 }
 
+/** 動手操作：開關或滑桿，拖動時零件的機構跟著動 */
+export interface PartControl {
+  /** toggle＝開關；slider＝滑桿；run＝運轉（風扇轉、活塞動，由 userData.anim 標記的零件負責） */
+  kind: 'toggle' | 'slider' | 'run'
+  label: string
+  /** 開關兩邊／滑桿兩端的字 */
+  off: string
+  on: string
+  /** 預設值 0～1 */
+  initial: number
+  /** 機構在外殼裡面：一操作就自動剖開 */
+  needsCut?: boolean
+  /** 依目前值（0～1，已平滑）擺動零件 */
+  apply?: (v: number) => void
+  /** 這個值代表什麼（顯示在控制項下面） */
+  describe: (v: number) => string
+}
+
 export interface PartModel {
   group: THREE.Group
   shells: THREE.Material[]
   legend: LegendItem[]
+  control?: PartControl
 }
 
 type V3 = [number, number, number]
@@ -85,8 +104,17 @@ class Builder {
     const c = (m as THREE.MeshStandardMaterial).color
     this.legend.push({ color: `#${c.getHexString()}`, name, desc })
   }
+  /** 把零件掛到一個支點上（之後縮放／旋轉都繞著支點） */
+  pivot(objects: THREE.Object3D[], at: V3) {
+    const p = new THREE.Group()
+    p.position.set(...at)
+    this.group.add(p)
+    objects.forEach((o) => p.attach(o))
+    return p
+  }
+  control?: PartControl
   done(): PartModel {
-    return { group: this.group, shells: this.shells, legend: this.legend }
+    return { group: this.group, shells: this.shells, legend: this.legend, control: this.control }
   }
 }
 
@@ -114,7 +142,21 @@ const builders: Record<Part3DId, () => PartModel> = {
     const glass = mat.glass()
     b.cylY(0.26, 0.05, glass, [0, 0.5, 0])
     b.note(glass, '玻璃視窗', '從上面看冷媒流過：冷媒夠時，液態像透明的水')
-    b.note(ring, '含水指示環', '系統含水時會變色（顏色依品牌），很多人不知道')
+    b.note(ring, '含水指示環', '綠色＝乾燥；變淡＝水分快超標；黃色＝含水過多')
+    const dry = new THREE.Color(0x22c55e)
+    const wet = new THREE.Color(0xeab308)
+    b.control = {
+      kind: 'toggle',
+      label: '系統裡的水分',
+      off: '乾燥',
+      on: '含水',
+      initial: 0,
+      apply: (v) => {
+        ring.color.copy(dry).lerp(wet, v)
+        ring.emissive.copy(ring.color)
+      },
+      describe: (v) => (v > 0.5 ? '指示環變黃：系統含水過多，乾燥過濾器吸飽了，要盡快更換。' : '指示環綠色：系統乾燥正常。'),
+    }
     b.note(liquid, '冷媒通道', '液管裡的液態冷媒從這裡流過')
     b.note(body, '黃銅本體', '裝在液管上，乾燥過濾器後面')
     b.note(cu, '銅管接頭', '接液管（焊接或喇叭口）')
@@ -152,13 +194,29 @@ const builders: Record<Part3DId, () => PartModel> = {
     const coil = b.shell(mat.dark())
     b.box(0.62, 0.56, 0.62, coil, [0, 0.66, 0])
     const plunger = mat.steel()
-    b.cylY(0.09, 0.36, plunger, [0, 0.42, 0], 24)
+    const plungerMesh = b.cylY(0.09, 0.36, plunger, [0, 0.42, 0], 24)
     const springM = mat.glow(0xf59e0b)
-    b.spring(0.07, 0.24, 6, 0.012, springM, [0, 0.62, 0])
+    const springPivot = b.pivot([b.spring(0.07, 0.24, 6, 0.012, springM, [0, 0.62, 0])], [0, 0.86, 0])
     const seat = mat.paint(0xef4444)
     b.cylY(0.12, 0.05, seat, [0, 0.2, 0], 24)
     const flow = mat.fluid(0x38bdf8, 0.45)
     b.cylX(0.12, 1.1, flow, [0, 0.02, 0])
+    b.control = {
+      kind: 'toggle',
+      label: '線圈電源',
+      off: '斷電',
+      on: '通電',
+      initial: 0,
+      needsCut: true,
+      apply: (v) => {
+        plungerMesh.position.y = 0.42 + 0.12 * v
+        springPivot.scale.y = 1 - 0.4 * v
+        coil.emissive.setHex(0xf59e0b)
+        coil.emissiveIntensity = 0.45 * v
+        flow.opacity = 0.06 + 0.5 * v
+      },
+      describe: (v) => (v > 0.5 ? '通電：線圈的磁力把柱塞吸上去，閥座打開，冷媒流過。' : '斷電：彈簧把柱塞壓在閥座上，冷媒被關在液管（常閉）。'),
+    }
     b.note(coil, '線圈', '通電產生磁力，把柱塞吸上去 → 閥打開')
     b.note(plunger, '柱塞', '被吸起時讓出閥座孔，冷媒才能通過')
     b.note(springM, '彈簧', '斷電時把柱塞壓回去 → 常閉（通電才開）')
@@ -176,17 +234,39 @@ const builders: Record<Part3DId, () => PartModel> = {
     const head = b.shell(mat.steel())
     b.cylY(0.44, 0.22, head, [0, 0.42, 0])
     const diaphragm = mat.paint(0x60a5fa)
-    b.cylY(0.4, 0.03, diaphragm, [0, 0.42, 0])
+    const diaphragmMesh = b.cylY(0.4, 0.03, diaphragm, [0, 0.42, 0])
     const capillary = mat.copper()
     b.tube([[0, 0.53, 0], [0, 0.9, 0], [0.6, 1.05, 0.2], [1.3, 0.8, 0.3], [1.6, 0.3, 0.3]], 0.025, capillary)
     const bulb = mat.copper()
     b.cylY(0.1, 0.7, bulb, [1.6, -0.05, 0.3], 24)
     const pin = mat.steel()
-    b.cylY(0.035, 0.45, pin, [0, 0.12, 0], 16)
+    const pinMesh = b.cylY(0.035, 0.45, pin, [0, 0.12, 0], 16)
     const needle = mat.paint(0xef4444)
-    b.mesh(new THREE.ConeGeometry(0.08, 0.16, 24), needle, [0, -0.15, 0], [Math.PI, 0, 0])
+    const needleMesh = b.mesh(new THREE.ConeGeometry(0.08, 0.16, 24), needle, [0, -0.15, 0], [Math.PI, 0, 0])
     const springM = mat.glow(0xf59e0b)
-    b.spring(0.1, 0.22, 5, 0.014, springM, [0, -0.5, 0])
+    const springPivot = b.pivot([b.spring(0.1, 0.22, 5, 0.014, springM, [0, -0.5, 0])], [0, -0.5, 0])
+    b.control = {
+      kind: 'slider',
+      label: '過熱度（感溫包的溫度）',
+      off: '小（感溫包冷）',
+      on: '大（感溫包熱）',
+      initial: 0.5,
+      needsCut: true,
+      apply: (v) => {
+        diaphragmMesh.position.y = 0.42 - 0.03 * v
+        pinMesh.position.y = 0.12 - 0.1 * v
+        needleMesh.position.y = -0.15 - 0.1 * v
+        springPivot.scale.y = 1 - 0.35 * v
+        bulb.emissive.setHex(0xef4444)
+        bulb.emissiveIntensity = 0.35 * v
+      },
+      describe: (v) =>
+        v < 0.34
+          ? '過熱度小：感溫包冷、壓力低，彈簧把閥針往上頂，閥開小，供液少（避免液體回壓縮機）。'
+          : v < 0.67
+            ? '過熱度剛好：膜片上下的力平衡，閥針停在中間，供液剛好。'
+            : '過熱度大：感溫包熱、壓力高，把膜片往下推，閥針打開，供液變多。',
+    }
     b.note(bulb, '感溫包', '綁在蒸發器出口的吸氣管上，感應溫度')
     b.note(capillary, '毛細管', '把感溫包的壓力傳到膜片')
     b.note(diaphragm, '膜片', '上面推、下面頂，決定閥針開多大')
@@ -296,6 +376,7 @@ const builders: Record<Part3DId, () => PartModel> = {
     b.note(piston, '活塞', '把低壓氣體壓成高溫高壓（不能壓液體）')
     b.note(suction, '吸氣管（低壓）', '冷排回來的低溫低壓氣體')
     b.note(discharge, '排氣管（高壓）', '往油分離器、冷凝器；最燙的一段')
+    b.control = { kind: 'run', label: '壓縮機', off: '停機', on: '運轉', initial: 0, needsCut: true, describe: (v) => (v > 0.5 ? '運轉中：馬達帶動活塞來回，把吸進來的低壓氣體壓成高壓。' : '停機：按「運轉」看活塞怎麼動。') }
     return b.done()
   },
 
@@ -319,6 +400,7 @@ const builders: Record<Part3DId, () => PartModel> = {
     b.note(tubeM, '銅管', '冷媒在裡面放熱、凝結成液體')
     b.note(blade, '風扇', '把熱吹到室外；出風四、五十度以上')
     b.note(housing, '外框', '有外箱的耐風雨；裸露型台語叫「無穿衫」')
+    b.control = { kind: 'run', label: '風扇', off: '停', on: '運轉', initial: 0, describe: (v) => (v > 0.5 ? '風扇運轉：把冷媒放出來的熱吹到室外，出風四、五十度。' : '風扇停：熱排不出去，高壓會升高。') }
     return b.done()
   },
 
@@ -349,6 +431,7 @@ const builders: Record<Part3DId, () => PartModel> = {
     b.note(heater, '除霜電熱管', '冷凍庫會結霜，要定時除霜')
     b.note(fanRing, '風扇', '把庫內空氣吹過冷排降溫')
     b.note(pan, '接水盤', '除霜融化的水從這裡排掉')
+    b.control = { kind: 'run', label: '風扇', off: '停', on: '運轉', initial: 0, describe: (v) => (v > 0.5 ? '風扇運轉：把庫內的空氣吹過冷排，冷風再吹回庫內。' : '風扇停：庫內空氣不流動，冷不容易散開。') }
     return b.done()
   },
 
@@ -362,11 +445,28 @@ const builders: Record<Part3DId, () => PartModel> = {
     const ball = mat.steel()
     b.mesh(new THREE.SphereGeometry(0.3, 32, 32), ball)
     const bore = mat.dark()
-    b.cylX(0.13, 0.62, bore, [0, 0, 0], 24)
+    const borePivot = b.pivot([b.cylX(0.13, 0.62, bore, [0, 0, 0], 24)], [0, 0, 0])
     const stem = mat.steel()
     b.cylY(0.07, 0.5, stem, [0, 0.45, 0], 16)
     const handle = mat.paint(0xef4444)
-    b.box(0.9, 0.08, 0.16, handle, [0.3, 0.72, 0])
+    const handlePivot = b.pivot([b.box(0.9, 0.08, 0.16, handle, [0.3, 0.72, 0])], [0, 0.72, 0])
+    const flow = mat.fluid(0x38bdf8, 0.45)
+    b.cylX(0.09, 1.7, flow)
+    b.control = {
+      kind: 'toggle',
+      label: '手閥',
+      off: '關',
+      on: '開',
+      initial: 1,
+      needsCut: true,
+      apply: (v) => {
+        const a = (1 - v) * (Math.PI / 2)
+        handlePivot.rotation.y = a
+        borePivot.rotation.y = a
+        flow.opacity = 0.05 + 0.45 * v
+      },
+      describe: (v) => (v > 0.5 ? '開：把手跟管子平行，球的孔對著管子，冷媒通過。' : '關：把手轉 90° 跟管子垂直，球的孔轉開，冷媒被擋住。'),
+    }
     b.note(ball, '球', '中間有個孔：孔對著管子＝開，轉 90° ＝關')
     b.note(bore, '球中間的孔', '冷媒從這裡通過')
     b.note(handle, '把手', '跟管子平行＝開，垂直＝關')
@@ -380,9 +480,26 @@ const builders: Record<Part3DId, () => PartModel> = {
     b.box(1.2, 1.1, 0.6, housing)
     const bellows = mat.steel()
     for (let i = 0; i < 6; i++) b.mesh(new THREE.TorusGeometry(0.16, 0.04, 12, 32), bellows, [-0.3, -0.35 + i * 0.07, 0], [R, 0, 0])
-    for (let i = 0; i < 6; i++) b.mesh(new THREE.TorusGeometry(0.16, 0.04, 12, 32), bellows, [0.3, -0.35 + i * 0.07, 0], [R, 0, 0])
+    const high = Array.from({ length: 6 }, (_, i) => b.mesh(new THREE.TorusGeometry(0.16, 0.04, 12, 32), bellows, [0.3, -0.35 + i * 0.07, 0], [R, 0, 0]))
+    const highPivot = b.pivot(high, [0.3, -0.38, 0])
     const contacts = mat.glow(0xf59e0b)
-    b.box(0.5, 0.08, 0.2, contacts, [0, 0.25, 0])
+    const contactMesh = b.box(0.5, 0.08, 0.2, contacts, [0, 0.25, 0])
+    b.control = {
+      kind: 'slider',
+      label: '高壓壓力',
+      off: '正常',
+      on: '過高',
+      initial: 0.3,
+      needsCut: true,
+      apply: (v) => {
+        highPivot.scale.y = 1 + 0.6 * v
+        const trip = v > 0.75
+        contactMesh.position.y = trip ? 0.36 : 0.25
+        contacts.emissive.setHex(trip ? 0xef4444 : 0xf59e0b)
+        contacts.color.setHex(trip ? 0xef4444 : 0xf59e0b)
+      },
+      describe: (v) => (v > 0.75 ? '高壓超過設定：右邊的伸縮囊撐開、把接點頂開，切斷電源，壓縮機停機保護。' : v > 0.5 ? '高壓偏高：伸縮囊被推高，但還沒到跳脫的設定值。' : '高壓正常：接點接通，壓縮機運轉。'),
+    }
     const knob = mat.paint(0xe2e8f0)
     b.cylY(0.1, 0.18, knob, [-0.3, 0.64, 0], 24)
     b.cylY(0.1, 0.18, knob, [0.3, 0.64, 0], 24)

@@ -104,6 +104,12 @@
   background: rgb(251 191 36 / 0.85);
 }
 
+/* 主題「冷凍庫玻璃」：面板像霧面玻璃，透出後面的霜（上緣一條細亮線像玻璃反光） */
+.deck-hover :is(section, aside)[class*='bg-white/'] {
+  backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 0 rgb(186 230 253 / 0.08);
+}
+
 /* Apple 風格（只作用在投影片畫布與閱讀模式）：不顯示英文 mono 小標；中性外框改無框，靠填色分區 */
 .deck-hover .font-mono.uppercase {
   display: none;

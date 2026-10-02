@@ -11,6 +11,7 @@ import { toneStyles } from '../lib/tone'
 import { ChapterDrawer } from './ChapterDrawer'
 import { MobileBlock } from './mobile/MobileBlocks'
 import { SOURCE_LABEL } from './SlideCard'
+import { FrostBackground } from './ui/FrostBackground'
 
 const scrollToId = (id: string) => document.getElementById(`reader-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
@@ -26,8 +27,9 @@ export function ReaderView({ onExit }: { onExit: () => void }) {
   return (
     <MotionConfig reducedMotion="user">
       <DeckContext.Provider value={api}>
-        <div className="fixed inset-0 overflow-y-auto overflow-x-hidden bg-navy-950 text-[17px] leading-[1.7] text-slate-200">
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-white/10 bg-navy-900/95 px-3 backdrop-blur">
+        <div className="fixed inset-0 overflow-y-auto overflow-x-hidden bg-[#081526] text-[17px] leading-[1.7] text-slate-200">
+          <FrostBackground fixed className="-z-10" />
+          <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-white/10 bg-[#0b1d33]/90 px-3 backdrop-blur">
             <button
               type="button"
               onClick={() => setDrawerOpen(true)}

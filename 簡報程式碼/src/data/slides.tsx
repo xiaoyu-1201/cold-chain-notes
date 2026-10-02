@@ -194,8 +194,8 @@ const slideList: SlideData[] = [
             icon: RefreshCw,
             summary: '先看全貌，再補名詞與冷媒',
             chapters: [
-              { code: '圖解', title: '冷凍循環一圈', slide: 'cycle-lesson' },
               { code: '行程', title: '四大行程', slide: 'strokes' },
+              { code: '圖解', title: '冷凍循環一圈', slide: 'cycle-lesson' },
             ],
           },
           {
@@ -2661,8 +2661,8 @@ const ORDER = [
   'cover',
   'owner',
   'overview',
-  'cycle-lesson',
   'strokes',
+  'cycle-lesson',
   'check-1',
   'units',
   'reftools',

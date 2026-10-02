@@ -512,12 +512,17 @@ const slideList: SlideData[] = [
     blocks: [
       {
         type: 'grid',
-        className: 'grid-cols-[minmax(0,1.18fr)_minmax(0,1fr)]',
+        className: 'grid-cols-[minmax(0,0.74fr)_minmax(0,1.26fr)]',
         children: [
+          { type: 'showcase', parts: [{ id: 'comp', label: '壓縮機' }] },
           {
             type: 'grid',
-            className: 'grid-rows-[minmax(0,1.3fr)_minmax(0,1fr)]',
+            className: 'grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)]',
             children: [
+              {
+                type: 'grid',
+                className: 'grid-rows-[auto_minmax(0,1fr)]',
+                children: [
               {
                 type: 'concept',
                 icon: Gauge,
@@ -573,8 +578,8 @@ const slideList: SlideData[] = [
                   </>
                 ),
               },
-            ],
-          },
+                ],
+              },
           {
             type: 'alert',
             title: '兩大運轉紅線',
@@ -601,6 +606,8 @@ const slideList: SlideData[] = [
                   </>
                 ),
               },
+            ],
+          },
             ],
           },
         ],
@@ -632,6 +639,11 @@ const slideList: SlideData[] = [
       ),
     },
     blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,0.74fr)_minmax(0,1.26fr)]',
+        children: [
+          { type: 'showcase', parts: [{ id: 'cond', label: '氣冷式冷凝器' }] },
       {
         type: 'grid',
         className: 'grid-rows-[minmax(0,1.2fr)_minmax(0,1fr)]',
@@ -704,6 +716,8 @@ const slideList: SlideData[] = [
           },
         ],
       },
+        ],
+      },
     ],
     conclusion: {
       text: (
@@ -733,7 +747,12 @@ const slideList: SlideData[] = [
     blocks: [
       {
         type: 'grid',
-        className: 'grid-rows-[minmax(0,1.4fr)_minmax(0,1fr)]',
+        className: 'grid-cols-[minmax(0,0.74fr)_minmax(0,1.26fr)]',
+        children: [
+          { type: 'showcase', parts: [{ id: 'evap', label: '蒸發器（冷風機）' }] },
+      {
+        type: 'grid',
+        className: 'grid-rows-[minmax(0,1.6fr)_minmax(0,1fr)]',
         children: [
           {
             type: 'grid',
@@ -830,6 +849,8 @@ const slideList: SlideData[] = [
           },
         ],
       },
+        ],
+      },
     ],
     conclusion: {
       text: (
@@ -859,12 +880,23 @@ const slideList: SlideData[] = [
     blocks: [
       {
         type: 'grid',
-        className: 'grid-rows-[minmax(0,1fr)_auto]',
+        className: 'grid-cols-[minmax(0,0.74fr)_minmax(0,1.26fr)]',
         children: [
           {
-            type: 'grid',
-            className: 'grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]',
-            children: [
+            type: 'showcase',
+            parts: [
+              { id: 'txv', label: '膨脹閥' },
+              { id: 'evr', label: '電磁閥' },
+              { id: 'kp15', label: '壓力開關' },
+              { id: 'sgi', label: '視液鏡' },
+              { id: 'gbc', label: '手閥' },
+              { id: 'dml', label: '乾燥過濾器' },
+            ],
+          },
+      {
+        type: 'grid',
+        className: 'grid-rows-[auto_minmax(0,1fr)]',
+        children: [
               {
                 type: 'txv',
                 icon: SlidersHorizontal,
@@ -899,7 +931,7 @@ const slideList: SlideData[] = [
               },
               {
                 type: 'grid',
-                className: 'grid-rows-2 gap-4',
+                className: 'grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)]',
                 children: [
                   {
                     type: 'info',
@@ -909,20 +941,9 @@ const slideList: SlideData[] = [
                     body: '剛開機降溫或除霜完時，吸氣壓力偏高；CPR 限制吸氣壓力，避免壓縮機馬達超載燒毀。',
                     meta: '裝在吸氣管、壓縮機入口前',
                   },
-                  {
-                    type: 'info',
-                    icon: ShieldCheck,
-                    tone: 'ice',
-                    title: '其他保護零件',
-                    body: '液氣分離器、儲液器、油分離器、壓力開關：到「① 原理」的核心圖解點零件，就能看說明、聽錄音、看 3D 構造。',
-                  },
-                ],
-              },
-            ],
-          },
           {
             type: 'flow',
-            direction: 'row',
+            direction: 'col',
             compact: true,
             icon: PowerOff,
             tone: 'indigo',
@@ -936,6 +957,10 @@ const slideList: SlideData[] = [
             ],
             result: { label: '目的', text: '停機前先把低壓側的冷媒抽走，避免冷媒跑進壓縮機、稀釋冷凍油' },
           },
+                ],
+              },
+        ],
+      },
         ],
       },
     ],

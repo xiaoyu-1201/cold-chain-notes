@@ -10,7 +10,19 @@ import { Panel } from '../ui/Panel'
 export function FlowSteps({ block }: { block: FlowBlock }) {
   if (block.direction === 'row' && block.compact) return <CompactRow block={block} />
 
-  const body = block.direction === 'row' ? <RowFlow block={block} /> : <ColFlow block={block} />
+  const steps = block.direction === 'row' ? <RowFlow block={block} /> : <ColFlow block={block} />
+  // 直式／一般橫式也要顯示「目的」那一行（以前只有精簡橫式有）
+  const body = block.result ? (
+    <div className="flex h-full flex-col gap-3">
+      <div className="min-h-0 flex-1">{steps}</div>
+      <p className="flex flex-wrap items-baseline gap-x-3 rounded-2xl bg-emerald-400/[0.08] px-4 py-2.5">
+        <span className="text-[17px] font-bold text-emerald-300">{block.result.label}</span>
+        <span className="text-[19px] font-semibold leading-snug text-emerald-50">{block.result.text}</span>
+      </p>
+    </div>
+  ) : (
+    steps
+  )
   if (block.bare) return body
   return (
     <Panel icon={block.icon} title={block.title} en={block.en} tone={block.tone}>
@@ -73,7 +85,7 @@ function ColFlow({ block }: { block: FlowBlock }) {
               <span
                 className={cn(
                   'flex shrink-0 items-center justify-center rounded-full border-2 font-mono font-bold',
-                  compact ? 'size-9 text-[17px]' : 'size-11 text-[18px]',
+                  compact ? 'size-8 text-[16px]' : 'size-11 text-[18px]',
                   t.border,
                   t.soft,
                   t.strong,
@@ -81,11 +93,11 @@ function ColFlow({ block }: { block: FlowBlock }) {
               >
                 {i + 1}
               </span>
-              {!isLast && <span className="mt-1 w-0.5 flex-1 rounded bg-linear-to-b from-slate-500/60 to-slate-500/10" />}
+              {!isLast && <span className={cn('w-0.5 flex-1 rounded bg-linear-to-b from-slate-500/60 to-slate-500/10', compact ? 'mt-0.5' : 'mt-1')} />}
             </div>
-            <div className={cn('min-w-0 flex-1', compact ? 'pt-1' : 'pb-1 pt-1.5')}>
+            <div className={cn('min-w-0 flex-1', compact ? 'pt-0.5' : 'pb-1 pt-1.5')}>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                <h4 className={cn('font-bold leading-snug', compact ? 'text-[21px]' : 'text-[23px]', isLast && step.tone ? t.strong : 'text-slate-50')}>
+                <h4 className={cn('font-bold leading-snug', compact ? 'text-[20px]' : 'text-[23px]', isLast && step.tone ? t.strong : 'text-slate-50')}>
                   {step.title}
                 </h4>
                 {step.en && <span className="font-mono text-[16px] uppercase tracking-wider text-slate-400">{step.en}</span>}

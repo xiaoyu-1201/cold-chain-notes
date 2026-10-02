@@ -411,6 +411,12 @@ export interface RefSliderBlock {
 }
 
 /** 互動換算器：管徑「分」↔ mm（含考考我練習） */
+/** 產品展示：大的 3D／照片（元件章節的主角） */
+export interface ShowcaseBlock {
+  type: 'showcase'
+  parts: { id: string; label: string }[]
+}
+
 export interface FenBlock {
   type: 'fen'
 }
@@ -452,6 +458,7 @@ export type Block =
   | CycleLessonBlock
   | QuizBlock
   | FenBlock
+  | ShowcaseBlock
   | EstimateBlock
   | FlashcardsBlock
   | RefSliderBlock

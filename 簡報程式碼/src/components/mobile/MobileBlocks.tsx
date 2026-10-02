@@ -10,6 +10,7 @@ import { Segmented } from '../ui/Segmented'
 import { DataTable } from '../blocks/DataTable'
 import { EstimatePractice } from '../blocks/Estimate'
 import { FenConverter } from '../blocks/FenConverter'
+import { ProductShowcase } from '../three/ProductShowcase'
 import { Flashcards } from '../blocks/Flashcards'
 import { RefSlider } from '../blocks/RefSlider'
 import { BulbClock } from '../diagrams/BulbClock'
@@ -621,6 +622,8 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
 
     case 'fen':
       return <FenConverter mobile />
+    case 'showcase':
+      return <ProductShowcase parts={block.parts} mobile />
 
     case 'estimate':
       return <EstimatePractice block={block} mobile />

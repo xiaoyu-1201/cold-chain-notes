@@ -203,7 +203,7 @@ export function QAPanel({ block }: { block: QABlock }) {
     <Panel icon={block.icon} title={block.title} en={block.en} tone={block.tone}>
       <div className="flex h-full flex-col">
         <div className="flex items-center justify-center py-1">
-          <span className="bg-linear-to-br from-sky-100 via-sky-300 to-cyan-400 bg-clip-text font-mono text-[104px] font-black leading-none tracking-tight text-transparent">
+          <span className="bg-linear-to-br from-sky-100 via-sky-300 to-cyan-400 bg-clip-text pb-4 font-mono text-[104px] font-black leading-none tracking-tight text-transparent">
             Q&amp;A
           </span>
         </div>

@@ -372,7 +372,20 @@ export interface EstimateBlock {
 /** 名詞翻卡：國語／台語／英文／型號 */
 export interface FlashcardsBlock {
   type: 'flashcards'
-  cards: { term: string; alias: string; en: string; tip: string }[]
+  /** group：全選單的分組（同組的卡片要排在一起） */
+  cards: FlashCard[]
+}
+
+export interface FlashCard {
+  term: string
+  alias: string
+  en: string
+  tip: string
+  group: string
+  /** 上課錄音裡講台語的片段（錄音編號、起訖秒數；已用逐字對時確認） */
+  tw?: { rec: 1 | 2; from: number; to: number; say: string }
+  /** 有 3D 模型／照片的零件 id（three/ids 的 part3DFor） */
+  part?: string
 }
 
 /** 資料表（電腦版表格、手機版每欄一張卡片） */

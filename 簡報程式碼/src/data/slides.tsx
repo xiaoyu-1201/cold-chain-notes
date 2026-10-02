@@ -61,7 +61,7 @@ import {
 import handoutImg from '../assets/1001-handout.jpg'
 import refrigerantTableImg from '../assets/refrigerant-table.jpg'
 import { Danger, Em, Exp, Frac, Hl, Sub, Warn } from '../components/ui/rich'
-import { CLASS_AUDIO, CLASS_AUDIO_2, CLASS_AUDIO_3, CLASS_AUDIO_4, CLASS_AUDIO_5 } from './media'
+import { CLASS_AUDIO, CLASS_AUDIO_2, CLASS_AUDIO_3, CLASS_AUDIO_4, CLASS_AUDIO_5, CLASS_AUDIO_6 } from './media'
 import type { SlideData } from './types'
 
 /** 各頁定義（定義順序不等於顯示順序，顯示順序見檔案最後的 ORDER） */
@@ -1095,7 +1095,39 @@ const slideList: SlideData[] = [
       ),
     },
   },
-  /* ───────────────────────── 核心圖解：冷凍循環（可持續擴充） ───────────────────────── */
+  /* ───────────────────────── 1002 課堂錄音 Part 1（之後 10/2 的錄音加在 tracks） ───────────────────────── */
+  {
+    id: 'recording-4',
+    part: 'review',
+    chapter: '課堂錄音',
+    mark: 'AUDIO 4',
+    title: '錄音06｜毛細管冷排與店內實物',
+    en: 'Recording 06',
+    blocks: [
+      {
+        type: 'audio',
+        src: CLASS_AUDIO_6,
+        title: '錄音06',
+        en: 'Class Recording',
+        duration: '03:11',
+        chapters: [
+          { at: 0, title: '毛細管：便宜、可以剪長短', summary: '毛細管是細小的銅管，剪一段才幾百塊，長短可以自己剪；冰箱的冷排上面接毛細管就好' },
+          { at: 23, title: '「冷排」是籠統的說法', summary: '冷藏、冷凍的蒸發器都叫冷排；冷排、熱排的形式有百百種，這個是冰箱用的冷排' },
+          { at: 49, title: '有凸出的接管＝毛細管型', summary: '冷排上有凸出來的接管，就是接毛細管的型；沒有就是膨脹閥型。冷排大、能力大的，建議用膨脹閥型' },
+          { at: 92, title: '看貨架：壓縮機、冷媒、冷凍油', summary: '壓縮機看型號；冷媒鋼瓶有藍的、紅的，直接看標籤寫的型號；冷凍油一罐 4 公升，店裡叫「一加侖」，一箱 6 罐' },
+          { at: 151, title: '送貨要排順序', summary: '一次送三家以上，先排好先後順序，順路就好' },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          冰箱這類小系統用<Hl>毛細管</Hl>（便宜、可剪長短）；冷排大、能力大的用<Hl>膨脹閥型</Hl>。看冷排有沒有凸出的接管就分得出來。
+        </>
+      ),
+    },
+  },  /* ───────────────────────── 核心圖解：冷凍循環（可持續擴充） ───────────────────────── */
   {
     id: 'cycle-lesson',
     part: 'basics',
@@ -2710,6 +2742,7 @@ const ORDER = [
   'recording',
   'recording-2',
   'recording-3',
+  'recording-4',
   'glossary',
   'quiz',
   'lesson-insights',

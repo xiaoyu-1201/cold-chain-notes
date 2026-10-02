@@ -17,7 +17,6 @@ import {
   Fan,
   Fish,
   Flame,
-  FlaskConical,
   Gauge,
   GraduationCap,
   Handshake,
@@ -197,8 +196,6 @@ const slideList: SlideData[] = [
             chapters: [
               { code: '圖解', title: '冷凍循環一圈', slide: 'cycle-lesson' },
               { code: '行程', title: '四大行程', slide: 'strokes' },
-              { code: 'CH.00', title: '名詞與熱工物理', slide: 'ch0' },
-              { code: 'CH.01', title: '冷凍循環與冷媒', slide: 'ch1' },
             ],
           },
           {
@@ -211,6 +208,7 @@ const slideList: SlideData[] = [
               { code: '單位', title: '分、溫度壓力', slide: 'units' },
               { code: 'App', title: 'Ref Tools 網頁版', slide: 'reftools' },
               { code: '速查', title: '常用冷媒速查表', slide: 'reftable' },
+              { code: '冷媒', title: '冷媒演進與冷凍油', slide: 'refrigerants' },
             ],
           },
           {
@@ -440,8 +438,8 @@ const slideList: SlideData[] = [
             en: 'Refrigerant & Oil',
             items: 'R404A、R134a、R448A、R22（維修）；POE / 礦物油',
             side: '循環工質',
-            chapter: '第 1 章',
-            slide: 'ch1',
+            chapter: '冷媒',
+            slide: 'refrigerants',
           },
           {
             icon: Waypoints,
@@ -490,171 +488,6 @@ const slideList: SlideData[] = [
       text: (
         <>
           每一個料號都對應循環中的一個位置——<Hl>懂原理</Hl>，才知道客人真正需要的是哪一顆零件。
-        </>
-      ),
-    },
-  },
-
-  /* ───────────────────────── 06 第 0 章 ───────────────────────── */
-  {
-    id: 'ch0',
-    source: 'handbook',
-    part: 'basics',
-    chapter: '第 0 章',
-    title: '冷凍名詞與熱工物理',
-    en: 'Terms & Thermal Physics',
-    store: {
-      products: ['雙錶組', '夾式溫度計', 'P-T 對照卡'],
-      tip: (
-        <>
-          客人拿著錶問「低壓這樣正常嗎？」→ 先問<Em>冷媒種類</Em>，查 P-T 表換算飽和溫度，再算過熱度才有答案。
-        </>
-      ),
-    },
-    blocks: [
-      {
-        type: 'grid',
-        className: 'grid-cols-2 grid-rows-2',
-        children: [
-          {
-            type: 'concept',
-            icon: Flame,
-            tone: 'amber',
-            title: '顯熱 vs. 潛熱',
-            en: 'Sensible vs. Latent Heat',
-            body: (
-              <>
-                冷凍核心靠冷媒「<Hl>相變潛熱</Hl>」（蒸發吸熱、冷凝放熱），效率遠高於單純降溫的顯熱。
-              </>
-            ),
-            pairs: [
-              { label: '顯熱', en: 'Sensible', desc: '溫度改變、相態不變', tone: 'slate' },
-              { label: '潛熱', en: 'Latent', desc: '相態改變、溫度不變 → 冷凍核心', tone: 'ice' },
-            ],
-          },
-          {
-            type: 'concept',
-            icon: Gauge,
-            tone: 'teal',
-            title: '飽和狀態與 P-T 關係',
-            en: 'Saturation · P-T Chart',
-            body: (
-              <>
-                冷媒的壓力和沸點<Hl>綁在一起</Hl>（P-T 關係）：量到壓力，就能換算出管內的飽和溫度。
-              </>
-            ),
-            chain: ['量測壓力錶', '查 P-T 表', '換算飽和溫度'],
-          },
-          {
-            type: 'concept',
-            icon: ThermometerSun,
-            tone: 'ice',
-            title: '過熱度 Superheat',
-            en: 'SH · 防液擊',
-            badge: { label: '進階', tone: 'amber' },
-            formula: { lhs: 'SH', rhs: '吸氣溫度 − 飽和蒸發溫度' },
-            body: (
-              <>
-                過熱度確保進壓縮機的冷媒 <Hl>100% 是氣體</Hl>，防止液擊（液體打壞壓縮機）。
-              </>
-            ),
-            guard: '防液擊',
-          },
-          {
-            type: 'concept',
-            icon: Snowflake,
-            tone: 'indigo',
-            title: '過冷度 Subcooling',
-            en: 'SC · 防閃發氣體',
-            badge: { label: '進階', tone: 'amber' },
-            formula: { lhs: 'SC', rhs: '飽和冷凝溫度 − 液管溫度' },
-            body: (
-              <>
-                過冷度確保進膨脹閥的冷媒 <Hl>100% 是液體</Hl>，避免液管裡提早冒出氣體（閃發氣體）。
-              </>
-            ),
-            guard: '防閃發氣體',
-          },
-        ],
-      },
-    ],
-    conclusion: {
-      text: (
-        <>
-          冷凍不是製造冷，而是「<Hl>熱量的搬運</Hl>」：靠液態變氣態吸熱、壓力和溫度綁在一起。過熱度、過冷度在第二階段（進階）會再深入。
-        </>
-      ),
-    },
-  },
-
-  /* ───────────────────────── 07 第 1 章 ───────────────────────── */
-  {
-    id: 'ch1',
-    source: 'handbook',
-    part: 'basics',
-    chapter: '第 1 章',
-    title: '基本冷凍循環與冷媒',
-    en: 'Refrigeration Cycle & Refrigerants',
-    store: {
-      products: ['R404A', 'R134a', 'R448A', 'POE / 礦物油'],
-      tip: (
-        <>
-          冷媒與冷凍油要配對：HFC 配 POE、R22 舊機配礦物油；不同冷媒<Em>嚴禁混灌</Em>，開單前先確認原機冷媒。
-        </>
-      ),
-    },
-    blocks: [
-      {
-        type: 'grid',
-        className: 'grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]',
-        children: [
-          {
-            type: 'cycle',
-            icon: RefreshCw,
-            tone: 'ice',
-            title: '封閉循環示意',
-            en: 'Closed-Loop Vapor-Compression Cycle',
-          },
-          {
-            type: 'grid',
-            className: 'grid-rows-[minmax(0,1fr)_auto]',
-            children: [
-              {
-                type: 'flow',
-                direction: 'col',
-                icon: Workflow,
-                tone: 'ice',
-                title: '封閉循環四大步',
-                en: 'Four Steps',
-                steps: [
-                  { title: '壓縮機', en: 'Compressor', desc: '壓成高溫高壓氣態', tag: '高壓側', tone: 'red' },
-                  { title: '冷凝器', en: 'Condenser', desc: '散熱到室外：氣態 → 中溫中壓液態', tag: '高壓側', tone: 'amber' },
-                  { title: '膨脹閥', en: 'Expansion Valve', desc: '降壓節流 → 液氣混合', tag: '高壓 → 低壓', tone: 'teal' },
-                  { title: '蒸發器', en: 'Evaporator', desc: '在庫內吸熱，完全蒸發成低溫低壓氣態', tag: '低壓側', tone: 'ice' },
-                ],
-              },
-              {
-                type: 'timeline',
-                icon: History,
-                tone: 'emerald',
-                title: '冷媒演進',
-                en: 'Refrigerant Evolution',
-                items: [
-                  { gen: 'CFCs', example: 'R12', note: '破壞臭氧層，已禁用', tone: 'slate' },
-                  { gen: 'HCFCs', example: 'R22', note: '過渡冷媒，逐步淘汰', tone: 'slate' },
-                  { gen: 'HFCs', example: 'R404A / R134a', note: 'ODP = 0，但 GWP 高', tone: 'indigo' },
-                  { gen: '低 GWP', example: '自然冷媒', note: 'R448A・R290・R744', tone: 'emerald' },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    ],
-    conclusion: {
-      text: (
-        <>
-          <Hl>壓縮機和膨脹閥</Hl>把系統分成高壓側和低壓側。故障追根究柢，不外乎<Hl>冷媒流量不對、換熱不好或壓力失衡</Hl>。
         </>
       ),
     },
@@ -1065,48 +898,23 @@ const slideList: SlideData[] = [
                 ],
               },
               {
-                type: 'section',
-                icon: ShieldCheck,
-                tone: 'teal',
-                title: '四大核心安全閥件',
-                en: 'Protection Devices',
-                className: 'grid-cols-2 grid-rows-2 gap-4',
+                type: 'grid',
+                className: 'grid-rows-2 gap-4',
                 children: [
-                  {
-                    type: 'info',
-                    icon: Droplets,
-                    tone: 'ice',
-                    title: '液氣分離器',
-                    en: 'Accumulator',
-                    body: '在液體進壓縮機之前攔下來，避免壓縮機被液體打壞。',
-                    meta: '吸氣管・低壓側',
-                  },
-                  {
-                    type: 'info',
-                    icon: Cylinder,
-                    tone: 'amber',
-                    title: '高壓儲液器',
-                    en: 'Receiver',
-                    body: '存一些液態冷媒當緩衝，讓膨脹閥一直拿到液態、供液穩定。',
-                    meta: '液管・高壓側',
-                  },
-                  {
-                    type: 'info',
-                    icon: FlaskConical,
-                    tone: 'violet',
-                    title: '油分離器',
-                    en: 'Oil Separator',
-                    body: '在排氣管把冷凍油分出來，自動送回壓縮機的曲軸箱。',
-                    meta: '排氣管・高壓側',
-                  },
                   {
                     type: 'info',
                     icon: Gauge,
                     tone: 'teal',
-                    title: '曲軸箱壓力調節閥',
-                    en: 'CPR Valve',
-                    body: '剛開機降溫或除霜完時吸氣壓力偏高；它限制吸氣壓力，避免壓縮機馬達超載燒毀。',
-                    meta: '吸氣管・壓縮機入口',
+                    title: '曲軸箱壓力調節閥（CPR）',
+                    body: '剛開機降溫或除霜完時，吸氣壓力偏高；CPR 限制吸氣壓力，避免壓縮機馬達超載燒毀。',
+                    meta: '裝在吸氣管、壓縮機入口前',
+                  },
+                  {
+                    type: 'info',
+                    icon: ShieldCheck,
+                    tone: 'ice',
+                    title: '其他保護零件',
+                    body: '液氣分離器、儲液器、油分離器、壓力開關：到「① 原理」的核心圖解點零件，就能看說明、聽錄音、看 3D 構造。',
                   },
                 ],
               },
@@ -1614,7 +1422,7 @@ const slideList: SlideData[] = [
           },
           {
             type: 'grid',
-            className: 'grid-rows-3 gap-4',
+            className: 'grid-rows-2 gap-4',
             children: [
               {
                 type: 'info',
@@ -1638,17 +1446,6 @@ const slideList: SlideData[] = [
                   </>
                 ),
               },
-              {
-                type: 'info',
-                icon: Gauge,
-                tone: 'ice',
-                title: '溫度壓力：用 Ref Tools App',
-                body: (
-                  <>
-                    很多客戶不懂溫度和壓力的關係、只憑經驗；下載冷媒工具 App（Ref Tools），查資料就能幫忙<Hl>排除故障</Hl>。
-                  </>
-                ),
-              },
             ],
           },
         ],
@@ -1657,7 +1454,7 @@ const slideList: SlideData[] = [
     conclusion: {
       text: (
         <>
-          先把單位搞好：<Hl>1 吋＝8 分＝25.4 mm</Hl>；高壓、低壓幾分要能一眼看懂，溫度壓力用 App 查。
+          先把單位搞好：<Hl>1 吋＝8 分＝25.4 mm</Hl>；高壓、低壓幾分要能一眼看懂。溫度和壓力怎麼換算，下一頁用 Ref Tools 練習。
         </>
       ),
     },
@@ -1861,7 +1658,7 @@ const slideList: SlideData[] = [
                 value: '5 ~ 7',
                 unit: '°C',
                 tone: 'ice',
-                note: '一般取 5°C，負載變化大可到 7°C；用表面溫度計量時，讀數要再減 2～3°C',
+                note: '過熱度＝吸氣溫度－飽和蒸發溫度；一般取 5°C，負載變化大可到 7°C',
               },
               {
                 label: '壓縮機吸氣口總過熱度',
@@ -1876,7 +1673,7 @@ const slideList: SlideData[] = [
                   </>
                 ),
               },
-              { label: '液管過冷度', tag: 'SC', value: '≈ 5', unit: '°C', tone: 'indigo', note: '過冷度約 5°C 最好；太小，液管容易冒出氣泡（閃發氣體）' },
+              { label: '液管過冷度', tag: 'SC', value: '≈ 5', unit: '°C', tone: 'indigo', note: '過冷度＝飽和冷凝溫度－液管溫度；約 5°C 最好，太小液管容易冒氣泡' },
             ],
           },
         ],
@@ -2216,8 +2013,23 @@ const slideList: SlideData[] = [
     blocks: [
       {
         type: 'grid',
-        className: 'grid-cols-4',
+        className: 'grid-rows-[auto_minmax(0,1fr)]',
         children: [
+          {
+            type: 'info',
+            icon: Flame,
+            tone: 'amber',
+            title: '冷凍靠的是「潛熱」',
+            body: (
+              <>
+                冷媒<Hl>變相</Hl>（氣↔液）時吸收或放出的熱叫潛熱：溫度不變、相態改變，量比單純升降溫的顯熱大得多。冷凝器（氣→液）放熱、蒸發器（液→氣）吸熱，靠的都是潛熱。
+              </>
+            ),
+          },
+          {
+            type: 'grid',
+            className: 'grid-cols-4',
+            children: [
           {
             type: 'concept',
             icon: Cylinder,
@@ -2257,6 +2069,8 @@ const slideList: SlideData[] = [
             body: '液態冷媒在低壓下吸熱、蒸發成氣體，把庫房和貨物的熱吸走——這就是我們要的「冷」。',
             chain: ['液氣混合', '低溫低壓氣態'],
             points: ['術語：等壓等溫吸熱汽化', '要完全蒸發才回壓縮機'],
+          },
+            ],
           },
         ],
       },
@@ -2361,6 +2175,75 @@ const slideList: SlideData[] = [
       text: (
         <>
           <Hl>R22 是基準（40.42°C 冷凝 ≈ 210 psig）</Hl>；R438A 最接近 R22，R404A、R507 高壓高約 2 成，散熱器要配大一點。
+        </>
+      ),
+    },
+  },
+
+  /* ───────────────────────── 冷媒演進與冷凍油（原第 1 章的冷媒內容） ───────────────────────── */
+  {
+    id: 'refrigerants',
+    source: 'handbook',
+    part: 'units',
+    chapter: '冷媒',
+    mark: 'GWP',
+    title: '冷媒的演進與冷凍油搭配',
+    en: 'Refrigerants & Oils',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
+        children: [
+          {
+            type: 'timeline',
+            icon: History,
+            tone: 'emerald',
+            title: '冷媒演進：越來越環保',
+            items: [
+              { gen: 'CFCs', example: 'R12', note: '破壞臭氧層，已禁用', tone: 'slate' },
+              { gen: 'HCFCs', example: 'R22', note: '過渡冷媒，逐步淘汰；老機器還很多', tone: 'slate' },
+              { gen: 'HFCs', example: 'R404A／R134a／R507', note: '不破壞臭氧層（ODP＝0），但溫室效應（GWP）高', tone: 'indigo' },
+              { gen: '低 GWP', example: 'R448A・R290・R744', note: '新一代冷媒；R290 會燃燒，要特別注意安全', tone: 'emerald' },
+            ],
+          },
+          {
+            type: 'grid',
+            className: 'grid-rows-2 gap-4',
+            children: [
+              {
+                type: 'info',
+                icon: Droplets,
+                tone: 'amber',
+                title: '冷凍油要跟冷媒配對',
+                body: (
+                  <>
+                    R404A、R134a、R507 這些 HFC 冷媒要用 <Hl>POE 油</Hl>；R22 老機器多用礦物油。不同冷媒<Em>絕對不能混灌</Em>，開單前先確認原機的冷媒。
+                  </>
+                ),
+                warn: '舊的 R22 壓縮機改用 POE 油時，要先清洗系統，避免兩種油混在一起。',
+              },
+              {
+                type: 'list',
+                icon: Snowflake,
+                tone: 'ice',
+                title: '店裡常見冷媒用在哪',
+                items: [
+                  { icon: Snowflake, title: 'R404A、R507', desc: '冷凍庫、低溫冷藏' },
+                  { icon: Thermometer, title: 'R134a', desc: '冷藏、冰箱、汽車冷氣' },
+                  { icon: Fan, title: 'R410A、R32', desc: '冷氣（壓力比較高）' },
+                  { icon: History, title: 'R22', desc: '舊機器維修；資深師傅的比較基準' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          <Hl>冷媒和冷凍油要成對</Hl>：HFC 配 POE、R22 舊機配礦物油；不同冷媒不能混灌，換冷媒、換油要先清洗系統。
         </>
       ),
     },
@@ -2797,12 +2680,11 @@ const ORDER = [
   'overview',
   'cycle-lesson',
   'strokes',
-  'ch0',
-  'ch1',
   'check-1',
   'units',
   'reftools',
   'reftable',
+  'refrigerants',
   'check-2',
   'industry',
   'check-3',

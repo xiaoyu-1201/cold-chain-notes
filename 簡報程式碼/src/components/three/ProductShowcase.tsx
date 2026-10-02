@@ -2,6 +2,7 @@ import { Box, Camera, Layers, RotateCw } from 'lucide-react'
 import { lazy, Suspense, useCallback, useState } from 'react'
 import { photoCredits } from '../../data/photoCredits'
 import { cn } from '../../lib/cn'
+import { Deferred } from '../ui/Deferred'
 import { Segmented } from '../ui/Segmented'
 import { part3DFor } from './ids'
 import type { LegendItem, PartControl } from './models'
@@ -41,6 +42,7 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
     ? { title: 'text-[17px]', small: 'text-[13px]', body: 'text-[14px]', pill: 'px-3 py-1.5 text-[13px]' }
     : { title: 'text-[24px]', small: 'text-[16px]', body: 'text-[17px]', pill: 'px-4 py-2 text-[16px]' }
   const pill = (on: boolean) => cn('flex items-center gap-1.5 rounded-full font-semibold transition', t.pill, on ? 'bg-sky-400 text-navy-950' : 'bg-white/[0.1] text-slate-100 hover:bg-white/[0.16]', focusRing)
+  const loading = <p className={cn('absolute inset-0 flex items-center justify-center text-slate-400', t.body)}>3D 模型載入中…</p>
 
   return (
     <section className={cn('flex min-h-0 flex-col rounded-[28px] bg-white/[0.045]', mobile ? 'gap-2.5 p-3' : 'h-full gap-3 p-6')}>
@@ -82,9 +84,11 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
             onTouchStart={(e) => e.stopPropagation()}
             onTouchEnd={(e) => e.stopPropagation()}
           >
-            <Suspense fallback={<p className={cn('absolute inset-0 flex items-center justify-center text-slate-400', t.body)}>3D 模型載入中…</p>}>
-              <Part3D key={id} id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} />
-            </Suspense>
+            <Deferred fallback={loading}>
+              <Suspense fallback={loading}>
+                <Part3D key={id} id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} />
+              </Suspense>
+            </Deferred>
             <div className="absolute bottom-3 left-3 flex flex-wrap gap-2">
               <button type="button" aria-pressed={cut} onClick={() => setCut((c) => !c)} className={pill(cut)}>
                 <Layers className="size-4" aria-hidden />

@@ -141,6 +141,12 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
         <span className="mr-2 font-bold text-sky-300">重點</span>
         {note.point}
       </p>
+      {note.field && (
+        <p className={cn('mt-1.5 leading-snug text-slate-300', large ? 'text-[18px]' : 'text-[16px]')}>
+          <span className="mr-2 font-bold text-emerald-300">現場</span>
+          {note.field}
+        </p>
+      )}
 
       <div className="mt-3 flex flex-wrap gap-2">
         {model && (

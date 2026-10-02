@@ -1,31 +1,36 @@
-import { Play, Power, RotateCcw } from 'lucide-react'
+import { Minus, Play, Plus, Power, RotateCcw, Scan } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js'
 import type { CycleNodeId } from '../../data/cycleNotes'
 import type { FaultFx, PipeMode } from '../../data/faults'
 import { cn } from '../../lib/cn'
 import { buildPart, type Part3DId } from './models'
+import { acquireRenderer, releaseRenderer } from './rendererPool'
 
 type V3 = [number, number, number]
 type PipeId = 'discharge' | 'liquid' | 'mixture' | 'suction'
 /** 名稱標籤放哪一側：上（預設）、下、左、右 */
 type Side = 't' | 'b' | 'l' | 'r'
 
-/** 零件擺位（對照 2D 圖：上冷凝器、下蒸發器、右壓縮機、左膨脹閥，小零件在管線上） */
+/**
+ * 零件擺位（依老闆 10/2 看 3D 後的修正〔錄音07 00:51～03:30〕）：
+ * - 冷凝器「上進下出」：高溫氣體從上面進去，液體從下面出來
+ * - 儲液器要「進去再出來」：液管先進儲液器上方、從底部取液出來，不是從旁邊經過
+ * - 膨脹閥裝在蒸發器旁邊（很多做「內膨」，鎖在蒸發器箱子裡，因為會結冰滴水）；電磁閥拉到膨脹閥前面
+ */
 const PLACEMENTS: { id: Part3DId; pos: V3; scale: number; rotZ?: number; label: string; major?: boolean; side?: Side }[] = [
   { id: 'cond', pos: [0, 1.9, 0], scale: 0.85, label: '② 冷凝器', major: true },
-  { id: 'evap', pos: [0, -1.9, 0], scale: 0.85, label: '④ 蒸發器', major: true },
+  { id: 'evap', pos: [0.4, -1.9, 0], scale: 0.85, label: '④ 蒸發器', major: true },
   { id: 'comp', pos: [3.2, 0, 0], scale: 0.55, label: '① 壓縮機', major: true, side: 'l' },
-  { id: 'txv', pos: [-3.2, 0, 0], scale: 0.42, rotZ: Math.PI / 2, label: '③ 膨脹閥', major: true, side: 'r' },
-  { id: 'receiver', pos: [-1.55, 2.2, 0], scale: 0.24, label: '儲液器' },
-  { id: 'gbc', pos: [-2.35, 1.9, 0], scale: 0.24, label: '手閥', side: 'b' },
-  { id: 'dml', pos: [-3.2, 1.35, 0], scale: 0.2, rotZ: Math.PI / 2, label: '乾燥過濾器', side: 'r' },
-  { id: 'sgi', pos: [-3.2, 0.98, 0], scale: 0.24, rotZ: Math.PI / 2, label: '視液鏡', side: 'r' },
-  { id: 'evr', pos: [-3.2, 0.62, 0], scale: 0.22, rotZ: Math.PI / 2, label: '電磁閥', side: 'r' },
-  { id: 'tc', pos: [-4.45, 0.62, 0], scale: 0.3, label: '溫控器' },
+  { id: 'txv', pos: [-1.55, -1.9, 0], scale: 0.34, label: '③ 膨脹閥', major: true },
+  { id: 'receiver', pos: [-1.75, 1.8, 0], scale: 0.24, label: '儲液器', side: 'l' },
+  { id: 'gbc', pos: [-3.2, 0.75, 0], scale: 0.24, rotZ: Math.PI / 2, label: '手閥', side: 'r' },
+  { id: 'dml', pos: [-3.2, 0.2, 0], scale: 0.2, rotZ: Math.PI / 2, label: '乾燥過濾器', side: 'r' },
+  { id: 'sgi', pos: [-3.2, -0.35, 0], scale: 0.24, rotZ: Math.PI / 2, label: '視液鏡', side: 'r' },
+  { id: 'evr', pos: [-2.55, -1.9, 0], scale: 0.22, label: '電磁閥', side: 'b' },
+  { id: 'tc', pos: [-4.45, 0.55, 0], scale: 0.3, label: '溫控器' },
   { id: 'oub', pos: [3.2, 1.3, 0], scale: 0.24, label: '油分離器', side: 'l' },
   { id: 'kp15', pos: [4.45, 0.15, 0], scale: 0.3, label: '壓力開關' },
   { id: 'acc', pos: [3.2, -1.3, 0], scale: 0.24, label: '液氣分離器', side: 'l' },
@@ -33,19 +38,28 @@ const PLACEMENTS: { id: Part3DId; pos: V3; scale: number; rotZ?: number; label: 
 
 /** 四段管路（依冷媒流向）＋顏色＋狀態標籤（標在管路外側） */
 const PIPES: { id: PipeId; color: number; points: V3[]; label: string; labelPos: V3; side: Side }[] = [
-  { id: 'discharge', color: 0xf87171, points: [[3.2, 0.75, 0], [3.2, 1.9, 0], [1.05, 1.9, 0]], label: '高溫高壓氣態', labelPos: [3.42, 1.65, 0], side: 'r' },
-  { id: 'liquid', color: 0xfbbf24, points: [[-1.05, 1.9, 0], [-3.2, 1.9, 0], [-3.2, 0.42, 0]], label: '中溫中壓液態', labelPos: [-3.42, 1.6, 0], side: 'l' },
-  { id: 'mixture', color: 0x5eead4, points: [[-3.2, -0.42, 0], [-3.2, -1.9, 0], [-0.95, -1.9, 0]], label: '液氣混合', labelPos: [-3.42, -1.35, 0], side: 'l' },
-  { id: 'suction', color: 0x38bdf8, points: [[0.95, -1.9, 0], [3.2, -1.9, 0], [3.2, -0.75, 0]], label: '低溫低壓氣態', labelPos: [3.42, -1.6, 0], side: 'r' },
+  // 從冷凝器上方進去
+  { id: 'discharge', color: 0xf87171, points: [[3.2, 0.75, 0], [3.2, 2.3, 0], [1.08, 2.3, 0]], label: '高溫高壓氣態', labelPos: [3.42, 1.75, 0], side: 'r' },
+  // 冷凝器下方出來 → 繞上去從儲液器上方進去 → 底部出來 → 沿左邊往下 → 走到蒸發器旁的膨脹閥
+  {
+    id: 'liquid',
+    color: 0xfbbf24,
+    points: [[-1.08, 1.5, 0], [-1.4, 1.5, 0], [-1.4, 2.32, 0], [-1.75, 2.32, 0], [-1.75, 1.15, 0], [-3.2, 1.15, 0], [-3.2, -1.9, 0], [-1.86, -1.9, 0]],
+    label: '中溫中壓液態',
+    labelPos: [-3.42, -0.9, 0],
+    side: 'l',
+  },
+  { id: 'mixture', color: 0x5eead4, points: [[-1.24, -1.9, 0], [-0.55, -1.9, 0]], label: '液氣混合', labelPos: [-1.3, -2.15, 0], side: 'b' },
+  { id: 'suction', color: 0x38bdf8, points: [[1.35, -1.9, 0], [3.2, -1.9, 0], [3.2, -0.75, 0]], label: '低溫低壓氣態', labelPos: [3.42, -1.6, 0], side: 'r' },
 ]
 
 /** 啟動後的導覽：冷媒從壓縮機出發，一段一段跑完一圈 */
 const STAGES: { node: CycleNodeId; title: string; text: string }[] = [
   { node: 'comp', title: '① 壓縮機啟動', text: '把低溫低壓氣體壓成高溫高壓氣體' },
   { node: 'discharge', title: '高壓氣管', text: '高溫高壓氣體從壓縮機流到冷凝器' },
-  { node: 'cond', title: '② 冷凝器放熱', text: '風扇把熱吹到室外，冷媒凝結成液體' },
-  { node: 'liquid', title: '液管', text: '液態冷媒經過儲液器、乾燥過濾器、視液鏡，流到膨脹閥' },
-  { node: 'txv', title: '③ 膨脹閥降壓', text: '液態冷媒擠過小孔，壓力和溫度一起下降' },
+  { node: 'cond', title: '② 冷凝器放熱', text: '冷媒上進下出；風扇把熱吹到室外，冷媒凝結成液體' },
+  { node: 'liquid', title: '液管', text: '液態冷媒先進儲液器再出來，經過乾燥過濾器、視液鏡、電磁閥，流到膨脹閥' },
+  { node: 'txv', title: '③ 膨脹閥降壓', text: '膨脹閥裝在蒸發器旁；液態冷媒擠過小孔，壓力和溫度一起下降' },
   { node: 'mixture', title: '液氣混合段', text: '低溫的液氣混合冷媒流進蒸發器' },
   { node: 'evap', title: '④ 蒸發器吸熱', text: '冷媒蒸發，吸走庫內的熱；風扇吹出冷風' },
   { node: 'suction', title: '吸氣管', text: '低溫低壓氣體回到壓縮機，開始下一圈' },
@@ -78,6 +92,10 @@ interface Api {
   start: () => void
   stop: () => void
   skip: () => void
+  /** 回到全覽 */
+  home: () => void
+  /** 放大（f < 1）或縮小（f > 1） */
+  zoom: (f: number) => void
 }
 
 /** 整套冷凍循環 3D：按「啟動」看冷媒跑一圈；故障模擬演出拿掉零件的後果；零件可點選、可剖開 */
@@ -88,16 +106,14 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
   const api = useRef<Api | null>(null)
   const [phase, setPhase] = useState<Phase>('off')
   const [stage, setStage] = useState(0)
-  const stateRef = useRef({ setPhase, setStage })
+  const [zoomed, setZoomed] = useState(false)
+  const stateRef = useRef({ setPhase, setStage, setZoomed })
 
   useEffect(() => {
     const host = hostRef.current
     if (!host) return
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.localClippingEnabled = true
-    renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.domElement.style.display = 'block'
+    const pooled = acquireRenderer()
+    const { renderer } = pooled
     host.appendChild(renderer.domElement)
 
     const labels = new CSS2DRenderer()
@@ -107,9 +123,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     host.appendChild(labels.domElement)
 
     const scene = new THREE.Scene()
-    const pmrem = new THREE.PMREMGenerator(renderer)
-    const envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
-    scene.environment = envTex
+    scene.environment = pooled.env
     const key = new THREE.DirectionalLight(0xffffff, 1.1)
     key.position.set(3, 6, 6)
     scene.add(key, new THREE.AmbientLight(0xffffff, 0.3))
@@ -118,9 +132,12 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     camera.position.set(0, 1.5, 12.5)
     const controls = new OrbitControls(camera, renderer.domElement)
     controls.enableDamping = true
-    controls.minDistance = 5
+    controls.minDistance = 2.2
     controls.maxDistance = 26
     controls.maxPolarAngle = Math.PI * 0.75
+    // 滾輪往游標的位置放大；右鍵（觸控：雙指）拖曳＝平移
+    controls.zoomToCursor = true
+    controls.screenSpacePanning = true
 
     /** 零件的材質（記住原本的發光，取消高亮時還原） */
     const partMats = new Map<CycleNodeId, { m: THREE.MeshStandardMaterial; emissive: number; intensity: number }[]>()
@@ -228,7 +245,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     const heatOut = makeLabel('放熱 → 室外', null, false, '#fca5a5')
     heatOut.position.set(0, 3.4, 0)
     const heatIn = makeLabel('吸熱 ← 庫內', null, false, '#7dd3fc')
-    heatIn.position.set(0, -3.3, 0)
+    heatIn.position.set(0.4, -3.3, 0)
     scene.add(heatOut, heatIn)
 
     // 熱氣（冷凝器上方往上飄）與冷風（蒸發器下方往下吹）
@@ -241,7 +258,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
         return { mesh, x: a + Math.random() * (b - a), z: -0.15 + Math.random() * 0.5, phase: Math.random(), y0, y1 }
       })
     const hot = puffs(18, 0xfca5a5, [[-1.0, 1.0]], 2.55, 3.2)
-    const cold = puffs(16, 0x93c5fd, [[-1.0, -0.2], [0.2, 1.0]], -2.3, -3.0)
+    const cold = puffs(16, 0x93c5fd, [[-0.6, 0.2], [0.6, 1.4]], -2.3, -3.0)
 
     // ── 故障模擬用的物件 ──
     const tag = (bg: string) => {
@@ -263,7 +280,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       c.position.set((Math.random() - 0.5) * 0.3, (Math.random() - 0.5) * 0.3, (Math.random() - 0.5) * 0.3)
       ice.add(c)
     }
-    ice.position.set(-3.2, 0.36, 0.05)
+    ice.position.set(-1.92, -1.9, 0.05)
     ice.visible = false
     scene.add(ice)
     // 冷凍油：琥珀色油滴沿著整圈跑（穿過零件內部）
@@ -305,6 +322,44 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       phase = p
       stateRef.current.setPhase(p)
     }
+
+    // 鏡頭：平常由使用者自己縮放／平移；雙擊零件或按按鈕時，平滑飛過去
+    const homePos = new THREE.Vector3(0, 1.5, 12.5)
+    let atHome = true
+    let fly: { p0: THREE.Vector3; t0: THREE.Vector3; p1: THREE.Vector3; t1: THREE.Vector3; start: number } | null = null
+    const FLY_SEC = 0.7
+    const markZoomed = (z: boolean) => {
+      if (atHome !== z) return
+      atHome = !z
+      stateRef.current.setZoomed(z)
+    }
+    const flyTo = (target: THREE.Vector3, pos: THREE.Vector3) => {
+      fly = { p0: camera.position.clone(), t0: controls.target.clone(), p1: pos, t1: target.clone(), start: clock.getElapsedTime() }
+    }
+    const home = () => {
+      flyTo(new THREE.Vector3(), homePos.clone())
+      markZoomed(false)
+    }
+    const zoom = (f: number) => {
+      const dir = camera.position.clone().sub(controls.target)
+      const len = THREE.MathUtils.clamp(dir.length() * f, controls.minDistance, controls.maxDistance)
+      flyTo(controls.target, controls.target.clone().add(dir.setLength(len)))
+      markZoomed(true)
+    }
+    /** 飛到某個零件前面：保持目前的觀看角度，只拉近距離 */
+    const flyToNode = (id: CycleNodeId) => {
+      const c = centers.get(id)
+      if (!c) return
+      const holder = holders.get(id as Part3DId)
+      const size = holder ? new THREE.Box3().setFromObject(holder).getSize(new THREE.Vector3()).length() : 1.6
+      const dir = camera.position.clone().sub(controls.target).normalize()
+      flyTo(c, c.clone().add(dir.multiplyScalar(THREE.MathUtils.clamp(size * 2.6, 2.6, 6))))
+      markZoomed(true)
+    }
+    controls.addEventListener('start', () => {
+      fly = null
+      markZoomed(true)
+    })
     api.current = {
       setSelected: (id) => (selectedId = id),
       setCut,
@@ -321,13 +376,15 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       skip: () => {
         runStart = clock.getElapsedTime() - STAGES.length * STAGE_SEC
       },
+      home,
+      zoom,
     }
 
     // 點選（拖曳不算點選）
     const raycaster = new THREE.Raycaster()
     const pointer = new THREE.Vector2()
     let down: { x: number; y: number } | null = null
-    const pick = (e: PointerEvent): CycleNodeId | null => {
+    const pick = (e: MouseEvent): CycleNodeId | null => {
       const rect = renderer.domElement.getBoundingClientRect()
       pointer.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1)
       raycaster.setFromCamera(pointer, camera)
@@ -348,9 +405,16 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       if (e.buttons) return
       renderer.domElement.style.cursor = pick(e) ? 'pointer' : 'grab'
     }
+    // 雙擊零件＝飛過去放大；雙擊空白處＝回到全覽
+    const onDbl = (e: MouseEvent) => {
+      const id = pick(e)
+      if (id) flyToNode(id)
+      else home()
+    }
     renderer.domElement.addEventListener('pointerdown', onDown)
     renderer.domElement.addEventListener('pointerup', onUp)
     renderer.domElement.addEventListener('pointermove', onMove)
+    renderer.domElement.addEventListener('dblclick', onDbl)
 
     const resize = () => {
       const w = Math.max(host.clientWidth, 1)
@@ -362,14 +426,14 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       camera.aspect = w / h
       // 高度要放得下上下的標籤（約 7.4 單位），寬度要放得下左右的標籤（約 11.4 單位）
       const span = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))
-      camera.position.setLength(Math.max(7.4 / span, 11.4 / (span * camera.aspect)))
+      homePos.setLength(Math.max(7.4 / span, 11.4 / (span * camera.aspect)))
+      if (atHome && !fly) camera.position.copy(homePos)
       camera.updateProjectionMatrix()
     }
     const ro = new ResizeObserver(resize)
     ro.observe(host)
     resize()
 
-    const focus = new THREE.Vector3()
     const clamp01 = (x: number) => Math.min(Math.max(x, 0), 1)
     let raf = 0
     let last = 0
@@ -499,8 +563,14 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       // 過熱：排氣管越來越紅、越亮
       if (heat > 0) dm.emissiveIntensity = Math.max(dm.emissiveIntensity, 0.15 + heat * (0.6 + 0.3 * pulse))
 
-      // 畫面一直置中（不跟著選取移動，靠高亮指出位置）
-      controls.target.lerp(focus, 0.06)
+      // 選取零件不會移動鏡頭（靠高亮指出位置）；只有雙擊或按按鈕才飛過去
+      if (fly) {
+        const k = clamp01((t - fly.start) / FLY_SEC)
+        const s = k * k * (3 - 2 * k)
+        camera.position.lerpVectors(fly.p0, fly.p1, s)
+        controls.target.lerpVectors(fly.t0, fly.t1, s)
+        if (k >= 1) fly = null
+      }
       controls.update()
       renderer.render(scene, camera)
       labels.render(scene, camera)
@@ -514,6 +584,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       renderer.domElement.removeEventListener('pointerdown', onDown)
       renderer.domElement.removeEventListener('pointerup', onUp)
       renderer.domElement.removeEventListener('pointermove', onMove)
+      renderer.domElement.removeEventListener('dblclick', onDbl)
       controls.dispose()
       scene.traverse((o) => {
         const mesh = o as THREE.Mesh
@@ -523,10 +594,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
           ;(Array.isArray(m) ? m : [m]).forEach((x) => x.dispose())
         }
       })
-      envTex.dispose()
-      pmrem.dispose()
-      renderer.dispose()
-      host.removeChild(renderer.domElement)
+      releaseRenderer(pooled)
       host.removeChild(labels.domElement)
       api.current = null
     }
@@ -550,10 +618,35 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     compact ? 'px-3 py-1.5 text-[14px]' : 'px-5 py-2 text-[18px]',
   )
   const icon = compact ? 'size-4' : 'size-5'
+  const zoomBtn = cn('grid place-items-center text-slate-200 transition hover:bg-white/[0.08] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300', compact ? 'size-9' : 'size-11')
 
   return (
     <div className="flex h-full w-full flex-col">
-      <div ref={hostRef} className="relative min-h-0 flex-1 touch-none" />
+      <div className="relative min-h-0 flex-1">
+        <div ref={hostRef} className="absolute inset-0 touch-none" />
+        {/* 鏡頭控制：放大、縮小、回到全覽（放大後才出現） */}
+        <div className={cn('absolute flex flex-col items-end', compact ? 'right-2 top-2 gap-1.5' : 'right-4 top-4 gap-2')}>
+          <div className="flex flex-col overflow-hidden rounded-full bg-[rgba(13,17,23,0.72)] ring-1 ring-white/10">
+            <button type="button" aria-label="放大" onClick={() => api.current?.zoom(0.7)} className={cn(zoomBtn, 'border-b border-white/10')}>
+              <Plus className={icon} aria-hidden />
+            </button>
+            <button type="button" aria-label="縮小" onClick={() => api.current?.zoom(1.4)} className={zoomBtn}>
+              <Minus className={icon} aria-hidden />
+            </button>
+          </div>
+          {zoomed && (
+            <button
+              type="button"
+              onClick={() => api.current?.home()}
+              className={cn(btn, 'bg-[rgba(13,17,23,0.72)] text-sky-300 ring-1 ring-white/10 hover:bg-[rgba(30,41,59,0.85)]', compact ? 'px-3 py-1.5' : 'px-4 py-2')}
+            >
+              <Scan className={icon} aria-hidden />
+              全覽
+            </button>
+          )}
+        </div>
+        {!zoomed && !compact && <p className="pointer-events-none absolute left-5 top-4 text-[16px] text-slate-400">滾輪縮放・右鍵拖曳平移・雙擊零件放大</p>}
+      </div>
       {/* 控制列：停機 → 啟動按鈕；導覽中 → 這一步在做什麼；運轉中 → 重看／停機 */}
       <div className={cn('flex shrink-0 items-center', compact ? 'min-h-[64px] gap-2.5 px-3 py-2.5' : 'min-h-[92px] gap-5 px-7 py-4')}>
         {fault && (

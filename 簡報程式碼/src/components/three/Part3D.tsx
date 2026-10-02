@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import { buildPart, type LegendItem, type Part3DId, type PartControl } from './models'
+import { acquireRenderer, releaseRenderer } from './rendererPool'
 
 interface Part3DProps {
   id: Part3DId
@@ -31,16 +31,12 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
   useEffect(() => {
     const host = hostRef.current
     if (!host) return
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.localClippingEnabled = true
-    renderer.toneMapping = THREE.ACESFilmicToneMapping
+    const pooled = acquireRenderer()
+    const { renderer } = pooled
     host.appendChild(renderer.domElement)
 
     const scene = new THREE.Scene()
-    const pmrem = new THREE.PMREMGenerator(renderer)
-    const envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
-    scene.environment = envTex
+    scene.environment = pooled.env
     const key = new THREE.DirectionalLight(0xffffff, 1.2)
     key.position.set(3, 5, 4)
     scene.add(key, new THREE.AmbientLight(0xffffff, 0.35))
@@ -136,10 +132,7 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
           ;(Array.isArray(m) ? m : [m]).forEach((x) => x.dispose())
         }
       })
-      envTex.dispose()
-      pmrem.dispose()
-      renderer.dispose()
-      host.removeChild(renderer.domElement)
+      releaseRenderer(pooled)
       api.current = null
     }
   }, [id])

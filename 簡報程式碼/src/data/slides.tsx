@@ -2115,7 +2115,7 @@ const slideList: SlideData[] = [
             type: 'section',
             icon: Gauge,
             tone: 'ice',
-            title: '冷媒尺：跟 App 一樣，上下滑動左邊的尺',
+            title: '冷媒尺：拖曳、點刻度直接跳，或按下方微調鍵',
             className: 'grid-rows-1',
             children: [{ type: 'refslider' }],
           },

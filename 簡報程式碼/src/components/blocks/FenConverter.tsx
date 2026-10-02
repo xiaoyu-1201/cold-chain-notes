@@ -11,6 +11,8 @@ import { Panel } from '../ui/Panel'
 const MM: Record<number, number> = { 1: 3.18, 2: 6.35, 3: 9.52, 4: 12.7, 5: 15.88, 6: 19.05, 7: 22.22, 8: 25.4, 9: 28.58, 10: 31.75, 11: 34.92, 12: 38.1, 13: 41.28, 14: 44.45, 15: 47.62, 16: 50.8, 17: 53.98 }
 /** 店裡常見的冷媒銅管（ACR）尺寸 */
 const ACR = [2, 3, 4, 5, 6, 7, 9, 11, 13, 17]
+/** 對照表多列 8 分（＝1 吋）：客人會講，但冷媒銅管標準尺寸（ASTM B280）從 7/8″ 直接跳 1-1/8″ */
+const TABLE = [2, 3, 4, 5, 6, 7, 8, 9, 11, 13, 17]
 const MM_PER_FEN = 3.175
 
 const fenName = (f: number) => (f < 8 ? `${f}分` : f % 8 === 0 ? `${f / 8}吋` : `${Math.floor(f / 8)}吋${f % 8}分`)
@@ -143,7 +145,7 @@ export function FenConverter({ mobile = false }: { mobile?: boolean }) {
   }
 
   const helper = (
-    <div className={cn('flex h-full flex-col', mobile ? 'gap-3' : 'gap-4')}>
+    <div className={cn('flex h-full flex-col', mobile ? 'gap-3' : 'gap-3')}>
       <input
         value={input}
         onChange={(e) => setInput(e.target.value)}
@@ -161,7 +163,7 @@ export function FenConverter({ mobile = false }: { mobile?: boolean }) {
       </div>
 
       {reading && fen !== null ? (
-        <div className={cn('rounded-[22px] bg-white/[0.05]', mobile ? 'p-3' : 'p-5')}>
+        <div className={cn('rounded-[22px] bg-white/[0.05]', mobile ? 'p-3' : 'px-5 py-4')}>
           <p className={cn('text-slate-400', t.small)}>我讀成：{reading.as}</p>
           <dl className={cn('mt-2 grid grid-cols-4', mobile ? 'gap-2' : 'gap-4')}>
             {[
@@ -203,7 +205,11 @@ export function FenConverter({ mobile = false }: { mobile?: boolean }) {
         </p>
       )}
 
-      <div className={cn('rounded-[22px] bg-emerald-400/[0.07]', mobile ? 'p-3' : 'mt-auto p-5')}>
+      <p className={cn('rounded-2xl bg-white/[0.04] text-slate-300', t.small, mobile ? 'p-2.5' : 'px-4 py-3')}>
+        <b className="text-white">看型號知道幾分：</b>Danfoss DML 08<b className="text-sky-200">3</b> 最後一碼＝3 分；尾巴 S＝焊接，沒有＝喇叭口
+      </p>
+
+      <div className={cn('rounded-[22px] bg-emerald-400/[0.07]', mobile ? 'p-3' : 'mt-auto px-5 py-4')}>
         <div className="flex items-center justify-between gap-2">
           <p className={cn('font-bold text-emerald-200', t.body)}>考考我：{quiz.q}</p>
           <button type="button" onClick={nextQuiz} className={cn('flex shrink-0 items-center gap-1 rounded-full bg-white/[0.08] font-semibold text-sky-300 hover:bg-white/[0.12]', t.chip, focusRing)}>
@@ -263,7 +269,7 @@ export function FenConverter({ mobile = false }: { mobile?: boolean }) {
           </tr>
         </thead>
         <tbody>
-          {ACR.map((f) => {
+          {TABLE.map((f) => {
             const on = f === fen
             return (
               <tr
@@ -284,6 +290,7 @@ export function FenConverter({ mobile = false }: { mobile?: boolean }) {
                   <button type="button" onClick={() => setInput(fenName(f))} className={cn('rounded', focusRing)}>
                     {fenName(f)}
                   </button>
+                  {!ACR.includes(f) && <span className={cn('ml-2 rounded-md bg-white/[0.08] px-1.5 align-middle font-semibold text-slate-400', mobile ? 'text-[12px]' : 'text-[16px]')}>8 分・少見</span>}
                 </td>
                 <td className={cn('py-1 font-semibold tabular-nums text-slate-100', mobile ? 'text-[15px]' : 'text-[21px]')}>{fenInch(f)}″</td>
                 <td className={cn('py-1 font-semibold tabular-nums text-slate-100', mobile ? 'text-[15px]' : 'text-[21px]')}>{fenMm(f)}</td>
@@ -293,9 +300,6 @@ export function FenConverter({ mobile = false }: { mobile?: boolean }) {
           })}
         </tbody>
       </table>
-      <p className={cn('rounded-2xl bg-white/[0.04] text-slate-300', t.small, mobile ? 'p-2.5' : 'mt-auto px-4 py-3')}>
-        <b className="text-white">看型號也知道幾分：</b>Danfoss 乾燥過濾器 DML 08<b className="text-sky-200">3</b> 的最後一碼 3＝3 分（3/8″）；尾巴 S＝焊接，沒有＝喇叭口
-      </p>
     </div>
   )
 

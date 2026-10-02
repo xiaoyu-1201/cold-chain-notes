@@ -5,6 +5,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js'
 import type { CycleNodeId } from '../../data/cycleNotes'
+import type { FaultFx, PipeMode } from '../../data/faults'
 import { cn } from '../../lib/cn'
 import { buildPart, type Part3DId } from './models'
 
@@ -63,18 +64,24 @@ interface Props {
   cut: boolean
   /** 手機版：字小一點 */
   compact?: boolean
+  /** 故障模擬：目前這一步要演的狀態（null＝一般模式） */
+  fault?: FaultFx | null
+  /** 故障模擬的名稱（控制列顯示） */
+  faultLabel?: string
+  onExitFault?: () => void
 }
 
 interface Api {
   setSelected: (id: CycleNodeId | null) => void
   setCut: (c: boolean) => void
+  setFault: (fx: FaultFx | null) => void
   start: () => void
   stop: () => void
   skip: () => void
 }
 
-/** 整套冷凍循環 3D：按「啟動」看冷媒跑一圈；零件可點選、可剖開；拖曳旋轉、滾輪縮放 */
-export default function CycleSystem3D({ selected, onSelect, cut, compact = false }: Props) {
+/** 整套冷凍循環 3D：按「啟動」看冷媒跑一圈；故障模擬演出拿掉零件的後果；零件可點選、可剖開 */
+export default function CycleSystem3D({ selected, onSelect, cut, compact = false, fault = null, faultLabel, onExitFault }: Props) {
   const hostRef = useRef<HTMLDivElement>(null)
   const selectRef = useRef(onSelect)
   selectRef.current = onSelect
@@ -108,7 +115,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     scene.add(key, new THREE.AmbientLight(0xffffff, 0.3))
 
     const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100)
-    camera.position.set(0.9, 1.3, 12.5)
+    camera.position.set(0, 1.5, 12.5)
     const controls = new OrbitControls(camera, renderer.domElement)
     controls.enableDamping = true
     controls.minDistance = 5
@@ -236,6 +243,51 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     const hot = puffs(18, 0xfca5a5, [[-1.0, 1.0]], 2.55, 3.2)
     const cold = puffs(16, 0x93c5fd, [[-1.0, -0.2], [0.2, 1.0]], -2.3, -3.0)
 
+    // ── 故障模擬用的物件 ──
+    const tag = (bg: string) => {
+      const o = makeLabel('', null, true, '#fff')
+      o.element.style.background = bg
+      o.element.style.boxShadow = '0 6px 20px -6px rgba(0,0,0,0.6)'
+      o.visible = false
+      scene.add(o)
+      return o
+    }
+    const removedTag = tag('rgba(220,38,38,0.92)')
+    const alarmTag = tag('rgba(220,38,38,0.92)')
+    alarmTag.center.set(0.5, 1.6)
+    // 膨脹閥入口結冰：一團白色冰晶
+    const ice = new THREE.Group()
+    const iceMat = new THREE.MeshStandardMaterial({ color: 0xe0f2fe, emissive: 0xbae6fd, emissiveIntensity: 0.35, roughness: 0.2, transparent: true, opacity: 0.92 })
+    for (let i = 0; i < 9; i++) {
+      const c = new THREE.Mesh(new THREE.IcosahedronGeometry(0.07 + Math.random() * 0.07, 0), iceMat)
+      c.position.set((Math.random() - 0.5) * 0.3, (Math.random() - 0.5) * 0.3, (Math.random() - 0.5) * 0.3)
+      ice.add(c)
+    }
+    ice.position.set(-3.2, 0.36, 0.05)
+    ice.visible = false
+    scene.add(ice)
+    // 冷凍油：琥珀色油滴沿著整圈跑（穿過零件內部）
+    const loop = new THREE.CurvePath<THREE.Vector3>()
+    PIPES.forEach((p, i) => {
+      for (let k = 0; k < p.points.length - 1; k++) loop.add(new THREE.LineCurve3(new THREE.Vector3(...p.points[k]), new THREE.Vector3(...p.points[k + 1])))
+      const next = PIPES[(i + 1) % PIPES.length].points[0]
+      loop.add(new THREE.LineCurve3(new THREE.Vector3(...p.points[p.points.length - 1]), new THREE.Vector3(...next)))
+    })
+    const oilMat = new THREE.MeshStandardMaterial({ color: 0xd97706, emissive: 0xf59e0b, emissiveIntensity: 0.9, roughness: 0.3 })
+    const oil = Array.from({ length: 10 }, () => {
+      const m = new THREE.Mesh(new THREE.SphereGeometry(0.09, 12, 12), oilMat)
+      m.visible = false
+      scene.add(m)
+      return m
+    })
+    // 管內流動的特殊樣子：液體（琥珀）、氣泡（白、大顆）
+    const liquidDot = new THREE.MeshStandardMaterial({ color: 0xfbbf24, emissive: 0xf59e0b, emissiveIntensity: 1 })
+    const bubbleDot = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.6, transparent: true, opacity: 0.85 })
+    const baseDot = new Map(pipes.map((p) => [p.id, p.dots[0].material as THREE.MeshStandardMaterial]))
+    let fx: FaultFx | null = null
+    const dischargeBase = new THREE.Color(0xf87171)
+    const overheatColor = new THREE.Color(0xff1f1f)
+
     const plane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0)
     const setCut = (c: boolean) =>
       shells.forEach((m) => {
@@ -256,6 +308,10 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     api.current = {
       setSelected: (id) => (selectedId = id),
       setCut,
+      setFault: (f) => {
+        fx = f
+        if (f) ice.scale.setScalar(0.01)
+      },
       start: () => {
         runStart = clock.getElapsedTime()
         shownStage = -1
@@ -331,23 +387,59 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
         stateRef.current.setStage(step)
       }
       const reached = (s: number) => phase !== 'off' && e >= s * STAGE_SEC
-      const compOn = reached(0)
-      const condOn = reached(2)
-      const evapOn = reached(6)
+      // 故障模擬時，以這一步的設定為準（沒寫＝正常運轉）
+      const compOn = fx ? (fx.compOn ?? true) : reached(0)
+      const condOn = fx ? (fx.condFan ?? true) : reached(2)
+      const evapOn = fx ? (fx.evapFan ?? true) : reached(6)
+      const hotOn = fx ? (fx.hotPuffs ?? condOn) : condOn
+      const coldOn = fx ? (fx.coldPuffs ?? evapOn) : evapOn
 
       // 管路灌冷媒＋流動光點
       for (const p of pipes) {
         const s = PIPE_STAGE[p.id]
-        const prog = phase === 'off' ? 0 : clamp01((e - s * STAGE_SEC) / (STAGE_SEC * 0.9))
+        const prog = fx ? 1 : phase === 'off' ? 0 : clamp01((e - s * STAGE_SEC) / (STAGE_SEC * 0.9))
         p.fill.setDrawRange(0, Math.floor(prog * TUBE_SEG) * TUBE_RAD * 6)
         p.front.visible = prog > 0 && prog < 1
         if (p.front.visible) p.front.position.copy(p.curve.getPointAt(prog))
         const full = prog >= 1
+        const mode: PipeMode = fx?.flow?.[p.id] ?? 'on'
+        // 液體在管裡是慢慢流；氣泡大顆；供液不穩只剩零星幾顆
+        const speed = mode === 'liquid' ? 0.07 : 0.22
         p.dots.forEach((d, i) => {
-          d.visible = full
-          if (full) d.position.copy(p.curve.getPointAt((i / p.dots.length + t * 0.22) % 1))
+          const show = full && mode !== 'off' && !(mode === 'weak' && i % 3 !== 0)
+          d.visible = show
+          if (!show) return
+          const bubble = mode === 'bubbles' && i % 2 === 1
+          d.material = mode === 'liquid' ? liquidDot : bubble ? bubbleDot : baseDot.get(p.id)!
+          d.scale.setScalar(bubble ? 1.7 : mode === 'liquid' ? 1.15 : 1)
+          d.position.copy(p.curve.getPointAt((i / p.dots.length + t * speed) % 1))
         })
       }
+
+      // 故障模擬：拿掉的零件、警示、結冰、冷凍油
+      holders.forEach((h, id) => (h.visible = id !== fx?.removed))
+      removedTag.visible = !!fx?.removed
+      if (fx?.removed) {
+        removedTag.element.textContent = '✕ 拿掉了'
+        removedTag.position.copy(centers.get(fx.removed)!)
+      }
+      alarmTag.visible = !!fx?.alarm
+      if (fx?.alarm) {
+        alarmTag.element.textContent = `⚠ ${fx.alarm.text}`
+        alarmTag.element.style.background = fx.alarm.tone === 'red' ? 'rgba(220,38,38,0.92)' : 'rgba(217,119,6,0.92)'
+        alarmTag.element.style.opacity = String(0.75 + 0.25 * Math.sin(t * 6))
+        alarmTag.position.copy(centers.get(fx.alarm.at)!)
+      }
+      ice.visible = !!fx?.ice
+      if (ice.visible) ice.scale.lerp(new THREE.Vector3(1, 1, 1), 0.04)
+      oil.forEach((m, i) => {
+        m.visible = !!fx?.oil
+        if (m.visible) m.position.copy(loop.getPointAt((i / oil.length + t * 0.06) % 1))
+      })
+      const heat = fx?.overheat ?? 0
+      const dm = pipeMats.get('discharge')!.fill
+      dm.color.copy(dischargeBase).lerp(overheatColor, heat)
+      dm.emissive.copy(dm.color)
 
       // 會動的零件：壓縮機震動＋活塞、冷凝器／蒸發器風扇
       for (const m of moving) {
@@ -362,8 +454,8 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
         comp.position.y = compOn ? Math.cos(t * 63) * 0.008 : 0
       }
       for (const [list, on] of [
-        [hot, condOn],
-        [cold, evapOn],
+        [hot, hotOn],
+        [cold, coldOn],
       ] as const) {
         for (const q of list) {
           q.mesh.visible = on
@@ -374,14 +466,19 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
         }
       }
 
-      // 高亮：選取＝琥珀色；導覽中的這一步＝藍色呼吸光
-      const stageNode = touring ? STAGES[step].node : null
+      // 高亮：警示＝紅／橘閃爍；選取＝琥珀色；導覽中的這一步（或故障模擬的焦點）＝藍色呼吸光
+      const stageNode = fx ? (fx.focus ?? null) : touring ? STAGES[step].node : null
       const pulse = 0.5 + 0.5 * Math.sin(t * 5)
+      const alarmAt = fx?.alarm?.at ?? (heat >= 0.8 ? 'comp' : null)
       partMats.forEach((mats, id) => {
         const sel = id === selectedId
         const cur = id === stageNode
+        const warn = id === alarmAt
         for (const x of mats) {
-          if (sel) {
+          if (warn) {
+            x.m.emissive.setHex(fx?.alarm?.tone === 'amber' ? 0xf59e0b : 0xef4444)
+            x.m.emissiveIntensity = 0.25 + 0.4 * pulse
+          } else if (sel) {
             x.m.emissive.setHex(0xfbbf24)
             x.m.emissiveIntensity = 0.35
           } else if (cur) {
@@ -399,10 +496,10 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
         m.fill.emissiveIntensity = sel ? 0.7 : cur ? 0.3 + 0.3 * pulse : 0.1
         m.empty.emissiveIntensity = sel ? 0.45 : 0
       })
+      // 過熱：排氣管越來越紅、越亮
+      if (heat > 0) dm.emissiveIntensity = Math.max(dm.emissiveIntensity, 0.15 + heat * (0.6 + 0.3 * pulse))
 
-      const target = selectedId ?? stageNode
-      const c = target ? centers.get(target) : null
-      focus.copy(c ?? new THREE.Vector3()).multiplyScalar(c ? (selectedId ? 0.25 : 0.18) : 0)
+      // 畫面一直置中（不跟著選取移動，靠高亮指出位置）
       controls.target.lerp(focus, 0.06)
       controls.update()
       renderer.render(scene, camera)
@@ -443,6 +540,10 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     api.current?.setCut(cut)
   }, [cut])
 
+  useEffect(() => {
+    api.current?.setFault(fault)
+  }, [fault])
+
   const text = compact ? 'text-[14px]' : 'text-[19px]'
   const btn = cn(
     'flex shrink-0 items-center gap-1.5 rounded-full font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300',
@@ -455,7 +556,22 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       <div ref={hostRef} className="relative min-h-0 flex-1 touch-none" />
       {/* 控制列：停機 → 啟動按鈕；導覽中 → 這一步在做什麼；運轉中 → 重看／停機 */}
       <div className={cn('flex shrink-0 items-center', compact ? 'min-h-[64px] gap-2.5 px-3 py-2.5' : 'min-h-[92px] gap-5 px-7 py-4')}>
-        {phase === 'off' && (
+        {fault && (
+          <>
+            <span className={cn('relative flex shrink-0', compact ? 'size-2.5' : 'size-3')} aria-hidden>
+              <span className="absolute inset-0 animate-ping rounded-full bg-red-400/70" />
+              <span className="relative size-full rounded-full bg-red-400" />
+            </span>
+            <p className={cn('min-w-0 flex-1 text-slate-300', text)}>
+              <b className="mr-3 text-red-200">故障模擬：{faultLabel}</b>
+              {compact ? '看下面說明' : '看右邊的說明一步一步走'}
+            </p>
+            <button type="button" onClick={onExitFault} className={cn(btn, 'bg-white/[0.08] text-slate-200 hover:bg-white/[0.12]')}>
+              結束模擬
+            </button>
+          </>
+        )}
+        {!fault && phase === 'off' && (
           <>
             <button
               type="button"
@@ -468,7 +584,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
             <p className={cn('min-w-0 text-slate-400', text)}>按下去，看冷媒從壓縮機出發，跑完一圈</p>
           </>
         )}
-        {phase === 'tour' && (
+        {!fault && phase === 'tour' && (
           <>
             <div className="flex shrink-0 gap-1" aria-label={`第 ${stage + 1} 步，共 ${STAGES.length} 步`}>
               {STAGES.map((s, i) => (
@@ -484,7 +600,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
             </button>
           </>
         )}
-        {phase === 'on' && (
+        {!fault && phase === 'on' && (
           <>
             <span className={cn('relative flex shrink-0', compact ? 'size-2.5' : 'size-3')} aria-hidden>
               <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/70" />

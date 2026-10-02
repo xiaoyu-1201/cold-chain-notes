@@ -1,5 +1,6 @@
-import { ArrowUpRight, Box, ChevronLeft, Layers } from 'lucide-react'
-import { lazy, Suspense, useState } from 'react'
+import { ArrowUpRight, Box, ChevronLeft, ChevronRight, Layers, TriangleAlert } from 'lucide-react'
+import { lazy, Suspense, useEffect, useState } from 'react'
+import { FAULTS, type Fault } from '../../data/faults'
 import { useStickyState } from '../../hooks/useStickyState'
 import { useDeck } from '../../context/deck'
 import { cycleNotes, type CycleNodeId } from '../../data/cycleNotes'
@@ -53,10 +54,92 @@ export function Segmented<T extends string>({ value, options, onChange, size = '
   )
 }
 
-/** 右側檢視面板：沒選→分組清單；選了→說明（取代蓋在圖上的小視窗） */
-function Inspector({ selected, onSelect }: { selected: CycleNodeId | null; onSelect: (id: CycleNodeId | null) => void }) {
+interface FaultControl {
+  fault: Fault | null
+  step: number
+  auto: boolean
+  start: (id: string) => void
+  setStep: (s: number) => void
+  setAuto: (a: boolean) => void
+  exit: () => void
+}
+
+/** 故障模擬的說明：一步一步走，最後給結論 */
+function FaultPanel({ f, onSelect }: { f: FaultControl; onSelect: (id: CycleNodeId | null) => void }) {
+  const fault = f.fault!
+  const last = fault.steps.length - 1
+  const navBtn = cn('flex items-center gap-1 rounded-full bg-white/[0.08] px-4 py-2 text-[18px] font-semibold text-slate-100 transition hover:bg-white/[0.14] disabled:opacity-30', focusRing)
+  return (
+    <div className="flex h-full flex-col rounded-[28px] bg-white/[0.04] px-8 py-7">
+      <button type="button" onClick={f.exit} className={cn('flex items-center gap-1 self-start text-[18px] font-semibold text-sky-300 hover:text-sky-200', focusRing)}>
+        <ChevronLeft className="size-5" aria-hidden />
+        結束模擬
+      </button>
+      <p className="mt-3 flex items-center gap-2 text-[18px] font-semibold text-red-300">
+        <TriangleAlert className="size-5" aria-hidden />
+        故障模擬
+      </p>
+      <p className="text-[34px] font-bold leading-tight text-white">{fault.label}，會怎樣？</p>
+      <ol className="mt-4 min-h-0 flex-1 space-y-2.5">
+        {fault.steps.map((s, i) => (
+          <li key={s.title}>
+            <button
+              type="button"
+              onClick={() => f.setStep(i)}
+              className={cn('flex w-full gap-3 rounded-2xl px-4 py-2.5 text-left transition', i === f.step ? 'bg-red-400/[0.12]' : 'hover:bg-white/[0.05]', i > f.step && 'opacity-45', focusRing)}
+            >
+              <span className={cn('mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full text-[17px] font-bold', i === f.step ? 'bg-red-400 text-navy-950' : 'bg-white/[0.1] text-slate-200')}>{i + 1}</span>
+              <span className="min-w-0">
+                <span className="block text-[21px] font-bold text-white">{s.title}</span>
+                <span className="block text-[18px] leading-snug text-slate-300">{s.text}</span>
+              </span>
+            </button>
+          </li>
+        ))}
+      </ol>
+      {f.step === last && (
+        <div className="mt-3 rounded-2xl bg-emerald-400/[0.1] px-5 py-3">
+          <p className="text-[19px] leading-snug text-emerald-50">
+            <b className="mr-2 text-emerald-300">所以</b>
+            {fault.lesson}
+          </p>
+        </div>
+      )}
+      <div className="mt-4 flex flex-wrap items-center gap-2.5">
+        <button type="button" onClick={() => f.setStep(f.step - 1)} disabled={f.step === 0} className={navBtn}>
+          <ChevronLeft className="size-5" aria-hidden />
+          上一步
+        </button>
+        <button type="button" onClick={() => f.setStep(f.step + 1)} disabled={f.step === last} className={navBtn}>
+          下一步
+          <ChevronRight className="size-5" aria-hidden />
+        </button>
+        <label className="ml-1 flex cursor-pointer items-center gap-2 text-[17px] text-slate-300">
+          <input type="checkbox" checked={f.auto} onChange={(e) => f.setAuto(e.target.checked)} className="size-4 accent-sky-400" />
+          自動播放
+        </label>
+        <button
+          type="button"
+          onClick={() => {
+            f.exit()
+            onSelect(fault.part)
+          }}
+          className={cn('ml-auto flex items-center gap-1 rounded-full bg-white/[0.07] px-4 py-2 text-[17px] font-semibold text-sky-300 hover:bg-white/[0.12]', focusRing)}
+        >
+          看{cycleNotes[fault.part].title.replace(/^[①-④]\s*/, '')}說明
+          <ArrowUpRight className="size-4" aria-hidden />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+/** 右側檢視面板：沒選→分組清單；選了→說明（取代蓋在圖上的小視窗）；故障模擬→一步一步的說明 */
+function Inspector({ selected, onSelect, faults }: { selected: CycleNodeId | null; onSelect: (id: CycleNodeId | null) => void; faults: FaultControl }) {
   const { goToId, numberOf } = useDeck()
   const [viewer, setViewer] = useState(false)
+
+  if (faults.fault) return <FaultPanel f={faults} onSelect={onSelect} />
 
   if (!selected) {
     return (
@@ -101,6 +184,24 @@ function Inspector({ selected, onSelect }: { selected: CycleNodeId | null; onSel
             </div>
           </div>
         ))}
+        <div>
+          <p className="mb-2.5 flex items-center gap-1.5 text-[17px] font-semibold text-red-300">
+            <TriangleAlert className="size-4" aria-hidden />
+            故障模擬：拿掉一個會怎樣？（3D 演給你看）
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {FAULTS.map((fa) => (
+              <button
+                key={fa.id}
+                type="button"
+                onClick={() => faults.start(fa.id)}
+                className={cn('rounded-full bg-red-400/[0.12] px-4 py-2 text-[18px] font-semibold text-red-200 transition hover:bg-red-400/20', focusRing)}
+              >
+                {fa.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     )
   }
@@ -160,13 +261,43 @@ export function CycleLesson() {
   const [selected, setSelected] = useStickyState<CycleNodeId | null>('cycle:selected', null)
   const [view, setView] = useStickyState<'2d' | '3d'>('cycle:view', '2d')
   const [cut, setCut] = useState(false)
+  const [faultId, setFaultId] = useState<string | null>(null)
+  const [faultStep, setFaultStep] = useState(0)
+  const [auto, setAuto] = useState(true)
+  const fault = FAULTS.find((x) => x.id === faultId) ?? null
+  const faults: FaultControl = {
+    fault,
+    step: faultStep,
+    auto,
+    start: (id) => {
+      setFaultId(id)
+      setFaultStep(0)
+      setSelected(null)
+      setView('3d')
+    },
+    setStep: (s) => {
+      setAuto(false)
+      setFaultStep(Math.min(Math.max(s, 0), (fault?.steps.length ?? 1) - 1))
+    },
+    setAuto,
+    exit: () => setFaultId(null),
+  }
+  // 自動播放：每一步停 4.5 秒，播到最後一步停下
+  useEffect(() => {
+    if (!fault || !auto || faultStep >= fault.steps.length - 1) return
+    const id = setTimeout(() => setFaultStep((s) => s + 1), 4500)
+    return () => clearTimeout(id)
+  }, [fault, auto, faultStep])
 
   return (
     <div className="flex h-full flex-col gap-5">
       <div className="flex items-center gap-5">
         <Segmented
           value={view}
-          onChange={setView}
+          onChange={(v) => {
+            setView(v)
+            if (v === '2d') setFaultId(null)
+          }}
           options={[
             { value: '2d', label: '2D 圖解' },
             { value: '3d', label: '3D 立體' },
@@ -197,12 +328,12 @@ export function CycleLesson() {
             </div>
           ) : (
             <Suspense fallback={<p className="absolute inset-0 flex items-center justify-center text-[20px] text-slate-400">3D 載入中…</p>}>
-              <CycleSystem3D selected={selected} onSelect={setSelected} cut={cut} />
+              <CycleSystem3D selected={selected} onSelect={setSelected} cut={cut} fault={fault?.steps[faultStep].fx ?? null} faultLabel={fault?.label} onExitFault={() => setFaultId(null)} />
             </Suspense>
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <Inspector selected={selected} onSelect={setSelected} />
+          <Inspector selected={selected} onSelect={setSelected} faults={faults} />
         </div>
       </div>
     </div>

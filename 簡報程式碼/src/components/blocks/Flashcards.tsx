@@ -33,7 +33,7 @@ function speakEnglish(text: string) {
   speechSynthesis.speak(u)
 }
 
-/** 台語：播上課錄音裡的那一小段 */
+/** 台語：播上課錄音裡老闆講的那一小段 */
 let clipAudio: HTMLAudioElement | null = null
 let clipSrc = ''
 let clipStop: (() => void) | null = null
@@ -150,7 +150,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
         playClip(c.tw!)
       }} className={cn(pill, 'bg-amber-400/15 text-amber-200 hover:bg-amber-400/25')} title={`錄音0${c.tw.rec} ${mmss(c.tw.from)}：「${c.tw.say}」`}>
         <Volume2 className="size-4" aria-hidden />
-        台語原音（錄音0{c.tw.rec} {mmss(c.tw.from)}）
+        老闆說（錄音0{c.tw.rec} {mmss(c.tw.from)}）
       </button>
     )
 

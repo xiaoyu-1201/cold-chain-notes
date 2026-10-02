@@ -283,7 +283,7 @@ const builders: Record<Part3DId, () => PartModel> = {
     const shaft = mat.steel()
     b.cylY(0.06, 1.1, shaft, [0, 0.05, 0], 16)
     const piston = mat.paint(0xf59e0b)
-    b.cylX(0.16, 0.3, piston, [0.32, -0.45, 0], 24)
+    b.cylX(0.16, 0.3, piston, [0.32, -0.45, 0], 24).userData.anim = { kind: 'slide', amp: 0.07, speed: 14 }
     const cyl = mat.dark()
     b.cylX(0.2, 0.42, cyl, [0.5, -0.45, 0], 24)
     const suction = mat.copper()
@@ -312,6 +312,7 @@ const builders: Record<Part3DId, () => PartModel> = {
     for (let i = 0; i < 4; i++) {
       const o = b.box(0.08, 0.5, 0.02, blade, [0, 0, 0.45])
       o.rotation.z = (i * Math.PI) / 2 + 0.3
+      o.userData.anim = { kind: 'spin', speed: 9 }
     }
     b.cylZ(0.08, 0.1, mat.steel(), [0, 0, 0.45], 16)
     b.note(fin, '散熱鰭片', '增加散熱面積；會積灰塵，要定期清洗')
@@ -332,7 +333,15 @@ const builders: Record<Part3DId, () => PartModel> = {
     const heater = mat.glow(0xef4444)
     b.cylX(0.025, 1.9, heater, [0, -0.33, 0.12], 12)
     const fanRing = b.shell(mat.dark())
-    for (const x of [-0.55, 0.55]) b.mesh(new THREE.TorusGeometry(0.28, 0.04, 12, 40), fanRing, [x, 0, 0.42])
+    const evapBlade = mat.paint(0x475569)
+    for (const x of [-0.55, 0.55]) {
+      b.mesh(new THREE.TorusGeometry(0.28, 0.04, 12, 40), fanRing, [x, 0, 0.42])
+      for (let i = 0; i < 2; i++) {
+        const o = b.box(0.08, 0.46, 0.02, evapBlade, [x, 0, 0.42])
+        o.rotation.z = (i * Math.PI) / 2 + 0.4
+        o.userData.anim = { kind: 'spin', speed: 11 }
+      }
+    }
     const pan = mat.steel()
     b.box(2.2, 0.06, 0.9, pan, [0, -0.5, 0])
     b.note(tubeM, '銅管', '液氣混合的冷媒在裡面蒸發吸熱')

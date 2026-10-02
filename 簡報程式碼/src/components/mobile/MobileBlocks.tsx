@@ -809,15 +809,15 @@ function CycleLessonMobile() {
           </button>
         )}
       </div>
-      <p className="text-[15px] text-slate-300">{view === '2d' ? '點圖上的虛線框或下面的按鈕，看說明、聽錄音。' : '用手指拖曳旋轉、兩指縮放；點零件名稱看說明。'}</p>
+      <p className="text-[15px] text-slate-300">{view === '2d' ? '點圖上的虛線框或下面的按鈕，看說明、聽錄音。' : '按「啟動冷凍系統」看冷媒跑一圈；手指拖曳旋轉、兩指縮放，點零件名稱看說明。'}</p>
       {view === '2d' ? (
         <div className="relative rounded-2xl border border-white/10 bg-navy-900" style={{ aspectRatio: '820 / 560' }}>
           <CycleDiagram className="absolute inset-0 h-full w-full" interactive selected={selected} onSelect={(id) => pick(id, false)} />
         </div>
       ) : (
-        <div className="relative h-[340px] overflow-hidden rounded-2xl bg-navy-900">
+        <div className="relative h-[420px] overflow-hidden rounded-2xl bg-white/[0.04]">
           <Suspense fallback={<p className="absolute inset-0 flex items-center justify-center text-[15px] text-slate-400">3D 載入中…</p>}>
-            <CycleSystem3D selected={selected} onSelect={(id) => id && pick(id, true)} cut={cut} />
+            <CycleSystem3D selected={selected} onSelect={(id) => id && pick(id, true)} cut={cut} compact />
           </Suspense>
         </div>
       )}

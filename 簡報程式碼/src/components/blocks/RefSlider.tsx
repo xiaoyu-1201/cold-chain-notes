@@ -1,5 +1,6 @@
 import { ArrowLeftRight, Keyboard } from 'lucide-react'
 import { useState } from 'react'
+import { useStickyState } from '../../hooks/useStickyState'
 import { ATM, isBlend, KG_PER_BAR, PSI_PER_BAR, pressureAt, PT_TEMPS, REFRIGERANTS, temperatureAt, type RefrigerantId } from '../../data/refrigerants'
 import { cn } from '../../lib/cn'
 
@@ -11,11 +12,13 @@ const fmt = (n: number) => n.toFixed(2)
 
 /** 網頁版 Ref Tools「冷媒滑尺」：選冷媒，拖滑桿或直接輸入 psig／公斤／溫度，互相換算 */
 export function RefSlider({ mobile = false }: { mobile?: boolean }) {
-  const [id, setId] = useState<RefrigerantId>('R22')
+  const [stickyId, setId] = useStickyState<RefrigerantId>('refslider:id', 'R22')
+  // 舊版存的冷媒如果已移除，退回 R22
+  const id: RefrigerantId = stickyId in REFRIGERANTS ? stickyId : 'R22'
   /** 目前以哪個欄位為準（使用者最後輸入或拖動的） */
-  const [src, setSrc] = useState<{ field: Field; value: number }>({ field: 'psig', value: 30 })
+  const [src, setSrc] = useStickyState<{ field: Field; value: number }>('refslider:src', { field: 'psig', value: 30 })
   const [editing, setEditing] = useState<{ field: Field; text: string } | null>(null)
-  const [drag, setDrag] = useState<'psig' | 'temp'>('psig')
+  const [drag, setDrag] = useStickyState<'psig' | 'temp'>('refslider:drag', 'psig')
 
   // 資料範圍：-40～60°C 的飽和壓力
   const tMin = PT_TEMPS[0]
@@ -149,8 +152,19 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
         )}
       </div>
 
+      <button
+        type="button"
+        onClick={() => {
+          setId('R22')
+          setSrc({ field: 'psig', value: 210 })
+        }}
+        className={cn('self-start rounded-full bg-sky-400/15 font-semibold text-sky-200 transition hover:bg-sky-400/25', mobile ? 'px-3 py-1.5 text-[14px]' : 'px-5 py-2 text-[18px]', focusRing)}
+      >
+        對照老闆的手寫表：R22 210 psig → 40.42°C
+      </button>
+
       <p className={cn('text-slate-500', mobile ? 'text-[12px]' : 'text-[16px]')}>
-        資料：R134a、R22、R32 為 NIST Chemistry WebBook；R404A、R410A、R507A 為 CoolProp 計算（與 NIST 交叉比對）；範圍 -40～60°C，每 5°C 內插，僅供參考。
+        資料：CoolProp 計算（R22、R134a、R32 與 NIST 交叉比對），-40～60°C 每 1°C 一筆；跟 Ref Tools 一樣，混合冷媒以露點為準。R438A、R408A 還沒收錄，請用 Ref Tools App。
       </p>
     </div>
   )

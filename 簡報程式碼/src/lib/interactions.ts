@@ -2,7 +2,7 @@ import type { Block, SlideData } from '../data/types'
 
 /** 各互動區塊的操作提示：[電腦, 手機] */
 const HINTS: Partial<Record<Block['type'], [string, string]>> = {
-  cycleLesson: ['點循環圖上的虛線框，看說明、聽錄音、看 3D 構造', '點循環圖或下方按鈕，看說明、聽錄音、看 3D 構造'],
+  cycleLesson: ['點零件看說明；切到「3D 立體」按「啟動冷凍系統」看冷媒跑一圈', '點零件看說明；切到 3D 按「啟動冷凍系統」看冷媒跑一圈'],
   cycle: ['點循環圖上的零件，看說明', '點「互動版」按鈕，到可點的循環圖'],
   hotspots: ['點講義上的零件，看用途、聽錄音、看 3D 構造', '點「3D 看構造」或錄音按鈕；點圖片可放大'],
   audio: ['點段落，從那裡開始播放', '點段落，從那裡開始播放'],

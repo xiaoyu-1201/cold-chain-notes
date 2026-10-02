@@ -1,6 +1,6 @@
 import { Check, MessageCircle, RotateCcw, X } from 'lucide-react'
-import { useState } from 'react'
 import { useDeck } from '../../context/deck'
+import { useStickyState } from '../../hooks/useStickyState'
 import type { EstimateBlock } from '../../data/types'
 import { cn, pad } from '../../lib/cn'
 
@@ -9,8 +9,8 @@ const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-
 /** 估價練習：選情境，一題一題幫客人配出整套（選完顯示理由與出處） */
 export function EstimatePractice({ block, mobile = false }: { block: EstimateBlock; mobile?: boolean }) {
   const { goToId, numberOf } = useDeck()
-  const [scenario, setScenario] = useState(0)
-  const [picks, setPicks] = useState<Record<string, number>>({})
+  const [scenario, setScenario] = useStickyState('estimate:scenario', 0)
+  const [picks, setPicks] = useStickyState<Record<string, number>>('estimate:picks', {})
   const s = block.scenarios[scenario]
   const key = (qi: number) => `${scenario}-${qi}`
   const answered = s.questions.filter((_, qi) => picks[key(qi)] !== undefined).length

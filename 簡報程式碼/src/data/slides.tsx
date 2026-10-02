@@ -2116,7 +2116,7 @@ const slideList: SlideData[] = [
               { title: '下載並打開 Ref Tools', desc: 'App Store／Google Play 搜尋「Ref Tools」，開啟後選「Refrigerant Slider」（冷媒滑尺）' },
               { title: '選冷媒', desc: '看機器銘牌或冷媒鋼瓶上寫的型號，例如 R134a、R404A' },
               { title: '輸入或拖動壓力', desc: '把壓力錶讀數（錶壓）輸入，就會跳出對應的飽和溫度' },
-              { title: '對照看看', desc: '例：R22 高壓 210 psig ≈ 管內 40.4°C（在左邊輸入 210 試試）' },
+              { title: '對照看看', desc: '例：R22 高壓 210 psig ＝ 管內 40.42°C，跟老闆的手寫表一樣（按左邊藍色按鈕試試）' },
               { title: '其他功能之後再學', desc: '故障排除（Troubleshooter）、膨脹閥過熱度調整、產品查詢', tone: 'slate' },
             ],
           },
@@ -2139,7 +2139,7 @@ const slideList: SlideData[] = [
     part: 'units',
     chapter: '冷媒速查',
     mark: 'R22',
-    title: '常用冷媒速查表：同樣溫度，高壓差多少',
+    title: '常用冷媒速查表：同一個溫度，高壓都不一樣',
     en: 'Common Refrigerants at a Glance',
     blocks: [
       {
@@ -2150,21 +2150,21 @@ const slideList: SlideData[] = [
           { col: 0, label: '基準' },
           { col: 2, label: '最接近 R22' },
         ],
+        standard: { label: '比較條件', value: '冷凝溫度都是 40.42°C', note: '溫度固定，只比高壓' },
+        bars: { label: '高壓（psig）', unit: 'psig', values: [210, 183.2, 201.7, 233, 251.2, 259], baseCol: 0 },
         rows: [
-          { label: '高壓（psig）', cells: ['210', '183.2', '201.7', '233', '251.2', '259'] },
-          { label: '高壓比 R22', cells: ['基準', '↓ 12.8%', '↓ 4%', '↑ 11%', '↑ 19.6%', '↑ 23.3%'] },
           { label: '冷凍油', cells: ['POE、礦物油', 'POE、礦物油', 'POE、礦物油', 'POE、礦物油', '只能 POE', '只能 POE'] },
           { label: '用途', cells: ['冷凍、冷藏、空調', '空調、冷藏（稍差）', '冷凍、冷藏', '冷凍、冷藏', '冷凍、冷藏', '冷凍、冷藏'] },
         ],
         notes: [
           <>
-            比較條件：冷凝溫度都是 <Hl>40.42°C</Hl>，看同一溫度下的高壓。<Hl>R22 是基準</Hl>：資深師傅常拿 R22 的 210 psig 當標竿。
+            40.42°C 的由來：在 Ref Tools 把 <Hl>R22 設在 210 psig</Hl>（資深師傅的標竿），飽和溫度就是 40.42°C；再查其他冷媒在這個溫度的高壓。
           </>,
           <>
-            舊的 R22 壓縮機換成用 <Em>POE 油</Em>的壓縮機時，要先清洗系統，避免兩種冷凍油混在一起。
+            高壓比 R22 高的冷媒（R408A、R404A、R507），<Hl>散熱器要選大一點</Hl>；6 種都能用 POE 油的壓縮機。
           </>,
           <>
-            6 種冷媒都能用 POE 油的壓縮機，但高壓不同：R404A、R507 高壓比 R22 高約 2 成，<Hl>散熱器要選大一點</Hl>。
+            舊的 R22 壓縮機換成用 <Em>POE 油</Em>的壓縮機，要先清洗系統，避免兩種冷凍油混在一起。
           </>,
         ],
         image: { src: refrigerantTableImg, label: '看老闆手寫原稿' },
@@ -2174,7 +2174,7 @@ const slideList: SlideData[] = [
       label: '一句話',
       text: (
         <>
-          <Hl>R22 是基準（40.42°C 冷凝 ≈ 210 psig）</Hl>；R438A 最接近 R22，R404A、R507 高壓高約 2 成，散熱器要配大一點。
+          <Hl>同樣 40.42°C 冷凝，R22 是 210 psig</Hl>；R438A 最接近 R22，R404A、R507 高約 2 成，散熱器要配大一點。
         </>
       ),
     },
@@ -2195,32 +2195,20 @@ const slideList: SlideData[] = [
         className: 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
         children: [
           {
-            type: 'timeline',
-            icon: History,
-            tone: 'emerald',
-            title: '冷媒演進：越來越環保',
-            items: [
-              { gen: 'CFCs', example: 'R12', note: '破壞臭氧層，已禁用', tone: 'slate' },
-              { gen: 'HCFCs', example: 'R22', note: '過渡冷媒，逐步淘汰；老機器還很多', tone: 'slate' },
-              { gen: 'HFCs', example: 'R404A／R134a／R507', note: '不破壞臭氧層（ODP＝0），但溫室效應（GWP）高', tone: 'indigo' },
-              { gen: '低 GWP', example: 'R448A・R290・R744', note: '新一代冷媒；R290 會燃燒，要特別注意安全', tone: 'emerald' },
-            ],
-          },
-          {
             type: 'grid',
-            className: 'grid-rows-2 gap-4',
+            className: 'grid-rows-[auto_minmax(0,1fr)] gap-6',
             children: [
               {
-                type: 'info',
-                icon: Droplets,
-                tone: 'amber',
-                title: '冷凍油要跟冷媒配對',
-                body: (
-                  <>
-                    R404A、R134a、R507 這些 HFC 冷媒要用 <Hl>POE 油</Hl>；R22 老機器多用礦物油。不同冷媒<Em>絕對不能混灌</Em>，開單前先確認原機的冷媒。
-                  </>
-                ),
-                warn: '舊的 R22 壓縮機改用 POE 油時，要先清洗系統，避免兩種油混在一起。',
+                type: 'timeline',
+                icon: History,
+                tone: 'emerald',
+                title: '冷媒演進：越來越環保',
+                items: [
+                  { gen: 'CFCs', example: 'R12', note: '破壞臭氧層，已禁用', tone: 'slate' },
+                  { gen: 'HCFCs', example: 'R22', note: '過渡冷媒，逐步淘汰；老機器還很多', tone: 'slate' },
+                  { gen: 'HFCs', example: 'R404A／R134a／R507', note: '不破壞臭氧層（ODP＝0），但溫室效應（GWP）高', tone: 'indigo' },
+                  { gen: '低 GWP', example: 'R448A・R290・R744', note: '新一代冷媒；R290 會燃燒，要特別注意安全', tone: 'emerald' },
+                ],
               },
               {
                 type: 'list',
@@ -2232,6 +2220,35 @@ const slideList: SlideData[] = [
                   { icon: Thermometer, title: 'R134a', desc: '冷藏、冰箱、汽車冷氣' },
                   { icon: Fan, title: 'R410A、R32', desc: '冷氣（壓力比較高）' },
                   { icon: History, title: 'R22', desc: '舊機器維修；資深師傅的比較基準' },
+                ],
+              },
+            ],
+          },
+          {
+            type: 'grid',
+            className: 'grid-rows-[auto_minmax(0,1fr)] gap-6',
+            children: [
+              {
+                type: 'info',
+                icon: Droplets,
+                tone: 'amber',
+                title: '冷凍油要跟冷媒配對',
+                body: (
+                  <>
+                    HFC 冷媒（R404A、R134a、R507）要用 <Hl>POE 油</Hl>；R22 老機器多用礦物油。不同冷媒<Em>絕對不能混灌</Em>，開單前先確認原機的冷媒。
+                  </>
+                ),
+                warn: '舊的 R22 壓縮機改用 POE 油時，要先清洗系統，避免兩種油混在一起。',
+              },
+              {
+                type: 'list',
+                icon: Droplets,
+                tone: 'amber',
+                title: '哪種冷媒配哪種油（老闆的手寫表）',
+                items: [
+                  { icon: Ban, title: '只能用 POE 油', desc: 'R404A、R507' },
+                  { icon: CircleCheck, title: 'POE、礦物油都可以', desc: 'R22、R417A、R438A、R408A' },
+                  { icon: Snowflake, title: '6 種都能用 POE 油的壓縮機', desc: '但高壓不同，散熱器大小要跟著冷媒選' },
                 ],
               },
             ],

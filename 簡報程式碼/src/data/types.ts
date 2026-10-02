@@ -380,6 +380,10 @@ export interface TableBlock {
   type: 'table'
   tone: Tone
   head: string[]
+  /** 全部欄位共用的比較條件：合併成一格強調（例如「冷凝溫度都是 40.42°C」） */
+  standard?: { label: string; value: string; note: ReactNode }
+  /** 用長條圖比較的數值列；虛線＝基準欄的值 */
+  bars?: { label: string; unit: string; values: number[]; baseCol: number }
   rows: { label: string; cells: ReactNode[] }[]
   /** 要特別標示的欄（例如基準） */
   highlight?: { col: number; label: string }[]

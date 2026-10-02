@@ -3,6 +3,7 @@ import { lazy, Suspense, useCallback, useState } from 'react'
 import { photoCredits } from '../../data/photoCredits'
 import { cn } from '../../lib/cn'
 import { Deferred } from '../ui/Deferred'
+import { InView } from '../ui/InView'
 import { Segmented } from '../ui/Segmented'
 import { part3DFor } from './ids'
 import type { LegendItem, PartControl } from './models'
@@ -84,11 +85,13 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
             onTouchStart={(e) => e.stopPropagation()}
             onTouchEnd={(e) => e.stopPropagation()}
           >
-            <Deferred fallback={loading}>
-              <Suspense fallback={loading}>
-                <Part3D key={id} id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} />
-              </Suspense>
-            </Deferred>
+            <InView fallback={loading}>
+              <Deferred fallback={loading}>
+                <Suspense fallback={loading}>
+                  <Part3D key={id} id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} />
+                </Suspense>
+              </Deferred>
+            </InView>
             <div className="absolute bottom-3 left-3 flex flex-wrap gap-2">
               <button type="button" aria-pressed={cut} onClick={() => setCut((c) => !c)} className={pill(cut)}>
                 <Layers className="size-4" aria-hidden />

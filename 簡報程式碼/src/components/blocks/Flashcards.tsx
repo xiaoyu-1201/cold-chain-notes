@@ -1,5 +1,6 @@
 import { Box, Check, ChevronLeft, ChevronRight, Repeat, RotateCcw, Shuffle, Volume2 } from 'lucide-react'
 import { useMemo, useState, type KeyboardEvent, type MouseEvent } from 'react'
+import { CARD_AUDIO } from '../../data/cardAudio'
 import { CLASS_AUDIO, loadPlayable, RECORDINGS } from '../../data/media'
 import type { FlashCard, FlashcardsBlock } from '../../data/types'
 import { useStickyState } from '../../hooks/useStickyState'
@@ -20,45 +21,59 @@ const shuffled = (n: number) => {
   return a
 }
 
-/** 英文發音：用瀏覽器內建語音（離線也能用）；型號括號不唸 */
+/**
+ * 翻卡的聲音都是幾秒的小檔（data/cardAudio.ts，工具/make_card_audio.py 產生）：
+ * 英文用 Windows 英文語音先錄好；老闆說的片段從上課錄音剪出來。
+ * 按下去「同一個點擊裡」直接播小檔：手機、平板不會卡，iPhone 靜音模式也聽得到
+ * （瀏覽器內建語音在 iPhone 靜音時會沒聲音，只當沒有小檔時的備用）。
+ */
+let cardAudio: HTMLAudioElement | null = null
+function playSmall(url: string) {
+  if (!cardAudio) cardAudio = new Audio()
+  cardAudio.pause()
+  cardAudio.src = url
+  cardAudio.currentTime = 0
+  void cardAudio.play().catch(() => {})
+}
 const canSpeak = typeof window !== 'undefined' && 'speechSynthesis' in window
-function speakEnglish(text: string) {
+function speakEnglish(card: FlashCard) {
+  const file = CARD_AUDIO[card.term]?.en
+  if (file) return playSmall(file)
   if (!canSpeak) return
-  const u = new SpeechSynthesisUtterance(text.replace(/（.*?）|\(.*?\)/g, '').trim())
+  const u = new SpeechSynthesisUtterance(card.en.replace(/（.*?）|\(.*?\)/g, '').trim())
   u.lang = 'en-US'
   u.rate = 0.85
-  const voice = speechSynthesis.getVoices().find((v) => v.lang.startsWith('en'))
-  if (voice) u.voice = voice
-  speechSynthesis.cancel()
+  // iPhone：先 cancel 再馬上 speak，有時新的那句也會被取消 → 只在正在唸時才 cancel
+  if (speechSynthesis.speaking) speechSynthesis.cancel()
   speechSynthesis.speak(u)
 }
 
-/** 台語：播上課錄音裡老闆講的那一小段 */
-let clipAudio: HTMLAudioElement | null = null
-let clipSrc = ''
+/** 老闆說：播剪好的小檔；沒有小檔（新加的卡還沒產生）才從整段錄音跳過去播 */
 let clipStop: (() => void) | null = null
-function playClip(tw: NonNullable<FlashCard['tw']>) {
-  if (!clipAudio) clipAudio = new Audio()
-  const audio = clipAudio
+function playClip(card: FlashCard) {
+  const tw = card.tw!
+  const file = CARD_AUDIO[card.term]?.tw
+  if (file) return playSmall(file)
+  if (!cardAudio) cardAudio = new Audio()
+  const audio = cardAudio
   const src = RECORDINGS[tw.rec - 1] ?? CLASS_AUDIO
   if (clipStop) audio.removeEventListener('timeupdate', clipStop)
   clipStop = () => {
     if (audio.currentTime >= tw.to) audio.pause()
   }
   audio.addEventListener('timeupdate', clipStop)
-  const start = () => {
-    audio.currentTime = tw.from
-    void audio.play()
-  }
-  // 換錄音檔要等讀到長度才能跳到指定秒數
-  if (clipSrc !== src) {
-    clipSrc = src
-    void loadPlayable(src).then((url) => {
-      audio.src = url
-      audio.addEventListener('loadedmetadata', start, { once: true })
-      audio.load()
-    })
-  } else start()
+  void loadPlayable(src).then((url) => {
+    audio.src = url
+    audio.addEventListener(
+      'loadedmetadata',
+      () => {
+        audio.currentTime = tw.from
+        void audio.play().catch(() => {})
+      },
+      { once: true },
+    )
+    audio.load()
+  })
 }
 const mmss = (s: number) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`
 
@@ -135,12 +150,12 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
     : { term: 'text-[68px]', en: 'text-[48px]', body: 'text-[26px]', small: 'text-[18px]', btn: 'px-5 py-2.5 text-[20px]', chip: 'px-3 py-1.5 text-[17px]' }
   const pill = cn('inline-flex items-center gap-1.5 rounded-full font-semibold transition', size.chip, focusRing)
 
-  const englishButton = (text: string) =>
-    canSpeak && (
+  const englishButton = (c: FlashCard) =>
+    (canSpeak || CARD_AUDIO[c.term]?.en) && (
       <button type="button" onClick={(e) => {
         stop(e)
-        speakEnglish(text)
-      }} className={cn(pill, 'bg-sky-400/15 text-sky-200 hover:bg-sky-400/25')} aria-label={`播放英文發音：${text}`}>
+        speakEnglish(c)
+      }} className={cn(pill, 'bg-sky-400/15 text-sky-200 hover:bg-sky-400/25')} aria-label={`播放英文發音：${c.en}`}>
         <Volume2 className="size-4" aria-hidden />
         英文
       </button>
@@ -149,7 +164,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
     c.tw && (
       <button type="button" onClick={(e) => {
         stop(e)
-        playClip(c.tw!)
+        playClip(c)
       }} className={cn(pill, 'bg-amber-400/15 text-amber-200 hover:bg-amber-400/25')} title={`錄音${String(c.tw.rec).padStart(2, '0')} ${mmss(c.tw.from)}：「${c.tw.say}」`}>
         <Volume2 className="size-4" aria-hidden />
         老闆說（錄音{String(c.tw.rec).padStart(2, '0')} {mmss(c.tw.from)}）
@@ -176,7 +191,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
       ) : (
         <span className="flex flex-col items-center gap-3">
           <span className={cn('font-black text-sky-100', size.en)}>{card.en}</span>
-          {englishButton(card.en)}
+          {englishButton(card)}
         </span>
       )}
       {flipped ? (
@@ -185,7 +200,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
           {taiwaneseButton(card)}
           <p className="flex flex-wrap items-center justify-center gap-3 text-sky-200">
             <span className="font-semibold">{card.en}</span>
-            {englishButton(card.en)}
+            {englishButton(card)}
           </p>
           <p className="max-w-[880px] text-emerald-50">{card.tip}</p>
           {model && (

@@ -6,6 +6,7 @@ import { CLASS_AUDIO, CLASS_AUDIO_2 } from '../../data/media'
 import type { AudioBlock, Block, HotspotsBlock, MatrixBlock, Tone } from '../../data/types'
 import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
+import { DataTable } from '../blocks/DataTable'
 import { EstimatePractice } from '../blocks/Estimate'
 import { FenConverter } from '../blocks/FenConverter'
 import { Flashcards } from '../blocks/Flashcards'
@@ -626,6 +627,9 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
 
     case 'refslider':
       return <RefSlider mobile />
+
+    case 'table':
+      return <DataTable block={block} mobile />
 
     case 'quiz':
       return <QuizMobile items={block.items} />

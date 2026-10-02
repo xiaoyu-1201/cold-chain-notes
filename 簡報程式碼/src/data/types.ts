@@ -375,6 +375,19 @@ export interface FlashcardsBlock {
   cards: { term: string; alias: string; en: string; tip: string }[]
 }
 
+/** 資料表（電腦版表格、手機版每欄一張卡片） */
+export interface TableBlock {
+  type: 'table'
+  tone: Tone
+  head: string[]
+  rows: { label: string; cells: ReactNode[] }[]
+  /** 要特別標示的欄（例如基準） */
+  highlight?: { col: number; label: string }[]
+  notes?: ReactNode[]
+  /** 原稿照片 */
+  image?: { src: string; label: string }
+}
+
 /** 網頁版 Ref Tools 冷媒滑尺：溫度 ↔ 壓力 */
 export interface RefSliderBlock {
   type: 'refslider'
@@ -425,6 +438,7 @@ export type Block =
   | EstimateBlock
   | FlashcardsBlock
   | RefSliderBlock
+  | TableBlock
 
 export interface CoverData {
   kicker: string

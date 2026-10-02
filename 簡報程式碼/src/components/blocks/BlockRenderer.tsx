@@ -6,6 +6,7 @@ import { Compare, InfoCard, ItemList, Tiles, Timeline } from './Cards'
 import { Checklist } from './Checklist'
 import { CycleLesson, CyclePanel, InsightCard, SectionPanel, TxvPanel } from './Composite'
 import { ConceptCard } from './ConceptCard'
+import { DataTable } from './DataTable'
 import { DiagnosisMatrix } from './DiagnosisMatrix'
 import { Equation } from './Equation'
 import { FlowSteps } from './FlowSteps'
@@ -108,5 +109,7 @@ function Leaf({ block }: { block: Exclude<Block, GridBlock> }) {
       return <Flashcards block={block} />
     case 'refslider':
       return <RefSlider />
+    case 'table':
+      return <DataTable block={block} />
   }
 }

@@ -62,4 +62,26 @@ export const photoSets: Record<string, PhotoCredit[]> = {
     { ...unit, label: '裝在機組上', note: photoCredits.dml.note },
   ],
   flare: [{ ...classPhoto, file: '1005-capillary', note: '上面：銅管口打成喇叭嘴（張開的斜面），後面套著喇叭螺帽；下面：螺帽裡面的內牙。' }],
+  fittings: [
+    {
+      file: 'copper-fittings',
+      note: '銅的焊接接頭：上排 45° 彎頭、T 型三通、直接頭；下排管帽、90° 彎頭、大小頭、45° 彎頭。口都是套筒，銅管插在裡面，所以量內徑。',
+      title: 'Kupferfittings 4062',
+      author: 'Torsten Bätge',
+      license: 'CC BY-SA 3.0',
+      licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/',
+      source: 'https://commons.wikimedia.org/wiki/File:Kupferfittings_4062.jpg',
+    },
+  ],
+  insul: [
+    {
+      file: 'ac-insulation',
+      note: '冷氣室外機：右下角黑色的就是保溫管（發泡橡膠），包在冷媒管外面。',
+      title: 'Air conditioner armaflex insulation',
+      author: 'Achim Hering',
+      license: 'CC BY 3.0',
+      licenseUrl: 'https://creativecommons.org/licenses/by/3.0/',
+      source: 'https://commons.wikimedia.org/wiki/File:Air_conditioner_armaflex_insulation.jpg',
+    },
+  ],
 }

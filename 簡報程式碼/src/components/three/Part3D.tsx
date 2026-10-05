@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { buildPart, type LegendItem, type Part3DId, type PartControl } from './models'
 import { acquireRenderer, releaseRenderer } from './rendererPool'
+import { fixTouchPointers } from './touchFix'
 
 interface Part3DProps {
   id: Part3DId
@@ -77,6 +78,7 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
     }
     controls.addEventListener('start', () => (fly = null))
     renderer.domElement.addEventListener('dblclick', onDbl)
+    const unfixTouch = fixTouchPointers(controls, host, renderer.domElement)
 
     const plane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0)
     const setCut = (c: boolean) =>
@@ -96,9 +98,11 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
     }
     api.current = { setCut, setSpin, setRun, setOp }
 
+    let size = ''
     const resize = () => {
       const w = Math.max(host.clientWidth, 1)
       const h = Math.max(host.clientHeight, 1)
+      size = `${w}x${h}`
       renderer.setSize(w, h, false)
       renderer.domElement.style.width = '100%'
       renderer.domElement.style.height = '100%'
@@ -112,6 +116,8 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
     let raf = 0
     const clock = new THREE.Clock()
     const tick = () => {
+      // 框的大小變了（下面多出操作區、換頁動畫）就重設，ResizeObserver 慢一步時畫面才不會被拉歪
+      if (`${Math.max(host.clientWidth, 1)}x${Math.max(host.clientHeight, 1)}` !== size) resize()
       const dt = Math.min(clock.getDelta(), 0.05)
       const t = clock.elapsedTime
       // 操作值慢慢靠近目標，機構看起來是「動過去」的
@@ -141,6 +147,7 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
       cancelAnimationFrame(raf)
       ro.disconnect()
       renderer.domElement.removeEventListener('dblclick', onDbl)
+      unfixTouch()
       controls.dispose()
       scene.traverse((o) => {
         const mesh = o as THREE.Mesh

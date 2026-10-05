@@ -7,6 +7,7 @@ import type { CycleNodeId } from '../../data/cycleNotes'
 import type { FaultFx, PipeMode } from '../../data/faults'
 import { cn } from '../../lib/cn'
 import { buildPart, type Part3DId } from './models'
+import { fixTouchPointers } from './touchFix'
 import { acquireRenderer, releaseRenderer } from './rendererPool'
 
 type V3 = [number, number, number]
@@ -138,6 +139,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     // 滾輪往游標的位置放大；右鍵（觸控：雙指）拖曳＝平移
     controls.zoomToCursor = true
     controls.screenSpacePanning = true
+    const unfixTouch = fixTouchPointers(controls, host, renderer.domElement)
 
     /** 零件的材質（記住原本的發光，取消高亮時還原） */
     const partMats = new Map<CycleNodeId, { m: THREE.MeshStandardMaterial; emissive: number; intensity: number }[]>()
@@ -585,6 +587,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       renderer.domElement.removeEventListener('pointerup', onUp)
       renderer.domElement.removeEventListener('pointermove', onMove)
       renderer.domElement.removeEventListener('dblclick', onDbl)
+      unfixTouch()
       controls.dispose()
       scene.traverse((o) => {
         const mesh = o as THREE.Mesh

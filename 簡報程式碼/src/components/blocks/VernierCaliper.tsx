@@ -49,29 +49,31 @@ function fenName(sixteenths: number) {
 }
 
 /* ─────────── 卡尺本體（SVG） ─────────── */
+// 照 10/5 拍的實物排：主尺上緣＝英制（1/16″，刻度往下長）、下緣＝公制（mm，刻度往上長）；
+// 滑座上片＝英制游尺（1/128″）、下片＝公制游尺（0.05 mm）；固定螺絲在上、滾輪在下
+const BEAM_END = 175
 function Ticks({ d, hl }: { d: number; hl: boolean }) {
   const r = reading(d)
   const out: ReactNode[] = []
-  for (let x = 0; x <= MAX; x++) {
+  for (let x = 0; x <= BEAM_END - 4; x++) {
     const len = x % 10 === 0 ? 4.6 : x % 5 === 0 ? 3.4 : 2.2
     const on = hl && (x === r.main || x === r.main + 2 * r.k)
-    out.push(<line key={`m${x}`} x1={x} y1={9} x2={x} y2={9 - len} stroke={on ? (x === r.main + 2 * r.k && r.k ? '#f59e0b' : '#0284c7') : '#111827'} strokeWidth={on ? 0.42 : 0.16} />)
-    if (x % 10 === 0)
+    out.push(<line key={`m${x}`} x1={x} y1={18} x2={x} y2={18 - len} stroke={on ? (x === r.main + 2 * r.k && r.k ? '#f59e0b' : '#0284c7') : '#111827'} strokeWidth={on ? 0.42 : 0.16} />)
+    if (x % 10 === 0 && x <= MAX)
       out.push(
-        <text key={`n${x}`} x={x} y={3.4} fontSize={2.5} textAnchor="middle" fill="#1f2937" fontWeight={600}>
+        <text key={`n${x}`} x={x} y={12.2} fontSize={2.5} textAnchor="middle" fill="#1f2937" fontWeight={600}>
           {x}
         </text>,
       )
   }
-  for (let i = 0; i <= 96; i++) {
+  for (let i = 0; (i * 25.4) / 16 <= BEAM_END - 4; i++) {
     const x = (i * 25.4) / 16
-    if (x > MAX) break
     const len = i % 16 === 0 ? 4.4 : i % 8 === 0 ? 3.6 : i % 4 === 0 ? 3.0 : i % 2 === 0 ? 2.4 : 1.5
     const on = hl && i === r.sixteenths
-    out.push(<line key={`i${i}`} x1={x} y1={18} x2={x} y2={18 - len} stroke={on ? '#f59e0b' : '#111827'} strokeWidth={on ? 0.42 : 0.15} />)
-    if (i % 16 === 0 && i > 0)
+    out.push(<line key={`i${i}`} x1={x} y1={0} x2={x} y2={len} stroke={on ? '#f59e0b' : '#111827'} strokeWidth={on ? 0.42 : 0.15} />)
+    if (i % 16 === 0 && i > 0 && i <= 96)
       out.push(
-        <text key={`in${i}`} x={x} y={12.6} fontSize={2.3} textAnchor="middle" fill="#1f2937" fontWeight={600}>
+        <text key={`in${i}`} x={x} y={7.3} fontSize={2.3} textAnchor="middle" fill="#1f2937" fontWeight={600}>
           {i / 16}
         </text>,
       )
@@ -85,17 +87,16 @@ function Caliper({ d, mode, objectMm, hl, uid }: { d: number; mode: Mode; object
   const plate = `url(#${uid}-plate)`
   const jaw = `url(#${uid}-jaw)`
   const cu = `url(#${uid}-cu)`
-  // 滑座外框：中間兩個窗口露出主尺（上：公制、下：英制）
-  const head = `M${d - 3},-1.5 H${d + 58} V23.5 H${d - 3} Z M${d - 1.5},-0.2 V9 H${d + 43} V-0.2 Z M${d - 1.5},13.2 V18 H${d + 43} V13.2 Z`
+  const W = 52 // 滑座長度
   const vernier: ReactNode[] = []
   for (let k = 0; k <= 20; k++) {
     const x = d + k * VERNIER_STEP
     const on = hl && k === r.k && r.k > 0
     const zero = hl && k === 0
-    vernier.push(<line key={k} x1={x} y1={9} x2={x} y2={9 + (k % 2 === 0 ? 3 : 2)} stroke={on ? '#f59e0b' : zero ? '#0284c7' : '#111827'} strokeWidth={on || zero ? 0.42 : 0.15} />)
+    vernier.push(<line key={k} x1={x} y1={18} x2={x} y2={18 + (k % 2 === 0 ? 2.2 : 1.5)} stroke={on ? '#f59e0b' : zero ? '#0284c7' : '#111827'} strokeWidth={on || zero ? 0.42 : 0.15} />)
     if (k % 2 === 0)
       vernier.push(
-        <text key={`t${k}`} x={x} y={12.85} fontSize={1.5} textAnchor="middle" fill="#1f2937">
+        <text key={`t${k}`} x={x} y={21.9} fontSize={1.5} textAnchor="middle" fill="#1f2937">
           {k / 2}
         </text>,
       )
@@ -103,17 +104,17 @@ function Caliper({ d, mode, objectMm, hl, uid }: { d: number; mode: Mode; object
   const inchV: ReactNode[] = []
   for (let k = 0; k <= 8; k++) {
     const x = d + k * INCH_V_STEP
-    inchV.push(<line key={k} x1={x} y1={18} x2={x} y2={18 + (k % 4 === 0 ? 2.4 : 1.6)} stroke="#111827" strokeWidth={0.15} />)
+    inchV.push(<line key={k} x1={x} y1={0} x2={x} y2={k % 4 === 0 ? -2.1 : -1.4} stroke="#111827" strokeWidth={0.15} />)
     if (k % 4 === 0)
       inchV.push(
-        <text key={`t${k}`} x={x} y={21.2} fontSize={1.4} textAnchor="middle" fill="#1f2937">
+        <text key={`t${k}`} x={x} y={-2.6} fontSize={1.4} textAnchor="middle" fill="#1f2937">
           {k}
         </text>,
       )
   }
   const knurl = Array.from({ length: 14 }, (_, i) => {
     const a = (i / 14) * Math.PI * 2
-    return <line key={i} x1={d + 48 + Math.cos(a) * 2.2} y1={26.2 + Math.sin(a) * 2.2} x2={d + 48 + Math.cos(a) * 3.4} y2={26.2 + Math.sin(a) * 3.4} stroke="#4b5563" strokeWidth={0.35} />
+    return <line key={i} x1={d + 46 + Math.cos(a) * 2.2} y1={25.4 + Math.sin(a) * 2.2} x2={d + 46 + Math.cos(a) * 3.4} y2={25.4 + Math.sin(a) * 3.4} stroke="#4b5563" strokeWidth={0.35} />
   })
   return (
     <g>
@@ -144,27 +145,33 @@ function Caliper({ d, mode, objectMm, hl, uid }: { d: number; mode: Mode; object
       </defs>
       {/* 影子 */}
       <path d="M-18,19 L-8,49 L0,53 L0,19 Z" fill="#000" opacity="0.18" transform="translate(1.2,1.2)" />
-      <rect x={-24} y={0} width={199} height={18} rx={0.8} fill="#000" opacity="0.18" transform="translate(1.2,1.2)" />
+      <rect x={-24} y={0} width={BEAM_END + 24} height={18} rx={0.8} fill="#000" opacity="0.18" transform="translate(1.2,1.2)" />
       {/* 深度桿（跟著游尺伸出主尺尾端） */}
-      <rect x={175} y={8.4} width={Math.min(d, 40)} height={1.2} fill={steel} stroke="#6b7280" strokeWidth={0.12} />
+      <rect x={BEAM_END} y={8.4} width={Math.min(d, 40)} height={1.2} fill={steel} stroke="#6b7280" strokeWidth={0.12} />
       {/* 固定量爪：下（外徑）、上（內徑） */}
       <path d="M0,18 L0,52 L-1.5,52 L-8,48 L-18,18 Z" fill={jaw} stroke="#6b7280" strokeWidth={0.2} />
       <path d="M-12,0 L-2,0 L6,-10 L6,-14 L4.5,-15.2 L3,-14 L3,-9 Z" fill={jaw} stroke="#6b7280" strokeWidth={0.2} />
       {/* 主尺 */}
-      <rect x={-24} y={0} width={199} height={18} rx={0.8} fill={steel} stroke="#6b7280" strokeWidth={0.2} />
-      <rect x={-24} y={0} width={199} height={18} rx={0.8} fill={`url(#${uid}-brush)`} />
-      <text x={-21} y={5} fontSize={1.6} fill="#374151" letterSpacing={0.2}>
-        STAINLESS
-      </text>
-      <text x={-21} y={7.4} fontSize={1.6} fill="#374151" letterSpacing={0.2}>
-        HARDENED
-      </text>
-      <text x={155} y={6.2} fontSize={2} fill="#374151">
-        mm
-      </text>
-      <text x={155} y={16.4} fontSize={2} fill="#374151">
+      <rect x={-24} y={0} width={BEAM_END + 24} height={18} rx={0.8} fill={steel} stroke="#6b7280" strokeWidth={0.2} />
+      <rect x={-24} y={0} width={BEAM_END + 24} height={18} rx={0.8} fill={`url(#${uid}-brush)`} />
+      <text x={157} y={7.3} fontSize={1.9} fill="#374151">
         in.
       </text>
+      <text x={157} y={12.2} fontSize={1.9} fill="#374151">
+        mm
+      </text>
+      <text x={163.5} y={8.4} fontSize={1.3} fill="#374151" letterSpacing={0.15}>
+        STAINLESS
+      </text>
+      <text x={163.5} y={10.4} fontSize={1.3} fill="#374151" letterSpacing={0.15}>
+        HARDENED
+      </text>
+      {[2.6, 15.4].map((y) => (
+        <g key={y}>
+          <circle cx={172.6} cy={y} r={0.9} fill="#9ca3af" stroke="#4b5563" strokeWidth={0.15} />
+          <line x1={172} y1={y - 0.5} x2={173.2} y2={y + 0.5} stroke="#374151" strokeWidth={0.2} />
+        </g>
+      ))}
       <Ticks d={d} hl={hl} />
       {/* 要量的東西：銅管（端面）或接頭（剖面） */}
       {objectMm !== null && mode === 'od' && (
@@ -181,29 +188,30 @@ function Caliper({ d, mode, objectMm, hl, uid }: { d: number; mode: Mode; object
           <rect x={3 + objectMm} y={-17} width={2.2} height={12} fill={cu} stroke="#7c3f1d" strokeWidth={0.15} />
         </g>
       )}
-      {/* 游尺（滑座）＋可動量爪 */}
+      {/* 游尺（滑座）＋可動量爪：上片、下片包住主尺，中間看得到主尺 */}
       <g>
-        <path d={`M${d + 7},-1.5 L${d - 3},-1.5 L${d},-10 L${d},-14 L${d + 1.5},-15.2 L${d + 3},-14 L${d + 3},-9 Z`} fill={jaw} stroke="#6b7280" strokeWidth={0.2} opacity={0.96} />
-        <path d={`M${d},23.5 L${d + 18},23.5 L${d + 8},48 L${d + 1.5},52 L${d},52 Z`} fill={jaw} stroke="#6b7280" strokeWidth={0.2} />
-        <path d={head} fill={plate} fillRule="evenodd" stroke="#6b7280" strokeWidth={0.2} />
-        <rect x={d - 1.5} y={9} width={44.5} height={4.2} fill={plate} stroke="#6b7280" strokeWidth={0.1} />
-        <rect x={d - 1.5} y={18} width={44.5} height={3.6} fill={plate} stroke="#6b7280" strokeWidth={0.1} />
+        <path d={`M${d + 7},-4.5 L${d - 3},-4.5 L${d},-10 L${d},-14 L${d + 1.5},-15.2 L${d + 3},-14 L${d + 3},-9 Z`} fill={jaw} stroke="#6b7280" strokeWidth={0.2} opacity={0.96} />
+        <path d={`M${d},22.5 L${d + 18},22.5 L${d + 8},48 L${d + 1.5},52 L${d},52 Z`} fill={jaw} stroke="#6b7280" strokeWidth={0.2} />
+        <rect x={d - 3} y={-0.1} width={1.5} height={18.2} fill={plate} stroke="#6b7280" strokeWidth={0.15} />
+        <rect x={d - 3} y={-4.5} width={W} height={4.5} rx={0.4} fill={plate} stroke="#6b7280" strokeWidth={0.2} />
+        <rect x={d - 3} y={18} width={W} height={4.5} rx={0.4} fill={plate} stroke="#6b7280" strokeWidth={0.2} />
+        <line x1={d - 1.5} y1={0.15} x2={d + W - 3} y2={0.15} stroke="#000" strokeOpacity={0.18} strokeWidth={0.3} />
         {vernier}
         {inchV}
-        <text x={d + 14} y={21.2} fontSize={1.4} fill="#374151">
+        <text x={d + 13.5} y={-1.3} fontSize={1.4} fill="#374151">
           1/128 in.
         </text>
-        <text x={d + 33} y={21.2} fontSize={1.4} fill="#374151">
-          0.05 mm
+        <text x={d + 40.6} y={21.6} fontSize={1.4} fill="#374151">
+          0.05mm
         </text>
-        {/* 固定螺絲、滾輪 */}
-        <rect x={d + 47} y={-5.4} width={6} height={4} rx={0.8} fill="#9ca3af" stroke="#4b5563" strokeWidth={0.2} />
-        {Array.from({ length: 6 }, (_, i) => (
-          <line key={i} x1={d + 47.8 + i} y1={-5.2} x2={d + 47.8 + i} y2={-1.6} stroke="#4b5563" strokeWidth={0.18} />
+        {/* 固定螺絲（上）、滾輪（下） */}
+        <rect x={d + 22.5} y={-8.3} width={5} height={3.8} rx={1} fill="#9ca3af" stroke="#4b5563" strokeWidth={0.2} />
+        {Array.from({ length: 5 }, (_, i) => (
+          <line key={i} x1={d + 23.3 + i * 0.85} y1={-8.1} x2={d + 23.3 + i * 0.85} y2={-4.7} stroke="#4b5563" strokeWidth={0.18} />
         ))}
-        <circle cx={d + 48} cy={26.2} r={3.4} fill="#cbd5e1" stroke="#4b5563" strokeWidth={0.25} />
+        <circle cx={d + 46} cy={25.4} r={3.4} fill="#cbd5e1" stroke="#4b5563" strokeWidth={0.25} />
         {knurl}
-        <circle cx={d + 48} cy={26.2} r={1.1} fill="#9ca3af" />
+        <circle cx={d + 46} cy={25.4} r={1.1} fill="#9ca3af" />
       </g>
     </g>
   )
@@ -382,13 +390,13 @@ export function VernierCaliper({ mobile = false }: { mobile?: boolean }) {
 
         <section className="flex min-h-0 flex-col gap-2 rounded-[20px] bg-white/[0.045] p-4">
           <div className="flex flex-wrap items-baseline justify-between gap-x-3">
-            <p className={cn('font-bold text-white', t.h)}>放大看游尺</p>
+            <p className={cn('font-bold text-white', t.h)}>放大看公制游尺</p>
             <p className={cn('text-slate-400', t.small)}>
               <span className="text-sky-300">藍色</span>＝游尺的 0；<span className="text-amber-300">橘色</span>＝對齊的那一條
             </p>
           </div>
           <div className="min-h-0 flex-1 overflow-hidden rounded-xl bg-slate-200/[0.06]">
-            <svg viewBox={`${d - 6} -0.3 ${mobile ? 40 : 50} 22.4`} className={cn('w-full', mobile ? 'h-[150px]' : 'h-full')} aria-hidden>
+            <svg viewBox={`${d - 6} 8.2 ${mobile ? 40 : 50} 14.8`} className={cn('w-full', mobile ? 'h-[150px]' : 'h-full')} aria-hidden>
               <Caliper d={d} mode={mode} objectMm={null} hl={!hidden} uid={`${uid}z`} />
             </svg>
           </div>

@@ -427,13 +427,18 @@ export interface RefSliderBlock {
   type: 'refslider'
 }
 
-/** 互動換算器：管徑「分」↔ mm（含考考我練習） */
+/** 互動游標卡尺（照實物畫：0.05 mm、英制 1/128″；量外徑／內徑、考考我） */
+export interface CaliperBlock {
+  type: 'caliper'
+}
+
 /** 產品展示：大的 3D／照片（元件章節的主角） */
 export interface ShowcaseBlock {
   type: 'showcase'
   parts: { id: string; label: string }[]
 }
 
+/** 互動換算器：管徑「分」↔ mm（含考考我練習） */
 export interface FenBlock {
   type: 'fen'
 }
@@ -480,6 +485,7 @@ export type Block =
   | CycleLessonBlock
   | QuizBlock
   | FenBlock
+  | CaliperBlock
   | CoilReaderBlock
   | ShowcaseBlock
   | PhotoBlock

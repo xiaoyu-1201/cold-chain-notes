@@ -5,7 +5,7 @@ import * as THREE from 'three'
  * 外殼材質放進 shells：開啟「剖開」時會被切掉前半，露出內部零件。
  */
 
-export type Part3DId = 'comp' | 'cond' | 'txv' | 'evap' | 'oub' | 'kp15' | 'receiver' | 'gbc' | 'dml' | 'sgi' | 'evr' | 'tc' | 'acc'
+export type Part3DId = 'comp' | 'cond' | 'txv' | 'evap' | 'oub' | 'kp15' | 'receiver' | 'gbc' | 'dml' | 'sgi' | 'evr' | 'tc' | 'acc' | 'flare' | 'fittings' | 'insul'
 
 export interface LegendItem {
   color: string
@@ -126,6 +126,44 @@ function stubsX(b: Builder, half: number, r = 0.11, len = 0.5) {
   return cu
 }
 
+/** 旋轉體：profile 是 [半徑, 沿軸位置]；外壁要照位置變大的方向寫（法線才朝外） */
+function lathe(b: Builder, profile: [number, number][], m: THREE.Material, axis: 'x' | 'y' = 'x', pos: V3 = [0, 0, 0], seg = 40) {
+  const geo = new THREE.LatheGeometry(profile.map(([r, t]) => new THREE.Vector2(r, t)), seg)
+  return b.mesh(geo, m, pos, axis === 'x' ? [0, 0, -R] : [0, 0, 0])
+}
+/** 空心管（看得到管壁厚度） */
+function hollowX(b: Builder, rOut: number, rIn: number, x0: number, x1: number, m: THREE.Material, seg = 40, pos: V3 = [0, 0, 0]) {
+  return lathe(b, [[rOut, x0], [rOut, x1], [rIn, x1], [rIn, x0], [rOut, x0]], m, 'x', pos, seg)
+}
+function hollowY(b: Builder, rOut: number, rIn: number, y0: number, y1: number, m: THREE.Material, pos: V3 = [0, 0, 0]) {
+  return lathe(b, [[rOut, y0], [rOut, y1], [rIn, y1], [rIn, y0], [rOut, y0]], m, 'y', pos)
+}
+/** 六角螺帽（中間圓孔），沿 X 軸從 x0 開始 */
+function hexNut(b: Builder, rHex: number, rHole: number, x0: number, len: number, m: THREE.Material) {
+  const s = new THREE.Shape()
+  for (let i = 0; i < 6; i++) {
+    const a = (i / 6) * Math.PI * 2 + Math.PI / 6
+    if (i) s.lineTo(Math.cos(a) * rHex, Math.sin(a) * rHex)
+    else s.moveTo(Math.cos(a) * rHex, Math.sin(a) * rHex)
+  }
+  s.closePath()
+  const hole = new THREE.Path()
+  hole.absarc(0, 0, rHole, 0, Math.PI * 2, true)
+  s.holes.push(hole)
+  return b.mesh(new THREE.ExtrudeGeometry(s, { depth: len, bevelEnabled: false, curveSegments: 40 }), m, [x0, 0, 0], [0, R, 0])
+}
+/** 牙的紋路（一圈一圈），從 x0 到 x1，每 pitch 一圈（pitch 可以是負的） */
+function threads(b: Builder, r: number, x0: number, x1: number, m: THREE.Material, pitch = 0.05) {
+  const out: THREE.Mesh[] = []
+  const n = Math.round((x1 - x0) / pitch)
+  for (let i = 0; i <= n; i++) out.push(b.mesh(new THREE.TorusGeometry(r, 0.011, 6, 40), m, [x0 + i * pitch, 0, 0], [0, R, 0]))
+  return out
+}
+/** 固定的亂數（每次畫出來一樣） */
+function seeded(seed: number) {
+  let s = seed
+  return () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646
+}
 const builders: Record<Part3DId, () => PartModel> = {
   sgi() {
     const b = new Builder()
@@ -169,22 +207,52 @@ const builders: Record<Part3DId, () => PartModel> = {
     b.cylX(0.46, 1.7, shellM)
     b.cylX(0.46, 0.32, shellM, [-1.01, 0, 0], 40, 0.16)
     b.cylX(0.16, 0.32, shellM, [1.01, 0, 0], 40, 0.46)
-    const nut = mat.brass()
-    b.hexX(0.2, 0.22, nut, [-1.28, 0, 0])
-    b.hexX(0.2, 0.22, nut, [1.28, 0, 0])
-    stubsX(b, 1.39, 0.09, 0.35)
     const core = mat.paint(0xe8d9b0)
     b.cylX(0.38, 1.3, core)
     const screen = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.6, roughness: 0.4, wireframe: true })
     b.cylX(0.42, 0.04, screen, [-0.72, 0, 0], 24)
     b.cylX(0.42, 0.04, screen, [0.72, 0, 0], 24)
+    // 本體上的箭頭（冷媒流向）
+    const arrowM = mat.paint(0x111827)
+    b.box(0.62, 0.02, 0.07, arrowM, [-0.1, 0.462, 0])
+    b.mesh(new THREE.ConeGeometry(0.1, 0.22, 24), arrowM, [0.32, 0.462, 0], [0, 0, -R]).scale.set(0.25, 1, 1)
+    // 牙（沒 S）：六角＋外牙＋斜面；焊接（有 S）：銅管口＋插進去的銅管
+    const nut = mat.brass()
+    const socket = mat.copper()
+    const pipe = mat.paint(0xe0a27a)
+    const flare: THREE.Object3D[] = []
+    const solder: THREE.Object3D[] = []
+    for (const s of [-1, 1]) {
+      flare.push(b.hexX(0.2, 0.2, nut, [s * 1.27, 0, 0]))
+      flare.push(b.cylX(0.115, 0.3, nut, [s * 1.52, 0, 0], 32))
+      flare.push(...threads(b, 0.115, s * 1.4, s * 1.64, nut, s * 0.06))
+      flare.push(b.cylX(s > 0 ? 0.06 : 0.11, 0.06, nut, [s * 1.7, 0, 0], 32, s > 0 ? 0.11 : 0.06))
+      solder.push(hollowX(b, 0.125, 0.1, Math.min(s * 1.17, s * 1.45), Math.max(s * 1.17, s * 1.45), socket, 32))
+      solder.push(hollowX(b, 0.098, 0.08, Math.min(s * 1.25, s * 1.95), Math.max(s * 1.25, s * 1.95), pipe, 32))
+    }
+    b.control = {
+      kind: 'toggle',
+      label: '接頭（看型號有沒有 S）',
+      off: '牙（沒 S）',
+      on: '焊接（有 S）',
+      initial: 0,
+      apply: (v) => {
+        flare.forEach((o) => (o.visible = v < 0.5))
+        solder.forEach((o) => (o.visible = v >= 0.5))
+      },
+      describe: (v) =>
+        v >= 0.5
+          ? '有 S（盒子寫 ODF）＝焊接：兩頭是銅管口，銅管插進去燒焊。例：052S、164S。'
+          : '沒有 S（盒子寫 SAE）＝牙：兩頭是外牙＋斜面，喇叭嘴套上螺帽鎖緊，不用動火。例：052、083。',
+    }
     b.note(core, '分子篩（乾燥劑）', '吸走系統裡的水分；水會結冰把管路塞住')
     b.note(screen, '濾網', '擋住雜質、焊渣，保護膨脹閥')
+    b.note(arrowM, '箭頭', '冷媒流向 IN → OUT；貼紙可能貼反，以本體箭頭為準')
     b.note(shellM, '銅殼', '裝在液管上；系統打開過就要換新')
-    b.note(nut, '喇叭口接頭', '有的是喇叭口、有的是焊接型')
+    b.note(nut, '牙（沒 S）', '外牙＋斜面，用鎖的、拆得下來')
+    b.note(socket, '焊接（有 S）', '銅管插進管口再燒焊')
     return b.done()
   },
-
   evr() {
     const b = new Builder()
     const body = b.shell(mat.brass())
@@ -531,6 +599,161 @@ const builders: Record<Part3DId, () => PartModel> = {
     b.note(probe, '感溫棒', '放在庫內，感應溫度')
     b.note(board, '控制電路', '到設定溫度就讓壓縮機停；溫差一般抓 4°C')
     b.note(btn, '按鍵', '設定溫度、溫差、除霜時間')
+    return b.done()
+  },
+  flare() {
+    const b = new Builder()
+    // 接頭（不動）：左邊銅管、六角、外牙、45° 斜面
+    const fit = mat.brass()
+    const cuL = mat.copper()
+    hollowX(b, 0.12, 0.1, -1.1, -0.5, cuL, 32)
+    b.hexX(0.3, 0.3, fit, [-0.42, 0, 0])
+    b.cylX(0.185, 0.52, fit, [-0.01, 0, 0])
+    threads(b, 0.185, -0.24, 0.21, fit)
+    b.cylX(0.1, 0.07, fit, [0.285, 0, 0], 40, 0.17)
+    // 銅管＋喇叭嘴（斜面剛好貼在接頭斜面上）
+    const cu = mat.copper()
+    const tube = lathe(b, [[0.19, 0.27], [0.12, 0.34], [0.12, 1.6], [0.1, 1.6], [0.1, 0.32], [0.17, 0.25], [0.19, 0.27]], cu)
+    const tubeP = b.pivot([tube], [0, 0, 0])
+    // 喇叭螺帽：前段內牙、後段有斜面把喇叭嘴壓住
+    const nutM = b.shell(mat.paint(0xd4a72c))
+    nutM.metalness = 0.85
+    nutM.roughness = 0.3
+    const nutParts = [
+      hexNut(b, 0.34, 0.2, 0, 0.5, nutM),
+      lathe(b, [[0.2, 0.27], [0.2, 0.5], [0.13, 0.5], [0.13, 0.34], [0.2, 0.27]], nutM),
+      ...threads(b, 0.2, 0.025, 0.225, nutM),
+    ]
+    const nutP = b.pivot(nutParts, [0, 0, 0])
+    b.control = {
+      kind: 'toggle',
+      label: '把螺帽鎖上去',
+      off: '分開',
+      on: '鎖緊',
+      initial: 0,
+      needsCut: true,
+      apply: (v) => {
+        tubeP.position.x = 0.55 * (1 - v)
+        nutP.position.x = 1.15 * (1 - v)
+        nutP.rotation.x = (1 - v) * Math.PI * 3
+      },
+      describe: (v) =>
+        v >= 0.5
+          ? '鎖緊：螺帽把喇叭嘴壓在接頭斜面上，銅貼銅不會漏；不用燒焊、拆得下來。'
+          : '分開：銅管先穿過螺帽，再用擴管工具把管口打成喇叭嘴（斜面）。',
+    }
+    b.note(cu, '喇叭嘴', '銅管口打成 45° 斜面（張開像喇叭）')
+    b.note(nutM, '喇叭螺帽', '先套在銅管上；鎖緊時把喇叭嘴壓住')
+    b.note(fit, '接頭（外牙＋斜面）', '幾分牙＝幾分的銅管鎖得上')
+    b.note(cuL, '另一頭', '可能是焊接，也可能又是牙')
+    return b.done()
+  },
+
+  fittings() {
+    const b = new Builder()
+    const elbow = b.shell(mat.copper())
+    const tee = b.shell(mat.paint(0xb5653a))
+    tee.metalness = 0.85
+    tee.roughness = 0.3
+    const red = b.shell(mat.paint(0xd4895a))
+    red.metalness = 0.85
+    red.roughness = 0.3
+    const pipe = mat.paint(0xe8b08a)
+    pipe.metalness = 0.6
+    pipe.roughness = 0.35
+    const moves: { o: THREE.Object3D; dir: V3 }[] = []
+    const insert = (o: THREE.Object3D, dir: V3) => {
+      const p = b.pivot([o], [0, 0, 0])
+      moves.push({ o: p, dir })
+    }
+    // 90° 彎頭：彎的部分＋兩頭套筒
+    b.mesh(new THREE.TorusGeometry(0.35, 0.15, 20, 32, Math.PI / 2), elbow, [-2.15, -0.2, 0])
+    hollowY(b, 0.15, 0.125, -0.45, -0.2, elbow, [-1.8, 0, 0])
+    hollowX(b, 0.15, 0.125, -2.4, -2.15, elbow, 40, [0, 0.15, 0])
+    insert(hollowY(b, 0.12, 0.1, -0.7, -0.25, pipe, [-1.8, 0, 0]), [0, -1, 0])
+    insert(hollowX(b, 0.12, 0.1, -2.65, -2.2, pipe, 32, [0, 0.15, 0]), [-1, 0, 0])
+    // T 型三通
+    hollowX(b, 0.15, 0.125, -0.45, 0.45, tee)
+    hollowY(b, 0.15, 0.125, 0.1, 0.45, tee)
+    insert(hollowX(b, 0.12, 0.1, -0.7, -0.25, pipe, 32), [-1, 0, 0])
+    insert(hollowX(b, 0.12, 0.1, 0.25, 0.7, pipe, 32), [1, 0, 0])
+    insert(hollowY(b, 0.12, 0.1, 0.25, 0.7, pipe), [0, 1, 0])
+    // 大小頭（例 5分×3分）
+    lathe(b, [[0.2, 1.75], [0.2, 2.05], [0.13, 2.25], [0.13, 2.5], [0.105, 2.5], [0.105, 2.25], [0.17, 2.05], [0.17, 1.75], [0.2, 1.75]], red)
+    insert(hollowX(b, 0.165, 0.145, 1.5, 1.95, pipe, 32), [-1, 0, 0])
+    insert(hollowX(b, 0.1, 0.085, 2.3, 2.75, pipe, 32), [1, 0, 0])
+    b.control = {
+      kind: 'toggle',
+      label: '把銅管插進去',
+      off: '還沒插',
+      on: '插進去',
+      initial: 0,
+      needsCut: true,
+      apply: (v) => {
+        const k = 0.35 * (1 - v)
+        moves.forEach(({ o, dir }) => o.position.set(dir[0] * k, dir[1] * k, dir[2] * k))
+      },
+      describe: (v) =>
+        v >= 0.5
+          ? '插進去再燒焊：4分的彎頭，剛好讓 4分（12.7 mm）銅管插進去。'
+          : '口是「套筒」：銅管插在裡面，所以接頭、彎頭量內徑。',
+    }
+    b.note(elbow, '90° 彎頭', '賣最多；也有 45°、180°（U 型）')
+    b.note(tee, 'T 型三通', '分成兩路；Y 型下面大、上面小')
+    b.note(red, '大小頭', '一邊大一邊小，例 5分×3分')
+    b.note(pipe, '銅管', '插在接頭裡面 → 接頭量內徑')
+    return b.done()
+  },
+
+  insul() {
+    const b = new Builder()
+    const cu = mat.copper()
+    hollowX(b, 0.12, 0.1, -1.8, 1.8, cu)
+    const foam = b.shell(new THREE.MeshStandardMaterial({ color: 0x3a3f47, roughness: 0.95, metalness: 0 }))
+    const seam = mat.paint(0xf59e0b)
+    // 同一支 4分銅管（外徑 12.7 mm）：4分厚≈12.7 mm、6分厚≈19 mm（照比例）
+    const layer = (t: number) => [hollowX(b, 0.13 + t, 0.13, -1.3, 1.3, foam, 56), b.box(2.6, 0.012, 0.024, seam, [0, 0.13 + t + 0.004, 0])]
+    const thin = layer(0.24)
+    const thick = layer(0.36)
+    const drop = mat.fluid(0x7dd3fc, 0.85)
+    const rnd = seeded(7)
+    const drops: THREE.Object3D[] = []
+    for (let i = 0; i < 90; i++) {
+      const a = -Math.PI * (0.05 + rnd() * 0.9) // 下半圈比較多
+      const up = rnd() < 0.3 ? Math.PI : 0
+      const r = 0.012 + rnd() * 0.018
+      drops.push(b.mesh(new THREE.SphereGeometry(r, 10, 8), drop, [-1.25 + rnd() * 2.5, Math.sin(a + up) * 0.125, Math.cos(a + up) * 0.125]))
+    }
+    for (let i = 0; i < 6; i++) {
+      const x = -1.0 + i * 0.4 + rnd() * 0.1
+      const m = b.mesh(new THREE.SphereGeometry(0.03, 12, 10), drop, [x, -0.16, 0])
+      m.scale.set(1, 1.6, 1)
+      drops.push(m)
+      if (i % 2 === 0) drops.push(b.mesh(new THREE.SphereGeometry(0.025, 12, 10), drop, [x, -0.45 - rnd() * 0.3, 0]))
+    }
+    b.control = {
+      kind: 'slider',
+      label: '保溫管厚度',
+      off: '沒包',
+      on: '6分厚（冷凍）',
+      initial: 0,
+      apply: (v) => {
+        const s = v < 0.25 ? 0 : v < 0.75 ? 1 : 2
+        drops.forEach((o) => (o.visible = s === 0))
+        thin.forEach((o) => (o.visible = s === 1))
+        thick.forEach((o) => (o.visible = s === 2))
+      },
+      describe: (v) =>
+        v < 0.25
+          ? '沒包：回氣管比室溫冷很多，外面會結露、滴水（倒汗），跟裝冰水的杯子一樣；會滴到天花板、地上。'
+          : v < 0.75
+            ? '4分厚：冷藏用。洞要剛好插得進去：4分銅管（12.7 mm）配 13 mm 的洞。'
+            : '6分厚：冷凍用（回氣管零下 20 幾度）；還不夠就再套一層（雙套管）。',
+    }
+    b.note(cu, '回氣管（銅管）', '冷排回壓縮機的那一支，很冰')
+    b.note(foam, '保溫管', '洞剛好插得進去；厚度看冷凍或冷藏')
+    b.note(seam, '割開的接縫', '割開包上，再用強力膠黏回去')
+    b.note(drop, '倒汗（水滴）', '沒包時，水氣碰到冰管子凝結')
     return b.done()
   },
 }

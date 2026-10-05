@@ -13,6 +13,7 @@ import { EstimatePractice } from '../blocks/Estimate'
 import { CoilReader } from '../blocks/CoilReader'
 import { InView } from '../ui/InView'
 import { FenConverter } from '../blocks/FenConverter'
+import { VernierCaliper } from '../blocks/VernierCaliper'
 import { ProductShowcase } from '../three/ProductShowcase'
 import { Flashcards } from '../blocks/Flashcards'
 import { RefSlider } from '../blocks/RefSlider'
@@ -626,6 +627,8 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
 
     case 'fen':
       return <FenConverter mobile />
+    case 'caliper':
+      return <VernierCaliper mobile />
     case 'coilreader':
       return <CoilReader mobile />
     case 'showcase':

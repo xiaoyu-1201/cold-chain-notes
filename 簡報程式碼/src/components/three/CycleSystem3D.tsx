@@ -20,7 +20,7 @@ type Side = 't' | 'b' | 'l' | 'r'
  * - 儲液器要「進去再出來」：液管先進儲液器上方、從底部取液出來，不是從旁邊經過
  * - 膨脹閥裝在蒸發器旁邊（很多做「內膨」，鎖在蒸發器箱子裡，因為會結冰滴水）；電磁閥拉到膨脹閥前面
  */
-const PLACEMENTS: { id: Part3DId; pos: V3; scale: number; rotZ?: number; label: string; major?: boolean; side?: Side }[] = [
+const PLACEMENTS: { id: Extract<Part3DId, CycleNodeId>; pos: V3; scale: number; rotZ?: number; label: string; major?: boolean; side?: Side }[] = [
   { id: 'cond', pos: [0, 1.9, 0], scale: 0.85, label: '② 冷凝器', major: true },
   { id: 'evap', pos: [0.4, -1.9, 0], scale: 0.85, label: '④ 蒸發器', major: true },
   { id: 'comp', pos: [3.2, 0, 0], scale: 0.55, label: '① 壓縮機', major: true, side: 'l' },

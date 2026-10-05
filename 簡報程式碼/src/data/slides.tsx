@@ -65,10 +65,6 @@ import {
   Zap,
 } from 'lucide-react'
 import handoutImg from '../assets/1001-handout.jpg'
-import caliperImg from '../assets/1005-caliper.jpg'
-import capillaryImg from '../assets/1005-capillary.jpg'
-import driersFlareImg from '../assets/1005-driers-flare.jpg'
-import driersSolderImg from '../assets/1005-driers-solder.jpg'
 import insulationImg from '../assets/1005-insulation-chart.jpg'
 import refrigerantTableImg from '../assets/refrigerant-table.jpg'
 import { Danger, Em, Exp, Frac, Hl, Sub, Warn } from '../components/ui/rich'
@@ -1322,63 +1318,7 @@ const slideList: SlideData[] = [
     mark: 'CALIPER',
     title: '游標卡尺：量出幾分',
     en: 'Reading a Vernier Caliper',
-    blocks: [
-      {
-        type: 'grid',
-        className: 'grid-cols-[minmax(0,0.55fr)_minmax(0,1fr)_minmax(0,1fr)]',
-        children: [
-          { type: 'photo', src: caliperImg, alt: '游標卡尺：一排公制（mm）、一排英制（吋），游尺讀到 0.05 mm', tag: '10/5 上課', fit: 'contain', caption: '一排公制（mm）、一排英制（吋）；游尺最小讀到 0.05 mm' },
-          {
-            type: 'flow',
-            direction: 'col',
-            tone: 'teal',
-            icon: Ruler,
-            title: '怎麼讀出幾分',
-            en: 'Read the Inch Scale',
-            steps: [
-              { title: '先看游尺的 0 對到哪', desc: '0 對 0 是起點；讀數要看游尺「0」那一條，不是看游尺的邊邊' },
-              { title: '英制那排：1 吋＝8 分', desc: '1 吋＝25.4 mm，所以 1 分＝25.4 ÷ 8＝3.175 mm' },
-              { title: '找比較長的刻度最快', desc: '長的是雙數：2、4、6 分；再往後一格就是單數' },
-              { title: '換成 mm 對一下', desc: '例：1吋3分＝11 分 × 3.175＝34.92 mm，接近 35 mm' },
-            ],
-          },
-          {
-            type: 'grid',
-            className: 'grid-rows-[auto_minmax(0,1fr)]',
-            children: [
-              {
-                type: 'metrics',
-                icon: Calculator,
-                tone: 'amber',
-                title: '常量到的分數',
-                en: 'Common Sizes',
-                cols: 3,
-                items: [
-                  { label: '2分', value: '6.35', unit: 'mm', tone: 'ice' },
-                  { label: '2分半', value: '7.94', unit: 'mm', tone: 'ice' },
-                  { label: '3分', value: '9.52', unit: 'mm', tone: 'ice' },
-                  { label: '4分', value: '12.7', unit: 'mm', tone: 'teal' },
-                  { label: '5分', value: '15.88', unit: 'mm', tone: 'teal' },
-                  { label: '6分', value: '19.05', unit: 'mm', tone: 'teal' },
-                ],
-              },
-              {
-                type: 'list',
-                icon: Target,
-                tone: 'indigo',
-                title: '量哪裡',
-                en: 'What to Measure',
-                items: [
-                  { icon: Cylinder, title: '銅管：量外徑', desc: '用下面的大量爪，夾住管子外面' },
-                  { icon: Wrench, title: '接頭、彎頭：量內徑', desc: '銅管是插在裡面，所以用上面的小量爪量裡面' },
-                  { icon: Layers, title: '銅管厚度', desc: '2～5分厚 0.8 mm（店裡也叫 21 番）；6分以上用 1.0 mm（19 番）：管子越粗越要厚，不然容易扁' },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    ],
+    blocks: [{ type: 'caliper' }],
     conclusion: {
       label: '一句話',
       text: (
@@ -1398,16 +1338,9 @@ const slideList: SlideData[] = [
     blocks: [
       {
         type: 'grid',
-        className: 'grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1.15fr)]',
+        className: 'grid-cols-[minmax(0,0.95fr)_minmax(0,0.72fr)_minmax(0,1.15fr)]',
         children: [
-          {
-            type: 'grid',
-            className: 'grid-rows-2 gap-4',
-            children: [
-              { type: 'photo', src: driersSolderImg, alt: '焊接款乾燥過濾器的盒子：型號尾巴有 S，寫 ODF', tag: '焊接', caption: '型號尾巴有 S，盒子寫 ODF', position: 'center 30%' },
-              { type: 'photo', src: driersFlareImg, alt: '喇叭口款乾燥過濾器的盒子：沒有 S，寫 SAE', tag: '牙（喇叭口）', caption: '沒有 S，盒子寫 SAE', position: 'center 35%' },
-            ],
-          },
+          { type: 'showcase', parts: [{ id: 'drier', label: '乾燥過濾器' }] },
           {
             type: 'flow',
             direction: 'col',
@@ -1472,9 +1405,15 @@ const slideList: SlideData[] = [
     blocks: [
       {
         type: 'grid',
-        className: 'grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)_minmax(0,1fr)]',
+        className: 'grid-cols-[minmax(0,1.05fr)_minmax(0,0.9fr)_minmax(0,0.95fr)]',
         children: [
-          { type: 'photo', src: capillaryImg, alt: '銅管尾端打成喇叭嘴（斜面），套著黃銅的喇叭螺帽', tag: '10/5 上課', caption: '銅管尾端打成「喇叭嘴」（斜面），套上喇叭螺帽鎖緊就不會漏', position: 'center 30%' },
+          {
+            type: 'showcase',
+            parts: [
+              { id: 'flare', label: '喇叭頭（牙）' },
+              { id: 'fittings', label: '接頭、彎頭、三通' },
+            ],
+          },
           {
             type: 'list',
             icon: Wrench,
@@ -1524,8 +1463,9 @@ const slideList: SlideData[] = [
     blocks: [
       {
         type: 'grid',
-        className: 'grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]',
+        className: 'grid-cols-[minmax(0,0.9fr)_minmax(0,0.78fr)_minmax(0,1.22fr)]',
         children: [
+          { type: 'showcase', parts: [{ id: 'insul', label: '保溫管' }] },
           {
             type: 'grid',
             className: 'grid-rows-[minmax(0,1fr)_auto]',
@@ -1537,7 +1477,6 @@ const slideList: SlideData[] = [
                 title: '為什麼要包、包哪一段',
                 en: 'Why Insulate',
                 items: [
-                  { icon: Droplets, title: '會「倒汗」', desc: '管子比室溫冷，外面會結露、滴水，跟裝冰水的杯子一樣' },
                   { icon: Snowflake, title: '要包：回氣管', desc: '冷排回壓縮機的那一支，溫度很低', badge: { label: '一定要包', tone: 'ice' } },
                   { icon: Flame, title: '不用包：排氣管、液管', desc: '壓縮機出來接近 100°C；散熱器出來的液管約 40～50°C，都不會滴水' },
                   { icon: Building2, title: '比常溫低都要包', desc: '大樓空調的冰水管（約 7°C）也要包' },

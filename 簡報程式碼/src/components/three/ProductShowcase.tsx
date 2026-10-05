@@ -1,6 +1,6 @@
 import { Box, Camera, Layers, RotateCw } from 'lucide-react'
 import { lazy, Suspense, useCallback, useState } from 'react'
-import { photoCredits } from '../../data/photoCredits'
+import { photoCredits, photoSets } from '../../data/photoCredits'
 import { cn } from '../../lib/cn'
 import { Deferred } from '../ui/Deferred'
 import { InView } from '../ui/InView'
@@ -22,6 +22,7 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
   const part = parts[Math.min(index, parts.length - 1)]
   const id = part3DFor(part.id)
   const [tab, setTab] = useState<'3d' | 'photo'>('3d')
+  const [pi, setPi] = useState(0)
   const [cut, setCut] = useState(false)
   const [spin, setSpin] = useState(true)
   const [legend, setLegend] = useState<LegendItem[]>([])
@@ -36,7 +37,8 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
     setSpin(false)
     setOp(v)
   }
-  const credit = id ? photoCredits[id] : undefined
+  const credits = photoSets[part.id] ?? (id && photoCredits[id] ? [photoCredits[id]] : [])
+  const credit = credits[Math.min(pi, credits.length - 1)]
   const photo = photoOf(credit?.file)
 
   const t = mobile
@@ -67,6 +69,7 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
               type="button"
               onClick={() => {
                 setIndex(i)
+                setPi(0)
                 setCut(false)
                 setSpin(true)
               }}
@@ -144,13 +147,27 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
         <div className={cn('flex min-h-0 flex-col items-center justify-center gap-2', mobile ? 'min-h-[240px]' : 'flex-1')}>
           {photo && credit ? (
             <>
+              {credits.length > 1 && (
+                <div className="flex flex-wrap justify-center gap-1.5">
+                  {credits.map((c, i) => (
+                    <button key={c.file + i} type="button" onClick={() => setPi(i)} className={cn('rounded-full font-semibold transition', t.pill, i === pi ? 'bg-slate-100 text-navy-950' : 'bg-white/[0.08] text-slate-200 hover:bg-white/[0.14]', focusRing)}>
+                      {c.label ?? `照片 ${i + 1}`}
+                    </button>
+                  ))}
+                </div>
+              )}
               <img src={photo} alt={part.label} className="min-h-0 max-w-full flex-1 rounded-2xl bg-white object-contain" />
               <p className={cn('text-center font-semibold leading-snug text-amber-100', t.body)}>{credit.note}</p>
               <p className={cn('text-center text-slate-500', mobile ? 'text-[12px]' : 'text-[16px]')}>
-                照片：{credit.author}・
-                <a href={credit.licenseUrl} target="_blank" rel="noreferrer" className="underline hover:text-sky-300">
-                  {credit.license}
-                </a>
+                照片：{credit.author}
+                {credit.licenseUrl && (
+                  <>
+                    ・
+                    <a href={credit.licenseUrl} target="_blank" rel="noreferrer" className="underline hover:text-sky-300">
+                      {credit.license}
+                    </a>
+                  </>
+                )}
               </p>
             </>
           ) : (

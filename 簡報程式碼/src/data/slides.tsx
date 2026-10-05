@@ -1,4 +1,5 @@
 import {
+  ArrowLeftRight,
   Ban,
   Boxes,
   Building2,
@@ -18,6 +19,7 @@ import {
   Fish,
   Flame,
   Gauge,
+  GitFork,
   GraduationCap,
   Handshake,
   HeartHandshake,
@@ -63,9 +65,14 @@ import {
   Zap,
 } from 'lucide-react'
 import handoutImg from '../assets/1001-handout.jpg'
+import caliperImg from '../assets/1005-caliper.jpg'
+import capillaryImg from '../assets/1005-capillary.jpg'
+import driersFlareImg from '../assets/1005-driers-flare.jpg'
+import driersSolderImg from '../assets/1005-driers-solder.jpg'
+import insulationImg from '../assets/1005-insulation-chart.jpg'
 import refrigerantTableImg from '../assets/refrigerant-table.jpg'
 import { Danger, Em, Exp, Frac, Hl, Sub, Warn } from '../components/ui/rich'
-import { CLASS_AUDIO, CLASS_AUDIO_10, CLASS_AUDIO_11, CLASS_AUDIO_2, CLASS_AUDIO_3, CLASS_AUDIO_4, CLASS_AUDIO_5, CLASS_AUDIO_6, CLASS_AUDIO_7, CLASS_AUDIO_8, CLASS_AUDIO_9 } from './media'
+import { CLASS_AUDIO, CLASS_AUDIO_10, CLASS_AUDIO_11, CLASS_AUDIO_12, CLASS_AUDIO_2, CLASS_AUDIO_3, CLASS_AUDIO_4, CLASS_AUDIO_5, CLASS_AUDIO_6, CLASS_AUDIO_7, CLASS_AUDIO_8, CLASS_AUDIO_9 } from './media'
 import type { SlideData } from './types'
 
 /** 各頁定義（定義順序不等於顯示順序，顯示順序見檔案最後的 ORDER） */
@@ -210,6 +217,7 @@ const slideList: SlideData[] = [
             summary: '管徑「分」換算、溫度與壓力',
             chapters: [
               { code: '單位', title: '分、溫度壓力', slide: 'units' },
+              { code: '卡尺', title: '游標卡尺量幾分', slide: 'caliper' },
               { code: 'App', title: 'Ref Tools 網頁版', slide: 'reftools' },
               { code: '速查', title: '常用冷媒速查表', slide: 'reftable' },
               { code: '冷媒', title: '冷媒演進與冷凍油', slide: 'refrigerants' },
@@ -241,6 +249,7 @@ const slideList: SlideData[] = [
               { code: '種類', title: '散熱器三種', slide: 'outdoor-units' },
               { code: 'CH.04', title: '蒸發器', slide: 'ch4' },
               { code: 'CH.05', title: '控制與保護', slide: 'ch5' },
+              { code: '配件', title: '乾燥、接頭、保溫', slide: 'drier-sizes' },
               { code: '講義', title: '零件總覽圖', slide: 'handout' },
             ],
           },
@@ -252,6 +261,7 @@ const slideList: SlideData[] = [
             summary: '接單問診與常見故障',
             chapters: [
               { code: '門市', title: '客人來問散熱器', slide: 'coil-store' },
+              { code: '冷氣', title: '冷氣材料', slide: 'ac-materials' },
               { code: '心法', title: '材料行的服務心法', slide: 'store-mindset' },
               { code: 'CH.09', title: '四大故障診斷', slide: 'ch9' },
               { code: '實戰', title: '接單問診 SOP', slide: 'sop' },
@@ -1259,6 +1269,401 @@ const slideList: SlideData[] = [
       ),
     },
   },
+  /* ───────────────────────── 1005 錄音12：卡尺、乾燥過濾器、喇叭頭、冷氣材料、保溫管 ───────────────────────── */
+  {
+    id: 'recording-8',
+    part: 'review',
+    chapter: '課堂錄音',
+    mark: 'AUDIO 8',
+    title: '錄音12｜卡尺、乾燥過濾器、喇叭頭、冷氣材料、保溫管',
+    en: 'Recording 12',
+    blocks: [
+      {
+        type: 'audio',
+        src: CLASS_AUDIO_12,
+        title: '錄音12（10/5）',
+        en: 'Class Recording',
+        duration: '68:22',
+        chapters: [
+          { at: 123, title: '兩門白鐵冰箱', summary: '分兩尺、兩尺半、四尺、六尺（一尺約 30 公分）；全冷凍、半凍半藏、全冷藏，配的壓縮機、冷排、熱排都不一樣大' },
+          { at: 242, title: '游標卡尺怎麼看', summary: '游尺的 0 對到哪就讀哪；英制 1 吋＝25.4 mm 分成 8 分，1 分＝3.175 mm' },
+          { at: 468, title: '看長刻度最快', summary: '長的刻度是雙數 2、4、6 分；1吋3分＝11 × 3.175＝34.92 mm' },
+          { at: 719, title: '銅管量外徑、看厚度', summary: '銅管量外徑；2～5分厚 0.8 mm，6分以上用 1.0 mm，管子越粗越要厚' },
+          { at: 985, title: '接頭、彎頭量內徑', summary: '銅管插在裡面，所以量內徑；有直接頭、90 度、45 度、180 度彎頭和大小頭' },
+          { at: 1265, title: 'Y 型、T 型三通', summary: 'T 型賣最多；Y 型下面大、上面小，一對二分兩支時用' },
+          { at: 1365, title: '乾燥過濾器：看型號', summary: '最後一碼＝幾分；有 S（ODF）＝焊接，沒有 S（SAE）＝牙；照 IN／OUT 方向裝' },
+          { at: 1654, title: '兩分有 032、052', summary: '客人說「兩分」，先問 032 還是 052、焊接還是牙；光兩分就有 4 種' },
+          { at: 1918, title: '三分、四分、五分', summary: '三分 053、083；四分 164；五分 165、305；店裡一個蘿蔔一個坑' },
+          { at: 2105, title: '為什麼叫「兩分牙」', summary: '兩分銅管打好喇叭嘴剛好鎖上；用牙拆得下來，不能動火的地方（例如地下街）就用牙' },
+          { at: 2410, title: '冷氣：被覆銅管', summary: '兩支一組：液管小、氣管大；小台 2分＋3分，大台最多 4分＋6分' },
+          { at: 2596, title: '修飾管槽、架子', summary: '管槽讓銅管好看、擋紫外線；室外機架有白鐵、鍍鋅' },
+          { at: 2718, title: '牙跟銅管對不上', summary: '銅管 4分、牙 3分：用四外三內；銅管比較小：用大小喇叭頭或二外三內' },
+          { at: 3282, title: '管槽配件', summary: '平面彎、牆角彎（內角、外角）；尺寸很多，店裡放 80 和 120' },
+          { at: 3511, title: '保溫管：哪一段要包', summary: '回氣管比室溫冷，會倒汗、滴水，所以要包；鐵管的 4分＝銅管的 7分' },
+          { at: 3558, title: '大樓的冰水系統', summary: '大樓空調很多走冰水（約 7°C），冰水管也要包；比常溫低都要包' },
+          { at: 3774, title: '冷凍要包厚一點', summary: '冷凍庫 -18°C，回氣管是零下 20 幾度：一般用 6分厚；冷藏可以薄一點' },
+          { at: 4035, title: '電磁閥也分幾分', summary: '從銅管、乾燥過濾器到電磁閥，都先看幾分、焊接還是牙' },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          材料行天天在講「幾分」：先會用<Hl>卡尺</Hl>量出幾分，再分清楚<Hl>焊接還是牙</Hl>，客人說的零件就對得上。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'caliper',
+    part: 'units',
+    chapter: '游標卡尺',
+    mark: 'CALIPER',
+    title: '游標卡尺：量出幾分',
+    en: 'Reading a Vernier Caliper',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,0.55fr)_minmax(0,1fr)_minmax(0,1fr)]',
+        children: [
+          { type: 'photo', src: caliperImg, alt: '游標卡尺：一排公制（mm）、一排英制（吋），游尺讀到 0.05 mm', tag: '10/5 上課', fit: 'contain', caption: '一排公制（mm）、一排英制（吋）；游尺最小讀到 0.05 mm' },
+          {
+            type: 'flow',
+            direction: 'col',
+            tone: 'teal',
+            icon: Ruler,
+            title: '怎麼讀出幾分',
+            en: 'Read the Inch Scale',
+            steps: [
+              { title: '先看游尺的 0 對到哪', desc: '0 對 0 是起點；讀數要看游尺「0」那一條，不是看游尺的邊邊' },
+              { title: '英制那排：1 吋＝8 分', desc: '1 吋＝25.4 mm，所以 1 分＝25.4 ÷ 8＝3.175 mm' },
+              { title: '找比較長的刻度最快', desc: '長的是雙數：2、4、6 分；再往後一格就是單數' },
+              { title: '換成 mm 對一下', desc: '例：1吋3分＝11 分 × 3.175＝34.92 mm，接近 35 mm' },
+            ],
+          },
+          {
+            type: 'grid',
+            className: 'grid-rows-[auto_minmax(0,1fr)]',
+            children: [
+              {
+                type: 'metrics',
+                icon: Calculator,
+                tone: 'amber',
+                title: '常量到的分數',
+                en: 'Common Sizes',
+                cols: 3,
+                items: [
+                  { label: '2分', value: '6.35', unit: 'mm', tone: 'ice' },
+                  { label: '2分半', value: '7.94', unit: 'mm', tone: 'ice' },
+                  { label: '3分', value: '9.52', unit: 'mm', tone: 'ice' },
+                  { label: '4分', value: '12.7', unit: 'mm', tone: 'teal' },
+                  { label: '5分', value: '15.88', unit: 'mm', tone: 'teal' },
+                  { label: '6分', value: '19.05', unit: 'mm', tone: 'teal' },
+                ],
+              },
+              {
+                type: 'list',
+                icon: Target,
+                tone: 'indigo',
+                title: '量哪裡',
+                en: 'What to Measure',
+                items: [
+                  { icon: Cylinder, title: '銅管：量外徑', desc: '用下面的大量爪，夾住管子外面' },
+                  { icon: Wrench, title: '接頭、彎頭：量內徑', desc: '銅管是插在裡面，所以用上面的小量爪量裡面' },
+                  { icon: Layers, title: '銅管厚度', desc: '2～5分厚 0.8 mm（店裡也叫 21 番）；6分以上用 1.0 mm（19 番）：管子越粗越要厚，不然容易扁' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          卡尺先看<Hl>游尺的 0 對到哪</Hl>；1 分＝3.175 mm，找雙數的長刻度最快。銅管量<Em>外徑</Em>，接頭、彎頭量<Em>內徑</Em>。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'drier-sizes',
+    part: 'components',
+    chapter: '乾燥過濾器',
+    mark: 'DRIER',
+    title: '乾燥過濾器：客人說「兩分」，先問清楚',
+    en: 'Filter Drier Sizes',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1.15fr)]',
+        children: [
+          {
+            type: 'grid',
+            className: 'grid-rows-2 gap-4',
+            children: [
+              { type: 'photo', src: driersSolderImg, alt: '焊接款乾燥過濾器的盒子：型號尾巴有 S，寫 ODF', tag: '焊接', caption: '型號尾巴有 S，盒子寫 ODF', position: 'center 30%' },
+              { type: 'photo', src: driersFlareImg, alt: '喇叭口款乾燥過濾器的盒子：沒有 S，寫 SAE', tag: '牙（喇叭口）', caption: '沒有 S，盒子寫 SAE', position: 'center 35%' },
+            ],
+          },
+          {
+            type: 'flow',
+            direction: 'col',
+            tone: 'amber',
+            icon: MessagesSquare,
+            title: '客人說「兩分」，先問清楚',
+            en: 'Ask First',
+            steps: [
+              { title: '幾分？看最後一碼', desc: '052 的 2＝兩分、083 的 3＝三分；頭尾一樣大' },
+              { title: '焊接還是牙？看有沒有 S', desc: '有 S（ODF）＝焊接；沒有 S（SAE）＝喇叭口，用鎖的' },
+              { title: '小支還是大支？', desc: '兩分有 032（小支）和 052（胖胖的）；三分有 053、083' },
+            ],
+            result: { label: '所以', text: '光是「兩分」就有 4 種：032／052 × 焊接／牙' },
+          },
+          {
+            type: 'grid',
+            className: 'grid-rows-[auto_minmax(0,1fr)] gap-4',
+            children: [
+              {
+                type: 'table',
+                tone: 'teal',
+                corner: '幾分',
+                head: ['2分', '3分', '4分', '5分'],
+                rows: [
+                  { label: '店裡的型號', cells: ['032、052', '053、083、163', '164', '165、305'] },
+                  { label: '說明', cells: ['焊接、牙都有', '冰箱 053、冰庫 083', '焊接款 164S', '305 很大支'] },
+                ],
+              },
+              {
+                type: 'list',
+                icon: ArrowLeftRight,
+                tone: 'indigo',
+                title: '怎麼裝、怎麼換',
+                en: 'Install & Swap',
+                items: [
+                  { icon: Route, title: '照 IN → OUT 裝', desc: '有方向；貼紙可能貼反，以本體上的箭頭為準' },
+                  { icon: Ruler, title: '數字越大，支越大', desc: '前兩碼是乾燥劑容量（立方吋，Danfoss 規格書）；系統越大，用大一點的' },
+                  { icon: ArrowLeftRight, title: '同規格各牌可以互換', desc: '例：Danfoss DML 083＝Emerson ADK 083＝Sanhua FD-083（3分、喇叭口）；各牌長度不同，維修換一樣長的比較好裝' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          乾燥過濾器看型號就懂：<Hl>最後一碼＝幾分</Hl>、<Hl>有 S＝焊接</Hl>。客人說「兩分」，再問 032 還是 052、焊接還是牙。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'flare-fittings',
+    part: 'components',
+    chapter: '喇叭頭與接頭',
+    mark: 'FITTING',
+    title: '喇叭頭、接頭、彎頭：都是量「幾分」',
+    en: 'Flare & Fittings',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)_minmax(0,1fr)]',
+        children: [
+          { type: 'photo', src: capillaryImg, alt: '銅管尾端打成喇叭嘴（斜面），套著黃銅的喇叭螺帽', tag: '10/5 上課', caption: '銅管尾端打成「喇叭嘴」（斜面），套上喇叭螺帽鎖緊就不會漏', position: 'center 30%' },
+          {
+            type: 'list',
+            icon: Wrench,
+            tone: 'amber',
+            title: '喇叭頭（牙）',
+            en: 'Flare Connection',
+            items: [
+              { icon: Ruler, title: '什麼叫「兩分牙」', desc: '兩分的銅管套得進去、打好喇叭嘴剛好鎖得上，就叫兩分牙；三分、四分以此類推' },
+              { icon: Wrench, title: '怎麼做', desc: '銅管先穿過螺帽，用擴管工具打出喇叭嘴（斜面），跟接頭的斜面貼緊再鎖' },
+              { icon: Ban, title: '不能動火就用牙', desc: '牙拆得下來、不用燒焊；有些地方不能動火（例如台北的地下街），乾燥過濾器常更換，用牙比較方便' },
+              { icon: Snowflake, title: '冷氣多用牙', desc: '冷氣機的接頭幾乎都是牙；兩分、三分最多' },
+            ],
+          },
+          {
+            type: 'list',
+            icon: Waypoints,
+            tone: 'teal',
+            title: '接頭、彎頭、三通',
+            en: 'Fittings',
+            items: [
+              { icon: Target, title: '量內徑', desc: '銅管插在裡面，所以量裡面；老闆看一眼就知道幾分' },
+              { icon: Route, title: '彎頭賣最多', desc: '有 90 度、45 度、180 度（U 型）；直接頭把兩支一樣大的銅管接起來' },
+              { icon: ArrowLeftRight, title: '大小頭', desc: '一邊大一邊小（例：5分×3分），店裡以大的那邊分類放' },
+              { icon: GitFork, title: '三通：T 型、Y 型', desc: 'T 型賣比較多；Y 型下面大、上面小，一對二要分兩支時用' },
+              { icon: MessagesSquare, title: '口語「一八五」', desc: '一八一、一八三、一八五＝1吋1分、1吋3分、1吋5分（1⅛″、1⅜″、1⅝″）' },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          牙的「幾分」看<Hl>套得進去的銅管</Hl>；接頭、彎頭量<Hl>內徑</Hl>。不能動火的地方，就用牙。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'insulation',
+    part: 'components',
+    chapter: '保溫管',
+    mark: 'INSUL',
+    title: '保溫管：哪一段要包、要多厚',
+    en: 'Pipe Insulation',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]',
+        children: [
+          {
+            type: 'grid',
+            className: 'grid-rows-[minmax(0,1fr)_auto]',
+            children: [
+              {
+                type: 'list',
+                icon: Droplets,
+                tone: 'ice',
+                title: '為什麼要包、包哪一段',
+                en: 'Why Insulate',
+                items: [
+                  { icon: Droplets, title: '會「倒汗」', desc: '管子比室溫冷，外面會結露、滴水，跟裝冰水的杯子一樣' },
+                  { icon: Snowflake, title: '要包：回氣管', desc: '冷排回壓縮機的那一支，溫度很低', badge: { label: '一定要包', tone: 'ice' } },
+                  { icon: Flame, title: '不用包：排氣管、液管', desc: '壓縮機出來接近 100°C；散熱器出來的液管約 40～50°C，都不會滴水' },
+                  { icon: Building2, title: '比常溫低都要包', desc: '大樓空調的冰水管（約 7°C）也要包' },
+                ],
+              },
+              {
+                type: 'metrics',
+                icon: ThermometerSnowflake,
+                tone: 'teal',
+                title: '要多厚',
+                en: 'Thickness',
+                cols: 2,
+                items: [
+                  { label: '冷凍', value: '6分', unit: '厚', tone: 'ice', note: '冷凍庫 -18°C，回氣管是零下 20 幾度；還不夠就再套一層（雙套管）' },
+                  { label: '冷藏', value: '4分', unit: '厚', tone: 'teal', note: '可以薄一點：越厚越難包（要割開包上，再用強力膠黏回去）' },
+                ],
+              },
+            ],
+          },
+          {
+            type: 'grid',
+            className: 'grid-rows-[auto_minmax(0,1fr)] gap-4',
+            children: [
+              {
+                type: 'table',
+                tone: 'amber',
+                corner: '套鐵管（水管）',
+                head: ['1/2″', '3/4″', '1″', '1¼″', '1½″', '2″'],
+                rows: [
+                  { label: '套銅管', cells: ['7/8″', '1⅛″', '1⅜″', '1⅝″', '1⅞″', '2⅜″'] },
+                  { label: '店裡說法', cells: ['7分', '1吋1分', '1吋3分', '1吋5分', '1吋7分', '2吋3分'] },
+                ],
+                notes: [
+                  <>同一號保溫管，套鐵管的「4分（1/2″）」＝套銅管的「7分」：鐵管尺寸是標稱，1/2″ 鐵管外徑約 21 mm，跟 7/8″ 銅管（22.2 mm）差不多。更大的尺寸看牆上的對照表。</>,
+                ],
+                image: { src: insulationImg, label: '看店裡牆上的對照表' },
+              },
+              {
+                type: 'list',
+                icon: Ruler,
+                tone: 'teal',
+                title: '怎麼選保溫管',
+                en: 'How to Pick',
+                items: [
+                  { icon: Target, title: '洞要剛好插得進去', desc: '4分銅管外徑 12.7 mm，保溫管的洞就要 13 mm' },
+                  { icon: Layers, title: '店裡說「洞×厚」', desc: '「36」＝3分的洞、6分厚；「46」＝4分的洞、6分厚。小冰箱的回氣管常用 3分洞、3分厚' },
+                  { icon: Package, title: '外面再包一層', desc: '大型空調包完保溫管，外面會再纏一層包布' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          會<Hl>倒汗的回氣管</Hl>才要包；冷凍包 <Hl>6分厚</Hl>、冷藏可以 4分厚。鐵管的 4分＝銅管的 7分，別拿錯。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'ac-materials',
+    part: 'practice',
+    chapter: '冷氣材料',
+    mark: 'A/C',
+    title: '冷氣材料：配管、管槽、轉接頭',
+    en: 'Air-con Materials',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-3',
+        children: [
+          {
+            type: 'list',
+            icon: Layers,
+            tone: 'ice',
+            title: '被覆銅管：兩支一組',
+            en: 'Pre-insulated Pair',
+            items: [
+              { icon: Snowflake, title: '一支液管、一支氣管', desc: '室外機（壓縮機＋散熱器）出來的液管進室內機；室內機回來的氣管回壓縮機' },
+              { icon: Ruler, title: '液管小、氣管大', desc: '小台冷氣 2分＋3分，再大 2分＋4分、2分＋5分；大台最多 4分＋6分' },
+              { icon: Package, title: '型號怎麼看', desc: '例：2330＝2分＋3分、30 米；兩支黏在一起，外面有保溫，可以撕開' },
+            ],
+          },
+          {
+            type: 'list',
+            icon: Building2,
+            tone: 'teal',
+            title: '修飾管槽與架子',
+            en: 'Covers & Brackets',
+            items: [
+              { icon: ShieldCheck, title: '管槽：好看又保護', desc: '把銅管包起來；銅管外面的保溫曬到紫外線會老化' },
+              { icon: Route, title: '配件', desc: '遮牆上洞口的蓋子、平面彎、牆角彎（內角、外角）' },
+              { icon: Boxes, title: '店裡放 80、120', desc: '尺寸有 70～140；120 可以放兩組管（一對二）' },
+              { icon: Wrench, title: '室外機架', desc: '有白鐵、鍍鋅，也有落地架、遮雨棚' },
+            ],
+          },
+          {
+            type: 'flow',
+            direction: 'col',
+            tone: 'amber',
+            icon: ArrowLeftRight,
+            title: '牙跟銅管對不上',
+            en: 'Adapters',
+            steps: [
+              { title: '先問兩個尺寸', desc: '銅管配幾分？機器的牙是幾分？冷氣機的接頭是外牙，接上去的一定要內牙' },
+              { title: '銅管比牙大', desc: '例：4分銅管、3分牙 → 用「四外三內」：一邊 3分內牙鎖機器，一邊 4分外牙接銅管' },
+              { title: '銅管比牙小', desc: '例：2分銅管、3分牙 → 用大小喇叭頭（3分牙、2分洞），或「二外三內」轉接頭' },
+            ],
+            result: { label: '店裡', text: '牆上有畫好的對照圖，對著拿就不會錯' },
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          冷氣材料就是配管：<Hl>被覆銅管（液管＋氣管）</Hl>＋管槽＋架子。牙跟銅管對不上，先問<Hl>兩個尺寸</Hl>再拿轉接頭。
+        </>
+      ),
+    },
+  },
   /* ───────────────────────── 核心圖解：冷凍循環（可持續擴充） ───────────────────────── */
   {
     id: 'cycle-lesson',
@@ -1773,8 +2178,8 @@ const slideList: SlideData[] = [
             en: 'Fridge Types',
             items: [
               { icon: UtensilsCrossed, title: '工作臺冰箱', desc: '廚房切菜的檯面下面就是冰箱；餐廳幾乎都有' },
-              { icon: DoorOpen, title: '兩門、四門、六門', desc: '寬度有兩尺、兩尺半、四尺，四尺最多；本體約 2 公尺高，最上面是放散熱器的機房' },
-              { icon: Snowflake, title: '上凍下藏', desc: '大約七成是上面冷凍、下面冷藏' },
+              { icon: DoorOpen, title: '兩門、四門、六門', desc: '寬度有兩尺、兩尺半、四尺、六尺（一尺約 30 公分），四尺最多；本體約 2 公尺高，最上面是放散熱器的機房' },
+              { icon: Snowflake, title: '全凍、半凍半藏、全藏', desc: '大約七成是上凍下藏；三種配的壓縮機、冷排、熱排都不一樣大' },
               { icon: ThermometerSun, title: '玻璃門要加大', desc: '玻璃保溫比 PU 發泡差；門越大，一開門溫度升得越快，壓縮機都要配大一點' },
             ],
           },
@@ -2835,6 +3240,19 @@ const slideList: SlideData[] = [
           { group: '散熱器', term: '基板', alias: '附基板', en: 'Base Plate', tip: '放壓縮機的板子；機上型冰箱用，最大到 2 馬半' },
           { group: '散熱器', term: '機上型', alias: '散熱器放冰箱頂上', en: 'Top-mount', tip: '冰箱約 2 公尺高，只能用 11 支（高約 29 公分）' },
           { group: '散熱器', term: '屋外型', alias: '室外機（有外殼）', en: 'Outdoor Unit', tip: '馬達在裡面：好看、安靜、防風雨；一般散熱器馬達外露', tw: { rec: 10, from: 1642.4, to: 1646.8, say: '有人說這有穿衣服的，散熱器就沒有穿衣服' } },
+          { group: '管路配件', term: '外徑／內徑', alias: '量外面／量裡面', en: 'OD / ID', tip: '銅管量外徑；接頭、彎頭量內徑（銅管插在裡面）', tw: { rec: 12, from: 718.7, to: 730.3, say: '銅管是要量外徑……這個是量外徑，這個是量內徑' } },
+          { group: '管路配件', term: 'ODF', alias: '焊接（型號尾巴有 S）', en: 'Solder Connection', tip: '乾燥過濾器型號尾巴有 S＝焊接；沒有 S＝喇叭口（牙）', tw: { rec: 12, from: 1688.5, to: 1694.7, say: '所以看 S 就知道了，S 代表焊接' } },
+          { group: '管路配件', term: 'SAE', alias: '喇叭口（牙）', en: 'Flare Connection', tip: '用鎖的，拆得下來、不用動火；地下街這種不能動火的地方就用牙', tw: { rec: 12, from: 2363.5, to: 2372.5, say: '你就把它拆下來就好了，就不用動火……譬如說台北市地下街，不能動火' } },
+          { group: '管路配件', term: '032／052', alias: '兩分的小支／大支', en: 'Drier Size', tip: '客人說兩分，先問 032 還是 052、焊接還是牙；光兩分就有 4 種', tw: { rec: 12, from: 1710.4, to: 1712.8, say: '我會問他說，你那 032 還是 052' } },
+          { group: '管路配件', term: '喇叭頭', alias: '喇叭嘴、喇叭牙', en: 'Flare Fitting', tip: '銅管打成斜面（喇叭嘴），套上喇叭螺帽鎖緊就不漏' },
+          { group: '管路配件', term: '大小頭', alias: '一邊大一邊小', en: 'Reducer', tip: '例：5分×3分；店裡以大的那邊分類放', tw: { rec: 12, from: 1123.9, to: 1130.9, say: '所以我自己歸類是 185 乘以小尺寸……大小頭，就只要以大的為主' } },
+          { group: '管路配件', term: '三通', alias: 'T 型、Y 型', en: 'Tee / Wye', tip: 'T 型賣比較多；Y 型下面大、上面小，一對二分兩支時用' },
+          { group: '管路配件', term: '一八五', alias: '1吋5分（1⅝″）', en: '1-5/8 inch', tip: '店裡口語：一八一、一八三、一八五＝1吋1分、1吋3分、1吋5分', tw: { rec: 12, from: 1182.7, to: 1184.7, say: '一八一、一八三、一八五' } },
+          { group: '管路配件', term: '被覆銅管', alias: '冷氣的兩支一組銅管', en: 'Pre-insulated Copper Pair', tip: '一支液管（小）、一支氣管（大）；例 2330＝2分＋3分、30 米', tw: { rec: 12, from: 2622.1, to: 2628.9, say: '所以被覆是什麼，被覆就是兩支管，就是一個液管、一個氣管的意思' } },
+          { group: '管路配件', term: '修飾管槽', alias: '管槽', en: 'Line-set Cover', tip: '把冷氣管包起來：好看、擋紫外線；店裡放 80、120' },
+          { group: '管路配件', term: '四外三內', alias: '轉接頭', en: 'Flare Adapter', tip: '銅管 4分、機器 3分牙：一邊 3分內牙鎖機器，一邊 4分外牙接銅管', tw: { rec: 12, from: 2856.3, to: 2862.0, say: '但是你三分外牙……四外三內' } },
+          { group: '管路配件', term: '保溫管', alias: '包回氣管', en: 'Pipe Insulation', tip: '回氣管會倒汗要包；冷凍 6分厚、冷藏 4分厚' },
+          { group: '管路配件', term: '倒汗', alias: '結露、滴水', en: 'Sweating', tip: '管子比室溫冷，外面結露滴水；所以回氣管要包保溫管', tw: { rec: 12, from: 3746.6, to: 3756.7, say: '冷排要回壓縮機這個氣管要包，它會倒汗，我都說倒汗' } },
           { group: '散熱器', term: '站壓', alias: '抓漏', en: 'Pressure Test', tip: '從充灌閥灌氮氣、泡水找漏點；散熱器沒有充灌閥', tw: { rec: 9, from: 569.8, to: 578.1, say: '這叫抓漏，自己站壓……站壓或是抓漏' } },
           { group: '散熱器', term: '內膨', alias: '膨脹閥鎖在蒸發器箱內', en: 'Internal TXV Mounting', tip: '冷凍做內膨（膨脹閥會結冰滴水）；冷氣是外膨' },
           { group: '管路', term: '液管', alias: '講義上的黃色線', en: 'Liquid Line', tip: '中溫中壓液態' },
@@ -2843,7 +3261,7 @@ const slideList: SlideData[] = [
           { group: '管路', term: '高壓幾分、低壓幾分', alias: '接管規格', en: 'Discharge／Suction Size', tip: '壓縮機和零件都會寫：高壓（排氣）、低壓（吸氣）接管各幾分' },
           { group: '單位與冷媒', term: '馬', alias: '馬力（口語）', en: 'HP（正確單位是 BTU）', tip: '客人都講幾馬', tw: { rec: 2, from: 304.2, to: 306.3, say: '口語的話就講幾馬' } },
           { group: '單位與冷媒', term: '分', alias: '管徑單位', en: '1/8 inch', tip: '1 吋＝8 分＝25.4 mm，1 分＝3.175 mm' },
-          { group: '單位與冷媒', term: '游標卡尺', alias: '卡尺', en: 'Vernier Caliper', tip: '量銅管外徑，÷ 3.175 就是幾分' },
+          { group: '單位與冷媒', term: '游標卡尺', alias: '卡尺', en: 'Vernier Caliper', tip: '量銅管外徑，÷ 3.175 就是幾分；先看游尺的 0 對到哪，找雙數的長刻度最快', tw: { rec: 12, from: 468.1, to: 474.4, say: '所以你看頂點就很快了，2、4、6、8，8 就是 1 分嘛' } },
           { group: '單位與冷媒', term: '喇叭口', alias: '擴管接頭', en: 'Flare（SAE）', tip: 'Danfoss 型號尾巴沒有 S＝喇叭口；有 S＝焊接' },
           { group: '單位與冷媒', term: '錶壓', alias: '公斤（kg/cm²）', en: 'psig（Gauge Pressure）', tip: '壓力錶讀到的數字；絕對壓力＝錶壓＋1 大氣壓' },
           { group: '單位與冷媒', term: '飽和溫度', alias: '管內溫度', en: 'Saturation Temperature', tip: '知道冷媒和錶壓，就能用 Ref Tools 查出來' },
@@ -3194,6 +3612,7 @@ const ORDER = [
   'cycle-lesson',
   'check-1',
   'units',
+  'caliper',
   'reftools',
   'reftable',
   'refrigerants',
@@ -3209,10 +3628,14 @@ const ORDER = [
   'outdoor-units',
   'ch4',
   'ch5',
+  'drier-sizes',
+  'flare-fittings',
+  'insulation',
   'handout',
   'check-4',
   'estimate',
   'coil-store',
+  'ac-materials',
   'store-mindset',
   'ch9',
   'sop',
@@ -3224,6 +3647,7 @@ const ORDER = [
   'recording-5',
   'recording-6',
   'recording-7',
+  'recording-8',
   'glossary',
   'quiz',
   'lesson-insights',

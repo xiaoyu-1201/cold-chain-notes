@@ -1,32 +1,11 @@
-import { Image as ImageIcon, Thermometer, X } from 'lucide-react'
+import { Image as ImageIcon, Thermometer } from 'lucide-react'
 import { useState } from 'react'
-import { createPortal } from 'react-dom'
 import type { TableBlock } from '../../data/types'
 import { cn } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
+import { Lightbox } from '../ui/Lightbox'
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
-
-/** 原稿照片放大檢視（離線單檔版的圖片是內嵌資料，不能開新分頁，所以用覆蓋視窗） */
-function Lightbox({ src, label, onClose }: { src: string; label: string; onClose: () => void }) {
-  return createPortal(
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label={label}
-      onClick={onClose}
-      onTouchStart={(e) => e.stopPropagation()}
-      onTouchEnd={(e) => e.stopPropagation()}
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-navy-950/90 p-4 backdrop-blur-sm"
-    >
-      <img src={src} alt={label} className="max-h-full max-w-full rounded-xl bg-white object-contain" />
-      <button type="button" aria-label="關閉" className={cn('absolute right-4 top-4 rounded-full bg-white/15 p-2 text-white', focusRing)}>
-        <X className="size-5" aria-hidden />
-      </button>
-    </div>,
-    document.body,
-  )
-}
 
 /** 跟基準比：↑ 11%、↓ 12.8% */
 function delta(v: number, base: number) {
@@ -157,7 +136,7 @@ export function DataTable({ block, mobile = false }: { block: TableBlock; mobile
         <table className="w-full table-fixed border-collapse text-center">
           <thead>
             <tr>
-              <th className="w-[210px] px-5 py-3 text-left text-[18px] font-bold text-slate-400">冷媒</th>
+              <th className="w-[210px] px-5 py-3 text-left text-[18px] font-bold text-slate-400">{block.corner ?? '冷媒'}</th>
               {block.head.map((name, col) => (
                 <th key={name} className={cn('px-2 py-3', badge(col) && t.soft)}>
                   <span className="block text-[26px] font-black text-white">{name}</span>

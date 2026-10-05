@@ -17,6 +17,7 @@ import { PartsOverview, ProductMap, QAPanel, QuoteCard, ScenarioCard } from './N
 import { EstimatePractice } from './Estimate'
 import { CoilReader } from './CoilReader'
 import { FenConverter } from './FenConverter'
+import { PhotoCard } from './PhotoCard'
 import { ProductShowcase } from '../three/ProductShowcase'
 import { Flashcards } from './Flashcards'
 import { QuizCards } from './Quiz'
@@ -118,5 +119,7 @@ function Leaf({ block }: { block: Exclude<Block, GridBlock> }) {
       return <RefSlider />
     case 'table':
       return <DataTable block={block} />
+    case 'photo':
+      return <PhotoCard block={block} />
   }
 }

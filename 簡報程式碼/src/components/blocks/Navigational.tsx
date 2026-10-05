@@ -52,14 +52,16 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
                   {part.goal}
                 </p>
               )}
-              <ul className="mt-4 flex flex-1 flex-col gap-2">
+              {/* 章節多（超過 8 個）就排緊一點，才放得下 */}
+              <ul className={cn('mt-4 flex flex-1 flex-col', item.chapters.length > 8 ? 'gap-1' : 'gap-2')}>
                 {item.chapters.map((ch) => (
                   <li key={ch.code + ch.title}>
                     <button
                       type="button"
                       onClick={() => goToId(ch.slide)}
                       className={cn(
-                        'group flex w-full items-center gap-3 rounded-xl border border-white/[0.08] bg-navy-900/50 px-3.5 py-2.5 text-left transition hover:border-sky-400/40 hover:bg-sky-400/10',
+                        'group flex w-full items-center gap-3 rounded-xl border border-white/[0.08] bg-navy-900/50 px-3.5 text-left transition hover:border-sky-400/40 hover:bg-sky-400/10',
+                        item.chapters.length > 8 ? 'py-1.5' : 'py-2.5',
                         focusRing,
                       )}
                     >

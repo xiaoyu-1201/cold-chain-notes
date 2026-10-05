@@ -16,6 +16,7 @@ import part8Url from '../assets/class-1002-part3-1.m4a'
 import part9Url from '../assets/class-1002-part3-2.m4a'
 import part10Url from '../assets/class-1002-part3-3.m4a'
 import part11Url from '../assets/class-1002-part3-4.m4a'
+import part12Url from '../assets/class-1005-part1.m4a'
 
 export const CLASS_AUDIO = part1Url
 export const CLASS_AUDIO_2 = part2Url
@@ -30,9 +31,10 @@ export const CLASS_AUDIO_8 = part8Url
 export const CLASS_AUDIO_9 = part9Url
 export const CLASS_AUDIO_10 = part10Url
 export const CLASS_AUDIO_11 = part11Url
+export const CLASS_AUDIO_12 = part12Url
 
 /** 依錄音編號排好（RECORDINGS[0]＝錄音01）；名詞翻卡的台語片段用 */
-export const RECORDINGS = [part1Url, part2Url, part3Url, part4Url, part5Url, part6Url, part7Url, part8Url, part9Url, part10Url, part11Url]
+export const RECORDINGS = [part1Url, part2Url, part3Url, part4Url, part5Url, part6Url, part7Url, part8Url, part9Url, part10Url, part11Url, part12Url]
 
 const ready = new Map<string, string>()
 const pending = new Map<string, Promise<string>>()

@@ -8,6 +8,7 @@ import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
 import { Segmented } from '../ui/Segmented'
 import { DataTable } from '../blocks/DataTable'
+import { PhotoCard } from '../blocks/PhotoCard'
 import { EstimatePractice } from '../blocks/Estimate'
 import { CoilReader } from '../blocks/CoilReader'
 import { InView } from '../ui/InView'
@@ -641,6 +642,8 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
 
     case 'table':
       return <DataTable block={block} mobile />
+    case 'photo':
+      return <PhotoCard block={block} mobile />
 
     case 'quiz':
       return <QuizMobile items={block.items} />

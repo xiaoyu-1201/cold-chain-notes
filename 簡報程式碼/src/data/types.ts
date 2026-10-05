@@ -382,8 +382,7 @@ export interface FlashCard {
   en: string
   tip: string
   group: string
-  /** 上課錄音裡講台語的片段（錄音編號、起訖秒數；已用逐字對時確認） */
-  /** 上課錄音裡老闆講台語的片段：rec＝錄音編號（1～11），from／to＝秒 */
+  /** 老闆說：上課錄音剪出來的原音（多數是國語講解；確認過才寫台語）：rec＝錄音編號，from／to＝秒 */
   tw?: { rec: number; from: number; to: number; say: string }
   /** 有 3D 模型／照片的零件 id（three/ids 的 part3DFor） */
   part?: string
@@ -394,6 +393,8 @@ export interface TableBlock {
   type: 'table'
   tone: Tone
   head: string[]
+  /** 表頭左上角那一格（第一列的標題）；沒寫＝「冷媒」 */
+  corner?: string
   /** 全部欄位共用的比較條件：合併成一格強調（例如「冷凝溫度都是 40.42°C」） */
   standard?: { label: string; value: string; note: ReactNode }
   /** 用長條圖比較的數值列；虛線＝基準欄的值 */
@@ -404,6 +405,21 @@ export interface TableBlock {
   notes?: ReactNode[]
   /** 原稿照片 */
   image?: { src: string; label: string }
+}
+
+/** 上課拍的照片：點一下放大 */
+export interface PhotoBlock {
+  type: 'photo'
+  src: string
+  alt: string
+  /** 照片下方一句話：這張在看什麼 */
+  caption: ReactNode
+  /** 左上角小標，例如「10/5 上課」 */
+  tag?: string
+  /** cover＝填滿裁切（預設）；contain＝整張放進去（表格、長條物品） */
+  fit?: 'cover' | 'contain'
+  /** cover 時要保留的位置，例如 'center 30%' */
+  position?: string
 }
 
 /** 網頁版 Ref Tools 冷媒滑尺：溫度 ↔ 壓力 */
@@ -466,6 +482,7 @@ export type Block =
   | FenBlock
   | CoilReaderBlock
   | ShowcaseBlock
+  | PhotoBlock
   | EstimateBlock
   | FlashcardsBlock
   | RefSliderBlock

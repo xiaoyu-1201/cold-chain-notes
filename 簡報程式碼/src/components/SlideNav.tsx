@@ -1,5 +1,5 @@
 import { BookOpen, ChevronLeft, ChevronRight, CornerUpLeft, Maximize, Menu, Minimize, Pointer } from 'lucide-react'
-import { useState, type MouseEvent, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import { parts } from '../data/parts'
 import { slides } from '../data/slides'
 import type { PartId } from '../data/types'
@@ -81,7 +81,7 @@ export function SlideNav({
       aria-label="簡報控制"
       className="flex h-16 shrink-0 items-center gap-4 bg-[#0b1626]/90 px-3 backdrop-blur sm:px-5"
     >
-      <div className="flex min-w-0 flex-1 items-center gap-3">
+      <div className="flex flex-1 items-center gap-3">
         <NavButton label="章節目錄 (M)" onClick={onOpenMenu}>
           <Menu className="size-5" aria-hidden />
           <span className="hidden text-sm font-bold md:inline">目錄</span>
@@ -99,33 +99,36 @@ export function SlideNav({
             </span>
           </NavButton>
         ) : null}
-        {hints.length > 0 ? (
-          <p
-            title={hints.join('；')}
-            className="hidden items-center gap-2 overflow-hidden rounded-full bg-sky-400/10 px-3.5 py-1.5 text-sm font-semibold text-sky-100 min-[1600px]:flex"
-          >
-            <Pointer className="size-4 shrink-0 animate-pulse text-sky-300" aria-hidden />
-            <span className="shrink-0 text-sky-300">本頁可以點</span>
-            <span className="min-w-0 truncate">{hints.join('；')}</span>
-          </p>
-        ) : (
-          !back && (
-            <div className="hidden min-w-0 min-[1700px]:block">
-              <p className="truncate text-sm font-bold text-slate-100">氣冷式冷凍冷藏系統・新人培訓</p>
-              <p className="truncate text-xs text-slate-400">
-                {partLabel}・{title}
-              </p>
-            </div>
-          )
-        )}
+        {/* 提示放在絕對定位層：只用剩下的空間，不會把左半邊撐大、擠到中間的篇章列 */}
+        <div className="relative h-10 min-w-0 flex-1">
+          {hints.length > 0 ? (
+            <p
+              title={hints.join('；')}
+              className="absolute left-0 top-1/2 hidden max-w-full -translate-y-1/2 items-center gap-2 overflow-hidden rounded-full bg-sky-400/10 px-3.5 py-1.5 text-sm font-semibold text-sky-100 min-[1600px]:flex"
+            >
+              <Pointer className="size-4 shrink-0 animate-pulse text-sky-300" aria-hidden />
+              <span className="shrink-0 text-sky-300">本頁可以點</span>
+              <span className="min-w-0 truncate">{hints.join('；')}</span>
+            </p>
+          ) : (
+            !back && (
+              <div className="absolute inset-0 hidden flex-col justify-center min-[1700px]:flex">
+                <p className="truncate text-sm font-bold text-slate-100">氣冷式冷凍冷藏系統・新人培訓</p>
+                <p className="truncate text-xs text-slate-400">
+                  {partLabel}・{title}
+                </p>
+              </div>
+            )
+          )}
+        </div>
       </div>
 
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-3">
         <NavButton label="上一頁 (←)" onClick={onPrev} disabled={index === 0}>
           <ChevronLeft className="size-5" aria-hidden />
         </NavButton>
         <ChapterBar index={index} onGoTo={onGoTo} />
-        <span className="min-w-[72px] text-center font-mono text-sm font-bold tracking-wider text-slate-300" aria-live="polite">
+        <span className="min-w-[72px] shrink-0 text-center font-mono text-sm font-bold tracking-wider text-slate-300" aria-live="polite">
           <span className="text-sky-300">{pad(index + 1)}</span> / {pad(total)}
         </span>
         <NavButton label="下一頁 (→ / Space)" onClick={onNext} disabled={index === total - 1}>
@@ -172,68 +175,106 @@ const groupLabel = (p: PartId) => {
 /**
  * 篇章列（取代頁碼點）：九篇名稱一直看得到；目前這篇展開成頁碼膠囊，
  * 滑鼠移上去浮出「頁碼・篇章・頁名」；點篇名跳到該篇第一頁。
+ * 螢幕不夠寬（iPad）時可以左右滑，並自動捲到目前這頁；浮出說明畫在捲動區外面才不會被切掉。
  */
 function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) => void }) {
-  const [tip, setTip] = useState<number | null>(null)
+  const [tip, setTip] = useState<{ i: number; x: number } | null>(null)
+  const [fade, setFade] = useState({ l: false, r: false })
+  const wrap = useRef<HTMLDivElement>(null)
+  const scroller = useRef<HTMLDivElement>(null)
+  const active = useRef<HTMLButtonElement>(null)
+  const measure = useCallback(() => {
+    const el = scroller.current
+    if (!el) return
+    setFade({ l: el.scrollLeft > 2, r: el.scrollLeft + el.clientWidth < el.scrollWidth - 2 })
+  }, [])
+  useEffect(() => {
+    const el = scroller.current
+    const btn = active.current
+    if (el && btn && el.scrollWidth > el.clientWidth) el.scrollLeft = btn.offsetLeft - el.clientWidth / 2 + btn.offsetWidth / 2
+    measure()
+  }, [index, measure])
+  useEffect(() => {
+    const el = scroller.current
+    if (!el) return
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [measure])
+  const show = (i: number) => (e: { currentTarget: HTMLElement }) => {
+    const box = wrap.current?.getBoundingClientRect()
+    const r = e.currentTarget.getBoundingClientRect()
+    if (box) setTip({ i, x: r.left + r.width / 2 - box.left })
+  }
+  const mask = fade.l || fade.r ? `linear-gradient(to right, ${fade.l ? 'transparent, #000 28px' : '#000'}, ${fade.r ? '#000 calc(100% - 28px), transparent' : '#000'})` : undefined
   return (
-    <div className="hidden items-center rounded-full bg-white/[0.06] p-1 lg:flex" onMouseLeave={() => setTip(null)}>
-      {dotGroups.map((group) => {
-        const part = parts[group.part]
-        const tone = toneStyles[part.tone]
-        const current = group.items.includes(index)
-        if (!current)
+    <div ref={wrap} className="relative hidden min-w-0 lg:block" onMouseLeave={() => setTip(null)}>
+      <div
+        ref={scroller}
+        onScroll={() => (measure(), setTip(null))}
+        onWheel={(e) => {
+          if (scroller.current && Math.abs(e.deltaY) > Math.abs(e.deltaX)) scroller.current.scrollLeft += e.deltaY
+        }}
+        style={{ maskImage: mask, WebkitMaskImage: mask }}
+        className="relative flex items-center overflow-x-auto rounded-full bg-white/[0.06] p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {dotGroups.map((group) => {
+          const part = parts[group.part]
+          const tone = toneStyles[part.tone]
+          const current = group.items.includes(index)
+          if (!current)
+            return (
+              <button
+                key={group.part}
+                type="button"
+                onClick={() => onGoTo(group.items[0])}
+                onMouseDown={keepFocus}
+                onMouseEnter={show(group.items[0])}
+                onFocus={show(group.items[0])}
+                aria-label={`${part.short}：${group.items.length} 頁，跳到第一頁`}
+                className="shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-[14px] font-semibold text-slate-400 transition hover:bg-white/[0.08] hover:text-white focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300"
+              >
+                {groupLabel(group.part)}
+              </button>
+            )
           return (
-            <button
-              key={group.part}
-              type="button"
-              onClick={() => onGoTo(group.items[0])}
-              onMouseDown={keepFocus}
-              onMouseEnter={() => setTip(group.items[0])}
-              onFocus={() => setTip(group.items[0])}
-              aria-label={`${part.short}：${group.items.length} 頁，跳到第一頁`}
-              className="relative whitespace-nowrap rounded-full px-3 py-1.5 text-[14px] font-semibold text-slate-400 transition hover:bg-white/[0.08] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
-            >
-              {groupLabel(group.part)}
-              {tip === group.items[0] && <Tip i={group.items[0]} />}
-            </button>
+            <div key={group.part} className="flex shrink-0 items-center gap-1 rounded-full bg-white/[0.1] py-0.5 pl-3 pr-1">
+              <span className={cn('mr-1 whitespace-nowrap text-[14px] font-bold', tone.text)}>{groupLabel(group.part)}</span>
+              {group.items.map((i, k) => {
+                const on = i === index
+                return (
+                  <button
+                    key={slides[i].id}
+                    ref={on ? active : undefined}
+                    type="button"
+                    aria-label={`第 ${i + 1} 頁：${slides[i].title}`}
+                    aria-current={on ? 'page' : undefined}
+                    onClick={() => onGoTo(i)}
+                    onMouseDown={keepFocus}
+                    onMouseEnter={show(i)}
+                    onFocus={show(i)}
+                    className={cn(
+                      'flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-bold transition focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300',
+                      on ? 'bg-sky-300 text-navy-950' : 'text-slate-300 hover:bg-white/[0.14] hover:text-white',
+                    )}
+                  >
+                    {k + 1}
+                  </button>
+                )
+              })}
+            </div>
           )
-        return (
-          <div key={group.part} className="flex items-center gap-1 rounded-full bg-white/[0.1] py-0.5 pl-3 pr-1">
-            <span className={cn('mr-1 whitespace-nowrap text-[14px] font-bold', tone.text)}>{groupLabel(group.part)}</span>
-            {group.items.map((i, k) => {
-              const active = i === index
-              return (
-                <button
-                  key={slides[i].id}
-                  type="button"
-                  aria-label={`第 ${i + 1} 頁：${slides[i].title}`}
-                  aria-current={active ? 'page' : undefined}
-                  onClick={() => onGoTo(i)}
-                  onMouseDown={keepFocus}
-                  onMouseEnter={() => setTip(i)}
-                  onFocus={() => setTip(i)}
-                  className={cn(
-                    'relative flex size-7 items-center justify-center rounded-full font-mono text-[13px] font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300',
-                    active ? 'bg-sky-300 text-navy-950' : 'text-slate-300 hover:bg-white/[0.14] hover:text-white',
-                  )}
-                >
-                  {k + 1}
-                  {tip === i && <Tip i={i} />}
-                </button>
-              )
-            })}
-          </div>
-        )
-      })}
+        })}
+      </div>
+      {tip && <Tip i={tip.i} x={tip.x} />}
     </div>
   )
 }
-
 /** 篇章列的浮出說明 */
-function Tip({ i }: { i: number }) {
+function Tip({ i, x }: { i: number; x: number }) {
   const s = slides[i]
   return (
-    <span className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-3 -translate-x-1/2 whitespace-nowrap rounded-xl bg-navy-800/95 px-3 py-1.5 text-[13px] font-semibold text-slate-100 shadow-lg backdrop-blur">
+    <span style={{ left: x }} className="pointer-events-none absolute bottom-full z-50 mb-3 -translate-x-1/2 whitespace-nowrap rounded-xl bg-navy-800/95 px-3 py-1.5 text-[13px] font-semibold text-slate-100 shadow-lg backdrop-blur">
       <span className="font-mono text-sky-300">P.{pad(i + 1)}</span>
       <span className={cn('mx-1.5', toneStyles[parts[s.part].tone].text)}>{parts[s.part].short}</span>
       {s.title}

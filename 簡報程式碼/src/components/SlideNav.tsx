@@ -259,6 +259,8 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
                     className={cn(
                       'relative flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-bold transition focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300',
                       on ? 'bg-sky-300 text-navy-950' : 'text-slate-300 hover:bg-white/[0.14] hover:text-white',
+                      // 查閱頁：字淡一點（必讀的才是實心）
+                      !on && slides[i].tier === 'ref' && 'text-slate-500',
                       // 這一批新增的頁：綠色外框＋右上角小點（目前頁用綠框就夠）
                       isNew(slides[i].added) && (on ? 'ring-2 ring-emerald-400' : 'ring-1 ring-emerald-400/80 text-emerald-200'),
                     )}
@@ -284,6 +286,7 @@ function Tip({ i, x }: { i: number; x: number }) {
       <span className="font-mono text-sky-300">P.{pad(i + 1)}</span>
       <span className={cn('mx-1.5', toneStyles[parts[s.part].tone].text)}>{parts[s.part].short}</span>
       {isNew(s.added) && <span className="mr-1.5 rounded bg-emerald-400 px-1.5 text-[12px] font-black text-navy-950">新</span>}
+      {s.tier === 'ref' && <span className="mr-1.5 text-slate-400">查閱 ·</span>}
       {s.title}
     </span>
   )

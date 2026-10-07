@@ -3,12 +3,14 @@ import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'rea
 import { useDeck } from '../../context/deck'
 import { cycleNotes, CYCLE_ORDER, type CycleNodeId } from '../../data/cycleNotes'
 import { CLASS_AUDIO, CLASS_AUDIO_2, usePlayable } from '../../data/media'
-import type { AudioBlock, Block, HotspotsBlock, MatrixBlock, Tone } from '../../data/types'
+import type { AudioBlock, Block, HotspotsBlock, MatrixBlock, RecordingsIndexBlock, Tone } from '../../data/types'
 import { slides } from '../../data/slides'
 import { isNew } from '../../data/whatsNew'
+import { recordingOf } from '../../data/recordings'
 
-/** 這一批新增的頁：學習地圖的連結後面加 🆕 */
+/** 這一批新增的頁：學習地圖的連結後面加 🆕；查閱頁加（查閱） */
 const newIds = new Set(slides.filter((s) => isNew(s.added)).map((s) => s.id))
+const refIds = new Set(slides.filter((s) => s.tier === 'ref').map((s) => s.id))
 import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
 import { Segmented } from '../ui/Segmented'
@@ -438,6 +440,7 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
                 {item.chapters.map((c) => (
                   <PageLink key={c.slide + c.code} slide={c.slide}>
                     {c.code} {c.title}
+                    {refIds.has(c.slide) ? '（查閱）' : ''}
                     {newIds.has(c.slide) ? ' 🆕' : ''}
                   </PageLink>
                 ))}
@@ -630,6 +633,47 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
 
     case 'audio':
       return <AudioMobile block={block} />
+
+    case 'recap':
+      return (
+        <div className="space-y-3">
+          <ol className="space-y-2">
+            {block.items.map((item, i) => (
+              <li key={item.title}>
+                <Card tone={block.tone}>
+                  <div className="flex gap-3">
+                    <span className={cn('flex size-9 shrink-0 items-center justify-center rounded-xl text-[20px] font-black', toneStyles[block.tone].soft, toneStyles[block.tone].text)}>{i + 1}</span>
+                    <div className="min-w-0">
+                      <p className="text-[19px] font-bold leading-snug text-white">{item.title}</p>
+                      <p className="mt-1 text-[15px] text-slate-300">{item.desc}</p>
+                      {item.slide && (
+                        <div className="mt-2">
+                          <PageLink slide={item.slide}>回去看</PageLink>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              </li>
+            ))}
+          </ol>
+          {block.refs.length > 0 && (
+            <Card>
+              <Title small>查閱頁：需要時再翻</Title>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {block.refs.map((r) => (
+                  <PageLink key={r.slide} slide={r.slide}>
+                    {r.label}
+                  </PageLink>
+                ))}
+              </div>
+            </Card>
+          )}
+        </div>
+      )
+
+    case 'recordingsIndex':
+      return <RecordingsMobile block={block} />
 
     case 'fen':
       return <FenConverter mobile />
@@ -962,6 +1006,40 @@ function HotspotsMobile({ block }: { block: HotspotsBlock }) {
                 </li>
               ))}
             </ul>
+          </Card>
+        )
+      })}
+    </div>
+  )
+}
+
+/** 錄音索引（手機）：一段一列，點開才出現章節和播放器 */
+function RecordingsMobile({ block }: { block: RecordingsIndexBlock }) {
+  const [open, setOpen] = useState<string | null>(null)
+  return (
+    <div className="space-y-2">
+      {block.items.map((item) => {
+        const rec = recordingOf(item.slide)
+        const on = open === item.slide
+        return (
+          <Card key={item.slide} tone={on ? 'emerald' : undefined}>
+            <button type="button" onClick={() => setOpen(on ? null : item.slide)} aria-expanded={on} className="flex w-full items-center gap-3 text-left">
+              <span className={cn('w-[80px] shrink-0 font-mono text-[14px] font-bold', on ? 'text-emerald-300' : 'text-slate-400')}>{item.code}</span>
+              <span className="min-w-0 flex-1 text-[16px] font-semibold text-white">{rec?.title ?? item.slide}</span>
+              <span className="shrink-0 font-mono text-[13px] text-slate-500">{rec?.duration}</span>
+            </button>
+            {on && rec && (
+              <div className="mt-3 space-y-3">
+                <div className="flex flex-wrap gap-2">
+                  {item.related.map((l) => (
+                    <PageLink key={l.slide} slide={l.slide}>
+                      {l.label}
+                    </PageLink>
+                  ))}
+                </div>
+                <AudioMobile block={rec.audio} />
+              </div>
+            )}
           </Card>
         )
       })}

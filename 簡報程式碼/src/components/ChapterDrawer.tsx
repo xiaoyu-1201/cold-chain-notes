@@ -118,6 +118,7 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
                                 <span className="block text-[13px] text-slate-400">
                                   {slide.chapter}
                                   {slide.advanced && <span className="ml-1.5 font-bold text-amber-300">進階</span>}
+                                  {slide.tier === 'ref' && <span className="ml-1.5 text-slate-500">查閱</span>}
                                 </span>
                               )}
                             </span>

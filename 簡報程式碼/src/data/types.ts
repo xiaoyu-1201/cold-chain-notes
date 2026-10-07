@@ -390,6 +390,27 @@ export interface FlashCard {
   added?: string
 }
 
+/** 每篇結尾：這篇只要記住的三件事＋哪幾頁是查閱用的 */
+export interface RecapBlock {
+  type: 'recap'
+  tone: Tone
+  items: { title: string; desc: ReactNode; slide?: string }[]
+  /** 查閱頁（需要時再翻） */
+  refs: { label: string; slide: string }[]
+}
+
+/** 錄音索引：一頁列出全部錄音，點一個展開章節＋播放器 */
+export interface RecordingsIndexBlock {
+  type: 'recordingsIndex'
+  items: {
+    /** 錄音頁的 id（slideList 裡的定義，不在 ORDER 裡） */
+    slide: string
+    code: string
+    /** 對應的內容頁 */
+    related: { label: string; slide: string }[]
+  }[]
+}
+
 /** 資料表（電腦版表格、手機版每欄一張卡片） */
 export interface TableBlock {
   type: 'table'
@@ -495,6 +516,8 @@ export type Block =
   | FlashcardsBlock
   | RefSliderBlock
   | TableBlock
+  | RecapBlock
+  | RecordingsIndexBlock
 
 export interface CoverData {
   kicker: string
@@ -530,6 +553,8 @@ export interface SlideData {
   source?: 'handbook' | 'extra'
   /** 哪一天新增或大改（YYYY-MM-DD）；≥ whatsNew.NEW_SINCE 的頁會標「新」 */
   added?: string
+  /** 沒標＝第一週必讀；ref＝查閱手冊（規格、對照、型號讀法，需要時再翻） */
+  tier?: 'ref'
   /** 每頁底部「📌 本章小結論」 */
   conclusion: { label?: string; text: ReactNode }
 }

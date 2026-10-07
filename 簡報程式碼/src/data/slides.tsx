@@ -68,7 +68,7 @@ import handoutImg from '../assets/1001-handout.jpg'
 import insulationImg from '../assets/1005-insulation-chart.jpg'
 import refrigerantTableImg from '../assets/refrigerant-table.jpg'
 import { Danger, Em, Exp, Frac, Hl, Sub, Warn } from '../components/ui/rich'
-import { CLASS_AUDIO, CLASS_AUDIO_10, CLASS_AUDIO_11, CLASS_AUDIO_12, CLASS_AUDIO_13, CLASS_AUDIO_14, CLASS_AUDIO_2, CLASS_AUDIO_3, CLASS_AUDIO_4, CLASS_AUDIO_5, CLASS_AUDIO_6, CLASS_AUDIO_7, CLASS_AUDIO_8, CLASS_AUDIO_9 } from './media'
+import { CLASS_AUDIO, CLASS_AUDIO_10, CLASS_AUDIO_11, CLASS_AUDIO_12, CLASS_AUDIO_13, CLASS_AUDIO_14, CLASS_AUDIO_15, CLASS_AUDIO_2, CLASS_AUDIO_3, CLASS_AUDIO_4, CLASS_AUDIO_5, CLASS_AUDIO_6, CLASS_AUDIO_7, CLASS_AUDIO_8, CLASS_AUDIO_9 } from './media'
 import type { SlideData } from './types'
 
 /** 各頁定義（定義順序不等於顯示順序，顯示順序見檔案最後的 ORDER） */
@@ -241,13 +241,10 @@ const slideList: SlideData[] = [
               { code: 'CH.02', title: '壓縮機', slide: 'ch2' },
               { code: '貨架', title: '壓縮機：牌子、電壓、拿貨', slide: 'comp-brands' },
               { code: 'CH.03', title: '冷凝器', slide: 'ch3' },
-              { code: '規格', title: '散熱器排×支', slide: 'coil-spec' },
-              { code: '實務', title: '冷凝器配多大', slide: 'cond-practice' },
-              { code: '種類', title: '散熱器三種', slide: 'outdoor-units' },
+              { code: '規格', title: '散熱器規格、配多大、三種', slide: 'coil-spec' },
               { code: 'CH.04', title: '蒸發器', slide: 'ch4' },
               { code: 'CH.05', title: '控制與保護', slide: 'ch5' },
-              { code: '配件', title: '乾燥、接頭、保溫', slide: 'drier-sizes' },
-              { code: '講義', title: '零件總覽圖', slide: 'handout' },
+              { code: '配件', title: '乾燥、接頭、保溫、講義', slide: 'drier-sizes' },
             ],
           },
           {
@@ -263,13 +260,14 @@ const slideList: SlideData[] = [
               { code: '新人', title: '新人業務怎麼開始', slide: 'newbie-sales' },
               { code: 'CH.09', title: '四大故障診斷', slide: 'ch9' },
               { code: '實戰', title: '接單問診 SOP', slide: 'sop' },
+              { code: '送貨', title: '送貨對貨 SOP', slide: 'delivery-sop' },
             ],
           },
         ],
         finale: {
           label: '學完之後',
           links: [
-            { title: '聽原音複習', slide: 'recording' },
+            { title: '聽原音複習', slide: 'recordings' },
             { title: '自我檢測', slide: 'quiz' },
             { title: '課後 Insight', slide: 'lesson-insights' },
             { title: '第二階段：進階', slide: 'ch6' },
@@ -663,8 +661,8 @@ const slideList: SlideData[] = [
             title: '店裡常備的四個牌子',
             en: 'Four Brands',
             items: [
-              { icon: Package, title: '英博格（Embraco）', desc: '小顆的，一馬以下。家用冰箱、小冰箱用；型號後面會寫電壓，110 和 220 要分清楚', badge: { label: '小顆', tone: 'ice' } },
-              { icon: Factory, title: '鐵甲（Tecumseh）', desc: '法國廠（型號 GAJ、AW 開頭）和泰國廠（KK 系列）；數字越大越大顆', badge: { label: '中小顆', tone: 'teal' } },
+              { icon: Package, title: '英博格（Embraco）', desc: '小顆的，一馬以下；義大利品牌、斯洛伐克製造（標籤上有寫）。只有 110、220 單相，沒有三相', badge: { label: '小顆', tone: 'ice' } },
+              { icon: Factory, title: '鐵甲（Tecumseh）', desc: '以法國廠為主（型號 GAJ、AW 開頭），泰國廠 KK 系列；巴西廠店裡不賣、美國廠已退出。在台灣超過 50 年', badge: { label: '中小顆', tone: 'teal' } },
               { icon: Cylinder, title: 'Copeland（黑金剛）', desc: '店裡賣最多，口語叫黑金剛、孔不爛；CS、CR、CF 系列，分高溫、中溫、低溫；印度廠和墨西哥廠都有', badge: { label: '賣最多', tone: 'amber' } },
               { icon: Snowflake, title: 'Danfoss（現在叫 Secop）', desc: '壓縮機部門已改名 Secop，很多人還是叫 Danfoss。型號裡有 G 的灌 R134a（冷藏）、有 CL 的灌 R404A（冷凍）；數字越大越大顆', badge: { label: '看冷媒', tone: 'violet' } },
             ],
@@ -815,6 +813,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'comp-temp',
+    tier: 'ref',
     added: '2026-10-07',
     part: 'components',
     chapter: '壓縮機貨架',
@@ -1303,6 +1302,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 1001 課堂錄音（本堂課主軸） ───────────────────────── */
   {
     id: 'recording',
+    tier: 'ref',
     part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO',
@@ -1342,6 +1342,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 1001 課堂錄音 Part 2 ───────────────────────── */
   {
     id: 'recording-2',
+    tier: 'ref',
     part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO 2',
@@ -1382,6 +1383,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 1001 課堂錄音 Part 3–5 ───────────────────────── */
   {
     id: 'recording-3',
+    tier: 'ref',
     part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO 3',
@@ -1425,6 +1427,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 1002 課堂錄音 Part 1（之後 10/2 的錄音加在 tracks） ───────────────────────── */
   {
     id: 'recording-4',
+    tier: 'ref',
     part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO 4',
@@ -1458,6 +1461,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 1002 下午 錄音07～11 ───────────────────────── */
   {
     id: 'recording-5',
+    tier: 'ref',
     part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO 5',
@@ -1499,6 +1503,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'recording-6',
+    tier: 'ref',
     part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO 6',
@@ -1535,6 +1540,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'recording-7',
+    tier: 'ref',
     part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO 7',
@@ -1577,6 +1583,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 1005 錄音12：卡尺、乾燥過濾器、喇叭頭、冷氣材料、保溫管 ───────────────────────── */
   {
     id: 'recording-8',
+    tier: 'ref',
     part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO 8',
@@ -1622,6 +1629,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'recording-9',
+    tier: 'ref',
     added: '2026-10-07',
     part: 'review',
     chapter: '課堂錄音',
@@ -1667,6 +1675,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'recording-10',
+    tier: 'ref',
     added: '2026-10-07',
     part: 'review',
     chapter: '課堂錄音',
@@ -1708,6 +1717,43 @@ const slideList: SlideData[] = [
     },
   },
   {
+    id: 'recording-11',
+    tier: 'ref',
+    added: '2026-10-08',
+    part: 'review',
+    chapter: '課堂錄音',
+    mark: 'AUDIO 11',
+    title: '錄音15｜送貨對貨 SOP；老闆看簡報補充壓縮機牌子',
+    en: 'Recording 15',
+    blocks: [
+      {
+        type: 'audio',
+        src: CLASS_AUDIO_15,
+        title: '錄音15（10/7）',
+        en: 'Class Recording',
+        duration: '8:36',
+        chapters: [
+          { at: 1, title: '對給收貨的人', summary: '不管對方是師傅、鄰居還是小學生，都當面照型號一件一件對；上面有型號，外行也對得了' },
+          { at: 51, title: '打開箱子、打勾', summary: '一包三個喇叭頭就打開給他看；請他打勾、簽名。預防勝於治療，前線做好後面就沒事' },
+          { at: 129, title: '提早 10 分鐘聯絡', summary: '出門沒多久就打電話「快到了」；寧願客戶等我們，不要我們等客戶' },
+          { at: 152, title: '成本不能讓客戶的客戶知道', summary: '到現場是業主在收，有價格的單就不簽，改用 LINE 給客戶；進貨標籤也要撕掉，道理一樣' },
+          { at: 206, title: '臨時改地點就不簽', summary: '做信用的；地點改到業主那裡，就不簽有價格的單' },
+          { at: 260, title: '老闆看簡報：英博格', summary: 'Embraco 是義大利品牌、斯洛伐克製造，標籤上有寫；只有 110、220，沒有三相' },
+          { at: 392, title: '鐵甲：法國為主', summary: '美國廠退出、歐洲做的貴；巴西鐵甲店裡不賣，一馬以下用英博格代替；法國型號很多' },
+          { at: 489, title: '明天從鐵甲講起', summary: '鐵甲在台灣超過 50 年，歷史最悠久；壓縮機會從鐵甲開始講' },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          送貨<Hl>當面對型號、請對方打勾</Hl>；有價格的單<Hl>不能讓客戶的客戶看到</Hl>。
+        </>
+      ),
+    },
+  },
+  {
     id: 'caliper',
     part: 'units',
     chapter: '游標卡尺',
@@ -1726,6 +1772,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'drier-sizes',
+    tier: 'ref',
     part: 'components',
     chapter: '乾燥過濾器',
     mark: 'DRIER',
@@ -1793,6 +1840,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'flare-fittings',
+    tier: 'ref',
     part: 'components',
     chapter: '喇叭頭與接頭',
     mark: 'FITTING',
@@ -1938,6 +1986,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'pipe-marks',
+    tier: 'ref',
     added: '2026-10-07',
     part: 'components',
     chapter: '接頭標示',
@@ -2011,6 +2060,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'insulation-sizes',
+    tier: 'ref',
     added: '2026-10-07',
     part: 'components',
     chapter: '保溫管',
@@ -2098,6 +2148,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'ac-materials',
+    tier: 'ref',
     part: 'practice',
     chapter: '冷氣材料',
     mark: 'A/C',
@@ -2180,6 +2231,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 1001 課堂講義 ───────────────────────── */
   {
     id: 'handout',
+    tier: 'ref',
     part: 'components',
     chapter: '講義',
     title: '講義：系統零件總覽圖',
@@ -2507,6 +2559,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 1002 錄音08～10：散熱器規格 排×支×鏡面 ───────────────────────── */
   {
     id: 'coil-spec',
+    tier: 'ref',
     part: 'components',
     chapter: '散熱器規格',
     mark: 'COIL',
@@ -2525,6 +2578,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 1002 錄音07、08、11：冷凝器實務 ───────────────────────── */
   {
     id: 'cond-practice',
+    tier: 'ref',
     part: 'components',
     chapter: '冷凝器實務',
     mark: 'COND',
@@ -2589,6 +2643,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 1002 錄音09～11：門市接散熱器的問題 ───────────────────────── */
   {
     id: 'coil-store',
+    tier: 'ref',
     part: 'practice',
     chapter: '門市：散熱器',
     mark: 'STORE',
@@ -2723,6 +2778,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 1002 錄音10、11：散熱器三種 ───────────────────────── */
   {
     id: 'outdoor-units',
+    tier: 'ref',
     part: 'components',
     chapter: '散熱器種類',
     mark: 'UNITS',
@@ -2829,6 +2885,70 @@ const slideList: SlideData[] = [
       text: (
         <>
           客人跟我們買，是因為我們<Hl>比別人多關心他</Hl>：多問一句配對、把話講在前頭，客人就不會賠錢，也會再回來。
+        </>
+      ),
+    },
+  },
+  /* ───────────────────────── 送貨對貨 SOP（錄音15） ───────────────────────── */
+  {
+    id: 'delivery-sop',
+    added: '2026-10-08',
+    part: 'practice',
+    chapter: '送貨',
+    mark: 'DELIVER',
+    title: '送貨對貨 SOP：當面對、請他打勾、價格不外流',
+    en: 'Delivery SOP',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
+        children: [
+          {
+            type: 'flow',
+            direction: 'col',
+            tone: 'indigo',
+            icon: Truck,
+            title: '到現場這樣做',
+            en: 'At the Site',
+            steps: [
+              { title: '出門沒多久就打電話', desc: '「快到了」，提早 10 分鐘聯絡；寧願客戶等我們，不要我們等客戶', icon: Clock },
+              { title: '當面照型號一件一件對', desc: '對方是師傅、鄰居、甚至小學生都一樣：上面有型號，外行也對得了', icon: ClipboardList },
+              { title: '箱子打開給他看', desc: '一包三個喇叭頭就打開數給他看；比別人嚴謹，是預防不是不信任', icon: Package },
+              { title: '請他打勾、簽名', desc: '對好的打勾；少的當場講清楚。前線做好，後面就沒有「少一件」的電話', icon: CircleCheck },
+            ],
+            result: { label: '為什麼', text: '曾經送完客人才說少一件，有簽名公司還是賠了；送貨 SOP 做好，問題就留在現場解決' },
+          },
+          {
+            type: 'grid',
+            className: 'grid-rows-[minmax(0,1fr)_auto]',
+            children: [
+              {
+                type: 'alert',
+                title: '價格不能讓客戶的客戶看到',
+                en: 'Price Stays Private',
+                items: [
+                  { icon: ShieldAlert, title: '現場是業主在收', value: '不簽那張單', desc: <>送貨單上有價格。地點臨時改到麵包店、小吃店、市場攤位，收貨的是<Hl>客戶的客戶</Hl>：那張單不簽，改用 LINE 給客戶。〔錄音15 02:32〕</> },
+                  { icon: Ban, title: '進貨標籤要撕', value: '同一個道理', desc: '我們的成本不能讓客戶知道；客戶的成本也不能讓他的客戶知道。' },
+                ],
+              },
+              {
+                type: 'info',
+                icon: Handshake,
+                tone: 'emerald',
+                title: '不打擾、做信用',
+                en: 'Courtesy',
+                body: <>客人會下來拿就不按門鈴、不上樓；臨時改地點就不簽，大家做信用的。〔錄音15 01:41、03:26〕</>,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          送貨<Hl>當面對型號、請對方打勾</Hl>；有價格的單<Hl>不能讓客戶的客戶看到</Hl>，改用 LINE 給客戶。
         </>
       ),
     },
@@ -3255,6 +3375,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 14 第 9 章 ───────────────────────── */
   {
     id: 'ch9',
+    tier: 'ref',
     source: 'handbook',
     part: 'practice',
     chapter: '第 9 章',
@@ -3534,6 +3655,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── Ref Tools 網頁版（錄音05：溫度壓力用 App 查） ───────────────────────── */
   {
     id: 'reftools',
+    tier: 'ref',
     part: 'units',
     chapter: 'Ref Tools',
     mark: 'P-T',
@@ -3582,6 +3704,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 常用冷媒速查表（老闆用 Ref Tools 整理的手寫表） ───────────────────────── */
   {
     id: 'reftable',
+    tier: 'ref',
     part: 'units',
     chapter: '冷媒速查',
     mark: 'R22',
@@ -3629,6 +3752,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 冷媒演進與冷凍油（原第 1 章的冷媒內容） ───────────────────────── */
   {
     id: 'refrigerants',
+    tier: 'ref',
     source: 'handbook',
     part: 'units',
     chapter: '冷媒',
@@ -3728,8 +3852,8 @@ const slideList: SlideData[] = [
             title: '便利商店冷藏',
             story: '便利商店要做冷藏櫃，散熱器要掛在外牆、管子拉很長；用膨脹閥系統，壓縮機選 2 馬。',
             questions: [
-              { q: '散熱器要配幾馬？', options: ['2 馬', '4 馬', '6 馬'], answer: 1, why: '一般 1 馬壓縮機配 2 馬散熱器，2 馬就配 4 馬。〔錄音02 04:46〕', slide: 'recording-2' },
-              { q: '散熱器選哪一種？', options: ['有外箱的', '無穿衫（裸露型）'], answer: 0, why: '掛外牆要耐風吹雨淋，像 7-11 都用有外箱的。〔錄音02 06:07〕', slide: 'recording-2' },
+              { q: '散熱器要配幾馬？', options: ['2 馬', '4 馬', '6 馬'], answer: 1, why: '一般 1 馬壓縮機配 2 馬散熱器，2 馬就配 4 馬。〔錄音02 04:46〕', slide: 'recordings' },
+              { q: '散熱器選哪一種？', options: ['有外箱的', '無穿衫（裸露型）'], answer: 0, why: '掛外牆要耐風吹雨淋，像 7-11 都用有外箱的。〔錄音02 06:07〕', slide: 'recordings' },
               { q: '電磁閥要不要裝？', options: ['要', '不用'], answer: 0, why: '散熱器裝在外牆、管子拉長，系統裡的冷媒就多；停機時要用電磁閥把冷媒關在液管。〔錄音01 21:28〕', slide: 'cycle-lesson' },
               { q: '儲液器要不要裝？', options: ['要', '不用'], answer: 0, why: '膨脹閥系統一定要裝，確保送到膨脹閥的是源源不絕的液態。〔錄音02 10:17〕', slide: 'handout' },
               { q: '乾燥過濾器、壓力開關呢？', options: ['兩個都要', '看情況'], answer: 0, why: '乾燥過濾器一定要（系統不能有水）；壓力開關一定要（保護壓縮機）。〔錄音01 03:12〕〔錄音02 17:57〕', slide: 'handout' },
@@ -3739,11 +3863,11 @@ const slideList: SlideData[] = [
             title: '餐廳冷凍庫',
             story: '餐廳要做一間冷凍庫，機器想放在鐵皮屋頂上，老闆想省錢。',
             questions: [
-              { q: '第一個要先問什麼？', options: ['要幾馬', '冰什麼', '預算多少'], answer: 1, why: '先問冰什麼，才知道要多大的壓縮機。〔錄音02 06:07〕', slide: 'recording-2' },
-              { q: '想省錢用「無穿衫」散熱器，要提醒什麼？', options: ['沒差，直接裝', '鐵皮屋上夏天會到 50°C，散熱很差'], answer: 1, why: '裸露型比較便宜，但擺放位置很重要。〔錄音04 00:51〕', slide: 'recording-3' },
-              { q: '溫控器的溫差一般抓幾度？', options: ['1°C', '4°C', '10°C'], answer: 1, why: '溫差太小，壓縮機開關太頻繁、影響壽命。〔錄音01 14:46〕', slide: 'recording' },
-              { q: '冷凍庫的溫控跟冷藏有什麼不同？', options: ['冷凍要除霜', '沒有差別'], answer: 0, why: '冷藏和冷凍主要差在溫控：冷凍要除霜，冷藏不用。〔錄音03 03:28〕', slide: 'recording-3' },
-              { q: '客人想用同一台壓縮機，順便帶隔壁的冷藏庫？', options: ['可以，比較省', '建議一對一'], answer: 1, why: '一藏一凍很難控制，還可能把壓縮機搞壞；一般一對一。〔錄音03 03:28〕', slide: 'recording-3' },
+              { q: '第一個要先問什麼？', options: ['要幾馬', '冰什麼', '預算多少'], answer: 1, why: '先問冰什麼，才知道要多大的壓縮機。〔錄音02 06:07〕', slide: 'recordings' },
+              { q: '想省錢用「無穿衫」散熱器，要提醒什麼？', options: ['沒差，直接裝', '鐵皮屋上夏天會到 50°C，散熱很差'], answer: 1, why: '裸露型比較便宜，但擺放位置很重要。〔錄音04 00:51〕', slide: 'recordings' },
+              { q: '溫控器的溫差一般抓幾度？', options: ['1°C', '4°C', '10°C'], answer: 1, why: '溫差太小，壓縮機開關太頻繁、影響壽命。〔錄音01 14:46〕', slide: 'recordings' },
+              { q: '冷凍庫的溫控跟冷藏有什麼不同？', options: ['冷凍要除霜', '沒有差別'], answer: 0, why: '冷藏和冷凍主要差在溫控：冷凍要除霜，冷藏不用。〔錄音03 03:28〕', slide: 'recordings' },
+              { q: '客人想用同一台壓縮機，順便帶隔壁的冷藏庫？', options: ['可以，比較省', '建議一對一'], answer: 1, why: '一藏一凍很難控制，還可能把壓縮機搞壞；一般一對一。〔錄音03 03:28〕', slide: 'recordings' },
             ],
           },
           {
@@ -3753,7 +3877,7 @@ const slideList: SlideData[] = [
               { q: '要不要加儲液器？', options: ['要', '不用'], answer: 1, why: '毛細管的小系統可以不裝；用膨脹閥的系統才一定要。〔錄音02 10:17〕', slide: 'handout' },
               { q: '電磁閥呢？', options: ['一定要', '小冰箱可以不裝'], answer: 1, why: '散熱外移、管路長才一定要；小冰箱可以不裝。〔錄音01 21:28〕', slide: 'cycle-lesson' },
               { q: '乾燥過濾器呢？', options: ['一定要', '可以省'], answer: 0, why: '系統只能有冷媒、不能有水，乾燥過濾器一定要。〔錄音01 03:12〕', slide: 'cycle-lesson' },
-              { q: '只賣維修零件，對門市來說？', options: ['是主要生意', '利潤低，整套輸出才是主要生意'], answer: 1, why: '每天的工作是估冷凍庫；整套輸出金額才大。〔錄音02 06:53〕', slide: 'recording-2' },
+              { q: '只賣維修零件，對門市來說？', options: ['是主要生意', '利潤低，整套輸出才是主要生意'], answer: 1, why: '每天的工作是估冷凍庫；整套輸出金額才大。〔錄音02 06:53〕', slide: 'recordings' },
             ],
           },
         ],
@@ -3764,6 +3888,174 @@ const slideList: SlideData[] = [
       text: (
         <>
           先問<Hl>冰什麼</Hl>，壓縮機決定一切；散熱器配 2 倍，<Hl>乾燥過濾器、壓力開關一定要</Hl>，膨脹閥系統加儲液器，散熱外移加電磁閥。
+        </>
+      ),
+    },
+  },
+
+  /* ───────────────────────── 每篇結尾：記住三件事 ───────────────────────── */
+  {
+    id: 'recap-1',
+    added: '2026-10-08',
+    part: 'basics',
+    chapter: '記住三件事',
+    mark: 'RECAP 1',
+    title: '原理篇：記住這三件事就好',
+    en: 'Recap: Basics',
+    blocks: [
+      {
+        type: 'recap',
+        tone: 'teal',
+        items: [
+          { title: '冷凍是「搬熱」，不是製造冷', desc: '液體蒸發會吸熱（庫內），氣體冷凝會放熱（室外）；冷媒就是搬熱的車。', slide: 'strokes' },
+          { title: '冷媒一圈四個狀態', desc: '高溫高壓氣態 → 中溫中壓液態 → 液氣混合 → 低溫低壓氣態，回到壓縮機再來一圈。', slide: 'cycle-lesson' },
+          { title: '四大金剛各做一件事', desc: '壓縮機壓氣體（只吃氣不吃液）、冷凝器放熱、膨脹閥降壓、蒸發器吸熱；其他零件都是在保護這四個。', slide: 'cycle-lesson' },
+        ],
+        refs: [],
+      },
+    ],
+    conclusion: { label: '下一步', text: <>做完下一頁的小測驗，就可以進第二步「單位」。</> },
+  },
+  {
+    id: 'recap-2',
+    added: '2026-10-08',
+    part: 'units',
+    chapter: '記住三件事',
+    mark: 'RECAP 2',
+    title: '單位篇：記住這三件事就好',
+    en: 'Recap: Units',
+    blocks: [
+      {
+        type: 'recap',
+        tone: 'amber',
+        items: [
+          { title: '1 吋＝8 分＝25.4 mm', desc: '所以 1 分＝3.175 mm；客人說的「幾分」就是銅管外徑。', slide: 'units' },
+          { title: '銅管量外徑、接頭量內徑', desc: '卡尺先看游尺的 0 對到哪，找雙數的長刻度最快。', slide: 'caliper' },
+          { title: '溫度和壓力綁在一起', desc: '同一種冷媒，壓力多少就代表溫度多少；用冷媒尺或 App 查，不用背。', slide: 'reftools' },
+        ],
+        refs: [
+          { label: 'Ref Tools 網頁版', slide: 'reftools' },
+          { label: '常用冷媒速查表', slide: 'reftable' },
+          { label: '冷媒演進與冷凍油', slide: 'refrigerants' },
+        ],
+      },
+    ],
+    conclusion: { label: '下一步', text: <>小測驗之後進第三步「裝置」：客人把這些東西用在哪。</> },
+  },
+  {
+    id: 'recap-3',
+    added: '2026-10-08',
+    part: 'industry',
+    chapter: '記住三件事',
+    mark: 'RECAP 3',
+    title: '裝置篇：記住這三件事就好',
+    en: 'Recap: Applications',
+    blocks: [
+      {
+        type: 'recap',
+        tone: 'violet',
+        items: [
+          { title: '我們在代理商和工程行之間', desc: '備貨庫存、技術諮詢、急件調貨、規格替代——客人找我們是因為我們比別人多懂一點。', slide: 'industry' },
+          { title: '客人說幾坪，先問「冰什麼」', desc: '冰什麼決定溫度，溫度決定壓縮機多大；整套估價才是主要生意。', slide: 'estimate' },
+          { title: '冰箱看尺寸和用途', desc: '兩尺、兩尺半、四尺、六尺；全凍、半凍半藏、全藏，配的壓縮機、冷排、熱排都不一樣大。', slide: 'fridge-types' },
+        ],
+        refs: [],
+      },
+    ],
+    conclusion: { label: '下一步', text: <>第四步「元件」最長：先走一次店內產品地圖，再一類一類認。</> },
+  },
+  {
+    id: 'recap-4',
+    added: '2026-10-08',
+    part: 'components',
+    chapter: '記住三件事',
+    mark: 'RECAP 4',
+    title: '元件篇：記住這三件事就好',
+    en: 'Recap: Components',
+    blocks: [
+      {
+        type: 'recap',
+        tone: 'ice',
+        items: [
+          { title: '每個零件都在循環的某一段', desc: '液管上：散熱器 → 乾燥過濾器 → 視液鏡 → 電磁閥 → 膨脹閥；回管最冷，要包保溫管。', slide: 'products' },
+          { title: '壓縮機先對四樣：牌子、電壓、單相三相、溫度', desc: '焊過就不能退，拿之前一個字一個字對；單相要配一盒配件，三相只要角座。', slide: 'comp-pick' },
+          { title: '配對：1 馬壓縮機配 2 馬散熱器', desc: '散熱器規格看「排×支×鏡面」；客人換壓縮機先問熱排、冷排多大。', slide: 'ch3' },
+        ],
+        refs: [
+          { label: '高中低溫、誰代替誰', slide: 'comp-temp' },
+          { label: '散熱器排×支×鏡面', slide: 'coil-spec' },
+          { label: '冷凝器配多大', slide: 'cond-practice' },
+          { label: '散熱器三種', slide: 'outdoor-units' },
+          { label: '乾燥過濾器型號', slide: 'drier-sizes' },
+          { label: '喇叭頭、接頭', slide: 'flare-fittings' },
+          { label: 'ODF／SAE／MPT', slide: 'pipe-marks' },
+          { label: '保溫管 15 種', slide: 'insulation-sizes' },
+          { label: '講義零件總覽', slide: 'handout' },
+        ],
+      },
+    ],
+    conclusion: { label: '下一步', text: <>查閱頁不用背，需要時回來翻；小測驗之後進第五步「實務」。</> },
+  },
+  {
+    id: 'recap-5',
+    added: '2026-10-08',
+    part: 'practice',
+    chapter: '記住三件事',
+    mark: 'RECAP 5',
+    title: '實務篇：記住這三件事就好',
+    en: 'Recap: Practice',
+    blocks: [
+      {
+        type: 'recap',
+        tone: 'indigo',
+        items: [
+          { title: '多問一句、話先講在前頭、講結論', desc: '客人只問壓縮機，我們多問熱排冷排；買賣說斷斷；客人不是來上課的。', slide: 'store-mindset' },
+          { title: '不拿錯貨，是新人最快建立信任的方法', desc: '型號一字不漏、電壓對、出門前再對一次；送貨當面對、請對方打勾，有價格的單不給客戶的客戶看。', slide: 'delivery-sop' },
+          { title: '故障先看高壓、低壓各查哪裡', desc: '高壓高先看冷凝器；低壓低先看蒸發器和視液鏡；反覆補冷媒的先找漏點。', slide: 'sop' },
+        ],
+        refs: [
+          { label: '估價練習', slide: 'estimate' },
+          { label: '客人來問散熱器', slide: 'coil-store' },
+          { label: '冷氣材料', slide: 'ac-materials' },
+          { label: '四大故障診斷', slide: 'ch9' },
+        ],
+      },
+    ],
+    conclusion: { label: '下一步', text: <>五步走完：到「錄音」聽原音、用「翻卡」和「自我檢測」複習。</> },
+  },
+
+  /* ───────────────────────── 錄音索引（取代一頁一段的錄音頁） ───────────────────────── */
+  {
+    id: 'recordings',
+    added: '2026-10-08',
+    part: 'review',
+    chapter: '課堂錄音',
+    mark: 'AUDIO',
+    title: '課堂錄音：15 段，點一段就能聽',
+    en: 'Recordings',
+    blocks: [
+      {
+        type: 'recordingsIndex',
+        items: [
+          { slide: 'recording', code: '錄音01', related: [{ label: '冷凍循環一圈', slide: 'cycle-lesson' }, { label: '四大行程', slide: 'strokes' }] },
+          { slide: 'recording-2', code: '錄音02', related: [{ label: '冷凍循環一圈', slide: 'cycle-lesson' }, { label: '估價練習', slide: 'estimate' }] },
+          { slide: 'recording-3', code: '錄音03–05', related: [{ label: '單位', slide: 'units' }, { label: '客人的冰箱', slide: 'fridge-types' }] },
+          { slide: 'recording-4', code: '錄音06', related: [{ label: '客人的冰箱', slide: 'fridge-types' }] },
+          { slide: 'recording-5', code: '錄音07–08', related: [{ label: '冷凝器', slide: 'ch3' }, { label: '冷凝器配多大', slide: 'cond-practice' }] },
+          { slide: 'recording-6', code: '錄音09', related: [{ label: '散熱器排×支', slide: 'coil-spec' }, { label: '客人來問散熱器', slide: 'coil-store' }] },
+          { slide: 'recording-7', code: '錄音10–11', related: [{ label: '散熱器三種', slide: 'outdoor-units' }, { label: '客人的冰箱', slide: 'fridge-types' }] },
+          { slide: 'recording-8', code: '錄音12', related: [{ label: '游標卡尺', slide: 'caliper' }, { label: '乾燥過濾器', slide: 'drier-sizes' }, { label: '喇叭頭、接頭', slide: 'flare-fittings' }, { label: '保溫管', slide: 'insulation' }] },
+          { slide: 'recording-9', code: '錄音13', related: [{ label: '四個牌子', slide: 'comp-brands' }, { label: '電壓與相位', slide: 'comp-power' }, { label: '高中低溫', slide: 'comp-temp' }, { label: '拿貨 SOP', slide: 'comp-pick' }] },
+          { slide: 'recording-10', code: '錄音14', related: [{ label: 'ODF／SAE／MPT', slide: 'pipe-marks' }, { label: '保溫管 15 種', slide: 'insulation-sizes' }] },
+          { slide: 'recording-11', code: '錄音15', related: [{ label: '送貨對貨 SOP', slide: 'delivery-sop' }, { label: '四個牌子', slide: 'comp-brands' }] },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          錄音是<Hl>複習用</Hl>的：內容頁讀過之後，隔幾天回來聽老闆怎麼講，記得最牢。
         </>
       ),
     },
@@ -3889,8 +4181,8 @@ const slideList: SlideData[] = [
         step: '③ 裝置',
         items: [
           { q: '我們在冷鏈產業鏈的哪個位置？做什麼？', a: '在代理商和工程行之間：備貨庫存、技術諮詢、急件調貨、規格替代。', slide: 'industry' },
-          { q: '客人說「我要幾坪的冷藏庫」，第一個要問什麼？', a: '冰什麼——才知道要多大的壓縮機。', slide: 'recording-2' },
-          { q: '為什麼要知道客人的裝置用在哪裡？', a: '才知道怎麼跟客人溝通、需要多大的壓縮機。', slide: 'recording-3' },
+          { q: '客人說「我要幾坪的冷藏庫」，第一個要問什麼？', a: '冰什麼——才知道要多大的壓縮機。', slide: 'recordings' },
+          { q: '為什麼要知道客人的裝置用在哪裡？', a: '才知道怎麼跟客人溝通、需要多大的壓縮機。', slide: 'recordings' },
         ],
       },
       {
@@ -3898,7 +4190,7 @@ const slideList: SlideData[] = [
         part: 'components',
         step: '④ 元件',
         items: [
-          { q: '壓縮機 1 馬，散熱器一般配幾馬？', a: '2 馬；膨脹閥閥芯、冷排大小也都跟著壓縮機配。', slide: 'recording-2' },
+          { q: '壓縮機 1 馬，散熱器一般配幾馬？', a: '2 馬；膨脹閥閥芯、冷排大小也都跟著壓縮機配。', slide: 'recordings' },
           { q: '乾燥過濾器為什麼一定要裝？', a: '系統只能有冷媒、不能有水，水會結冰塞住管路；它吸水也濾雜質。', slide: 'handout' },
           { q: '視液鏡的含水指示環變黃，代表什麼？', a: '系統含水過多、乾燥過濾器吸飽了，要盡快更換；綠色才是乾燥正常。', slide: 'handout' },
         ],
@@ -3969,12 +4261,12 @@ const slideList: SlideData[] = [
           {
             q: '壓縮機 1 馬，散熱器一般配幾馬？',
             a: '一般配 2 馬；膨脹閥閥芯、冷排大小也都跟著壓縮機配。',
-            slide: 'recording-2',
+            slide: 'recordings',
           },
           {
             q: '溫控設 -20°C、溫差 4°C，壓縮機幾度停、幾度再啟動？',
             a: '-20°C 停、-16°C 再啟動；溫差太小，壓縮機會開關太頻繁。',
-            slide: 'recording',
+            slide: 'recordings',
           },
           {
             q: '電磁閥平常是開還是關？什麼情況一定要裝？',
@@ -3989,7 +4281,7 @@ const slideList: SlideData[] = [
           {
             q: '一台壓縮機可以同時帶冷藏和冷凍嗎？',
             a: '很難，容易出問題；一般一對一，兩庫同溫（都冷藏或都冷凍）才一對二。',
-            slide: 'recording-3',
+            slide: 'recordings',
           },
           {
             q: '學習順序是什麼？哪些放到第二階段（進階）？',
@@ -4162,7 +4454,7 @@ const slideList: SlideData[] = [
               { label: '四大故障診斷矩陣', slide: 'ch9' },
               { label: '門市接單問診 SOP', slide: 'sop' },
               { label: '自我檢測', slide: 'quiz' },
-              { label: '聽原音複習', slide: 'recording' },
+              { label: '聽原音複習', slide: 'recordings' },
             ],
           },
         ],
@@ -4189,15 +4481,18 @@ const ORDER = [
   'overview',
   'strokes',
   'cycle-lesson',
+  'recap-1',
   'check-1',
   'units',
   'caliper',
   'reftools',
   'reftable',
   'refrigerants',
+  'recap-2',
   'check-2',
   'industry',
   'fridge-types',
+  'recap-3',
   'check-3',
   'products',
   'ch2',
@@ -4217,6 +4512,7 @@ const ORDER = [
   'insulation',
   'insulation-sizes',
   'handout',
+  'recap-4',
   'check-4',
   'estimate',
   'coil-store',
@@ -4225,17 +4521,10 @@ const ORDER = [
   'newbie-sales',
   'ch9',
   'sop',
+  'delivery-sop',
+  'recap-5',
   'check-5',
-  'recording',
-  'recording-2',
-  'recording-3',
-  'recording-4',
-  'recording-5',
-  'recording-6',
-  'recording-7',
-  'recording-8',
-  'recording-9',
-  'recording-10',
+  'recordings',
   'glossary',
   'quiz',
   'lesson-insights',
@@ -4250,3 +4539,6 @@ export const slides: SlideData[] = ORDER.map((id) => {
   if (!slide) throw new Error(`找不到投影片：${id}`)
   return slide
 })
+
+/** 錄音頁的定義（不在 ORDER 裡，由「課堂錄音」索引頁拿來用） */
+export const slideById = (id: string) => slideList.find((s) => s.id === id)

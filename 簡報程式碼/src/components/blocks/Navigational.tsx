@@ -5,6 +5,7 @@ import { parts } from '../../data/parts'
 import { slides } from '../../data/slides'
 import { NEW_LABEL, isNew } from '../../data/whatsNew'
 import { useDeck } from '../../context/deck'
+import { useStickyState } from '../../hooks/useStickyState'
 import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
 import { Badge } from '../ui/Badge'
@@ -17,10 +18,14 @@ const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-
 /** 這一批新增的頁（標題、學習地圖、目錄都標「新」） */
 const newSlides = slides.filter((s) => isNew(s.added))
 const newIds = new Set(newSlides.map((s) => s.id))
+/** 查閱手冊的頁（學習地圖標「查閱」、可以收起來只看必讀） */
+const refIds = new Set(slides.filter((s) => s.tier === 'ref').map((s) => s.id))
+const coreCount = slides.filter((s) => s.tier !== 'ref' && !s.advanced).length
 
 /** 簡報架構：各篇章卡片，點擊章節直接跳頁 */
 export function PartsOverview({ block }: { block: PartsBlock }) {
   const { goToId, numberOf } = useDeck()
+  const [coreOnly, setCoreOnly] = useStickyState('overview-core-only', false)
   return (
     <div className="grid h-full grid-rows-[minmax(0,1fr)_auto] gap-5">
       <motion.div
@@ -59,21 +64,25 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
                 </p>
               )}
               {/* 章節多（超過 8 個）就排緊一點，才放得下 */}
-              <ul className={cn('mt-4 flex flex-1 flex-col', item.chapters.length > 8 ? 'gap-1' : 'gap-2')}>
-                {item.chapters.map((ch) => (
+              <ul className={cn('mt-4 flex flex-1 flex-col', item.chapters.length > 6 ? 'gap-1' : 'gap-2')}>
+                {item.chapters
+                  .filter((ch) => !coreOnly || !refIds.has(ch.slide))
+                  .map((ch) => (
                   <li key={ch.code + ch.title}>
                     <button
                       type="button"
                       onClick={() => goToId(ch.slide)}
                       className={cn(
                         'group flex w-full items-center gap-3 rounded-xl border border-white/[0.08] bg-navy-900/50 px-3.5 text-left transition hover:border-sky-400/40 hover:bg-sky-400/10',
-                        item.chapters.length > 8 ? 'py-1.5' : 'py-2.5',
+                        item.chapters.length > 6 ? 'py-1' : 'py-2.5',
+                        refIds.has(ch.slide) && 'opacity-75',
                         focusRing,
                       )}
                     >
                       <span className={cn('w-[52px] shrink-0 font-mono text-[16px] font-bold', t.text)}>{ch.code}</span>
                       <span className="min-w-0 flex-1 text-[18px] font-semibold leading-snug text-slate-100">{ch.title}</span>
-                      {newIds.has(ch.slide) && <span className="rounded bg-emerald-400 px-1.5 text-[13px] font-black text-navy-950">新</span>}
+                      {refIds.has(ch.slide) && <span className="rounded border border-white/15 px-1.5 text-[16px] leading-6 text-slate-400">查閱</span>}
+                      {newIds.has(ch.slide) && <span className="rounded bg-emerald-400 px-1.5 text-[16px] font-black leading-6 text-navy-950">新</span>}
                       <span className="font-mono text-[16px] text-slate-500">P.{pad(numberOf(ch.slide))}</span>
                       <ArrowUpRight className="size-4 shrink-0 text-slate-500 transition group-hover:text-sky-300" aria-hidden />
                     </button>
@@ -91,6 +100,19 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
       >
         <Flag className="size-6 text-emerald-300" aria-hidden />
         <span className="text-[20px] font-bold text-emerald-200">{block.finale.label}</span>
+        <button
+          type="button"
+          onClick={() => setCoreOnly(!coreOnly)}
+          aria-pressed={coreOnly}
+          title="第一週必讀：原理、單位、裝置、四大元件、拿貨、服務心法；查閱手冊：規格、對照、型號讀法，需要時再翻"
+          className={cn(
+            'flex items-center gap-2 rounded-xl border px-4 py-2 text-[19px] font-semibold transition',
+            coreOnly ? 'border-sky-300 bg-sky-400/20 text-sky-100' : 'border-white/10 bg-navy-900/50 text-slate-100 hover:border-sky-400/40',
+            focusRing,
+          )}
+        >
+          {coreOnly ? `只看必讀 ${coreCount} 頁` : `全部 ${coreCount}＋${refIds.size} 頁`}
+        </button>
         {newSlides.length > 0 && (
           <button
             type="button"
@@ -117,7 +139,7 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
             <ArrowUpRight className="size-4 text-slate-500 group-hover:text-emerald-300" aria-hidden />
           </button>
         ))}
-        {block.finale.note && <p className="ml-auto text-right text-[16px] leading-snug text-slate-400">{block.finale.note}</p>}
+        {block.finale.note && <p className="ml-auto hidden max-w-[300px] text-right text-[16px] leading-snug text-slate-400 2xl:block">{block.finale.note}</p>}
       </motion.div>
     </div>
   )

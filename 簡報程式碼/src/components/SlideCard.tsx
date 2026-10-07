@@ -52,6 +52,11 @@ export function SlideCard({ slide }: { slide: SlideData }) {
               </span>
             )}
             {slide.advanced && <span className="text-amber-300">· 進階</span>}
+            {slide.tier === 'ref' && (
+              <span className="text-slate-400" title="查閱手冊：規格、對照、型號怎麼讀；需要時再翻，不用背">
+                · 查閱
+              </span>
+            )}
             {isNew(slide.added) && (
               <span className="ml-1 rounded-md bg-emerald-400 px-2 py-0.5 text-[16px] font-black leading-none text-navy-950" title={NEW_LABEL}>
                 新

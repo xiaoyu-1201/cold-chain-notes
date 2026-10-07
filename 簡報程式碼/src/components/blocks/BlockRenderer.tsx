@@ -23,6 +23,8 @@ import { ProductShowcase } from '../three/ProductShowcase'
 import { Flashcards } from './Flashcards'
 import { QuizCards } from './Quiz'
 import { RefSlider } from './RefSlider'
+import { Recap } from './Recap'
+import { RecordingsIndex } from './RecordingsIndex'
 import { AlertPanel, SizingPanel, TrapPanel } from './Warnings'
 
 const renderChild = (child: Block, index: number) => <BlockRenderer key={index} block={child} />
@@ -124,5 +126,9 @@ function Leaf({ block }: { block: Exclude<Block, GridBlock> }) {
       return <DataTable block={block} />
     case 'photo':
       return <PhotoCard block={block} />
+    case 'recap':
+      return <Recap block={block} />
+    case 'recordingsIndex':
+      return <RecordingsIndex block={block} />
   }
 }

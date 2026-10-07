@@ -68,7 +68,7 @@ import handoutImg from '../assets/1001-handout.jpg'
 import insulationImg from '../assets/1005-insulation-chart.jpg'
 import refrigerantTableImg from '../assets/refrigerant-table.jpg'
 import { Danger, Em, Exp, Frac, Hl, Sub, Warn } from '../components/ui/rich'
-import { CLASS_AUDIO, CLASS_AUDIO_10, CLASS_AUDIO_11, CLASS_AUDIO_12, CLASS_AUDIO_2, CLASS_AUDIO_3, CLASS_AUDIO_4, CLASS_AUDIO_5, CLASS_AUDIO_6, CLASS_AUDIO_7, CLASS_AUDIO_8, CLASS_AUDIO_9 } from './media'
+import { CLASS_AUDIO, CLASS_AUDIO_10, CLASS_AUDIO_11, CLASS_AUDIO_12, CLASS_AUDIO_13, CLASS_AUDIO_14, CLASS_AUDIO_2, CLASS_AUDIO_3, CLASS_AUDIO_4, CLASS_AUDIO_5, CLASS_AUDIO_6, CLASS_AUDIO_7, CLASS_AUDIO_8, CLASS_AUDIO_9 } from './media'
 import type { SlideData } from './types'
 
 /** 各頁定義（定義順序不等於顯示順序，顯示順序見檔案最後的 ORDER） */
@@ -239,6 +239,7 @@ const slideList: SlideData[] = [
             chapters: [
               { code: '地圖', title: '店內產品地圖', slide: 'products' },
               { code: 'CH.02', title: '壓縮機', slide: 'ch2' },
+              { code: '貨架', title: '壓縮機：牌子、電壓、拿貨', slide: 'comp-brands' },
               { code: 'CH.03', title: '冷凝器', slide: 'ch3' },
               { code: '規格', title: '散熱器排×支', slide: 'coil-spec' },
               { code: '實務', title: '冷凝器配多大', slide: 'cond-practice' },
@@ -259,6 +260,7 @@ const slideList: SlideData[] = [
               { code: '門市', title: '客人來問散熱器', slide: 'coil-store' },
               { code: '冷氣', title: '冷氣材料', slide: 'ac-materials' },
               { code: '心法', title: '材料行的服務心法', slide: 'store-mindset' },
+              { code: '新人', title: '新人業務怎麼開始', slide: 'newbie-sales' },
               { code: 'CH.09', title: '四大故障診斷', slide: 'ch9' },
               { code: '實戰', title: '接單問診 SOP', slide: 'sop' },
             ],
@@ -635,6 +637,309 @@ const slideList: SlideData[] = [
       text: (
         <>
           壓縮機<Hl>只吃氣不吃液</Hl>。壓比越大，效率越差；現場維護要守住<Hl>排氣溫度</Hl>和<Hl>吸氣過熱度</Hl>。
+        </>
+      ),
+    },
+  },
+
+  /* ───────────────────────── 壓縮機貨架（錄音13） ───────────────────────── */
+  {
+    id: 'comp-brands',
+    part: 'components',
+    chapter: '壓縮機貨架',
+    mark: 'BRANDS',
+    title: '壓縮機貨架：四個牌子怎麼認',
+    en: 'Compressor Brands on the Shelf',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]',
+        children: [
+          {
+            type: 'list',
+            icon: Boxes,
+            tone: 'ice',
+            title: '店裡常備的四個牌子',
+            en: 'Four Brands',
+            items: [
+              { icon: Package, title: '英博格（Embraco）', desc: '小顆的，一馬以下。家用冰箱、小冰箱用；型號後面會寫電壓，110 和 220 要分清楚', badge: { label: '小顆', tone: 'ice' } },
+              { icon: Factory, title: '鐵甲（Tecumseh）', desc: '法國廠（型號 GAJ、AW 開頭）和泰國廠（KK 系列）；數字越大越大顆', badge: { label: '中小顆', tone: 'teal' } },
+              { icon: Cylinder, title: '黑金剛（Copeland）', desc: '店裡賣最多；CS、CR、CF 系列，分高溫、中溫、低溫；印度廠和墨西哥廠都有', badge: { label: '賣最多', tone: 'amber' } },
+              { icon: Snowflake, title: 'Danfoss', desc: '型號裡有 G 的灌 R134a（冷藏）、有 CL 的灌 R404A（冷凍）；10G、12G、15G … 數字越大越大顆', badge: { label: '看冷媒', tone: 'violet' } },
+            ],
+          },
+          {
+            type: 'grid',
+            className: 'grid-rows-[auto_minmax(0,1fr)]',
+            children: [
+              {
+                type: 'table',
+                tone: 'ice',
+                corner: '型號怎麼讀',
+                head: ['CS27K TF5', 'CS20K PFV', '12G', '12CL'],
+                rows: [
+                  { label: '牌子', cells: ['黑金剛', '黑金剛', 'Danfoss', 'Danfoss'] },
+                  { label: '意思', cells: ['27＝大小；TF5＝三相', 'PFV＝單相', 'G＝R134a 冷藏', 'CL＝R404A 冷凍'] },
+                  { label: '客人會說', cells: ['「27 三相」', '「20 單相」', '「12 冷藏的」', '「12C」' ] },
+                ],
+                notes: [<>型號牌上找 <Hl>PH</Hl>（相位）：PH 1＝單相、PH 3＝三相。看不懂的字母先看這兩個：<Em>幾號（大小）</Em>、<Em>單相或三相</Em>。〔錄音13 20:47〕</>],
+              },
+              {
+                type: 'info',
+                icon: ArrowLeftRight,
+                tone: 'amber',
+                title: '每個牌子都有「同等級」可以互相代替',
+                en: 'Equivalents',
+                body: (
+                  <>
+                    客人要的型號缺貨，老闆會拿<Hl>同等級</Hl>的代替：要對的是 <Em>BTU（能力）</Em>和<Em>排氣量</Em>，還有電壓、單相三相。架上同一個位置貼三張標籤，就是三個互相代替的型號。〔錄音13 03:29、15:35〕
+                  </>
+                ),
+                warn: '不批評別家的牌子：客人問評價，只說我們賣的是哪一種、為什麼。',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          先認<Hl>牌子</Hl>，再從型號看出<Hl>大小</Hl>和<Hl>單相三相</Hl>；缺貨時拿同等級的代替，能力和電壓都要對。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'comp-power',
+    part: 'components',
+    chapter: '壓縮機貨架',
+    mark: 'POWER',
+    title: '電壓與相位：拿錯一個字就燒掉',
+    en: 'Voltage & Phase',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]',
+        children: [
+          {
+            type: 'grid',
+            className: 'grid-rows-[auto_minmax(0,1fr)]',
+            children: [
+              {
+                type: 'metrics',
+                icon: Zap,
+                tone: 'red',
+                title: '先看電壓，再看相位',
+                en: 'Voltage First',
+                cols: 2,
+                items: [
+                  { label: '110V', value: '2 條線', unit: '單相', tone: 'amber', note: '只有一馬以下的小顆才有；110 和 120 不能混用' },
+                  { label: '220V', value: '2 條線', unit: '單相', tone: 'ice', note: '最常見；三相（3 條線）只有大顆的才有，220 或 380' },
+                ],
+                footnote: <>客人要 220、你拿 110，通電就燒掉；<Hl>壓縮機焊過就不能退</Hl>，公司要自己吸收。〔錄音13 00:54、07:45〕</>,
+              },
+              {
+                type: 'compare',
+                icon: Cog,
+                tone: 'teal',
+                title: '往復式 vs 渦捲式',
+                en: 'Reciprocating vs Scroll',
+                axis: ['長相', '單相配件', '常見'],
+                left: {
+                  badge: '往復式',
+                  value: '矮、胖',
+                  tone: 'teal',
+                  rows: [
+                    { k: '長相', v: '比較矮、比較胖' },
+                    { k: '單相配件', v: '繼電器＋啟動電容＋運轉電容（一盒）' },
+                    { k: '常見', v: '小顆的幾乎都是' },
+                  ],
+                  use: '一馬以下到幾馬的都有',
+                },
+                right: {
+                  badge: '渦捲式',
+                  value: '高、瘦',
+                  tone: 'indigo',
+                  rows: [
+                    { k: '長相', v: '長得比較高' },
+                    { k: '單相配件', v: '只有一顆運轉電容' },
+                    { k: '常見', v: '大顆的（黑金剛 ZS 系列）' },
+                  ],
+                  use: '回管多半是六分，保溫管用很多',
+                },
+              },
+            ],
+          },
+          {
+            type: 'grid',
+            className: 'grid-rows-[minmax(0,1fr)_auto]',
+            children: [
+              {
+                type: 'list',
+                icon: Plug,
+                tone: 'ice',
+                title: '出貨時要一起拿的配件',
+                en: 'What Goes With It',
+                items: [
+                  { icon: CircleCheck, title: '三相：只要角座', desc: '四個角座固定壓縮機，中間插柱子，螺絲從底板鎖上去；220 或 380 三相都一樣', badge: { label: '簡單', tone: 'emerald' } },
+                  { icon: Boxes, title: '單相：角座＋一盒配件', desc: '原廠配好的盒子：繼電器（Relay）、啟動電容、運轉電容，線都接好了', badge: { label: '三樣', tone: 'amber' } },
+                  { icon: Ban, title: '配件不能拿錯盒', desc: '不同型號的配件盒內容不一樣；先對壓縮機，再對配件', badge: { label: '注意', tone: 'red' } },
+                  { icon: Route, title: '兩支管、三支管', desc: '兩支＝高壓吐出、低壓吸入；第三支是充灌閥，灌冷媒、測壓力用', badge: { label: '看管子', tone: 'teal' } },
+                ],
+              },
+              {
+                type: 'info',
+                icon: HardHat,
+                tone: 'slate',
+                title: '怎麼抱壓縮機',
+                en: 'Carrying',
+                body: <>不重，但<Hl>不要抓管子</Hl>：管子脆弱，脫落就沒人要了。一手扶底座、一手扶機身，稍微傾斜抱著走。〔錄音13 30:59〕</>,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          <Hl>電壓</Hl>和<Hl>單相三相</Hl>先對，再對配件：三相只要角座，單相還要一盒繼電器和電容。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'comp-temp',
+    part: 'components',
+    chapter: '壓縮機貨架',
+    mark: 'TEMP',
+    title: '高溫、中溫、低溫：誰可以代替誰',
+    en: 'High / Medium / Low Temp',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
+        children: [
+          {
+            type: 'flow',
+            direction: 'col',
+            tone: 'ice',
+            icon: ThermometerSnowflake,
+            title: '黑金剛的三種溫度（往復式）',
+            en: 'CR / CS / CF',
+            steps: [
+              { title: 'CR＝高溫（冷藏）', desc: '打冷藏用；價格最低', icon: Thermometer, tone: 'amber', tag: '高溫' },
+              { title: 'CS＝中溫', desc: '介於中間：打冷藏可以、打冷凍也可以', icon: ThermometerSnowflake, tone: 'teal', tag: '中溫' },
+              { title: 'CF＝低溫（冷凍）', desc: '純低溫，-20°C 的冷凍庫；越低溫越貴，一馬半的低溫機比兩馬半的中溫機還貴', icon: Snowflake, tone: 'ice', tag: '低溫' },
+            ],
+            result: { label: '規則', text: '低溫可以往上打（打冷藏），高溫不能往下打（打冷凍）；所以缺貨時用「更低溫的」代替，不能反過來' },
+          },
+          {
+            type: 'grid',
+            className: 'grid-rows-[auto_minmax(0,1fr)]',
+            children: [
+              {
+                type: 'table',
+                tone: 'amber',
+                corner: '同牌子的世代',
+                head: ['K6', 'K7'],
+                rows: [
+                  { label: '產地', cells: ['墨西哥廠', '印度廠'] },
+                  { label: '用途', cells: ['中溫', '冷藏（第三代 CS，代替原本的 CR）'] },
+                  { label: '怎麼記', cells: ['箱子不一樣', '型號一樣叫 CS，看後面的 K7'] },
+                ],
+                notes: [<>同樣寫 CS20，K6 和 K7 不是同一顆；老闆在電腦裡把 K7 記成「CR」，因為它代替的是冷藏機。〔錄音13 36:06～43:00〕</>],
+              },
+              {
+                type: 'list',
+                icon: ArrowLeftRight,
+                tone: 'teal',
+                title: '代替的三個條件',
+                en: 'Substitution Rules',
+                items: [
+                  { icon: Scale, title: '能力要對', desc: '對 BTU 和排氣量；大小不能差一級' },
+                  { icon: Zap, title: '電壓、相位要一樣', desc: '單相換單相、三相換三相' },
+                  { icon: ThermometerSnowflake, title: '溫度只能往低的換', desc: '低溫缺貨不能拿高溫代；中溫可以代高溫' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          冷藏用<Hl>高溫機</Hl>、冷凍用<Hl>低溫機</Hl>，中溫兩邊都能打；代替只能拿<Em>更低溫</Em>的，能力和電壓還是要對。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'comp-pick',
+    part: 'components',
+    chapter: '壓縮機貨架',
+    mark: 'PICK',
+    title: '拿壓縮機的 SOP：一個字都不能錯',
+    en: 'Picking SOP',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
+        children: [
+          {
+            type: 'checklist',
+            id: 'comp-pick-check',
+            title: '出貨前對一遍',
+            en: 'Before It Leaves',
+            items: [
+              <>型號<Hl>一個字一個字</Hl>對：客人傳的型號照著唸，最後一碼也要對〔錄音13 08:36〕</>,
+              <>電壓對了嗎：110 還是 220？三相是 220 還是 380？</>,
+              <>單相有沒有拿配件盒；三相有沒有拿角座</>,
+              <>溫度對嗎：冷藏拿高溫機，冷凍拿低溫機</>,
+              <>箱子上的字跟型號牌一樣嗎（紙箱有時候是重新包的）</>,
+              <>客人要的是哪一顆，不是「長得一樣」的那一顆（2446 和 2464 長得一模一樣，能力不同）</>,
+            ],
+          },
+          {
+            type: 'grid',
+            className: 'grid-rows-[minmax(0,1fr)_auto]',
+            children: [
+              {
+                type: 'list',
+                icon: Warehouse,
+                tone: 'ice',
+                title: '貨架為什麼這樣排',
+                en: 'Why the Shelf Looks Like This',
+                items: [
+                  { icon: ArrowLeftRight, title: '110 和 220 故意放遠', desc: '離越遠越好，拿錯的機率就小；110 的還特別用筆標出來' },
+                  { icon: MapPin, title: '一個蘿蔔一個坑', desc: '一種型號一個位置；少賣的各放一顆、常賣的放三顆，空了就知道要叫貨' },
+                  { icon: Boxes, title: '同等級貼在一起', desc: '同一個位置貼三張標籤＝三個可以互相代替的型號' },
+                  { icon: Droplets, title: '紙箱不放地上', desc: '下雨會滲水：紙箱一定往上擺，鐵的放下面' },
+                ],
+              },
+              {
+                type: 'info',
+                icon: ShieldAlert,
+                tone: 'red',
+                title: '為什麼壓縮機特別嚴',
+                en: 'No Returns',
+                body: <>管子一焊上去就算用過，<Hl>原廠一概不負責</Hl>，每個牌子都一樣。拿錯型號或電壓，客人不會認，公司只能自己吸收。〔錄音13 07:45〕</>,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          壓縮機<Hl>焊過就不能退</Hl>：出貨前型號、電壓、相位、配件、溫度全部再對一次，一個字都不能錯。
         </>
       ),
     },
@@ -1312,6 +1617,91 @@ const slideList: SlideData[] = [
     },
   },
   {
+    id: 'recording-9',
+    part: 'review',
+    chapter: '課堂錄音',
+    mark: 'AUDIO 9',
+    title: '錄音13｜壓縮機貨架：牌子、電壓、高中低溫、拿貨',
+    en: 'Recording 13',
+    blocks: [
+      {
+        type: 'audio',
+        src: CLASS_AUDIO_13,
+        title: '錄音13（10/6）',
+        en: 'Class Recording',
+        duration: '49:24',
+        chapters: [
+          { at: 1, title: '小顆壓縮機：英博格', summary: '一馬以下才有 110；型號後面寫電壓，110 和 120 不能混；兩條線叫單相' },
+          { at: 158, title: '有庫存的才寫價格', summary: '冷門的不庫存；110 一年賣不到一顆就不進，客人要再調' },
+          { at: 365, title: '110 和 220 要放遠', summary: '故意錯開位置，減少拿錯；老闆自己拿錯燒掉過，客戶不會認' },
+          { at: 462, title: '焊過就不能退', summary: '管子一焊上去原廠一概不負責；型號、電壓都要一字不漏對清楚' },
+          { at: 613, title: '鐵甲（Tecumseh）', summary: '法國廠 GAJ 系列；泰國 KK 廠是鐵甲的形式；2446 和 2464 長一樣能力不同' },
+          { at: 969, title: '三相：只要角座', summary: '三條線進電鈕，不用配件；四個角座加柱子固定，螺絲從底板鎖' },
+          { at: 1075, title: '單相：一盒配件', summary: '繼電器、啟動電容、運轉電容，原廠配好；渦捲的單相只有一顆運轉電容' },
+          { at: 1133, title: '往復式 vs 渦捲式', summary: '小顆的都是往復式（矮胖）；渦捲式比較高，大顆的用' },
+          { at: 1204, title: '黑金剛型號怎麼讀', summary: 'CS27K TF5：TF5＝三相 200～230V；PFV＝單相；型號牌上看 PH' },
+          { at: 1412, title: '印度廠、墨西哥廠', summary: '黑金剛賣最多；以前墨西哥做（美墨本一家），後來改印度廠，紙箱變大' },
+          { at: 1763, title: '渦捲 ZS 系列', summary: '單相、三相分開放；三相只有兩個專屬角座；15K 單相賣最多' },
+          { at: 1859, title: '怎麼抱、幾支管', summary: '不要抓管子；兩支管＝高壓吐出、低壓吸入，第三支是充灌閥' },
+          { at: 2155, title: '高溫、中溫、低溫', summary: 'CR 高溫打冷藏、CS 中溫兩邊都能、CF 低溫打冷凍；越低溫越貴' },
+          { at: 2314, title: 'K6、K7 世代', summary: 'K6 墨西哥＝中溫、K7 印度＝代替 CR 的冷藏機；同樣叫 CS 不是同一顆' },
+          { at: 2407, title: '缺貨怎麼代替', summary: '中溫可以代低溫、代冷藏；對得到能力就能換，但不要反過來' },
+          { at: 2630, title: 'Danfoss：G 和 CL', summary: 'G＝只灌 R134a（冷藏）；CL＝R404A 等（冷凍）；客人說 12C 就是 12CL' },
+          { at: 2915, title: '看型號牌找相位', summary: '箱子不用看，看機器上的型號牌：PH 3 就是三相' },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          壓縮機貨架先認<Hl>牌子</Hl>，再看<Hl>電壓、相位、溫度</Hl>；焊過就不能退，所以拿之前一個字一個字對。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'recording-10',
+    part: 'review',
+    chapter: '課堂錄音',
+    mark: 'AUDIO 10',
+    title: '錄音14｜接頭標示、機組配件、保溫管的 15 種',
+    en: 'Recording 14',
+    blocks: [
+      {
+        type: 'audio',
+        src: CLASS_AUDIO_14,
+        title: '錄音14（10/6）',
+        en: 'Class Recording',
+        duration: '25:56',
+        chapters: [
+          { at: 1, title: '零件上的標示', summary: 'ODF＝焊接；SAE、FLARE＝牙（喇叭口）；四窗、電磁閥上都有寫' },
+          { at: 80, title: '四進五出', summary: '進口四分、出口五分，看標示就知道怎麼接' },
+          { at: 110, title: 'MPT、PT＝鐵管牙', summary: '鐵管是平牙、銅管是斜的要打喇叭口；鐵管 4分＝銅管 7分，看對照表' },
+          { at: 377, title: '很多零件都有箭頭', summary: 'IN／OUT 不只乾燥過濾器：電磁閥、消音器都有方向' },
+          { at: 414, title: '看一台配好的機組', summary: '壓縮機 → 消音器 → 乾燥過濾器 → 視液鏡 → 電磁閥 → 膨脹閥；油分離器是選配' },
+          { at: 520, title: '配件清單怎麼開', summary: '老闆自己整理一張表：三分液管冷藏、冷凍、四分冷藏各要哪些配件' },
+          { at: 571, title: '保溫管厚度', summary: '3、4、6 分和 1 吋四種厚度；冷藏取 3 或 4、冷凍取 6 或 1 吋；再厚就雙套管' },
+          { at: 779, title: '客人來拿保溫管', summary: '先問「包什麼」：銅管還是水管、幾分、多厚；抽出來就塞不回去' },
+          { at: 848, title: '黑色＝水管尺寸', summary: '客人說包四分水管，要拿「7分」洞的；黑色硬、保溫好但難包' },
+          { at: 919, title: '灰色＝銅管尺寸 15 種', summary: '3、4、5、6、7 分五種洞 × 3、4、6 分三種厚度；一八一以上放倉庫' },
+          { at: 1009, title: '洞×厚怎麼唸', summary: '「六四」＝6分洞、4分厚；六四、六六、六一（1 吋厚）' },
+          { at: 1180, title: '客人說包水管先問溫度', summary: '冷氣排水用最薄的就好；冰水管 7°C 要包厚；聽得懂就知道你內行' },
+          { at: 1369, title: '六分回管最常用', summary: '黑金剛的渦捲、往復式回管（氣管）都是六分，所以六分保溫管用最多' },
+          { at: 1483, title: '配機組要問回管幾分', summary: '壓縮機、冷熱排講好之後，配件以三分為主，最後看回管幾分配保溫管' },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          零件上的字先看 <Hl>ODF／SAE／MPT</Hl>；保溫管先問<Hl>包什麼、幾分、多厚</Hl>，黑色用水管尺寸、灰色用銅管尺寸。
+        </>
+      ),
+    },
+  },
+  {
     id: 'caliper',
     part: 'units',
     chapter: '游標卡尺',
@@ -1536,6 +1926,164 @@ const slideList: SlideData[] = [
       text: (
         <>
           會<Hl>倒汗的回氣管</Hl>才要包；冷凍包 <Hl>6分厚</Hl>、冷藏可以 4分厚。鐵管的 4分＝銅管的 7分，別拿錯。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'pipe-marks',
+    part: 'components',
+    chapter: '接頭標示',
+    mark: 'MARKS',
+    title: '零件上的字：ODF、SAE、MPT',
+    en: 'Connection Markings',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
+        children: [
+          {
+            type: 'grid',
+            className: 'grid-rows-[auto_minmax(0,1fr)]',
+            children: [
+              {
+                type: 'table',
+                tone: 'teal',
+                corner: '標示',
+                head: ['ODF', 'SAE／FLARE', 'MPT／PT'],
+                rows: [
+                  { label: '意思', cells: ['焊接', '牙（喇叭口）', '鐵管牙'] },
+                  { label: '怎麼接', cells: ['銅管插進去燒焊', '銅管打喇叭口，螺帽鎖上', '平牙直接鎖，不用打口'] },
+                  { label: '哪裡看到', cells: ['乾燥過濾器尾巴有 S', '冷氣、乾燥過濾器沒 S', '鐵管、特殊用途'] },
+                ],
+                notes: [<>型號後面寫「四進五出」＝進口 4分、出口 5分；看標示就知道怎麼接。〔錄音14 01:41〕</>],
+              },
+              {
+                type: 'info',
+                icon: Ruler,
+                tone: 'amber',
+                title: '鐵管的分跟銅管不一樣',
+                en: 'Iron vs Copper',
+                body: <>鐵管是<Hl>標稱尺寸</Hl>，比同一個「分」的銅管大很多：<Em>鐵管 4分＝銅管 7分</Em>、鐵管 2分看起來像銅管 3分。客人說「三分」要先問是鐵管還是銅管。〔錄音14 02:32〕</>,
+                warn: '鐵管是平牙、銅管是斜面（喇叭口）：兩種不能互鎖。',
+              },
+            ],
+          },
+          {
+            type: 'flow',
+            direction: 'col',
+            tone: 'ice',
+            icon: Workflow,
+            title: '看一台配好的機組：零件照這個順序',
+            en: 'Order on a Condensing Unit',
+            compact: true,
+            steps: [
+              { title: '壓縮機', desc: '高壓吐出' },
+              { title: '消音器', desc: '有方向箭頭' },
+              { title: '油分離器', desc: '選配，不一定裝', tag: '選配' },
+              { title: '散熱器（冷凝器）', desc: '放熱，變成液態' },
+              { title: '乾燥過濾器', desc: 'IN → OUT 照箭頭' },
+              { title: '視液鏡（四窗）', desc: '看冷媒夠不夠' },
+              { title: '電磁閥', desc: '也有方向' },
+              { title: '膨脹閥 → 冷排', desc: '降壓進庫內' },
+              { title: '回管（氣管）回壓縮機', desc: '最冷的一支，要包保溫管' },
+            ],
+            result: { label: '店裡賣的', text: '就是這些零件；客人配機組時，壓縮機和冷熱排講好，配件以三分為主，最後問回管幾分' },
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          拿零件前先看上面的字：<Hl>ODF 焊接</Hl>、<Hl>SAE 牙</Hl>、<Hl>MPT 鐵管</Hl>；鐵管的 4分＝銅管的 7分。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'insulation-sizes',
+    part: 'components',
+    chapter: '保溫管',
+    mark: 'INSUL 2',
+    title: '保溫管的 15 種：怎麼問、怎麼拿',
+    en: 'Insulation Sizes',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,1.12fr)_minmax(0,0.88fr)]',
+        children: [
+          {
+            type: 'grid',
+            className: 'grid-rows-[auto_minmax(0,1fr)]',
+            children: [
+              {
+                type: 'table',
+                tone: 'ice',
+                corner: '灰色（銅管尺寸）洞×厚',
+                head: ['3分洞', '4分洞', '5分洞', '6分洞', '7分洞'],
+                rows: [
+                  { label: '3分厚', cells: ['33', '43', '53', '63', '73'] },
+                  { label: '4分厚', cells: ['34', '44', '54', '64', '74'] },
+                  { label: '6分厚', cells: ['36', '46', '56', '66', '76'] },
+                ],
+                highlight: [{ col: 3, label: '回管最常用' }],
+                notes: [<>前一碼＝<Hl>洞</Hl>（銅管幾分）、後一碼＝<Hl>厚度</Hl>：「六四」＝6分洞、4分厚。五種洞 × 三種厚＝15 種。〔錄音14 15:36〕</>],
+              },
+              {
+                type: 'compare',
+                icon: Layers,
+                tone: 'slate',
+                title: '黑色 vs 灰色',
+                en: 'Black vs Grey',
+                axis: ['尺寸怎麼標', '什麼時候拿'],
+                left: {
+                  badge: '黑色',
+                  value: '水管尺寸',
+                  tone: 'slate',
+                  rows: [
+                    { k: '尺寸', v: '照水管命名：4分水管＝7分銅管' },
+                    { k: '拿', v: '大隻、要厚的；硬，保溫好但難包' },
+                  ],
+                  use: '「包四分水管、黑色的」→ 拿 4分水管那一格',
+                },
+                right: {
+                  badge: '灰色',
+                  value: '銅管尺寸',
+                  tone: 'ice',
+                  rows: [
+                    { k: '尺寸', v: '照銅管命名：3～7 分' },
+                    { k: '拿', v: '小管徑的回管；軟、好彎、好包' },
+                  ],
+                  use: '「包六分銅管」→ 問多厚，拿六×厚',
+                },
+              },
+            ],
+          },
+          {
+            type: 'flow',
+            direction: 'col',
+            tone: 'emerald',
+            icon: MessagesSquare,
+            title: '客人來拿保溫管，先問三句',
+            en: 'Ask First',
+            steps: [
+              { title: '包什麼？', desc: '銅管還是水管？黑色還是灰色？抽出來就塞不回去，所以先問再拿', icon: MessagesSquare },
+              { title: '幾分？', desc: '銅管就看洞；水管就換算（4分水管＝7分洞）', icon: Ruler },
+              { title: '多厚？', desc: '冷藏 3 或 4分厚；冷凍 6分厚或 1吋；再冷就雙套管（裡面 1吋、外面再 1吋）', icon: Layers },
+              { title: '水管問溫度', desc: '冷氣排水不冷，最薄就好；冰水管 7°C 要包厚；聽得懂這句，客人就知道你內行', icon: Thermometer },
+            ],
+            result: { label: '雙套管怎麼算', text: '外層的洞＝內層的洞＋兩個厚度：6分管套 1吋厚，外層要 2吋6分的洞；寧可大不要小，大了可以切開再包' },
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          保溫管先問<Hl>包什麼、幾分、多厚</Hl>；灰色照銅管、黑色照水管（4分水管＝7分銅管）；<Hl>六分回管</Hl>用最多。
         </>
       ),
     },
@@ -2273,6 +2821,77 @@ const slideList: SlideData[] = [
       text: (
         <>
           客人跟我們買，是因為我們<Hl>比別人多關心他</Hl>：多問一句配對、把話講在前頭，客人就不會賠錢，也會再回來。
+        </>
+      ),
+    },
+  },
+  /* ───────────────────────── 新人業務怎麼開始 ───────────────────────── */
+  {
+    id: 'newbie-sales',
+    source: 'extra',
+    part: 'practice',
+    chapter: '新人業務',
+    mark: 'START',
+    title: '新人業務怎麼開始：先不出錯，再把產品串起來',
+    en: 'Starting as a New Salesperson',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]',
+        children: [
+          {
+            type: 'flow',
+            direction: 'col',
+            tone: 'emerald',
+            icon: Handshake,
+            title: '好業務先做到的四件事',
+            en: 'Four Habits',
+            steps: [
+              { title: '把產品認熟', desc: '業務不是靠口才，是客人問什麼都答得出來；客人只問壓縮機，我們多問熱排、冷排、裝什麼設備〔錄音09、10〕', icon: Boxes },
+              { title: '從來不拿錯貨', desc: '壓縮機焊過就不能退：型號一個字一個字對、電壓對、出門前再對一次。新人最快建立信任的方法是不出錯〔錄音13〕', icon: ShieldCheck },
+              { title: '話先講在前頭、講結論', desc: '買賣說斷斷：請客人施工前先測，有問題馬上換；客人不是來上課的，講他聽得懂的結論〔錄音09、14〕', icon: MessagesSquare },
+              { title: '不懂就問，每天記', desc: '問老闆、問客人「這裝在哪？」沒人會看輕你，拿錯才會；被問倒的問題記下來，一個月後會發現就那幾十種', icon: Lightbulb },
+            ],
+          },
+          {
+            type: 'grid',
+            className: 'grid-rows-[auto_minmax(0,1fr)]',
+            children: [
+              {
+                type: 'tiles',
+                icon: Route,
+                tone: 'ice',
+                title: '產品要「融會貫通」：每一種都掛在三個鉤子上',
+                en: 'Three Hooks',
+                cols: 3,
+                items: [
+                  { icon: RefreshCw, title: '在循環的哪裡', desc: '冷媒走到這裡時，這個零件做什麼：乾燥過濾器在液管、電磁閥在膨脹閥前、保溫管包回管' },
+                  { icon: Store, title: '客人為什麼要它', desc: '冷凍庫、冰箱、冷氣各要哪一套：冷凍庫＝低溫壓縮機＋冷熱排＋膨脹閥＋配件＋6分厚保溫管' },
+                  { icon: Warehouse, title: '貨架哪裡、跟誰像', desc: '放哪一排、誰可以代替誰、拿錯會怎樣：2446 和 2464 長一樣能力不同' },
+                ],
+              },
+              {
+                type: 'checklist',
+                id: 'newbie-30-days',
+                title: '一天 20 分鐘，一個月後會不一樣',
+                en: '30-Day Plan',
+                items: [
+                  <>每天一排貨架：拿 App 的產品總表對著看，每一種在心裡走一次三個鉤子；答不出來的，明天問老闆</>,
+                  <>每週一套：拿一張真的出貨單，自己配出整套（「估價練習」頁），再跟實際出的貨對</>,
+                  <>聽錄音對貨架：錄音13 邊播、邊站在壓縮機貨架前看，老闆講到哪就看到哪</>,
+                  <>每天記一題：被客人問倒的，晚上查或隔天問；寫進自己的筆記</>,
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          先當一個<Hl>從來不拿錯貨、話講在前頭</Hl>的人；產品用<Hl>循環、客人、貨架</Hl>三個鉤子掛起來，業績自然會來。
         </>
       ),
     },
@@ -3192,6 +3811,18 @@ const slideList: SlideData[] = [
           { group: '管路配件', term: '四外三內', alias: '轉接頭', en: 'Flare Adapter', tip: '銅管 4分、機器 3分牙：一邊 3分內牙鎖機器，一邊 4分外牙接銅管', tw: { rec: 12, from: 2856.3, to: 2862.0, say: '但是你三分外牙……四外三內' } },
           { group: '管路配件', term: '保溫管', alias: '包回氣管', en: 'Pipe Insulation', tip: '回氣管會倒汗要包；冷凍 6分厚、冷藏 4分厚' },
           { group: '管路配件', term: '倒汗', alias: '結露、滴水', en: 'Sweating', tip: '管子比室溫冷，外面結露滴水；所以回氣管要包保溫管', tw: { rec: 12, from: 3746.6, to: 3756.7, say: '冷排要回壓縮機這個氣管要包，它會倒汗，我都說倒汗' } },
+          { group: '管路配件', term: 'MPT', alias: '鐵管牙（平牙）', en: 'Male Pipe Thread', tip: '鐵管是平牙直接鎖；銅管是斜面要打喇叭口。鐵管 4分＝銅管 7分', tw: { rec: 14, from: 137.8, to: 144.1, say: '八分之一 MPT，MPT 就是鐵管，鐵管牙' } },
+          { group: '管路配件', term: '四進五出', alias: '進 4分、出 5分', en: '4-in 5-out', tip: '零件上寫的進出口尺寸；看標示就知道怎麼接', tw: { rec: 14, from: 82.3, to: 88.3, say: '四進五出，這個就是四進五出，這一看就知道' } },
+          { group: '管路配件', term: '回管', alias: '氣管、回氣管', en: 'Suction Line', tip: '冷排回壓縮機那一支，最冷、會倒汗；黑金剛的回管都是六分，所以六分保溫管用最多', tw: { rec: 14, from: 1372.7, to: 1379.7, say: '黑金剛那些渦捲式跟往復式，回管就是氣管，全部都六分的' } },
+          { group: '管路配件', term: '黑色保溫管', alias: '照水管尺寸', en: 'Black (IPS-sized) Insulation', tip: '客人說包 4分水管、黑色的，要拿 7分洞的；密度高、硬，保溫好但難包', tw: { rec: 14, from: 848.1, to: 851.1, say: '4分鐵管給 7分銅管，所以他要拿' } },
+          { group: '管路配件', term: '雙套管', alias: '再套一層', en: 'Double Insulation', tip: '冷凍還不夠厚就裡面 1吋、外面再 1吋；外層的洞＝內層洞＋兩個厚度', tw: { rec: 14, from: 693.9, to: 699.2, say: '再厚就是要雙套管，譬如說裡面 1 英寸、外面再 1 英寸' } },
+          { group: '壓縮機', term: '往復式／渦捲式', alias: '矮胖／高瘦', en: 'Reciprocating / Scroll', tip: '小顆的都是往復式；渦捲式比較高，大顆的用；渦捲的單相只有一顆運轉電容', part: 'comp', tw: { rec: 13, from: 1133.3, to: 1141.3, say: '這種叫渦捲式，這個叫往復式；剛才看到那些小顆的全部都是往復式' } },
+          { group: '壓縮機', term: '角座', alias: '固定壓縮機的腳', en: 'Mounting Feet', tip: '三相的只要角座：四個角座加中間的柱子，螺絲從底板鎖上去', tw: { rec: 13, from: 990.8, to: 998.0, say: '它不用配件，它只要角座，角座這四個角座' } },
+          { group: '壓縮機', term: '單相配件盒', alias: '繼電器＋兩顆電容', en: 'Start Kit', tip: '單相壓縮機要配：繼電器（Relay）、啟動電容、運轉電容，原廠配好一盒；不同型號內容不一樣', tw: { rec: 13, from: 1101.8, to: 1112.7, say: 'RELAY，然後一個啟動電容，一個運轉電容……然後有一個 RELAY 在裡面' } },
+          { group: '壓縮機', term: '充灌閥', alias: '第三支管', en: 'Service Valve', tip: '壓縮機的第三支管：灌冷媒、測壓力用；兩支管的壓縮機沒有，師傅自己接', tw: { rec: 13, from: 1935.1, to: 1945.8, say: '它這個接一個充灌閥……充灌冷媒就是要關跟開，然後測試壓力' } },
+          { group: '壓縮機', term: '高溫機／低溫機', alias: 'CR／CS／CF', en: 'High / Medium / Low Temp', tip: '黑金剛：CR 高溫打冷藏、CS 中溫兩邊都能、CF 低溫打冷凍；越低溫越貴；缺貨只能拿更低溫的代替', part: 'comp', tw: { rec: 13, from: 2155.6, to: 2164.9, say: '有分高溫中溫低溫；CR 是屬於高溫，中溫是 CS，低溫是 CF' } },
+          { group: '壓縮機', term: 'TF5／PFV', alias: '三相／單相', en: 'Three-phase / Single-phase', tip: '黑金剛型號後面：TF5＝三相 200～230V，PFV＝單相；型號牌上看 PH 1 或 PH 3', tw: { rec: 13, from: 1253.3, to: 1261.6, say: 'PFV，我們看 PFV 代表就是 PH-1，TF-5 代表就是三相' } },
+          { group: '壓縮機', term: '拿錯不能退', alias: '焊過就算用過', en: 'No Return After Brazing', tip: '壓縮機的管子焊上去就沒人要了；型號、電壓拿錯公司要自己吸收，所以一個字一個字對', tw: { rec: 13, from: 462.0, to: 469.2, say: '它只要焊接上去沒有人要了，等於是使用後就沒有人要了' } },
           { group: '散熱器', term: '站壓', alias: '抓漏', en: 'Pressure Test', tip: '從充灌閥灌氮氣、泡水找漏點；散熱器沒有充灌閥', tw: { rec: 9, from: 569.8, to: 578.1, say: '這叫抓漏，自己站壓……站壓或是抓漏' } },
           { group: '散熱器', term: '內膨', alias: '膨脹閥鎖在蒸發器箱內', en: 'Internal TXV Mounting', tip: '冷凍做內膨（膨脹閥會結冰滴水）；冷氣是外膨' },
           { group: '管路', term: '液管', alias: '講義上的黃色線', en: 'Liquid Line', tip: '中溫中壓液態' },
@@ -3561,6 +4192,10 @@ const ORDER = [
   'check-3',
   'products',
   'ch2',
+  'comp-brands',
+  'comp-power',
+  'comp-temp',
+  'comp-pick',
   'ch3',
   'coil-spec',
   'cond-practice',
@@ -3569,13 +4204,16 @@ const ORDER = [
   'ch5',
   'drier-sizes',
   'flare-fittings',
+  'pipe-marks',
   'insulation',
+  'insulation-sizes',
   'handout',
   'check-4',
   'estimate',
   'coil-store',
   'ac-materials',
   'store-mindset',
+  'newbie-sales',
   'ch9',
   'sop',
   'check-5',
@@ -3587,6 +4225,8 @@ const ORDER = [
   'recording-6',
   'recording-7',
   'recording-8',
+  'recording-9',
+  'recording-10',
   'glossary',
   'quiz',
   'lesson-insights',

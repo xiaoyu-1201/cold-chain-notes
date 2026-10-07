@@ -8,7 +8,7 @@ import { useFitStage } from '../hooks/useFitScale'
 import { useFullscreen } from '../hooks/useFullscreen'
 import { useReaderMode } from '../hooks/useReaderMode'
 import { interactionHints } from '../lib/interactions'
-import { ReaderView } from './ReaderView'
+import { MobileDeck } from './MobileDeck'
 import { ChapterDrawer } from './ChapterDrawer'
 import { ProgressBar } from './ProgressBar'
 import { SlideCard } from './SlideCard'
@@ -148,7 +148,7 @@ export function SlideDeck() {
   const slide = slides[page.index]
   const part = parts[slide.part]
 
-  if (reader) return <ReaderView onExit={() => setReader(false)} />
+  if (reader) return <MobileDeck onExit={() => setReader(false)} />
 
   return (
     <MotionConfig reducedMotion={AUDIT ? 'always' : 'user'}>

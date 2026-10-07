@@ -147,9 +147,9 @@ export function SlideNav({
           <Kbd>M</Kbd>
           <span>目錄</span>
         </div>
-        <NavButton label="閱讀模式（單欄捲動，手機適用）" onClick={onReader}>
+        <NavButton label="手機版（一頁一張卡，直式）" onClick={onReader}>
           <BookOpen className="size-5" aria-hidden />
-          <span className="hidden text-sm font-bold md:inline">閱讀</span>
+          <span className="hidden text-sm font-bold md:inline">手機版</span>
         </NavButton>
         <NavButton label={isFullscreen ? '離開全螢幕 (F)' : '全螢幕 (F)'} onClick={onToggleFullscreen}>
           {isFullscreen ? <Minimize className="size-5" aria-hidden /> : <Maximize className="size-5" aria-hidden />}

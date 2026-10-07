@@ -3,6 +3,7 @@ import { useMemo, useState, type KeyboardEvent, type MouseEvent } from 'react'
 import { CARD_AUDIO } from '../../data/cardAudio'
 import { CLASS_AUDIO, loadPlayable, RECORDINGS } from '../../data/media'
 import type { FlashCard, FlashcardsBlock } from '../../data/types'
+import { isNew } from '../../data/whatsNew'
 import { useStickyState } from '../../hooks/useStickyState'
 import { cn } from '../../lib/cn'
 import { part3DFor } from '../three/ids'
@@ -185,7 +186,10 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
         focusRing,
       )}
     >
-      <p className={cn('mb-3 font-semibold text-slate-500', size.small)}>{card.group}</p>
+      <p className={cn('mb-3 flex items-center gap-2 font-semibold text-slate-500', size.small)}>
+        {card.group}
+        {isNew(card.added) && <span className="rounded bg-emerald-400 px-1.5 text-[13px] font-black leading-5 text-navy-950">新</span>}
+      </p>
       {mode === 'term' || flipped ? (
         <span className={cn('font-black text-white', flipped ? (mobile ? 'text-[28px]' : 'text-[52px]') : size.term)}>{card.term}</span>
       ) : (

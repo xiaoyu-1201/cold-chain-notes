@@ -2,6 +2,8 @@ import { ArrowUpRight, ChevronRight, CornerDownRight, Flag, MessageCircle, Quote
 import { motion } from 'framer-motion'
 import type { PartsBlock, ProductsBlock, QABlock, QuoteBlock, ScenarioBlock } from '../../data/types'
 import { parts } from '../../data/parts'
+import { slides } from '../../data/slides'
+import { NEW_LABEL, isNew } from '../../data/whatsNew'
 import { useDeck } from '../../context/deck'
 import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
@@ -11,6 +13,10 @@ import { Panel } from '../ui/Panel'
 import { fadeUp, staggerParent } from '../ui/motion'
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
+
+/** 這一批新增的頁（標題、學習地圖、目錄都標「新」） */
+const newSlides = slides.filter((s) => isNew(s.added))
+const newIds = new Set(newSlides.map((s) => s.id))
 
 /** 簡報架構：各篇章卡片，點擊章節直接跳頁 */
 export function PartsOverview({ block }: { block: PartsBlock }) {
@@ -67,6 +73,7 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
                     >
                       <span className={cn('w-[52px] shrink-0 font-mono text-[16px] font-bold', t.text)}>{ch.code}</span>
                       <span className="min-w-0 flex-1 text-[18px] font-semibold leading-snug text-slate-100">{ch.title}</span>
+                      {newIds.has(ch.slide) && <span className="rounded bg-emerald-400 px-1.5 text-[13px] font-black text-navy-950">新</span>}
                       <span className="font-mono text-[16px] text-slate-500">P.{pad(numberOf(ch.slide))}</span>
                       <ArrowUpRight className="size-4 shrink-0 text-slate-500 transition group-hover:text-sky-300" aria-hidden />
                     </button>
@@ -84,6 +91,17 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
       >
         <Flag className="size-6 text-emerald-300" aria-hidden />
         <span className="text-[20px] font-bold text-emerald-200">{block.finale.label}</span>
+        {newSlides.length > 0 && (
+          <button
+            type="button"
+            onClick={() => goToId(newSlides[0].id)}
+            title={newSlides.map((s) => `P.${pad(numberOf(s.id))} ${s.title}`).join('\n')}
+            className={cn('group flex items-center gap-2 rounded-xl bg-emerald-400 px-4 py-2 text-[19px] font-bold text-navy-950 transition hover:bg-emerald-300', focusRing)}
+          >
+            {NEW_LABEL} {newSlides.length} 頁
+            <ArrowUpRight className="size-4" aria-hidden />
+          </button>
+        )}
         {block.finale.links.map((link) => (
           <button
             key={link.slide}

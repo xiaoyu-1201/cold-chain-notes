@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import { parts } from '../data/parts'
 import { slides } from '../data/slides'
 import type { Part, SlideData } from '../data/types'
+import { isNew } from '../data/whatsNew'
 import { cn, pad } from '../lib/cn'
 import { toneStyles } from '../lib/tone'
 import { Kbd } from './ui/Kbd'
@@ -104,7 +105,10 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
                               {pad(i + 1)}
                             </span>
                             <span className="min-w-0 flex-1">
-                              <span className={cn('block truncate text-[16px] font-semibold', active ? 'text-sky-100' : 'text-slate-100')}>{slide.title}</span>
+                              <span className={cn('block truncate text-[16px] font-semibold', active ? 'text-sky-100' : 'text-slate-100')}>
+                                {isNew(slide.added) && <span className="mr-1.5 rounded bg-emerald-400 px-1.5 text-[12px] font-black text-navy-950">新</span>}
+                                {slide.title}
+                              </span>
                               {slide.chapter && (
                                 <span className="block text-[13px] text-slate-400">
                                   {slide.chapter}

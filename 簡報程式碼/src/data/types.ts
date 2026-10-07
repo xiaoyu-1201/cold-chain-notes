@@ -386,6 +386,8 @@ export interface FlashCard {
   tw?: { rec: number; from: number; to: number; say: string }
   /** 有 3D 模型／照片的零件 id（three/ids 的 part3DFor） */
   part?: string
+  /** 哪一天新增（YYYY-MM-DD）；≥ whatsNew.NEW_SINCE 的卡會標「新」 */
+  added?: string
 }
 
 /** 資料表（電腦版表格、手機版每欄一張卡片） */
@@ -526,6 +528,8 @@ export interface SlideData {
   advanced?: boolean
   /** 內容來源：沒標＝課堂錄音／講義；handbook＝一丞手冊延伸；extra＝業界常識補充 */
   source?: 'handbook' | 'extra'
+  /** 哪一天新增或大改（YYYY-MM-DD）；≥ whatsNew.NEW_SINCE 的頁會標「新」 */
+  added?: string
   /** 每頁底部「📌 本章小結論」 */
   conclusion: { label?: string; text: ReactNode }
 }

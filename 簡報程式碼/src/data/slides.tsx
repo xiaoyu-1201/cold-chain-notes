@@ -645,6 +645,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 壓縮機貨架（錄音13） ───────────────────────── */
   {
     id: 'comp-brands',
+    added: '2026-10-07',
     part: 'components',
     chapter: '壓縮機貨架',
     mark: 'BRANDS',
@@ -713,6 +714,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'comp-power',
+    added: '2026-10-07',
     part: 'components',
     chapter: '壓縮機貨架',
     mark: 'POWER',
@@ -813,6 +815,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'comp-temp',
+    added: '2026-10-07',
     part: 'components',
     chapter: '壓縮機貨架',
     mark: 'TEMP',
@@ -881,6 +884,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'comp-pick',
+    added: '2026-10-07',
     part: 'components',
     chapter: '壓縮機貨架',
     mark: 'PICK',
@@ -1618,6 +1622,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'recording-9',
+    added: '2026-10-07',
     part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO 9',
@@ -1662,6 +1667,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'recording-10',
+    added: '2026-10-07',
     part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO 10',
@@ -1932,6 +1938,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'pipe-marks',
+    added: '2026-10-07',
     part: 'components',
     chapter: '接頭標示',
     mark: 'MARKS',
@@ -2004,6 +2011,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'insulation-sizes',
+    added: '2026-10-07',
     part: 'components',
     chapter: '保溫管',
     mark: 'INSUL 2',
@@ -2828,6 +2836,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 新人業務怎麼開始 ───────────────────────── */
   {
     id: 'newbie-sales',
+    added: '2026-10-07',
     source: 'extra',
     part: 'practice',
     chapter: '新人業務',
@@ -3811,18 +3820,18 @@ const slideList: SlideData[] = [
           { group: '管路配件', term: '四外三內', alias: '轉接頭', en: 'Flare Adapter', tip: '銅管 4分、機器 3分牙：一邊 3分內牙鎖機器，一邊 4分外牙接銅管', tw: { rec: 12, from: 2856.3, to: 2862.0, say: '但是你三分外牙……四外三內' } },
           { group: '管路配件', term: '保溫管', alias: '包回氣管', en: 'Pipe Insulation', tip: '回氣管會倒汗要包；冷凍 6分厚、冷藏 4分厚' },
           { group: '管路配件', term: '倒汗', alias: '結露、滴水', en: 'Sweating', tip: '管子比室溫冷，外面結露滴水；所以回氣管要包保溫管', tw: { rec: 12, from: 3746.6, to: 3756.7, say: '冷排要回壓縮機這個氣管要包，它會倒汗，我都說倒汗' } },
-          { group: '管路配件', term: 'MPT', alias: '鐵管牙（平牙）', en: 'Male Pipe Thread', tip: '鐵管是平牙直接鎖；銅管是斜面要打喇叭口。鐵管 4分＝銅管 7分', tw: { rec: 14, from: 137.8, to: 144.1, say: '八分之一 MPT，MPT 就是鐵管，鐵管牙' } },
-          { group: '管路配件', term: '四進五出', alias: '進 4分、出 5分', en: '4-in 5-out', tip: '零件上寫的進出口尺寸；看標示就知道怎麼接', tw: { rec: 14, from: 82.3, to: 88.3, say: '四進五出，這個就是四進五出，這一看就知道' } },
-          { group: '管路配件', term: '回管', alias: '氣管、回氣管', en: 'Suction Line', tip: '冷排回壓縮機那一支，最冷、會倒汗；黑金剛的回管都是六分，所以六分保溫管用最多', tw: { rec: 14, from: 1372.7, to: 1379.7, say: '黑金剛那些渦捲式跟往復式，回管就是氣管，全部都六分的' } },
-          { group: '管路配件', term: '黑色保溫管', alias: '照水管尺寸', en: 'Black (IPS-sized) Insulation', tip: '客人說包 4分水管、黑色的，要拿 7分洞的；密度高、硬，保溫好但難包', tw: { rec: 14, from: 848.1, to: 851.1, say: '4分鐵管給 7分銅管，所以他要拿' } },
-          { group: '管路配件', term: '雙套管', alias: '再套一層', en: 'Double Insulation', tip: '冷凍還不夠厚就裡面 1吋、外面再 1吋；外層的洞＝內層洞＋兩個厚度', tw: { rec: 14, from: 693.9, to: 699.2, say: '再厚就是要雙套管，譬如說裡面 1 英寸、外面再 1 英寸' } },
-          { group: '壓縮機', term: '往復式／渦捲式', alias: '矮胖／高瘦', en: 'Reciprocating / Scroll', tip: '小顆的都是往復式；渦捲式比較高，大顆的用；渦捲的單相只有一顆運轉電容', part: 'comp', tw: { rec: 13, from: 1133.3, to: 1141.3, say: '這種叫渦捲式，這個叫往復式；剛才看到那些小顆的全部都是往復式' } },
-          { group: '壓縮機', term: '角座', alias: '固定壓縮機的腳', en: 'Mounting Feet', tip: '三相的只要角座：四個角座加中間的柱子，螺絲從底板鎖上去', tw: { rec: 13, from: 990.8, to: 998.0, say: '它不用配件，它只要角座，角座這四個角座' } },
-          { group: '壓縮機', term: '單相配件盒', alias: '繼電器＋兩顆電容', en: 'Start Kit', tip: '單相壓縮機要配：繼電器（Relay）、啟動電容、運轉電容，原廠配好一盒；不同型號內容不一樣', tw: { rec: 13, from: 1101.8, to: 1112.7, say: 'RELAY，然後一個啟動電容，一個運轉電容……然後有一個 RELAY 在裡面' } },
-          { group: '壓縮機', term: '充灌閥', alias: '第三支管', en: 'Service Valve', tip: '壓縮機的第三支管：灌冷媒、測壓力用；兩支管的壓縮機沒有，師傅自己接', tw: { rec: 13, from: 1935.1, to: 1945.8, say: '它這個接一個充灌閥……充灌冷媒就是要關跟開，然後測試壓力' } },
-          { group: '壓縮機', term: '高溫機／低溫機', alias: 'CR／CS／CF', en: 'High / Medium / Low Temp', tip: '黑金剛：CR 高溫打冷藏、CS 中溫兩邊都能、CF 低溫打冷凍；越低溫越貴；缺貨只能拿更低溫的代替', part: 'comp', tw: { rec: 13, from: 2155.6, to: 2164.9, say: '有分高溫中溫低溫；CR 是屬於高溫，中溫是 CS，低溫是 CF' } },
-          { group: '壓縮機', term: 'TF5／PFV', alias: '三相／單相', en: 'Three-phase / Single-phase', tip: '黑金剛型號後面：TF5＝三相 200～230V，PFV＝單相；型號牌上看 PH 1 或 PH 3', tw: { rec: 13, from: 1253.3, to: 1261.6, say: 'PFV，我們看 PFV 代表就是 PH-1，TF-5 代表就是三相' } },
-          { group: '壓縮機', term: '拿錯不能退', alias: '焊過就算用過', en: 'No Return After Brazing', tip: '壓縮機的管子焊上去就沒人要了；型號、電壓拿錯公司要自己吸收，所以一個字一個字對', tw: { rec: 13, from: 462.0, to: 469.2, say: '它只要焊接上去沒有人要了，等於是使用後就沒有人要了' } },
+          { group: '管路配件', term: 'MPT', added: '2026-10-07', alias: '鐵管牙（平牙）', en: 'Male Pipe Thread', tip: '鐵管是平牙直接鎖；銅管是斜面要打喇叭口。鐵管 4分＝銅管 7分', tw: { rec: 14, from: 137.8, to: 144.1, say: '八分之一 MPT，MPT 就是鐵管，鐵管牙' } },
+          { group: '管路配件', term: '四進五出', added: '2026-10-07', alias: '進 4分、出 5分', en: '4-in 5-out', tip: '零件上寫的進出口尺寸；看標示就知道怎麼接', tw: { rec: 14, from: 82.3, to: 88.3, say: '四進五出，這個就是四進五出，這一看就知道' } },
+          { group: '管路配件', term: '回管', added: '2026-10-07', alias: '氣管、回氣管', en: 'Suction Line', tip: '冷排回壓縮機那一支，最冷、會倒汗；黑金剛的回管都是六分，所以六分保溫管用最多', tw: { rec: 14, from: 1372.7, to: 1379.7, say: '黑金剛那些渦捲式跟往復式，回管就是氣管，全部都六分的' } },
+          { group: '管路配件', term: '黑色保溫管', added: '2026-10-07', alias: '照水管尺寸', en: 'Black (IPS-sized) Insulation', tip: '客人說包 4分水管、黑色的，要拿 7分洞的；密度高、硬，保溫好但難包', tw: { rec: 14, from: 848.1, to: 851.1, say: '4分鐵管給 7分銅管，所以他要拿' } },
+          { group: '管路配件', term: '雙套管', added: '2026-10-07', alias: '再套一層', en: 'Double Insulation', tip: '冷凍還不夠厚就裡面 1吋、外面再 1吋；外層的洞＝內層洞＋兩個厚度', tw: { rec: 14, from: 693.9, to: 699.2, say: '再厚就是要雙套管，譬如說裡面 1 英寸、外面再 1 英寸' } },
+          { group: '壓縮機', term: '往復式／渦捲式', added: '2026-10-07', alias: '矮胖／高瘦', en: 'Reciprocating / Scroll', tip: '小顆的都是往復式；渦捲式比較高，大顆的用；渦捲的單相只有一顆運轉電容', part: 'comp', tw: { rec: 13, from: 1133.3, to: 1141.3, say: '這種叫渦捲式，這個叫往復式；剛才看到那些小顆的全部都是往復式' } },
+          { group: '壓縮機', term: '角座', added: '2026-10-07', alias: '固定壓縮機的腳', en: 'Mounting Feet', tip: '三相的只要角座：四個角座加中間的柱子，螺絲從底板鎖上去', tw: { rec: 13, from: 990.8, to: 998.0, say: '它不用配件，它只要角座，角座這四個角座' } },
+          { group: '壓縮機', term: '單相配件盒', added: '2026-10-07', alias: '繼電器＋兩顆電容', en: 'Start Kit', tip: '單相壓縮機要配：繼電器（Relay）、啟動電容、運轉電容，原廠配好一盒；不同型號內容不一樣', tw: { rec: 13, from: 1101.8, to: 1112.7, say: 'RELAY，然後一個啟動電容，一個運轉電容……然後有一個 RELAY 在裡面' } },
+          { group: '壓縮機', term: '充灌閥', added: '2026-10-07', alias: '第三支管', en: 'Service Valve', tip: '壓縮機的第三支管：灌冷媒、測壓力用；兩支管的壓縮機沒有，師傅自己接', tw: { rec: 13, from: 1935.1, to: 1945.8, say: '它這個接一個充灌閥……充灌冷媒就是要關跟開，然後測試壓力' } },
+          { group: '壓縮機', term: '高溫機／低溫機', added: '2026-10-07', alias: 'CR／CS／CF', en: 'High / Medium / Low Temp', tip: '黑金剛：CR 高溫打冷藏、CS 中溫兩邊都能、CF 低溫打冷凍；越低溫越貴；缺貨只能拿更低溫的代替', part: 'comp', tw: { rec: 13, from: 2155.6, to: 2164.9, say: '有分高溫中溫低溫；CR 是屬於高溫，中溫是 CS，低溫是 CF' } },
+          { group: '壓縮機', term: 'TF5／PFV', added: '2026-10-07', alias: '三相／單相', en: 'Three-phase / Single-phase', tip: '黑金剛型號後面：TF5＝三相 200～230V，PFV＝單相；型號牌上看 PH 1 或 PH 3', tw: { rec: 13, from: 1253.3, to: 1261.6, say: 'PFV，我們看 PFV 代表就是 PH-1，TF-5 代表就是三相' } },
+          { group: '壓縮機', term: '拿錯不能退', added: '2026-10-07', alias: '焊過就算用過', en: 'No Return After Brazing', tip: '壓縮機的管子焊上去就沒人要了；型號、電壓拿錯公司要自己吸收，所以一個字一個字對', tw: { rec: 13, from: 462.0, to: 469.2, say: '它只要焊接上去沒有人要了，等於是使用後就沒有人要了' } },
           { group: '散熱器', term: '站壓', alias: '抓漏', en: 'Pressure Test', tip: '從充灌閥灌氮氣、泡水找漏點；散熱器沒有充灌閥', tw: { rec: 9, from: 569.8, to: 578.1, say: '這叫抓漏，自己站壓……站壓或是抓漏' } },
           { group: '散熱器', term: '內膨', alias: '膨脹閥鎖在蒸發器箱內', en: 'Internal TXV Mounting', tip: '冷凍做內膨（膨脹閥會結冰滴水）；冷氣是外膨' },
           { group: '管路', term: '液管', alias: '講義上的黃色線', en: 'Liquid Line', tip: '中溫中壓液態' },

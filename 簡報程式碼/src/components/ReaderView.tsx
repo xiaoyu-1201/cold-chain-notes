@@ -5,6 +5,7 @@ import { DeckContext, type DeckApi } from '../context/deck'
 import { parts } from '../data/parts'
 import { slides } from '../data/slides'
 import type { SlideData } from '../data/types'
+import { isNew } from '../data/whatsNew'
 import { cn, pad } from '../lib/cn'
 import { interactionHints } from '../lib/interactions'
 import { toneStyles } from '../lib/tone'
@@ -122,6 +123,7 @@ function MobileSlide({ slide, index }: { slide: SlideData; index: number }) {
             {slide.chapter && <span className="rounded-md border border-white/15 px-2 py-0.5 font-semibold text-slate-300">{slide.chapter}</span>}
             {slide.source && <span className="rounded-md border border-white/15 px-2 py-0.5 font-semibold text-slate-400">{SOURCE_LABEL[slide.source]}</span>}
             {slide.advanced && <span className="rounded-md border border-amber-400/40 bg-amber-400/10 px-2 py-0.5 font-semibold text-amber-200">進階</span>}
+            {isNew(slide.added) && <span className="rounded-md bg-emerald-400 px-2 py-0.5 font-black text-navy-950">新</span>}
           </div>
           <h2 className="mt-2 text-[26px] font-black leading-[1.3] text-white">{slide.title}</h2>
           {hints.length > 0 && (

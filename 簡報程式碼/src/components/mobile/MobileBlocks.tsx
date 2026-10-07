@@ -4,6 +4,11 @@ import { useDeck } from '../../context/deck'
 import { cycleNotes, CYCLE_ORDER, type CycleNodeId } from '../../data/cycleNotes'
 import { CLASS_AUDIO, CLASS_AUDIO_2, usePlayable } from '../../data/media'
 import type { AudioBlock, Block, HotspotsBlock, MatrixBlock, Tone } from '../../data/types'
+import { slides } from '../../data/slides'
+import { isNew } from '../../data/whatsNew'
+
+/** 這一批新增的頁：學習地圖的連結後面加 🆕 */
+const newIds = new Set(slides.filter((s) => isNew(s.added)).map((s) => s.id))
 import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
 import { Segmented } from '../ui/Segmented'
@@ -433,6 +438,7 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
                 {item.chapters.map((c) => (
                   <PageLink key={c.slide + c.code} slide={c.slide}>
                     {c.code} {c.title}
+                    {newIds.has(c.slide) ? ' 🆕' : ''}
                   </PageLink>
                 ))}
               </div>

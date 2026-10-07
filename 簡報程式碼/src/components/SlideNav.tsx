@@ -2,6 +2,7 @@ import { BookOpen, ChevronLeft, ChevronRight, CornerUpLeft, Maximize, Menu, Mini
 import { useCallback, useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import { parts } from '../data/parts'
 import { slides } from '../data/slides'
+import { isNew } from '../data/whatsNew'
 import type { PartId } from '../data/types'
 import { cn, pad } from '../lib/cn'
 import { toneStyles } from '../lib/tone'
@@ -232,9 +233,11 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
                 onMouseEnter={show(group.items[0])}
                 onFocus={show(group.items[0])}
                 aria-label={`${part.short}：${group.items.length} 頁，跳到第一頁`}
-                className="shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-[14px] font-semibold text-slate-400 transition hover:bg-white/[0.08] hover:text-white focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300"
+                className="relative shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-[14px] font-semibold text-slate-400 transition hover:bg-white/[0.08] hover:text-white focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300"
               >
                 {groupLabel(group.part)}
+                {/* 這一篇裡有新頁：右上角綠點 */}
+                {group.items.some((i) => isNew(slides[i].added)) && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-emerald-400" />}
               </button>
             )
           return (
@@ -254,11 +257,14 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
                     onMouseEnter={show(i)}
                     onFocus={show(i)}
                     className={cn(
-                      'flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-bold transition focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300',
+                      'relative flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-bold transition focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300',
                       on ? 'bg-sky-300 text-navy-950' : 'text-slate-300 hover:bg-white/[0.14] hover:text-white',
+                      // 這一批新增的頁：綠色外框＋右上角小點（目前頁用綠框就夠）
+                      isNew(slides[i].added) && (on ? 'ring-2 ring-emerald-400' : 'ring-1 ring-emerald-400/80 text-emerald-200'),
                     )}
                   >
                     {k + 1}
+                    {isNew(slides[i].added) && !on && <span aria-hidden className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-emerald-400" />}
                   </button>
                 )
               })}
@@ -277,6 +283,7 @@ function Tip({ i, x }: { i: number; x: number }) {
     <span style={{ left: x }} className="pointer-events-none absolute bottom-full z-50 mb-3 -translate-x-1/2 whitespace-nowrap rounded-xl bg-navy-800/95 px-3 py-1.5 text-[13px] font-semibold text-slate-100 shadow-lg backdrop-blur">
       <span className="font-mono text-sky-300">P.{pad(i + 1)}</span>
       <span className={cn('mx-1.5', toneStyles[parts[s.part].tone].text)}>{parts[s.part].short}</span>
+      {isNew(s.added) && <span className="mr-1.5 rounded bg-emerald-400 px-1.5 text-[12px] font-black text-navy-950">新</span>}
       {s.title}
     </span>
   )

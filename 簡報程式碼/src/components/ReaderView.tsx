@@ -19,21 +19,44 @@ const scrollToId = (id: string) => document.getElementById(`reader-${id}`)?.scro
 /** 手機閱讀模式：實際字級的單欄文章排版，上下捲動 */
 export function ReaderView({ onExit }: { onExit: () => void }) {
   const [drawerOpen, setDrawerOpen] = useState(false)
+  // 現在讀到哪一頁：目錄打開時標「目前」並捲到那裡
+  const [current, setCurrent] = useState(0)
 
   const api = useMemo<DeckApi>(
     () => ({ goToId: scrollToId, numberOf: (id) => slides.findIndex((s) => s.id === id) + 1 }),
     [],
   )
+  /** 捲動位置對到哪一頁（標題過了畫面頂端 70px 就算那一頁） */
+  const computeCurrent = (container: HTMLElement) => {
+    const top = container.getBoundingClientRect().top + 70
+    let idx = 0
+    for (let i = 0; i < slides.length; i++) {
+      const el = document.getElementById(`reader-${slides[i].id}`)
+      if (el && el.getBoundingClientRect().top <= top) idx = i
+      else break
+    }
+    return idx
+  }
+  const onScroll = (e: { currentTarget: HTMLElement }) => {
+    const idx = computeCurrent(e.currentTarget)
+    setCurrent((c) => (c === idx ? c : idx))
+  }
+  // 按「目錄」時再算一次（有些瀏覽器捲動事件來得慢）
+  const openDrawer = (e: { currentTarget: HTMLElement }) => {
+    const container = e.currentTarget.closest('.overflow-y-auto') as HTMLElement | null
+    if (container) setCurrent(computeCurrent(container))
+    setDrawerOpen(true)
+  }
 
   return (
     <MotionConfig reducedMotion="user">
       <DeckContext.Provider value={api}>
-        <div className="fixed inset-0 overflow-y-auto overflow-x-hidden bg-[#081526] text-[17px] leading-[1.7] text-slate-200">
+        <div onScroll={onScroll} className="fixed inset-0 overflow-y-auto overflow-x-hidden overscroll-contain bg-[#081526] text-[17px] leading-[1.7] text-slate-200">
           <FrostBackground fixed className="-z-10" />
           <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-white/10 bg-[#0b1d33]/90 px-3 backdrop-blur">
             <button
               type="button"
-              onClick={() => setDrawerOpen(true)}
+              onClick={openDrawer}
               className="flex h-10 items-center gap-1.5 rounded-lg border border-white/10 px-3 text-[16px] font-bold text-slate-100"
             >
               <Menu className="size-5" aria-hidden />
@@ -77,7 +100,7 @@ export function ReaderView({ onExit }: { onExit: () => void }) {
         </div>
         <ChapterDrawer
           open={drawerOpen}
-          index={-1}
+          index={current}
           onClose={() => setDrawerOpen(false)}
           onSelect={(i) => {
             setDrawerOpen(false)

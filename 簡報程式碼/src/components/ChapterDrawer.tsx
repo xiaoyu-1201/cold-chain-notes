@@ -35,9 +35,14 @@ interface ChapterDrawerProps {
 
 export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerProps) {
   const closeRef = useRef<HTMLButtonElement>(null)
+  const activeRef = useRef<HTMLLIElement>(null)
 
   useEffect(() => {
-    if (open) closeRef.current?.focus()
+    if (!open) return
+    closeRef.current?.focus()
+    // 目錄打開時直接捲到目前這一頁（不然每次都從最上面開始找）
+    const t = window.setTimeout(() => activeRef.current?.scrollIntoView({ block: 'center' }), 60)
+    return () => window.clearTimeout(t)
   }, [open])
 
   return (
@@ -91,7 +96,7 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
                     {group.items.map(({ slide, index: i }) => {
                       const active = i === index
                       return (
-                        <li key={slide.id}>
+                        <li key={slide.id} ref={active ? activeRef : undefined}>
                           <button
                             type="button"
                             onClick={() => onSelect(i)}

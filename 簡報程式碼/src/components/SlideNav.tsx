@@ -1,5 +1,5 @@
 import { BookOpen, ChevronLeft, ChevronRight, CornerUpLeft, Maximize, Menu, Minimize, Pointer, Search } from 'lucide-react'
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type MouseEvent, type PointerEvent as ReactPointerEvent, type ReactNode, type WheelEvent as ReactWheelEvent } from 'react'
 import { parts } from '../data/parts'
 import { slides } from '../data/slides'
 import { isNew } from '../data/whatsNew'
@@ -84,15 +84,15 @@ export function SlideNav({
       aria-label="簡報控制"
       className="flex h-16 shrink-0 items-center gap-4 bg-[#0b1626]/90 px-3 backdrop-blur sm:px-5"
     >
-      {/* 篇章列現在是固定寬，大螢幕時左邊先保留一塊給提示／標題，不然會被篇章列吃光 */}
+      {/* 篇章列是固定寬，大螢幕時左邊先保留一塊給提示／標題，不然會被篇章列吃光；平板（<1280）按鈕只留圖示 */}
       <div className="flex flex-1 items-center gap-3 min-[1600px]:min-w-[260px]">
         <NavButton label="章節目錄 (M)" onClick={onOpenMenu}>
           <Menu className="size-5" aria-hidden />
-          <span className="hidden text-sm font-bold md:inline">目錄</span>
+          <span className="hidden text-sm font-bold xl:inline">目錄</span>
         </NavButton>
         <NavButton label="搜尋關鍵字 ( / )" onClick={onSearch} className="relative">
           <Search className="size-5" aria-hidden />
-          <span className="hidden text-sm font-bold md:inline">搜尋</span>
+          <span className="hidden text-sm font-bold xl:inline">搜尋</span>
           {/* 10/8 新功能：綠點（NEW_SINCE 往後移就自動退掉） */}
           {isNew('2026-10-08') && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-emerald-400" />}
         </NavButton>
@@ -133,12 +133,14 @@ export function SlideNav({
         </div>
       </div>
 
+      {/* 中間：左邊「篇章列」選篇，右邊「上一頁・這篇的頁碼・頁數・下一頁」翻頁；兩個都固定寬，換篇時什麼都不會動 */}
       <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+        <ChapterBar index={index} onGoTo={onGoTo} />
         <NavButton label="上一頁 (←)" onClick={onPrev} disabled={index === 0}>
           <ChevronLeft className="size-5" aria-hidden />
         </NavButton>
-        <ChapterBar index={index} onGoTo={onGoTo} />
-        <span className="min-w-[72px] shrink-0 text-center font-mono text-sm font-bold tracking-wider text-slate-300" aria-live="polite">
+        <PageStrip index={index} onGoTo={onGoTo} />
+        <span className="min-w-[60px] shrink-0 text-center font-mono text-sm font-bold tracking-wider text-slate-300" aria-live="polite">
           <span className="text-sky-300">{pad(index + 1)}</span> / {pad(total)}
         </span>
         <NavButton label="下一頁 (→ / Space)" onClick={onNext} disabled={index === total - 1}>
@@ -160,7 +162,7 @@ export function SlideNav({
         </div>
         <NavButton label="手機版（一頁一張卡，直式）" onClick={onReader}>
           <BookOpen className="size-5" aria-hidden />
-          <span className="hidden text-sm font-bold md:inline">手機版</span>
+          <span className="hidden text-sm font-bold xl:inline">手機版</span>
         </NavButton>
         <NavButton label={isFullscreen ? '離開全螢幕 (F)' : '全螢幕 (F)'} onClick={onToggleFullscreen}>
           {isFullscreen ? <Minimize className="size-5" aria-hidden /> : <Maximize className="size-5" aria-hidden />}
@@ -184,17 +186,34 @@ const groupLabel = (p: PartId) => {
   return part.step ? part.short.replace(' ', '') : part.short
 }
 
-/**
- * 篇章列（取代頁碼點）：九篇名稱一直看得到；目前這篇展開成頁碼膠囊，
- * 滑鼠移上去浮出「頁碼・篇章・頁名」；點篇名跳到該篇第一頁。
- * 螢幕不夠寬（iPad）時可以左右滑，並自動捲到目前這頁；浮出說明畫在捲動區外面才不會被切掉。
- */
-function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) => void }) {
-  const [tip, setTip] = useState<{ i: number; x: number } | null>(null)
-  const [fade, setFade] = useState({ l: false, r: false })
+const arrowCls = 'absolute top-1/2 z-20 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-navy-800/90 text-slate-200 shadow-md ring-1 ring-white/15 transition hover:bg-navy-700 hover:text-white focus-visible:outline-2 focus-visible:outline-sky-300'
+const stripCls = 'relative flex items-center overflow-x-auto rounded-full bg-white/[0.06] p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+const focusRing = 'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300'
+
+/** 目前這一頁屬於哪一篇 */
+const groupOf = (index: number) => dotGroups.find((g) => g.items.includes(index)) ?? dotGroups[0]
+
+/** 浮出說明：只有滑鼠才顯示（手指點了沒有「移開」這回事，說明框會一直留在畫面上） */
+function useHoverTip() {
   const wrap = useRef<HTMLDivElement>(null)
+  const [tip, setTip] = useState<{ i: number; x: number } | null>(null)
+  const show = useCallback(
+    (i: number) => (e: { currentTarget: HTMLElement }) => {
+      if (!window.matchMedia('(hover: hover)').matches) return
+      const box = wrap.current?.getBoundingClientRect()
+      const r = e.currentTarget.getBoundingClientRect()
+      if (box) setTip({ i, x: r.left + r.width / 2 - box.left })
+    },
+    [],
+  )
+  const clear = useCallback(() => setTip(null), [])
+  return { wrap, tip, show, clear }
+}
+
+/** 橫向捲動條共用的行為：兩端淡出、點箭頭捲 60%、滑鼠按住拖（拖過不算點擊）、滾輪 */
+function useStripScroll() {
   const scroller = useRef<HTMLDivElement>(null)
-  const active = useRef<HTMLButtonElement>(null)
+  const [fade, setFade] = useState({ l: false, r: false })
   const measure = useCallback(() => {
     const el = scroller.current
     if (!el) return
@@ -202,130 +221,150 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
   }, [])
   useEffect(() => {
     const el = scroller.current
-    const btn = active.current
-    if (el && btn && el.scrollWidth > el.clientWidth) el.scrollLeft = btn.offsetLeft - el.clientWidth / 2 + btn.offsetWidth / 2
-    measure()
-  }, [index, measure])
-  useEffect(() => {
-    const el = scroller.current
     if (!el) return
     const ro = new ResizeObserver(measure)
     ro.observe(el)
     return () => ro.disconnect()
   }, [measure])
-  const show = (i: number) => (e: { currentTarget: HTMLElement }) => {
-    const box = wrap.current?.getBoundingClientRect()
-    const r = e.currentTarget.getBoundingClientRect()
-    if (box) setTip({ i, x: r.left + r.width / 2 - box.left })
-  }
-  const mask = fade.l || fade.r ? `linear-gradient(to right, ${fade.l ? 'transparent, #000 40px' : '#000'}, ${fade.r ? '#000 calc(100% - 40px), transparent' : '#000'})` : undefined
-  // 篇章列太長時：兩端有箭頭可以點、滑鼠也可以按住左右拖
+  const mask = fade.l || fade.r ? `linear-gradient(to right, ${fade.l ? 'transparent, #000 32px' : '#000'}, ${fade.r ? '#000 calc(100% - 32px), transparent' : '#000'})` : undefined
   const slide = (dir: -1 | 1) => scroller.current?.scrollBy({ left: dir * scroller.current.clientWidth * 0.6, behavior: 'smooth' })
   const drag = useRef<{ x: number; left: number; moved: boolean } | null>(null)
-  const onPointerDown = (e: { pointerType: string; clientX: number; currentTarget: HTMLDivElement }) => {
-    if (e.pointerType !== 'mouse') return
-    drag.current = { x: e.clientX, left: e.currentTarget.scrollLeft, moved: false }
-  }
-  const onPointerMove = (e: { clientX: number; currentTarget: HTMLDivElement; buttons: number }) => {
-    const d = drag.current
-    if (!d || !e.buttons) return
-    const dx = e.clientX - d.x
-    if (Math.abs(dx) > 4) d.moved = true
-    if (d.moved) e.currentTarget.scrollLeft = d.left - dx
-  }
   const onPointerUp = () => {
     const d = drag.current
     drag.current = null
-    // 拖過就不要算成點擊（不然放開時會跳頁）
     if (d?.moved) {
       const block = (ev: Event) => ev.stopPropagation()
       scroller.current?.addEventListener('click', block, { capture: true, once: true })
       window.setTimeout(() => scroller.current?.removeEventListener('click', block, { capture: true }), 0)
     }
   }
-  const arrowCls = 'absolute top-1/2 z-20 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-navy-800/90 text-slate-200 shadow-md ring-1 ring-white/15 transition hover:bg-navy-700 hover:text-white focus-visible:outline-2 focus-visible:outline-sky-300'
-  // 兩排：上排九個篇名永遠在同一個位置（目前這篇只是變亮），下排才是目前這篇的頁碼膠囊。
-  // 這樣換篇時外框和篇名都不會移動（使用者 10/08：框框固定了但文字還是會跑）。
-  const cur = dotGroups.find((g) => g.items.includes(index)) ?? dotGroups[0]
-  // 下排頁碼要對齊在「亮起來的那個篇名」正下方（置中會跟篇名對不上，平板上看起來很怪）；
-  // 太靠邊就貼齊外框內緣。
-  const activeLabel = useRef<HTMLButtonElement>(null)
-  const labelsRow = useRef<HTMLDivElement>(null)
-  const ghostRow = useRef<HTMLDivElement>(null)
-  const capsRow = useRef<HTMLDivElement>(null)
-  const [capLeft, setCapLeft] = useState(0)
-  useLayoutEffect(() => {
-    const el = activeLabel.current
-    const row = capsRow.current
-    const labels = labelsRow.current
-    if (!el || !row || !labels) return
-    const contentW = Math.max(labels.offsetWidth, ghostRow.current?.offsetWidth ?? 0)
-    const contentLeft = labels.offsetLeft - (labels.offsetWidth === contentW ? 0 : (contentW - labels.offsetWidth) / 2)
-    const center = el.offsetLeft + el.offsetWidth / 2 - contentLeft
-    setCapLeft(Math.round(Math.min(Math.max(center - row.offsetWidth / 2, 0), contentW - row.offsetWidth)))
-  }, [index, cur])
+  const handlers = {
+    onPointerDown: (e: ReactPointerEvent<HTMLDivElement>) => {
+      if (e.pointerType !== 'mouse') return
+      drag.current = { x: e.clientX, left: e.currentTarget.scrollLeft, moved: false }
+    },
+    onPointerMove: (e: ReactPointerEvent<HTMLDivElement>) => {
+      const d = drag.current
+      if (!d || !e.buttons) return
+      const dx = e.clientX - d.x
+      if (Math.abs(dx) > 4) d.moved = true
+      if (d.moved) e.currentTarget.scrollLeft = d.left - dx
+    },
+    onPointerUp,
+    onPointerLeave: onPointerUp,
+    onWheel: (e: ReactWheelEvent<HTMLDivElement>) => {
+      if (scroller.current && Math.abs(e.deltaY) > Math.abs(e.deltaX)) scroller.current.scrollLeft += e.deltaY
+    },
+  }
+  const scrollable = fade.l || fade.r
+  return { scroller, fade, mask, slide, handlers, measure, scrollable }
+}
+
+function Arrows({ fade, slide, label }: { fade: { l: boolean; r: boolean }; slide: (dir: -1 | 1) => void; label: string }) {
   return (
-    <div ref={wrap} className="relative hidden min-w-0 lg:block" onMouseLeave={() => setTip(null)}>
+    <>
       {fade.l && (
-        <button type="button" onClick={() => slide(-1)} onMouseDown={keepFocus} aria-label="篇章列往左捲" className={cn(arrowCls, 'left-0')}>
+        <button type="button" onClick={() => slide(-1)} onMouseDown={keepFocus} aria-label={`${label}往左捲`} className={cn(arrowCls, 'left-0')}>
           <ChevronLeft className="size-4" aria-hidden />
         </button>
       )}
       {fade.r && (
-        <button type="button" onClick={() => slide(1)} onMouseDown={keepFocus} aria-label="篇章列往右捲" className={cn(arrowCls, 'right-0')}>
+        <button type="button" onClick={() => slide(1)} onMouseDown={keepFocus} aria-label={`${label}往右捲`} className={cn(arrowCls, 'right-0')}>
           <ChevronRight className="size-4" aria-hidden />
         </button>
       )}
+    </>
+  )
+}
+
+/**
+ * 篇章列：一排九個篇名，位置固定；目前這篇變亮（用該篇的顏色），點篇名跳到該篇第一頁。
+ * 頁碼不放在這裡（在旁邊的 PageStrip），所以換篇時外框和篇名都不會動。
+ * 螢幕不夠寬（iPad）時可以左右滑、兩端有箭頭、滑鼠可以按住拖。
+ */
+function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) => void }) {
+  const { wrap, tip, show, clear } = useHoverTip()
+  const { scroller, fade, mask, slide, handlers, measure, scrollable } = useStripScroll()
+  const cur = groupOf(index)
+  const active = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    const el = scroller.current
+    const btn = active.current
+    if (el && btn && el.scrollWidth > el.clientWidth) el.scrollLeft = btn.offsetLeft - el.clientWidth / 2 + btn.offsetWidth / 2
+    measure()
+  }, [cur, measure, scroller])
+  return (
+    <div ref={wrap} className="relative hidden min-w-0 lg:block" onMouseLeave={clear}>
+      <Arrows fade={fade} slide={slide} label="篇章列" />
       <div
         ref={scroller}
-        onScroll={() => (measure(), setTip(null))}
-        onWheel={(e) => {
-          if (scroller.current && Math.abs(e.deltaY) > Math.abs(e.deltaX)) scroller.current.scrollLeft += e.deltaY
-        }}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerLeave={onPointerUp}
+        {...handlers}
+        onScroll={() => (measure(), clear())}
         style={{ maskImage: mask, WebkitMaskImage: mask }}
-        className={cn('relative flex flex-col items-center overflow-x-auto rounded-2xl bg-white/[0.06] px-1.5 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden', (fade.l || fade.r) && 'cursor-grab active:cursor-grabbing')}
+        className={cn(stripCls, scrollable && 'cursor-grab active:cursor-grabbing')}
       >
-        {/* 上排：九個篇名，位置固定 */}
-        <div ref={labelsRow} className="flex shrink-0 items-center">
-          {dotGroups.map((group) => {
-            const part = parts[group.part]
-            const tone = toneStyles[part.tone]
-            const current = group === cur
-            return (
-              <button
-                key={group.part}
-                ref={current ? activeLabel : undefined}
-                type="button"
-                onClick={() => onGoTo(group.items[0])}
-                onMouseDown={keepFocus}
-                onMouseEnter={show(group.items[0])}
-                onFocus={show(group.items[0])}
-                aria-label={`${part.short}：${group.items.length} 頁，跳到第一頁`}
-                aria-current={current ? 'true' : undefined}
-                className={cn(
-                  'relative shrink-0 whitespace-nowrap rounded-full px-2.5 py-0.5 text-[13px] font-semibold leading-tight transition focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300',
-                  current ? cn('bg-white/[0.12] font-bold', tone.text) : 'text-slate-400 hover:bg-white/[0.08] hover:text-white',
-                )}
-              >
-                {groupLabel(group.part)}
-                {/* 這一篇裡有新頁：右上角綠點 */}
-                {group.items.some((i) => isNew(slides[i].added)) && <span aria-hidden className="absolute right-0.5 top-0 size-2 rounded-full bg-emerald-400" />}
-              </button>
-            )
-          })}
-        </div>
-        {/* 看不見的一排：用頁數最多那篇的膠囊數撐住寬度，換到頁數少的篇外框也不會縮 */}
-        <div ref={ghostRow} aria-hidden className="invisible flex h-0 shrink-0 gap-1 overflow-hidden">
-          {Array.from({ length: Math.max(...dotGroups.map((g) => g.items.length)) }, (_, k) => (
-            <span key={k} className="size-6 shrink-0" />
-          ))}
-        </div>
-        {/* 下排：目前這篇的頁碼膠囊，靠左排再用 margin 推到篇名正下方 */}
-        <div ref={capsRow} style={{ marginLeft: capLeft }} className="mt-0.5 flex shrink-0 items-center gap-1 self-start transition-[margin] duration-200">
+        {dotGroups.map((group) => {
+          const part = parts[group.part]
+          const current = group === cur
+          return (
+            <button
+              key={group.part}
+              ref={current ? active : undefined}
+              type="button"
+              onClick={() => onGoTo(group.items[0])}
+              onMouseDown={keepFocus}
+              onMouseEnter={show(group.items[0])}
+              onFocus={show(group.items[0])}
+              aria-label={`${part.short}：${group.items.length} 頁，跳到第一頁`}
+              aria-current={current ? 'true' : undefined}
+              className={cn(
+                'relative shrink-0 whitespace-nowrap rounded-full px-2.5 py-1.5 text-[13px] font-semibold leading-tight transition 2xl:px-3 2xl:text-[14px]',
+                current ? cn('bg-white/[0.12] font-bold', toneStyles[part.tone].text) : 'text-slate-400 hover:bg-white/[0.08] hover:text-white',
+                focusRing,
+              )}
+            >
+              {groupLabel(group.part)}
+              {/* 這一篇裡有新頁：右上角綠點 */}
+              {group.items.some((i) => isNew(slides[i].added)) && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-emerald-400" />}
+            </button>
+          )
+        })}
+      </div>
+      {tip && <Tip i={tip.i} x={tip.x} />}
+    </div>
+  )
+}
+
+/**
+ * 頁碼條：目前這篇的每一頁一顆，放在上一頁／下一頁中間。寬度固定（放得下 7 顆），
+ * 頁數多的篇（元件 20 頁）可以左右滑，目前頁自動捲到中間；換篇時篇章列和這條的位置都不變。
+ */
+function PageStrip({ index, onGoTo }: { index: number; onGoTo: (index: number) => void }) {
+  const { wrap, tip, show, clear } = useHoverTip()
+  const { scroller, mask, handlers, measure, scrollable } = useStripScroll()
+  const cur = groupOf(index)
+  const active = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    const el = scroller.current
+    const btn = active.current
+    if (el && btn && el.scrollWidth > el.clientWidth) {
+      const left = btn.offsetLeft - el.clientWidth / 2 + btn.offsetWidth / 2
+      el.scrollTo({ left, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
+    }
+    measure()
+  }, [index, measure, scroller])
+  return (
+    <div ref={wrap} className="relative hidden lg:block" onMouseLeave={clear}>
+      <div
+        ref={scroller}
+        {...handlers}
+        onScroll={() => (measure(), clear())}
+        style={{ maskImage: mask, WebkitMaskImage: mask }}
+        aria-label={`${parts[cur.part].short}的頁碼`}
+        className={cn(stripCls, 'w-[200px]', scrollable && 'cursor-grab active:cursor-grabbing')}
+      >
+        {/* mx-auto：不滿 7 顆時置中；超過時 auto margin 變 0，左邊不會被切掉 */}
+        <div className="mx-auto flex shrink-0 items-center gap-1">
           {cur.items.map((i, k) => {
             const on = i === index
             return (
@@ -340,13 +379,14 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
                 onMouseEnter={show(i)}
                 onFocus={show(i)}
                 className={cn(
-                  // after:：看不見的外圈，平板手指點得到（觸控範圍 ≥ 36px）
-                  'relative flex size-6 shrink-0 items-center justify-center rounded-full font-mono text-[12px] font-bold transition after:absolute after:-inset-1.5 after:content-[""] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300',
+                  // after:：看不見的外圈，平板手指點得到（觸控範圍 36px）
+                  'relative flex size-6 shrink-0 items-center justify-center rounded-full font-mono text-[12px] font-bold transition after:absolute after:-inset-1.5 after:content-[""]',
                   on ? 'bg-sky-300 text-navy-950' : 'text-slate-300 hover:bg-white/[0.14] hover:text-white',
                   // 查閱頁：字淡一點（必讀的才是實心）
                   !on && slides[i].tier === 'ref' && 'text-slate-500',
                   // 這一批新增的頁：綠色外框＋右上角小點（目前頁用綠框就夠）
                   isNew(slides[i].added) && (on ? 'ring-2 ring-emerald-400' : 'ring-1 ring-emerald-400/80 text-emerald-200'),
+                  focusRing,
                 )}
               >
                 {k + 1}

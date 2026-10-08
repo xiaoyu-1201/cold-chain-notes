@@ -64,14 +64,8 @@ export function SearchPanel({ open, onClose, onSelect, mobile }: SearchPanelProp
     <AnimatePresence>
       {open && (
         <>
-          <motion.div
-            key="overlay"
-            className="fixed inset-0 z-[60] bg-navy-950/70 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-          />
+          {/* 只有進場動畫、沒有退場：退場動畫在背景分頁會跑不完，視窗會留在畫面上關不掉 */}
+          <motion.div key="overlay" className="fixed inset-0 z-[60] bg-navy-950/70 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={onClose} />
           <motion.div
             key="panel"
             role="dialog"
@@ -83,7 +77,6 @@ export function SearchPanel({ open, onClose, onSelect, mobile }: SearchPanelProp
             )}
             initial={mobile ? { opacity: 0, y: 24 } : { opacity: 0, y: -12, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={mobile ? { opacity: 0, y: 24 } : { opacity: 0, y: -12, scale: 0.98 }}
             transition={{ duration: 0.18 }}
           >
             <div className={cn('flex items-center gap-3 border-b border-white/10', mobile ? 'px-3 py-2.5' : 'px-5 py-4')}>

@@ -82,7 +82,8 @@ export function SlideNav({
       aria-label="簡報控制"
       className="flex h-16 shrink-0 items-center gap-4 bg-[#0b1626]/90 px-3 backdrop-blur sm:px-5"
     >
-      <div className="flex flex-1 items-center gap-3">
+      {/* 篇章列現在是固定寬，大螢幕時左邊先保留一塊給提示／標題，不然會被篇章列吃光 */}
+      <div className="flex flex-1 items-center gap-3 min-[1600px]:min-w-[260px]">
         <NavButton label="章節目錄 (M)" onClick={onOpenMenu}>
           <Menu className="size-5" aria-hidden />
           <span className="hidden text-sm font-bold md:inline">目錄</span>
@@ -233,8 +234,47 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
     }
   }
   const arrowCls = 'absolute top-1/2 z-20 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-navy-800/90 text-slate-200 shadow-md ring-1 ring-white/15 transition hover:bg-navy-700 hover:text-white focus-visible:outline-2 focus-visible:outline-sky-300'
+  // 篇章列寬度固定成「最寬的那一種情況」（頁數最多的那篇展開時），換篇時外框才不會跟著伸縮、
+  // 把旁邊的頁碼和按鈕擠來擠去。寬度用一排看不見的替身量出來；字型載入完會重量一次。
+  const ghost = useRef<HTMLDivElement>(null)
+  const [barW, setBarW] = useState<number>()
+  useEffect(() => {
+    const g = ghost.current
+    if (!g) return
+    const calc = () => {
+      const kids = Array.from(g.children) as HTMLElement[]
+      const label = kids.filter((k) => k.dataset.kind === 'label').map((k) => k.offsetWidth)
+      const open = kids.filter((k) => k.dataset.kind === 'open').map((k) => k.offsetWidth)
+      const sum = label.reduce((a, b) => a + b, 0)
+      const widest = Math.max(...open.map((w, i) => sum - label[i] + w))
+      if (Number.isFinite(widest) && widest > 0) setBarW(Math.ceil(widest) + 8) // 外框 p-1：左右各 4px
+    }
+    calc()
+    const ro = new ResizeObserver(calc)
+    ro.observe(g)
+    document.fonts?.ready.then(calc)
+    return () => ro.disconnect()
+  }, [])
   return (
-    <div ref={wrap} className="relative hidden min-w-0 lg:block" onMouseLeave={() => setTip(null)}>
+    <div ref={wrap} style={{ width: barW }} className="relative hidden min-w-0 lg:block" onMouseLeave={() => setTip(null)}>
+      {/* 替身收在 0×0 的隱藏盒子裡量尺寸，不會把 nav 撐出一條看不見的橫向捲動 */}
+      <div aria-hidden className="absolute left-0 top-0 size-0 overflow-hidden">
+      <div ref={ghost} className="pointer-events-none invisible flex w-max items-center whitespace-nowrap">
+        {dotGroups.map((group) => (
+          <span key={`l-${group.part}`} data-kind="label" className="shrink-0 px-3 py-1.5 text-[14px] font-semibold">
+            {groupLabel(group.part)}
+          </span>
+        ))}
+        {dotGroups.map((group) => (
+          <span key={`o-${group.part}`} data-kind="open" className="flex shrink-0 items-center gap-1 py-0.5 pl-3 pr-1">
+            <span className="mr-1 text-[14px] font-bold">{groupLabel(group.part)}</span>
+            {group.items.map((i) => (
+              <span key={i} className="size-7 shrink-0" />
+            ))}
+          </span>
+        ))}
+      </div>
+      </div>
       {fade.l && (
         <button type="button" onClick={() => slide(-1)} onMouseDown={keepFocus} aria-label="篇章列往左捲" className={cn(arrowCls, 'left-0')}>
           <ChevronLeft className="size-4" aria-hidden />
@@ -258,6 +298,8 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
         style={{ maskImage: mask, WebkitMaskImage: mask }}
         className={cn('relative flex items-center overflow-x-auto rounded-full bg-white/[0.06] p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden', (fade.l || fade.r) && 'cursor-grab active:cursor-grabbing')}
       >
+        {/* mx-auto：內容比外框窄時置中；內容比外框寬時 auto margin 自動變 0，左邊不會被切掉 */}
+        <div className="mx-auto flex shrink-0 items-center">
         {dotGroups.map((group) => {
           const part = parts[group.part]
           const tone = toneStyles[part.tone]
@@ -312,6 +354,7 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
             </div>
           )
         })}
+        </div>
       </div>
       {tip && <Tip i={tip.i} x={tip.x} />}
     </div>

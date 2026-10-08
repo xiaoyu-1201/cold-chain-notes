@@ -234,47 +234,11 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
     }
   }
   const arrowCls = 'absolute top-1/2 z-20 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-navy-800/90 text-slate-200 shadow-md ring-1 ring-white/15 transition hover:bg-navy-700 hover:text-white focus-visible:outline-2 focus-visible:outline-sky-300'
-  // 篇章列寬度固定成「最寬的那一種情況」（頁數最多的那篇展開時），換篇時外框才不會跟著伸縮、
-  // 把旁邊的頁碼和按鈕擠來擠去。寬度用一排看不見的替身量出來；字型載入完會重量一次。
-  const ghost = useRef<HTMLDivElement>(null)
-  const [barW, setBarW] = useState<number>()
-  useEffect(() => {
-    const g = ghost.current
-    if (!g) return
-    const calc = () => {
-      const kids = Array.from(g.children) as HTMLElement[]
-      const label = kids.filter((k) => k.dataset.kind === 'label').map((k) => k.offsetWidth)
-      const open = kids.filter((k) => k.dataset.kind === 'open').map((k) => k.offsetWidth)
-      const sum = label.reduce((a, b) => a + b, 0)
-      const widest = Math.max(...open.map((w, i) => sum - label[i] + w))
-      if (Number.isFinite(widest) && widest > 0) setBarW(Math.ceil(widest) + 8) // 外框 p-1：左右各 4px
-    }
-    calc()
-    const ro = new ResizeObserver(calc)
-    ro.observe(g)
-    document.fonts?.ready.then(calc)
-    return () => ro.disconnect()
-  }, [])
+  // 兩排：上排九個篇名永遠在同一個位置（目前這篇只是變亮），下排才是目前這篇的頁碼膠囊。
+  // 這樣換篇時外框和篇名都不會移動（使用者 10/08：框框固定了但文字還是會跑）。
+  const cur = dotGroups.find((g) => g.items.includes(index)) ?? dotGroups[0]
   return (
-    <div ref={wrap} style={{ width: barW }} className="relative hidden min-w-0 lg:block" onMouseLeave={() => setTip(null)}>
-      {/* 替身收在 0×0 的隱藏盒子裡量尺寸，不會把 nav 撐出一條看不見的橫向捲動 */}
-      <div aria-hidden className="absolute left-0 top-0 size-0 overflow-hidden">
-      <div ref={ghost} className="pointer-events-none invisible flex w-max items-center whitespace-nowrap">
-        {dotGroups.map((group) => (
-          <span key={`l-${group.part}`} data-kind="label" className="shrink-0 px-3 py-1.5 text-[14px] font-semibold">
-            {groupLabel(group.part)}
-          </span>
-        ))}
-        {dotGroups.map((group) => (
-          <span key={`o-${group.part}`} data-kind="open" className="flex shrink-0 items-center gap-1 py-0.5 pl-3 pr-1">
-            <span className="mr-1 text-[14px] font-bold">{groupLabel(group.part)}</span>
-            {group.items.map((i) => (
-              <span key={i} className="size-7 shrink-0" />
-            ))}
-          </span>
-        ))}
-      </div>
-      </div>
+    <div ref={wrap} className="relative hidden min-w-0 lg:block" onMouseLeave={() => setTip(null)}>
       {fade.l && (
         <button type="button" onClick={() => slide(-1)} onMouseDown={keepFocus} aria-label="篇章列往左捲" className={cn(arrowCls, 'left-0')}>
           <ChevronLeft className="size-4" aria-hidden />
@@ -296,15 +260,14 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
         onPointerUp={onPointerUp}
         onPointerLeave={onPointerUp}
         style={{ maskImage: mask, WebkitMaskImage: mask }}
-        className={cn('relative flex items-center overflow-x-auto rounded-full bg-white/[0.06] p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden', (fade.l || fade.r) && 'cursor-grab active:cursor-grabbing')}
+        className={cn('relative flex flex-col items-center overflow-x-auto rounded-2xl bg-white/[0.06] px-1.5 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden', (fade.l || fade.r) && 'cursor-grab active:cursor-grabbing')}
       >
-        {/* mx-auto：內容比外框窄時置中；內容比外框寬時 auto margin 自動變 0，左邊不會被切掉 */}
-        <div className="mx-auto flex shrink-0 items-center">
-        {dotGroups.map((group) => {
-          const part = parts[group.part]
-          const tone = toneStyles[part.tone]
-          const current = group.items.includes(index)
-          if (!current)
+        {/* 上排：九個篇名，位置固定 */}
+        <div className="flex shrink-0 items-center">
+          {dotGroups.map((group) => {
+            const part = parts[group.part]
+            const tone = toneStyles[part.tone]
+            const current = group === cur
             return (
               <button
                 key={group.part}
@@ -314,46 +277,54 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
                 onMouseEnter={show(group.items[0])}
                 onFocus={show(group.items[0])}
                 aria-label={`${part.short}：${group.items.length} 頁，跳到第一頁`}
-                className="relative shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-[14px] font-semibold text-slate-400 transition hover:bg-white/[0.08] hover:text-white focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300"
+                aria-current={current ? 'true' : undefined}
+                className={cn(
+                  'relative shrink-0 whitespace-nowrap rounded-full px-2.5 py-0.5 text-[13px] font-semibold leading-tight transition focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300',
+                  current ? cn('bg-white/[0.12] font-bold', tone.text) : 'text-slate-400 hover:bg-white/[0.08] hover:text-white',
+                )}
               >
                 {groupLabel(group.part)}
                 {/* 這一篇裡有新頁：右上角綠點 */}
-                {group.items.some((i) => isNew(slides[i].added)) && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-emerald-400" />}
+                {group.items.some((i) => isNew(slides[i].added)) && <span aria-hidden className="absolute right-0.5 top-0 size-2 rounded-full bg-emerald-400" />}
               </button>
             )
-          return (
-            <div key={group.part} className="flex shrink-0 items-center gap-1 rounded-full bg-white/[0.1] py-0.5 pl-3 pr-1">
-              <span className={cn('mr-1 whitespace-nowrap text-[14px] font-bold', tone.text)}>{groupLabel(group.part)}</span>
-              {group.items.map((i, k) => {
-                const on = i === index
-                return (
-                  <button
-                    key={slides[i].id}
-                    ref={on ? active : undefined}
-                    type="button"
-                    aria-label={`第 ${i + 1} 頁：${slides[i].title}`}
-                    aria-current={on ? 'page' : undefined}
-                    onClick={() => onGoTo(i)}
-                    onMouseDown={keepFocus}
-                    onMouseEnter={show(i)}
-                    onFocus={show(i)}
-                    className={cn(
-                      'relative flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-bold transition focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300',
-                      on ? 'bg-sky-300 text-navy-950' : 'text-slate-300 hover:bg-white/[0.14] hover:text-white',
-                      // 查閱頁：字淡一點（必讀的才是實心）
-                      !on && slides[i].tier === 'ref' && 'text-slate-500',
-                      // 這一批新增的頁：綠色外框＋右上角小點（目前頁用綠框就夠）
-                      isNew(slides[i].added) && (on ? 'ring-2 ring-emerald-400' : 'ring-1 ring-emerald-400/80 text-emerald-200'),
-                    )}
-                  >
-                    {k + 1}
-                    {isNew(slides[i].added) && !on && <span aria-hidden className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-emerald-400" />}
-                  </button>
-                )
-              })}
-            </div>
-          )
-        })}
+          })}
+        </div>
+        {/* 看不見的一排：用頁數最多那篇的膠囊數撐住寬度，換到頁數少的篇外框也不會縮 */}
+        <div aria-hidden className="invisible flex h-0 shrink-0 gap-1 overflow-hidden">
+          {Array.from({ length: Math.max(...dotGroups.map((g) => g.items.length)) }, (_, k) => (
+            <span key={k} className="size-6 shrink-0" />
+          ))}
+        </div>
+        {/* 下排：目前這篇的頁碼膠囊 */}
+        <div className="mt-0.5 flex shrink-0 items-center gap-1">
+          {cur.items.map((i, k) => {
+            const on = i === index
+            return (
+              <button
+                key={slides[i].id}
+                ref={on ? active : undefined}
+                type="button"
+                aria-label={`第 ${i + 1} 頁：${slides[i].title}`}
+                aria-current={on ? 'page' : undefined}
+                onClick={() => onGoTo(i)}
+                onMouseDown={keepFocus}
+                onMouseEnter={show(i)}
+                onFocus={show(i)}
+                className={cn(
+                  'relative flex size-6 shrink-0 items-center justify-center rounded-full font-mono text-[12px] font-bold transition focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300',
+                  on ? 'bg-sky-300 text-navy-950' : 'text-slate-300 hover:bg-white/[0.14] hover:text-white',
+                  // 查閱頁：字淡一點（必讀的才是實心）
+                  !on && slides[i].tier === 'ref' && 'text-slate-500',
+                  // 這一批新增的頁：綠色外框＋右上角小點（目前頁用綠框就夠）
+                  isNew(slides[i].added) && (on ? 'ring-2 ring-emerald-400' : 'ring-1 ring-emerald-400/80 text-emerald-200'),
+                )}
+              >
+                {k + 1}
+                {isNew(slides[i].added) && !on && <span aria-hidden className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-emerald-400" />}
+              </button>
+            )
+          })}
         </div>
       </div>
       {tip && <Tip i={tip.i} x={tip.x} />}

@@ -68,6 +68,7 @@ import handoutImg from '../assets/1001-handout.jpg'
 import insulationImg from '../assets/1005-insulation-chart.jpg'
 import refrigerantTableImg from '../assets/refrigerant-table.jpg'
 import { Danger, Em, Exp, Frac, Hl, Sub, Warn } from '../components/ui/rich'
+import { ABBR_PARTS, ABBR_SPECS, ABBR_THERMO } from './abbr'
 import { CLASS_AUDIO, CLASS_AUDIO_10, CLASS_AUDIO_11, CLASS_AUDIO_12, CLASS_AUDIO_13, CLASS_AUDIO_14, CLASS_AUDIO_15, CLASS_AUDIO_2, CLASS_AUDIO_3, CLASS_AUDIO_4, CLASS_AUDIO_5, CLASS_AUDIO_6, CLASS_AUDIO_7, CLASS_AUDIO_8, CLASS_AUDIO_9 } from './media'
 import type { SlideData } from './types'
 
@@ -4152,6 +4153,62 @@ const slideList: SlideData[] = [
     },
   },
 
+  /* ───────────────────────── 英文縮寫全稱（10/08：用英文幫忙記） ───────────────────────── */
+  {
+    id: 'abbr-parts',
+    added: '2026-10-08',
+    part: 'review',
+    chapter: '英文縮寫 1/3',
+    mark: 'ABBR',
+    title: '英文縮寫全稱 ①：講義上的零件型號',
+    en: 'Abbreviations · Parts',
+    blocks: [{ type: 'abbr', groups: ABBR_PARTS }],
+    conclusion: {
+      label: '怎麼用',
+      text: (
+        <>
+          客人報型號（TE、EVR、KVL…）時先對到<Hl>英文全稱</Hl>，字母本身就在告訴你它是什麼閥；「記法」只是幫助記憶，不是正式定義。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'abbr-specs',
+    added: '2026-10-08',
+    part: 'review',
+    chapter: '英文縮寫 2/3',
+    mark: 'ABBR 2',
+    title: '英文縮寫全稱 ②：接頭、型號牌、單位',
+    en: 'Abbreviations · Specs & Units',
+    blocks: [{ type: 'abbr', groups: ABBR_SPECS }],
+    conclusion: {
+      label: '怎麼用',
+      text: (
+        <>
+          零件上的字先看 <Hl>ODF／SAE／MPT</Hl>（怎麼接）、型號牌先看 <Hl>PH</Hl>（單相三相）；能力單位 HP 只是口語，對貨要對 BTU。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'abbr-thermo',
+    added: '2026-10-08',
+    part: 'review',
+    chapter: '英文縮寫 3/3',
+    mark: 'ABBR 3',
+    title: '英文縮寫全稱 ③：溫度、壓力、冷媒',
+    en: 'Abbreviations · Thermo & Refrigerants',
+    blocks: [{ type: 'abbr', groups: ABBR_THERMO }],
+    conclusion: {
+      label: '怎麼用',
+      text: (
+        <>
+          <Hl>SH 過熱、SC 過冷</Hl>是調校時師傅會講的字；冷媒看 R 後面的數字：400 開頭是混合冷媒，HFC 都配 POE 油。
+        </>
+      ),
+    },
+  },
+
   /* ───────────────────────── 各步小測驗（每一步結尾，提取練習） ───────────────────────── */
   ...(
     [
@@ -4526,6 +4583,9 @@ const ORDER = [
   'check-5',
   'recordings',
   'glossary',
+  'abbr-parts',
+  'abbr-specs',
+  'abbr-thermo',
   'quiz',
   'lesson-insights',
   'qa',

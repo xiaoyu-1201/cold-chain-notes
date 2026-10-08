@@ -3,7 +3,7 @@ import { copyFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
 const src = fileURLToPath(new URL('../offline/index.html', import.meta.url))
-const dest = fileURLToPath(new URL('../../氣冷式冷凍冷藏系統簡報.html', import.meta.url))
+const dest = fileURLToPath(new URL('../../冷凍材料行培訓筆記.html', import.meta.url))
 
 copyFileSync(src, dest)
 console.log(`離線版已輸出：${dest}`)

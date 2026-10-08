@@ -1,5 +1,5 @@
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight, CornerUpLeft, Menu, Pin, Pointer, Presentation, Store } from 'lucide-react'
+import { ChevronLeft, ChevronRight, CornerUpLeft, Menu, Pin, Pointer, Presentation, Search, Store } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
 import { DeckContext, type DeckApi } from '../context/deck'
 import { parts } from '../data/parts'
@@ -11,6 +11,7 @@ import { interactionHints } from '../lib/interactions'
 import { toneStyles } from '../lib/tone'
 import { ChapterDrawer } from './ChapterDrawer'
 import { MobileBlock } from './mobile/MobileBlocks'
+import { SearchPanel } from './SearchPanel'
 import { SOURCE_LABEL } from './SlideCard'
 import { FrostBackground } from './ui/FrostBackground'
 
@@ -37,6 +38,7 @@ function hasHorizontalScroll(el: HTMLElement | null) {
 export function MobileDeck({ onExit }: { onExit: () => void }) {
   const [page, setPage] = useState(() => ({ index: indexFromHash(), dir: 0 }))
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const [returnTo, setReturnTo] = useState<number | null>(null)
   const indexRef = useRef(page.index)
   const scroller = useRef<HTMLDivElement>(null)
@@ -129,6 +131,15 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
               <span className="text-slate-500"> / {pad(TOTAL)}</span>
               <span className={cn('ml-2', toneStyles[part.tone].text)}>{part.short}</span>
             </p>
+            <button
+              type="button"
+              onClick={() => setSearchOpen(true)}
+              aria-label="搜尋關鍵字"
+              className="relative flex size-10 shrink-0 items-center justify-center rounded-lg border border-white/10 text-slate-100 active:bg-white/10"
+            >
+              <Search className="size-5" aria-hidden />
+              {isNew('2026-10-08') && <span aria-hidden className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-emerald-400" />}
+            </button>
             {showBack ? (
               <button
                 type="button"
@@ -207,6 +218,16 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
           onClose={() => setDrawerOpen(false)}
           onSelect={(i) => {
             setDrawerOpen(false)
+            goTo(i)
+          }}
+        />
+        <SearchPanel
+          open={searchOpen}
+          mobile
+          onClose={() => setSearchOpen(false)}
+          onSelect={(i) => {
+            if (i === indexRef.current) return
+            setReturnTo(indexRef.current)
             goTo(i)
           }}
         />

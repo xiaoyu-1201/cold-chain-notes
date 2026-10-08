@@ -23,6 +23,7 @@ import { ProductShowcase } from '../three/ProductShowcase'
 import { Flashcards } from './Flashcards'
 import { QuizCards } from './Quiz'
 import { RefSlider } from './RefSlider'
+import { Abbr } from './Abbr'
 import { Recap } from './Recap'
 import { RecordingsIndex } from './RecordingsIndex'
 import { AlertPanel, SizingPanel, TrapPanel } from './Warnings'
@@ -130,5 +131,7 @@ function Leaf({ block }: { block: Exclude<Block, GridBlock> }) {
       return <Recap block={block} />
     case 'recordingsIndex':
       return <RecordingsIndex block={block} />
+    case 'abbr':
+      return <Abbr block={block} />
   }
 }

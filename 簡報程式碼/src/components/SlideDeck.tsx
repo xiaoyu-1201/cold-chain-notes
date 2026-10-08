@@ -11,6 +11,7 @@ import { interactionHints } from '../lib/interactions'
 import { MobileDeck } from './MobileDeck'
 import { ChapterDrawer } from './ChapterDrawer'
 import { ProgressBar } from './ProgressBar'
+import { SearchPanel } from './SearchPanel'
 import { SlideCard } from './SlideCard'
 import { SlideNav } from './SlideNav'
 import { FrostBackground } from './ui/FrostBackground'
@@ -51,6 +52,7 @@ export function SlideDeck() {
   const [reader, setReader] = useReaderMode()
   const [page, setPage] = useState(() => ({ index: indexFromHash(), dir: 0 }))
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   /** 從頁內連結跳轉前所在的頁，用來顯示「返回」按鈕 */
   const [returnTo, setReturnTo] = useState<number | null>(null)
   const indexRef = useRef(page.index)
@@ -79,6 +81,16 @@ export function SlideDeck() {
   const last = useCallback(() => goTo(TOTAL - 1), [goTo])
   const toggleDrawer = useCallback(() => setDrawerOpen((o) => !o), [])
   const closeDrawer = useCallback(() => setDrawerOpen(false), [])
+  const toggleSearch = useCallback(() => setSearchOpen((o) => !o), [])
+  /** 搜尋結果跳頁：記住原本在哪一頁，可以「返回」 */
+  const jumpTo = useCallback(
+    (i: number) => {
+      if (i === indexRef.current) return
+      setReturnTo(indexRef.current)
+      goTo(i)
+    },
+    [goTo],
+  )
 
   const showBack = returnTo !== null && returnTo !== page.index
   const goBack = useCallback(() => {
@@ -87,7 +99,7 @@ export function SlideDeck() {
     setReturnTo(null)
   }, [returnTo, goTo])
 
-  useDeckKeyboard({ next, prev, first, last, toggleFullscreen, toggleDrawer, closeDrawer, back: goBack })
+  useDeckKeyboard({ next, prev, first, last, toggleFullscreen, toggleDrawer, closeDrawer, back: goBack, toggleSearch })
 
   // 頁碼同步到網址（#/5），重新整理後停留在同一頁
   useEffect(() => {
@@ -209,6 +221,7 @@ export function SlideDeck() {
             onNext={next}
             onGoTo={goTo}
             onOpenMenu={() => setDrawerOpen(true)}
+            onSearch={() => setSearchOpen(true)}
             onToggleFullscreen={toggleFullscreen}
             back={showBack && returnTo !== null ? { number: returnTo + 1, title: slides[returnTo].title } : null}
             onBack={goBack}
@@ -225,6 +238,7 @@ export function SlideDeck() {
               setDrawerOpen(false)
             }}
           />
+          <SearchPanel open={searchOpen} onClose={() => setSearchOpen(false)} onSelect={jumpTo} />
         </div>
       </DeckContext.Provider>
     </MotionConfig>

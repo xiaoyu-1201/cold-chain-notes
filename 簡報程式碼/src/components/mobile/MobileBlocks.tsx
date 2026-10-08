@@ -22,6 +22,7 @@ import { InView } from '../ui/InView'
 import { FenConverter } from '../blocks/FenConverter'
 import { VernierCaliper } from '../blocks/VernierCaliper'
 import { ProductShowcase } from '../three/ProductShowcase'
+import { Abbr } from '../blocks/Abbr'
 import { Flashcards } from '../blocks/Flashcards'
 import { RefSlider } from '../blocks/RefSlider'
 import { BulbClock } from '../diagrams/BulbClock'
@@ -674,6 +675,8 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
 
     case 'recordingsIndex':
       return <RecordingsMobile block={block} />
+    case 'abbr':
+      return <Abbr block={block} mobile />
 
     case 'fen':
       return <FenConverter mobile />

@@ -2,7 +2,7 @@
   "name": "cold-chain-training-deck",
   "private": true,
   "version": "1.0.0",
-  "description": "氣冷式冷凍冷藏系統｜技術教學與新人培訓互動簡報",
+  "description": "冷凍材料行培訓筆記｜氣冷式冷凍冷藏系統新人培訓（互動網頁）",
   "type": "module",
   "scripts": {
     "dev": "vite",

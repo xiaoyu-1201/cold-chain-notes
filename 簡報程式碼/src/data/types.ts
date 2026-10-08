@@ -476,8 +476,29 @@ export interface CycleLessonBlock {
   type: 'cycleLesson'
 }
 
+/** 英文縮寫全稱：一列一個縮寫（縮寫、英文全稱、中文、一句話），分組排成兩欄 */
+export interface AbbrBlock {
+  type: 'abbr'
+  groups: {
+    label: string
+    tone: Tone
+    items: AbbrItem[]
+  }[]
+}
+
+export interface AbbrItem {
+  abbr: string
+  /** 英文全稱（系列代號不是縮寫時寫「○○ 系列名」） */
+  en: string
+  zh: string
+  tip?: string
+  /** 相關頁 */
+  slide?: string
+}
+
 export type Block =
   | GridBlock
+  | AbbrBlock
   | SectionBlock
   | ConceptBlock
   | FlowBlock

@@ -23,6 +23,7 @@ const shortcuts: { keys: string[]; label: string }[] = [
   { keys: ['Home'], label: '回首頁' },
   { keys: ['F'], label: '全螢幕' },
   { keys: ['M'], label: '開關目錄' },
+  { keys: ['/'], label: '搜尋關鍵字' },
   { keys: ['Esc'], label: '關閉目錄' },
 ]
 

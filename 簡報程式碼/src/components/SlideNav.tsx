@@ -1,4 +1,4 @@
-import { BookOpen, ChevronLeft, ChevronRight, CornerUpLeft, Maximize, Menu, Minimize, Pointer } from 'lucide-react'
+import { BookOpen, ChevronLeft, ChevronRight, CornerUpLeft, Maximize, Menu, Minimize, Pointer, Search } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import { parts } from '../data/parts'
 import { slides } from '../data/slides'
@@ -18,6 +18,7 @@ interface SlideNavProps {
   onNext: () => void
   onGoTo: (index: number) => void
   onOpenMenu: () => void
+  onSearch: () => void
   onToggleFullscreen: () => void
   /** 頁內連結跳轉後才出現的「返回」目標 */
   back: { number: number; title: string } | null
@@ -71,6 +72,7 @@ export function SlideNav({
   onNext,
   onGoTo,
   onOpenMenu,
+  onSearch,
   onToggleFullscreen,
   back,
   onBack,
@@ -87,6 +89,12 @@ export function SlideNav({
         <NavButton label="章節目錄 (M)" onClick={onOpenMenu}>
           <Menu className="size-5" aria-hidden />
           <span className="hidden text-sm font-bold md:inline">目錄</span>
+        </NavButton>
+        <NavButton label="搜尋關鍵字 ( / )" onClick={onSearch} className="relative">
+          <Search className="size-5" aria-hidden />
+          <span className="hidden text-sm font-bold md:inline">搜尋</span>
+          {/* 10/8 新功能：綠點（NEW_SINCE 往後移就自動退掉） */}
+          {isNew('2026-10-08') && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-emerald-400" />}
         </NavButton>
         {back ? (
           <NavButton
@@ -115,7 +123,7 @@ export function SlideNav({
           ) : (
             !back && (
               <div className="absolute inset-0 hidden flex-col justify-center min-[1700px]:flex">
-                <p className="truncate text-sm font-bold text-slate-100">氣冷式冷凍冷藏系統・新人培訓</p>
+                <p className="truncate text-sm font-bold text-slate-100">冷凍材料行培訓筆記</p>
                 <p className="truncate text-xs text-slate-400">
                   {partLabel}・{title}
                 </p>
@@ -146,7 +154,9 @@ export function SlideNav({
           <Kbd>F</Kbd>
           <span className="mr-2">全螢幕</span>
           <Kbd>M</Kbd>
-          <span>目錄</span>
+          <span className="mr-2">目錄</span>
+          <Kbd>/</Kbd>
+          <span>搜尋</span>
         </div>
         <NavButton label="手機版（一頁一張卡，直式）" onClick={onReader}>
           <BookOpen className="size-5" aria-hidden />

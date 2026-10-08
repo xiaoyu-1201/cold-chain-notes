@@ -207,17 +207,56 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
     const r = e.currentTarget.getBoundingClientRect()
     if (box) setTip({ i, x: r.left + r.width / 2 - box.left })
   }
-  const mask = fade.l || fade.r ? `linear-gradient(to right, ${fade.l ? 'transparent, #000 28px' : '#000'}, ${fade.r ? '#000 calc(100% - 28px), transparent' : '#000'})` : undefined
+  const mask = fade.l || fade.r ? `linear-gradient(to right, ${fade.l ? 'transparent, #000 40px' : '#000'}, ${fade.r ? '#000 calc(100% - 40px), transparent' : '#000'})` : undefined
+  // 篇章列太長時：兩端有箭頭可以點、滑鼠也可以按住左右拖
+  const slide = (dir: -1 | 1) => scroller.current?.scrollBy({ left: dir * scroller.current.clientWidth * 0.6, behavior: 'smooth' })
+  const drag = useRef<{ x: number; left: number; moved: boolean } | null>(null)
+  const onPointerDown = (e: { pointerType: string; clientX: number; currentTarget: HTMLDivElement }) => {
+    if (e.pointerType !== 'mouse') return
+    drag.current = { x: e.clientX, left: e.currentTarget.scrollLeft, moved: false }
+  }
+  const onPointerMove = (e: { clientX: number; currentTarget: HTMLDivElement; buttons: number }) => {
+    const d = drag.current
+    if (!d || !e.buttons) return
+    const dx = e.clientX - d.x
+    if (Math.abs(dx) > 4) d.moved = true
+    if (d.moved) e.currentTarget.scrollLeft = d.left - dx
+  }
+  const onPointerUp = () => {
+    const d = drag.current
+    drag.current = null
+    // 拖過就不要算成點擊（不然放開時會跳頁）
+    if (d?.moved) {
+      const block = (ev: Event) => ev.stopPropagation()
+      scroller.current?.addEventListener('click', block, { capture: true, once: true })
+      window.setTimeout(() => scroller.current?.removeEventListener('click', block, { capture: true }), 0)
+    }
+  }
+  const arrowCls = 'absolute top-1/2 z-20 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-navy-800/90 text-slate-200 shadow-md ring-1 ring-white/15 transition hover:bg-navy-700 hover:text-white focus-visible:outline-2 focus-visible:outline-sky-300'
   return (
     <div ref={wrap} className="relative hidden min-w-0 lg:block" onMouseLeave={() => setTip(null)}>
+      {fade.l && (
+        <button type="button" onClick={() => slide(-1)} onMouseDown={keepFocus} aria-label="篇章列往左捲" className={cn(arrowCls, 'left-0')}>
+          <ChevronLeft className="size-4" aria-hidden />
+        </button>
+      )}
+      {fade.r && (
+        <button type="button" onClick={() => slide(1)} onMouseDown={keepFocus} aria-label="篇章列往右捲" className={cn(arrowCls, 'right-0')}>
+          <ChevronRight className="size-4" aria-hidden />
+        </button>
+      )}
       <div
         ref={scroller}
         onScroll={() => (measure(), setTip(null))}
         onWheel={(e) => {
           if (scroller.current && Math.abs(e.deltaY) > Math.abs(e.deltaX)) scroller.current.scrollLeft += e.deltaY
         }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerLeave={onPointerUp}
         style={{ maskImage: mask, WebkitMaskImage: mask }}
-        className="relative flex items-center overflow-x-auto rounded-full bg-white/[0.06] p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className={cn('relative flex items-center overflow-x-auto rounded-full bg-white/[0.06] p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden', (fade.l || fade.r) && 'cursor-grab active:cursor-grabbing')}
       >
         {dotGroups.map((group) => {
           const part = parts[group.part]

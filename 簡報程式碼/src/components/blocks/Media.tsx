@@ -1,5 +1,5 @@
 import { ArrowUpRight, AudioLines, Box, Headphones, MousePointerClick, Play } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDeck } from '../../context/deck'
 import { loadPlayable, usePlayable } from '../../data/media'
 import type { AudioBlock, HotspotGroup, HotspotsBlock } from '../../data/types'
@@ -230,6 +230,11 @@ export function AudioChapters({ block }: { block: AudioBlock }) {
   const [time, setTime] = useState(0)
   const [audioError, setAudioError] = useState(false)
   const current = block.chapters.reduce((acc, c, i) => ((c.track ?? 0) === track && time >= c.at ? i : acc), -1)
+  const listRef = useRef<HTMLOListElement>(null)
+  const activeRef = useRef<HTMLLIElement>(null)
+  useEffect(() => {
+    if (current >= 0) activeRef.current?.scrollIntoView({ block: 'nearest' })
+  }, [current])
 
   const seek = (sec: number, t: number) => {
     const audio = audioRef.current
@@ -306,17 +311,18 @@ export function AudioChapters({ block }: { block: AudioBlock }) {
         </div>
       </section>
 
-      <ol className="flex h-full min-h-0 flex-col gap-2">
+      {/* 段落多的時候（錄音13 有 17 段）不要硬擠：每一列固定高度、清單可以捲，正在播的那段自動捲到看得到 */}
+      <ol ref={listRef} className="flex h-full min-h-0 flex-col gap-2 overflow-y-auto pr-1 [scrollbar-width:thin]">
         {block.chapters.map((c, i) => {
           const active = i === current
           const t = c.track ?? 0
           return (
-            <li key={`${t}-${c.at}`} className="flex min-h-0 flex-1">
+            <li key={`${t}-${c.at}`} ref={active ? activeRef : undefined} className="flex shrink-0">
               <button
                 type="button"
                 onClick={() => seek(c.at, t)}
                 className={cn(
-                  'group flex w-full items-center gap-4 rounded-xl border px-4 py-2 text-left transition',
+                  'group flex w-full items-center gap-4 rounded-xl border px-4 py-3 text-left transition',
                   focusRing,
                   active ? 'border-emerald-400/50 bg-emerald-400/10' : 'border-white/[0.08] bg-navy-900/50 hover:border-white/20',
                 )}
@@ -334,7 +340,7 @@ export function AudioChapters({ block }: { block: AudioBlock }) {
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className={cn('block text-[20px] font-bold leading-snug', active ? 'text-white' : 'text-slate-100')}>{c.title}</span>
-                  <span className="block text-[16px] leading-snug text-slate-400">{c.summary}</span>
+                  <span className="block text-[17px] leading-snug text-slate-300">{c.summary}</span>
                 </span>
               </button>
             </li>

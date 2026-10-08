@@ -1,5 +1,5 @@
 import { BookOpen, ChevronLeft, ChevronRight, CornerUpLeft, Maximize, Menu, Minimize, Pointer, Search } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import { parts } from '../data/parts'
 import { slides } from '../data/slides'
 import { isNew } from '../data/whatsNew'
@@ -247,6 +247,23 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
   // 兩排：上排九個篇名永遠在同一個位置（目前這篇只是變亮），下排才是目前這篇的頁碼膠囊。
   // 這樣換篇時外框和篇名都不會移動（使用者 10/08：框框固定了但文字還是會跑）。
   const cur = dotGroups.find((g) => g.items.includes(index)) ?? dotGroups[0]
+  // 下排頁碼要對齊在「亮起來的那個篇名」正下方（置中會跟篇名對不上，平板上看起來很怪）；
+  // 太靠邊就貼齊外框內緣。
+  const activeLabel = useRef<HTMLButtonElement>(null)
+  const labelsRow = useRef<HTMLDivElement>(null)
+  const ghostRow = useRef<HTMLDivElement>(null)
+  const capsRow = useRef<HTMLDivElement>(null)
+  const [capLeft, setCapLeft] = useState(0)
+  useLayoutEffect(() => {
+    const el = activeLabel.current
+    const row = capsRow.current
+    const labels = labelsRow.current
+    if (!el || !row || !labels) return
+    const contentW = Math.max(labels.offsetWidth, ghostRow.current?.offsetWidth ?? 0)
+    const contentLeft = labels.offsetLeft - (labels.offsetWidth === contentW ? 0 : (contentW - labels.offsetWidth) / 2)
+    const center = el.offsetLeft + el.offsetWidth / 2 - contentLeft
+    setCapLeft(Math.round(Math.min(Math.max(center - row.offsetWidth / 2, 0), contentW - row.offsetWidth)))
+  }, [index, cur])
   return (
     <div ref={wrap} className="relative hidden min-w-0 lg:block" onMouseLeave={() => setTip(null)}>
       {fade.l && (
@@ -273,7 +290,7 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
         className={cn('relative flex flex-col items-center overflow-x-auto rounded-2xl bg-white/[0.06] px-1.5 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden', (fade.l || fade.r) && 'cursor-grab active:cursor-grabbing')}
       >
         {/* 上排：九個篇名，位置固定 */}
-        <div className="flex shrink-0 items-center">
+        <div ref={labelsRow} className="flex shrink-0 items-center">
           {dotGroups.map((group) => {
             const part = parts[group.part]
             const tone = toneStyles[part.tone]
@@ -281,6 +298,7 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
             return (
               <button
                 key={group.part}
+                ref={current ? activeLabel : undefined}
                 type="button"
                 onClick={() => onGoTo(group.items[0])}
                 onMouseDown={keepFocus}
@@ -301,13 +319,13 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
           })}
         </div>
         {/* 看不見的一排：用頁數最多那篇的膠囊數撐住寬度，換到頁數少的篇外框也不會縮 */}
-        <div aria-hidden className="invisible flex h-0 shrink-0 gap-1 overflow-hidden">
+        <div ref={ghostRow} aria-hidden className="invisible flex h-0 shrink-0 gap-1 overflow-hidden">
           {Array.from({ length: Math.max(...dotGroups.map((g) => g.items.length)) }, (_, k) => (
             <span key={k} className="size-6 shrink-0" />
           ))}
         </div>
-        {/* 下排：目前這篇的頁碼膠囊 */}
-        <div className="mt-0.5 flex shrink-0 items-center gap-1">
+        {/* 下排：目前這篇的頁碼膠囊，靠左排再用 margin 推到篇名正下方 */}
+        <div ref={capsRow} style={{ marginLeft: capLeft }} className="mt-0.5 flex shrink-0 items-center gap-1 self-start transition-[margin] duration-200">
           {cur.items.map((i, k) => {
             const on = i === index
             return (
@@ -322,7 +340,8 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
                 onMouseEnter={show(i)}
                 onFocus={show(i)}
                 className={cn(
-                  'relative flex size-6 shrink-0 items-center justify-center rounded-full font-mono text-[12px] font-bold transition focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300',
+                  // after:：看不見的外圈，平板手指點得到（觸控範圍 ≥ 36px）
+                  'relative flex size-6 shrink-0 items-center justify-center rounded-full font-mono text-[12px] font-bold transition after:absolute after:-inset-1.5 after:content-[""] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300',
                   on ? 'bg-sky-300 text-navy-950' : 'text-slate-300 hover:bg-white/[0.14] hover:text-white',
                   // 查閱頁：字淡一點（必讀的才是實心）
                   !on && slides[i].tier === 'ref' && 'text-slate-500',

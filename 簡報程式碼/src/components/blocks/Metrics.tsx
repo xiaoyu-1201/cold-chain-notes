@@ -22,8 +22,8 @@ export function Metrics({ block }: { block: MetricsBlock }) {
               <div
                 key={i}
                 className={cn(
-                  'relative flex flex-col justify-center overflow-hidden rounded-2xl border bg-white/[0.03]',
-                  lg ? 'px-6 py-4' : 'px-5 py-3',
+                  'relative flex flex-col justify-center overflow-hidden rounded-2xl border bg-card',
+                  lg ? 'px-6 py-4' : 'px-5 py-1.5',
                   t.border,
                 )}
               >
@@ -83,7 +83,7 @@ export function Boundaries({ block }: { block: BoundariesBlock }) {
       {block.items.map((item) => {
         const t = toneStyles[item.tone]
         return (
-          <li key={item.label} className={cn('flex flex-1 items-center gap-4 rounded-xl border bg-navy-900/60 px-4 py-2.5', t.border)}>
+          <li key={item.label} className={cn('flex flex-1 items-center gap-4 rounded-xl border bg-card px-4 py-2.5', t.border)}>
             <span aria-hidden className={cn('h-10 w-1.5 shrink-0 rounded-full', t.dot)} />
             <div className="min-w-0 flex-1">
               <div className="text-[21px] font-bold text-slate-100">{item.label}</div>

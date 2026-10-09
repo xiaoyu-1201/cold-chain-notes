@@ -30,7 +30,7 @@ export function EstimatePractice({ block, mobile = false }: { block: EstimateBlo
             className={cn(
               'rounded-xl border font-bold transition',
               mobile ? 'px-3 py-1.5 text-[15px]' : 'px-5 py-2 text-[20px]',
-              i === scenario ? 'border-sky-300 bg-sky-400/15 text-sky-100' : 'border-dashed border-white/20 text-slate-300 hover:border-sky-300/60',
+              i === scenario ? 'border-sky-500 bg-sky-950 text-sky-200' : 'border-dashed border-white/25 bg-card text-slate-300 hover:border-sky-500/60',
               focusRing,
             )}
           >
@@ -40,12 +40,37 @@ export function EstimatePractice({ block, mobile = false }: { block: EstimateBlo
       </div>
 
       <div className={cn('min-h-0', mobile ? 'space-y-3' : 'grid flex-1 grid-cols-[minmax(0,0.8fr)_minmax(0,2fr)] gap-5')}>
-        <div className={cn('rounded-2xl border border-sky-400/30 bg-sky-500/[0.07]', mobile ? 'p-4' : 'flex flex-col p-6')}>
+        <div className={cn('rounded-2xl border border-sky-500/40 bg-sky-950/70', mobile ? 'p-4' : 'flex flex-col p-6')}>
           <p className={cn('flex items-center gap-2 font-bold text-sky-200', mobile ? 'text-[15px]' : 'text-[19px]')}>
             <MessageCircle className="size-5" aria-hidden />
             客人說
           </p>
           <p className={cn('mt-2 font-semibold leading-relaxed text-white', mobile ? 'text-[17px]' : 'text-[24px]')}>{s.story}</p>
+          {/* 這一套目前配了什麼：右邊每答一題，這裡就填上一列（像估價單），答錯的標紅 */}
+          {!mobile && (
+            <div className="mt-5 rounded-xl border border-line bg-card px-4 py-3">
+              <p className="text-[17px] font-bold text-slate-300">這一套目前配了</p>
+              <ol className="mt-1 divide-y divide-line">
+                {s.questions.map((q, qi) => {
+                  const pick = picks[key(qi)]
+                  const ok = pick === q.answer
+                  return (
+                    <li key={q.q} className="flex items-baseline gap-2.5 py-1.5 text-[18px] leading-snug">
+                      <span className="font-mono text-[16px] font-bold text-slate-500">{pad(qi + 1)}</span>
+                      {pick === undefined ? (
+                        <span className="text-slate-400">還沒選</span>
+                      ) : (
+                        <span className={cn('min-w-0 flex-1 font-semibold', ok ? 'text-emerald-300' : 'text-red-300')}>
+                          {q.options[pick]}
+                          {!ok && <span className="ml-1.5 text-slate-400">→ {q.options[q.answer]}</span>}
+                        </span>
+                      )}
+                    </li>
+                  )
+                })}
+              </ol>
+            </div>
+          )}
           <div className={cn('flex items-center gap-3', mobile ? 'mt-3' : 'mt-auto pt-4')}>
             <p className={cn('font-bold', mobile ? 'text-[15px]' : 'text-[20px]', correct === s.questions.length ? 'text-emerald-300' : 'text-slate-300')}>
               答對 {correct} / {s.questions.length}
@@ -55,7 +80,7 @@ export function EstimatePractice({ block, mobile = false }: { block: EstimateBlo
               <button
                 type="button"
                 onClick={reset}
-                className={cn('flex items-center gap-1 rounded-lg border border-white/15 px-2.5 py-1 text-[16px] font-semibold text-slate-200', focusRing)}
+                className={cn('flex min-h-11 items-center gap-1 rounded-lg border border-line bg-card px-3 py-1 text-[16px] font-semibold text-slate-200 hover:border-sky-500/50', focusRing)}
               >
                 <RotateCcw className="size-3.5" aria-hidden />
                 重來
@@ -69,7 +94,7 @@ export function EstimatePractice({ block, mobile = false }: { block: EstimateBlo
             const pick = picks[key(qi)]
             const done = pick !== undefined
             return (
-              <li key={q.q} className={cn('rounded-2xl border bg-white/[0.03]', mobile ? 'p-3' : 'px-5 py-3', done ? (pick === q.answer ? 'border-emerald-400/40' : 'border-red-400/40') : 'border-white/10')}>
+              <li key={q.q} className={cn('rounded-2xl border bg-card', mobile ? 'p-3' : 'px-5 py-3', done ? (pick === q.answer ? 'border-emerald-500/40' : 'border-red-500/40') : 'border-line')}>
                 <p className={cn('font-bold text-white', mobile ? 'text-[16px]' : 'text-[21px]')}>
                   <span className="mr-2 font-mono text-sky-300">{pad(qi + 1)}</span>
                   {q.q}
@@ -83,11 +108,11 @@ export function EstimatePractice({ block, mobile = false }: { block: EstimateBlo
                       onClick={() => setPicks((p) => ({ ...p, [key(qi)]: oi }))}
                       className={cn(
                         'rounded-lg border font-semibold transition',
-                        mobile ? 'px-3 py-1 text-[15px]' : 'px-4 py-1.5 text-[18px]',
-                        !done && 'border-dashed border-white/25 text-slate-100 hover:border-sky-300/70',
-                        done && oi === q.answer && 'border-emerald-300 bg-emerald-400/20 text-emerald-100',
-                        done && oi !== q.answer && oi === pick && 'border-red-400/60 bg-red-500/15 text-red-200',
-                        done && oi !== q.answer && oi !== pick && 'border-white/10 text-slate-500',
+                        mobile ? 'min-h-11 px-3 py-1 text-[15px]' : 'min-h-[56px] px-5 py-2 text-[20px]',
+                        !done && 'border-dashed border-white/30 bg-card text-slate-100 hover:border-sky-500/70',
+                        done && oi === q.answer && 'border-emerald-500 bg-emerald-950 text-emerald-100',
+                        done && oi !== q.answer && oi === pick && 'border-red-500/70 bg-red-950 text-red-200',
+                        done && oi !== q.answer && oi !== pick && 'border-line text-slate-500',
                         focusRing,
                       )}
                     >

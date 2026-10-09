@@ -17,7 +17,7 @@ function delta(v: number, base: number) {
 /** 比基準高＝琥珀、低＝藍、基準本身＝主題色 */
 function barColor(v: number, base: number, isBase: boolean, baseBar: string) {
   if (isBase) return baseBar
-  return v > base ? 'bg-amber-400/80' : 'bg-sky-400/80'
+  return v > base ? 'bg-amber-500/80' : 'bg-sky-500/80'
 }
 function deltaColor(v: number, base: number) {
   return v > base ? 'text-amber-300' : 'text-sky-300'
@@ -33,14 +33,14 @@ export function DataTable({ block, mobile = false }: { block: TableBlock; mobile
   const bars = block.bars
   const max = bars ? Math.max(...bars.values) : 1
   const base = bars ? bars.values[bars.baseCol] : 0
-  const baseBar = 'bg-emerald-400/85'
+  const baseBar = 'bg-emerald-500/85'
 
   const imageButton = block.image && (
     <button
       type="button"
       onClick={() => setZoom(true)}
       className={cn(
-        'inline-flex items-center gap-2 rounded-full bg-sky-400/15 font-semibold text-sky-200 transition hover:bg-sky-400/25',
+        'inline-flex items-center gap-2 rounded-full border border-sky-500/45 bg-sky-950 font-semibold text-sky-200 transition hover:border-sky-500',
         mobile ? 'px-4 py-1.5 text-[15px]' : 'px-5 py-2 text-[18px]',
         focusRing,
       )}
@@ -62,13 +62,13 @@ export function DataTable({ block, mobile = false }: { block: TableBlock; mobile
     return (
       <div className="flex flex-col gap-3">
         {block.standard && (
-          <div className="rounded-2xl bg-amber-400/[0.12] px-3 py-3 text-center">
+          <div className="rounded-2xl border border-amber-500/50 bg-amber-950 px-3 py-3 text-center">
             <p className="mb-1 text-[14px] font-bold text-amber-300">{block.standard.label}</p>
             {standard}
           </div>
         )}
         {bars && (
-          <div className="rounded-2xl bg-white/[0.04] p-3">
+          <div className="rounded-2xl border border-line bg-card p-3">
             <p className="mb-2 text-[15px] font-bold text-slate-200">
               {bars.label}
               <span className="ml-2 text-[13px] font-medium text-slate-400">
@@ -81,7 +81,7 @@ export function DataTable({ block, mobile = false }: { block: TableBlock; mobile
                   <span className="w-[4.2em] shrink-0 text-[15px] font-bold text-white">{block.head[col]}</span>
                   <div className="relative h-5 flex-1">
                     <div className={cn('h-full rounded-r-md', barColor(v, base, col === bars.baseCol, baseBar))} style={{ width: `${(v / max) * 100}%` }} />
-                    <div aria-hidden className="absolute inset-y-[-3px] border-l-2 border-dashed border-slate-200/80" style={{ left: `${(base / max) * 100}%` }} />
+                    <div aria-hidden className="absolute inset-y-[-3px] border-l-2 border-dashed border-slate-500/80" style={{ left: `${(base / max) * 100}%` }} />
                   </div>
                   <span className="w-[6.4em] shrink-0 text-right text-[14px] tabular-nums text-slate-100">
                     {v}
@@ -96,7 +96,7 @@ export function DataTable({ block, mobile = false }: { block: TableBlock; mobile
         )}
         <div className="space-y-2.5">
           {block.head.map((name, col) => (
-            <div key={name} className={cn('rounded-2xl p-3', badge(col) ? t.soft : 'bg-white/[0.04]')}>
+            <div key={name} className={cn('rounded-2xl border p-3', badge(col) ? cn(t.soft, t.border) : 'border-line bg-card')}>
               <p className="flex items-center gap-2 text-[19px] font-black text-white">
                 {name}
                 {badge(col) && <span className={cn('rounded-md border px-1.5 text-[13px] font-bold', t.chip)}>{badge(col)}</span>}
@@ -132,7 +132,7 @@ export function DataTable({ block, mobile = false }: { block: TableBlock; mobile
 
   return (
     <div className="flex h-full flex-col gap-4">
-      <div className="overflow-hidden rounded-[24px] bg-white/[0.04]">
+      <div className="overflow-hidden rounded-[18px] border border-line bg-card">
         <table className="w-full table-fixed border-collapse text-center">
           <thead>
             <tr>
@@ -147,17 +147,17 @@ export function DataTable({ block, mobile = false }: { block: TableBlock; mobile
           </thead>
           <tbody>
             {block.standard && (
-              <tr className="border-t border-white/[0.06]">
+              <tr className="border-t border-line">
                 <th scope="row" className={cn(rowHead, 'text-amber-200')}>
                   {block.standard.label}
                 </th>
-                <td colSpan={block.head.length} className="bg-amber-400/[0.12] px-4 py-3.5">
+                <td colSpan={block.head.length} className="bg-amber-950 px-4 py-3.5">
                   {standard}
                 </td>
               </tr>
             )}
             {bars && (
-              <tr className="border-t border-white/[0.06]">
+              <tr className="border-t border-line">
                 <th scope="row" className={cn(rowHead, 'align-bottom')}>
                   {bars.label}
                   <span className="mt-1 block text-[16px] font-medium leading-snug text-slate-400">
@@ -174,7 +174,7 @@ export function DataTable({ block, mobile = false }: { block: TableBlock; mobile
                           style={{ height: (v / max) * BAR_H }}
                         />
                         {/* 每格畫同一高度的虛線，連起來就是一條橫跨整列的基準線 */}
-                        <div aria-hidden className="absolute -inset-x-2 border-t-2 border-dashed border-slate-200/80" style={{ bottom: (base / max) * BAR_H }} />
+                        <div aria-hidden className="absolute -inset-x-2 border-t-2 border-dashed border-slate-500/80" style={{ bottom: (base / max) * BAR_H }} />
                       </div>
                       <p className="mt-2 text-[28px] font-black tabular-nums leading-none text-white">{v}</p>
                       <p className={cn('mt-1 text-[18px] font-bold', isBase ? 'text-emerald-300' : deltaColor(v, base))}>
@@ -186,7 +186,7 @@ export function DataTable({ block, mobile = false }: { block: TableBlock; mobile
               </tr>
             )}
             {block.rows.map((row) => (
-              <tr key={row.label} className="border-t border-white/[0.06]">
+              <tr key={row.label} className="border-t border-line">
                 <th scope="row" className={rowHead}>
                   {row.label}
                 </th>

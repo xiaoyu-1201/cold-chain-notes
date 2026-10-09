@@ -40,18 +40,18 @@ const PLACEMENTS: { id: Extract<Part3DId, CycleNodeId>; pos: V3; scale: number; 
 /** 四段管路（依冷媒流向）＋顏色＋狀態標籤（標在管路外側） */
 const PIPES: { id: PipeId; color: number; points: V3[]; label: string; labelPos: V3; side: Side }[] = [
   // 從冷凝器上方進去
-  { id: 'discharge', color: 0xf87171, points: [[3.2, 0.75, 0], [3.2, 2.3, 0], [1.08, 2.3, 0]], label: '高溫高壓氣態', labelPos: [3.42, 1.75, 0], side: 'r' },
+  { id: 'discharge', color: 0xe04a38, points: [[3.2, 0.75, 0], [3.2, 2.3, 0], [1.08, 2.3, 0]], label: '高溫高壓氣態', labelPos: [3.42, 1.75, 0], side: 'r' },
   // 冷凝器下方出來 → 繞上去從儲液器上方進去 → 底部出來 → 沿左邊往下 → 走到蒸發器旁的膨脹閥
   {
     id: 'liquid',
-    color: 0xfbbf24,
+    color: 0xe8a92a,
     points: [[-1.08, 1.5, 0], [-1.4, 1.5, 0], [-1.4, 2.32, 0], [-1.75, 2.32, 0], [-1.75, 1.15, 0], [-3.2, 1.15, 0], [-3.2, -1.9, 0], [-1.86, -1.9, 0]],
     label: '中溫中壓液態',
     labelPos: [-3.42, -0.9, 0],
     side: 'l',
   },
-  { id: 'mixture', color: 0x5eead4, points: [[-1.24, -1.9, 0], [-0.55, -1.9, 0]], label: '液氣混合', labelPos: [-1.3, -2.15, 0], side: 'b' },
-  { id: 'suction', color: 0x38bdf8, points: [[1.35, -1.9, 0], [3.2, -1.9, 0], [3.2, -0.75, 0]], label: '低溫低壓氣態', labelPos: [3.42, -1.6, 0], side: 'r' },
+  { id: 'mixture', color: 0x2bb3a3, points: [[-1.24, -1.9, 0], [-0.55, -1.9, 0]], label: '液氣混合', labelPos: [-1.3, -2.15, 0], side: 'b' },
+  { id: 'suction', color: 0x3d8fdc, points: [[1.35, -1.9, 0], [3.2, -1.9, 0], [3.2, -0.75, 0]], label: '低溫低壓氣態', labelPos: [3.42, -1.6, 0], side: 'r' },
 ]
 
 /** 啟動後的導覽：冷媒從壓縮機出發，一段一段跑完一圈 */
@@ -300,11 +300,11 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       return m
     })
     // 管內流動的特殊樣子：液體（琥珀）、氣泡（白、大顆）
-    const liquidDot = new THREE.MeshStandardMaterial({ color: 0xfbbf24, emissive: 0xf59e0b, emissiveIntensity: 1 })
+    const liquidDot = new THREE.MeshStandardMaterial({ color: 0xe8a92a, emissive: 0xf59e0b, emissiveIntensity: 1 })
     const bubbleDot = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.6, transparent: true, opacity: 0.85 })
     const baseDot = new Map(pipes.map((p) => [p.id, p.dots[0].material as THREE.MeshStandardMaterial]))
     let fx: FaultFx | null = null
-    const dischargeBase = new THREE.Color(0xf87171)
+    const dischargeBase = new THREE.Color(0xe04a38)
     const overheatColor = new THREE.Color(0xff1f1f)
 
     const plane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0)
@@ -624,7 +624,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
   const zoomBtn = cn('grid place-items-center text-slate-200 transition hover:bg-white/[0.08] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300', compact ? 'size-9' : 'size-11')
 
   return (
-    <div className="flex h-full w-full flex-col">
+    <div className="theme-dark viewport-blueprint flex h-full w-full flex-col">
       <div className="relative min-h-0 flex-1">
         <div ref={hostRef} className="absolute inset-0 touch-none" />
         {/* 鏡頭控制：放大、縮小、回到全覽（放大後才出現） */}

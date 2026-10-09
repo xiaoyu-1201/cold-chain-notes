@@ -326,8 +326,8 @@ export function VernierCaliper({ mobile = false }: { mobile?: boolean }) {
   const t = mobile
     ? { h: 'text-[16px]', body: 'text-[14px]', small: 'text-[13px]', big: 'text-[34px]', chip: 'px-3 py-1.5 text-[14px]', btn: 'size-11' }
     : { h: 'text-[21px]', body: 'text-[18px]', small: 'text-[16px]', big: 'text-[46px]', chip: 'px-3.5 py-1.5 text-[17px]', btn: 'size-12' }
-  const chip = (on: boolean) => cn('rounded-full font-semibold transition', t.chip, on ? 'bg-sky-400 text-navy-950' : 'bg-white/[0.08] text-slate-100 hover:bg-white/[0.15]')
-  const btn = cn('grid place-items-center rounded-full bg-white/[0.1] text-slate-100 transition hover:bg-white/[0.18] active:scale-95', t.btn)
+  const chip = (on: boolean) => cn('rounded-full font-semibold transition', t.chip, on ? 'bg-sky-400 text-paper' : 'border border-line bg-card text-slate-100 hover:border-sky-500/50')
+  const btn = cn('grid place-items-center rounded-full border border-line bg-card text-slate-100 transition hover:border-sky-500/50 active:scale-95 active:bg-sky-950', t.btn)
 
   const steps = [
     <>主尺：游尺的 <b className="text-sky-300">0</b> 在 {r.main} 和 {r.main + 1} mm 中間 → <b className="text-white">{r.main} mm</b></>,
@@ -339,14 +339,14 @@ export function VernierCaliper({ mobile = false }: { mobile?: boolean }) {
   return (
     <div className={cn('flex min-h-0 flex-col', mobile ? 'gap-3' : 'h-full gap-4')}>
       {/* 卡尺 */}
-      <div className={cn('relative min-h-0 overflow-hidden rounded-[20px] bg-[radial-gradient(ellipse_at_center,rgba(148,163,184,0.18),transparent_75%)]', mobile ? 'h-[300px]' : 'flex-1')} onTouchStart={(e) => e.stopPropagation()} onTouchEnd={(e) => e.stopPropagation()}>
+      <div className={cn('blueprint-paper relative min-h-0 overflow-hidden rounded-[18px] border border-line', mobile ? 'h-[300px]' : 'flex-1')} onTouchStart={(e) => e.stopPropagation()} onTouchEnd={(e) => e.stopPropagation()}>
         <svg ref={svgRef} viewBox={view} className="size-full touch-none select-none" role="img" aria-label={`游標卡尺，目前讀數 ${fmt(d)} mm`}>
           <g onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp} className="cursor-ew-resize">
             <Caliper d={d} mode={mode} objectMm={obj} hl={!hidden} uid={uid} />
           </g>
         </svg>
-        <p className={cn('pointer-events-none absolute left-4 top-3 rounded-full bg-black/45 px-3 py-1 text-slate-200', t.small)}>拖游尺（滾輪那塊）左右移；下面有微調鍵</p>
-        <button type="button" onClick={() => setPhoto(true)} className={cn('absolute right-4 top-3 flex items-center gap-1.5 rounded-full bg-black/45 px-3 py-1 font-semibold text-slate-100 hover:bg-black/60', t.small)}>
+        <p className={cn('pointer-events-none absolute left-4 top-3 rounded-full border border-line bg-card/95 px-3 py-1 text-slate-200', t.small)}>拖游尺（滾輪那塊）左右移；下面有微調鍵</p>
+        <button type="button" onClick={() => setPhoto(true)} className={cn('absolute right-4 top-3 flex items-center gap-1.5 rounded-full border border-line bg-card px-3 py-1 font-semibold text-slate-100 hover:border-sky-500/50', t.small)}>
           <Camera className="size-4" aria-hidden />
           看真的卡尺照片
         </button>
@@ -354,7 +354,7 @@ export function VernierCaliper({ mobile = false }: { mobile?: boolean }) {
 
       {/* 操作＋讀法 */}
       <div className={cn('grid min-h-0', mobile ? 'gap-3' : 'h-[296px] shrink-0 grid-cols-[minmax(0,0.95fr)_minmax(0,1.4fr)_minmax(0,1fr)] gap-4')}>
-        <section className="flex flex-col gap-2.5 rounded-[20px] bg-white/[0.045] p-4">
+        <section className="flex flex-col gap-2.5 rounded-[18px] border border-line bg-card p-4">
           <div className="flex flex-wrap items-center gap-2">
             <Segmented size={mobile ? 'sm' : 'md'} value={mode} onChange={switchMode} options={[{ value: 'od', label: '銅管：量外徑' }, { value: 'id', label: '接頭：量內徑' }]} />
           </div>
@@ -380,7 +380,7 @@ export function VernierCaliper({ mobile = false }: { mobile?: boolean }) {
                 <ChevronsRight className="size-5" aria-hidden />
               </button>
             </div>
-            <button type="button" onClick={() => (setQuiz(null), setObj(null), animateTo(0))} className={cn('flex items-center gap-1.5 rounded-full bg-white/[0.08] px-3 py-1.5 font-semibold text-slate-200 hover:bg-white/[0.15]', t.small)}>
+            <button type="button" onClick={() => (setQuiz(null), setObj(null), animateTo(0))} className={cn('flex items-center gap-1.5 rounded-full border border-line bg-card px-3 py-1.5 font-semibold text-slate-200 hover:border-sky-500/50', t.small)}>
               <RotateCcw className="size-4" aria-hidden />
               歸零
             </button>
@@ -388,24 +388,24 @@ export function VernierCaliper({ mobile = false }: { mobile?: boolean }) {
           <p className={cn('text-slate-400', t.small)}>{mode === 'od' ? '銅管夾在下面的大量爪。管壁：2～5分 0.8 mm（21 番）、6分以上 1.0 mm（19 番）。' : '接頭、彎頭是銅管插在裡面，所以用上面的小量爪伸進去、往外撐。'}</p>
         </section>
 
-        <section className="flex min-h-0 flex-col gap-2 rounded-[20px] bg-white/[0.045] p-4">
+        <section className="flex min-h-0 flex-col gap-2 rounded-[18px] border border-line bg-card p-4">
           <div className="flex flex-wrap items-baseline justify-between gap-x-3">
             <p className={cn('font-bold text-white', t.h)}>放大看公制游尺</p>
             <p className={cn('text-slate-400', t.small)}>
               <span className="text-sky-300">藍色</span>＝游尺的 0；<span className="text-amber-300">橘色</span>＝對齊的那一條
             </p>
           </div>
-          <div className="min-h-0 flex-1 overflow-hidden rounded-xl bg-slate-200/[0.06]">
+          <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-line bg-paper">
             <svg viewBox={`${d - 6} 8.2 ${mobile ? 40 : 50} 14.8`} className={cn('w-full', mobile ? 'h-[150px]' : 'h-full')} aria-hidden>
               <Caliper d={d} mode={mode} objectMm={null} hl={!hidden} uid={`${uid}z`} />
             </svg>
           </div>
         </section>
 
-        <section className="flex min-h-0 flex-col gap-2 rounded-[20px] bg-white/[0.045] p-4">
+        <section className="flex min-h-0 flex-col gap-2 rounded-[18px] border border-line bg-card p-4">
           <div className="flex items-center justify-between gap-2">
             <p className={cn('font-bold text-white', t.h)}>{quiz ? '考考我：這是幾分？' : '讀數'}</p>
-            <button type="button" onClick={newQuiz} className={cn('flex items-center gap-1.5 rounded-full bg-amber-400/90 px-3 py-1.5 font-bold text-navy-950 hover:bg-amber-300', t.small)}>
+            <button type="button" onClick={newQuiz} className={cn('flex items-center gap-1.5 rounded-full bg-amber-500 px-3 py-1.5 font-bold text-ink hover:brightness-95', t.small)}>
               <GraduationCap className="size-4" aria-hidden />
               {quiz ? '下一題' : '考考我'}
             </button>
@@ -432,7 +432,7 @@ export function VernierCaliper({ mobile = false }: { mobile?: boolean }) {
               <p className="flex items-baseline gap-3">
                 <span className={cn('font-black tabular-nums text-white', t.big)}>{fmt(d)}</span>
                 <span className={cn('text-slate-300', t.body)}>mm</span>
-                {r.near && <span className={cn('rounded-full bg-sky-400/15 px-3 py-0.5 font-bold text-sky-200', t.body)}>≈ {r.near.fen}（{r.near.mm}）</span>}
+                {r.near && <span className={cn('rounded-full bg-sky-950 px-3 py-0.5 font-bold text-sky-200', t.body)}>≈ {r.near.fen}（{r.near.mm}）</span>}
               </p>
               <ol className={cn('space-y-1 leading-snug text-slate-300', t.small)}>
                 {steps.map((s, i) => (

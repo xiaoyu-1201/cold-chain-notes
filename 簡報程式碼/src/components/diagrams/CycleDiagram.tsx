@@ -14,12 +14,21 @@ function wave(x1: number, x2: number, y: number, amp: number, n: number) {
   return d
 }
 
+/** 管路三色（跟老闆講義一樣）＋液氣混合段；TEXT＝同一色在淡色紙上當字用的深色版 */
 const COLORS = {
-  discharge: '#f87171',
-  liquid: '#fbbf24',
-  mixture: '#67e8f9',
-  suction: '#38bdf8',
+  discharge: '#d23f2e',
+  liquid: '#e0a01b',
+  mixture: '#1a9c8e',
+  suction: '#2e7bc8',
 }
+const TEXT = {
+  discharge: '#8a2216',
+  liquid: '#7a5306',
+  mixture: '#0f655c',
+  suction: '#164d84',
+}
+const INK2 = '#3e5677'
+const SELECT = { stroke: '#b07d12', fill: 'rgba(224,160,27,0.16)' }
 
 const PIPE_PATHS: Record<'discharge' | 'liquid' | 'mixture' | 'suction', string> = {
   discharge: 'M 680 222 V 92 H 570',
@@ -110,13 +119,13 @@ function SmallParts() {
       {/* 每個 data-hit 群組會被量測，用來畫置中的點選虛線框 */}
       {/* 油分離器：排氣管上 */}
       <g data-hit="oub">
-        <rect x={670} y={168} width={20} height={34} rx={8} fill="#1f2937" stroke="#f87171" strokeWidth={2.5} />
+        <rect x={670} y={168} width={20} height={34} rx={8} fill="#ffffff" stroke={COLORS.discharge} strokeWidth={2.5} />
         <SmallLabel x={698} y={190} text="油分離器" />
       </g>
       {/* 壓力開關：接壓縮機 */}
-      <line x1={738} y1={280} x2={754} y2={280} stroke="#c4b5fd" strokeWidth={2} strokeDasharray="3 3" />
+      <line x1={738} y1={280} x2={754} y2={280} stroke="#6a3fbf" strokeWidth={2} strokeDasharray="3 3" />
       <g data-hit="kp15">
-        <rect x={754} y={268} width={44} height={24} rx={5} fill="#1e1b4b" stroke="#c4b5fd" strokeWidth={2} />
+        <rect x={754} y={268} width={44} height={24} rx={5} fill="#eee7fb" stroke="#6a3fbf" strokeWidth={2} />
         <text x={776} y={285} textAnchor="middle" fontSize={12} fontWeight={800} className="fill-violet-200">
           KP
         </text>
@@ -124,41 +133,41 @@ function SmallParts() {
       </g>
       {/* 儲液器、手閥：液管水平段 */}
       <g data-hit="receiver">
-        <rect x={204} y={83} width={34} height={18} rx={8} fill="#1f2937" stroke="#fbbf24" strokeWidth={2.5} />
+        <rect x={204} y={83} width={34} height={18} rx={8} fill="#ffffff" stroke={COLORS.liquid} strokeWidth={2.5} />
         <SmallLabel x={221} y={74} text="儲液器" anchor="middle" />
       </g>
       <g data-hit="gbc">
-        <polygon points="164,85 172,92 164,99" fill="#1f2937" stroke="#fbbf24" strokeWidth={2} strokeLinejoin="round" />
-        <polygon points="180,85 172,92 180,99" fill="#1f2937" stroke="#fbbf24" strokeWidth={2} strokeLinejoin="round" />
-        <line x1={172} y1={92} x2={172} y2={81} stroke="#fbbf24" strokeWidth={2} />
+        <polygon points="164,85 172,92 164,99" fill="#ffffff" stroke={INK2} strokeWidth={2} strokeLinejoin="round" />
+        <polygon points="180,85 172,92 180,99" fill="#ffffff" stroke={INK2} strokeWidth={2} strokeLinejoin="round" />
+        <line x1={172} y1={92} x2={172} y2={81} stroke={INK2} strokeWidth={2} />
         <SmallLabel x={172} y={74} text="手閥" anchor="middle" />
       </g>
       {/* 乾燥過濾器、視液鏡、電磁閥：液管垂直段 */}
       <g data-hit="dml">
-        <rect x={132} y={110} width={16} height={30} rx={6} fill="#1f2937" stroke="#fbbf24" strokeWidth={2.5} />
+        <rect x={132} y={110} width={16} height={30} rx={6} fill="#ffffff" stroke={COLORS.liquid} strokeWidth={2.5} />
         <SmallLabel x={156} y={130} text="乾燥過濾器" />
       </g>
       <g data-hit="sgi">
-        <circle cx={140} cy={161} r={9} fill="#0f172a" stroke="#fbbf24" strokeWidth={2.5} />
-        <circle cx={140} cy={161} r={4} fill="#fde68a" fillOpacity={0.7} />
+        <circle cx={140} cy={161} r={9} fill="#ffffff" stroke={COLORS.liquid} strokeWidth={2.5} />
+        <circle cx={140} cy={161} r={4} fill={COLORS.liquid} fillOpacity={0.55} />
         <SmallLabel x={156} y={166} text="視液鏡" />
       </g>
       <g data-hit="evr">
-        <rect x={134} y={186} width={12} height={8} rx={2} fill="#64748b" />
-        <rect x={131} y={194} width={18} height={18} rx={3} fill="#1f2937" stroke="#fbbf24" strokeWidth={2.5} />
+        <rect x={134} y={186} width={12} height={8} rx={2} fill={INK2} />
+        <rect x={131} y={194} width={18} height={18} rx={3} fill="#ffffff" stroke={COLORS.liquid} strokeWidth={2.5} />
         <SmallLabel x={156} y={208} text="電磁閥" />
       </g>
       {/* 溫控器：控制電磁閥與壓縮機 */}
-      <line x1={114} y1={210} x2={130} y2={204} stroke="#c4b5fd" strokeWidth={2} strokeDasharray="3 3" />
+      <line x1={114} y1={210} x2={130} y2={204} stroke="#6a3fbf" strokeWidth={2} strokeDasharray="3 3" />
       <g data-hit="tc">
-        <rect x={34} y={198} width={80} height={24} rx={6} fill="#1e1b4b" stroke="#c4b5fd" strokeWidth={2} />
+        <rect x={34} y={198} width={80} height={24} rx={6} fill="#eee7fb" stroke="#6a3fbf" strokeWidth={2} />
         <text x={74} y={215} textAnchor="middle" fontSize={13} fontWeight={800} className="fill-violet-200">
           溫控器
         </text>
       </g>
       {/* 液氣分離器：吸氣管上 */}
       <g data-hit="acc">
-        <rect x={667} y={402} width={26} height={38} rx={9} fill="#1f2937" stroke="#38bdf8" strokeWidth={2.5} />
+        <rect x={667} y={402} width={26} height={38} rx={9} fill="#ffffff" stroke={COLORS.suction} strokeWidth={2.5} />
         <SmallLabel x={700} y={426} text="液氣分離器" />
       </g>
     </g>
@@ -184,7 +193,7 @@ function Label({ x, y, title, sub, hit }: { x: number; y: number; title: string;
       <text x={x} y={y} textAnchor="middle" fontSize={21} fontWeight={800} className="fill-slate-50">
         {title}
       </text>
-      <text x={x} y={y + 22} textAnchor="middle" fontSize={14} className="fill-slate-400 font-mono" letterSpacing={1.5}>
+      <text x={x} y={y + 21} textAnchor="middle" fontSize={14} fontWeight={600} className="fill-slate-500">
         {sub}
       </text>
     </g>
@@ -277,53 +286,42 @@ export function CycleDiagram({ className, interactive = false, selected = null, 
           <stop offset="0" stopColor={COLORS.mixture} />
           <stop offset="1" stopColor={COLORS.suction} />
         </linearGradient>
-        <linearGradient id="cycle-comp" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#7f1d1d" stopOpacity="0.55" />
-          <stop offset="1" stopColor="#0c4a6e" stopOpacity="0.6" />
-        </linearGradient>
-        <filter id="cycle-glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="5" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
       </defs>
 
       {/* 高低壓分區 */}
-      <rect x="0" y="0" width="820" height="280" rx="18" fill="#ef4444" fillOpacity="0.045" />
-      <rect x="0" y="280" width="820" height="280" rx="18" fill="#0ea5e9" fillOpacity="0.055" />
-      <line x1="16" x2="804" y1="280" y2="280" stroke="#94a3b8" strokeOpacity="0.45" strokeDasharray="6 8" strokeWidth={2} />
-      <text x="20" y="32" fontSize={15} fontWeight={800} className="fill-red-300/80 font-mono" letterSpacing={2}>
-        HIGH SIDE 高壓側
+      <rect x="0" y="0" width="820" height="280" rx="14" fill={COLORS.discharge} fillOpacity="0.05" />
+      <rect x="0" y="280" width="820" height="280" rx="14" fill={COLORS.suction} fillOpacity="0.06" />
+      <line x1="16" x2="804" y1="280" y2="280" stroke={INK2} strokeOpacity="0.5" strokeDasharray="6 8" strokeWidth={2} />
+      <text x="20" y="32" fontSize={16} fontWeight={800} fill={TEXT.discharge}>
+        高壓側
       </text>
-      <text x="20" y="546" fontSize={15} fontWeight={800} className="fill-sky-300/80 font-mono" letterSpacing={2}>
-        LOW SIDE 低壓側
+      <text x="20" y="546" fontSize={16} fontWeight={800} fill={TEXT.suction}>
+        低壓側
       </text>
 
       {/* 熱量進出 */}
       {[340, 410, 480].map((x) => (
-        <HeatArrow key={`out-${x}`} x={x} y={44} color="#fca5a5" />
+        <HeatArrow key={`out-${x}`} x={x} y={44} color={COLORS.discharge} />
       ))}
-      <text x="506" y="28" fontSize={16} fontWeight={700} className="fill-red-200">
+      <text x="506" y="28" fontSize={16} fontWeight={700} fill={TEXT.discharge}>
         放熱 → 室外
       </text>
       {[340, 410, 480].map((x) => (
-        <HeatArrow key={`in-${x}`} x={x} y={556} color="#7dd3fc" />
+        <HeatArrow key={`in-${x}`} x={x} y={556} color={COLORS.suction} />
       ))}
-      <text x="506" y="546" fontSize={16} fontWeight={700} className="fill-sky-200">
+      <text x="506" y="546" fontSize={16} fontWeight={700} fill={TEXT.suction}>
         吸熱 ← 庫內
       </text>
 
       {/* 管路（底色 + 流動虛線） */}
       {PIPES.map((p, i) => (
         <g key={i} fill="none" strokeLinecap="round" strokeLinejoin="round">
-          <path d={p.d} stroke={p.stroke} strokeOpacity={0.22} strokeWidth={p.width + 4} />
+          <path d={p.d} stroke={p.stroke} strokeOpacity={0.2} strokeWidth={p.width + 4} />
           <path d={p.d} stroke={p.stroke} strokeWidth={4} className="pipe-flow" />
         </g>
       ))}
       {selectedPipe && (
-        <path d={selectedPipe} fill="none" stroke="#fbbf24" strokeWidth={9} strokeLinecap="round" strokeLinejoin="round" filter="url(#cycle-glow)" opacity={0.9} />
+        <path d={selectedPipe} fill="none" stroke="#0f2440" strokeOpacity={0.2} strokeWidth={24} strokeLinecap="round" strokeLinejoin="round" />
       )}
       <Arrow x={680} y={150} rotate={-90} color={COLORS.discharge} />
       <Arrow x={195} y={92} rotate={180} color={COLORS.liquid} />
@@ -331,30 +329,30 @@ export function CycleDiagram({ className, interactive = false, selected = null, 
       <Arrow x={625} y={468} rotate={0} color={COLORS.suction} />
 
       {/* 管路狀態 */}
-      <StateText x={700} y={116} lines={['高溫高壓', '氣態']} anchor="start" color="#fca5a5" hit="discharge-label" />
-      <StateText x={122} y={160} lines={['中溫中壓', '液態']} anchor="end" color="#fcd34d" hit="liquid-label" />
-      <StateText x={122} y={378} lines={['液氣', '混合']} anchor="end" color="#a5f3fc" hit="mixture-label" />
-      <StateText x={700} y={358} lines={['低溫低壓', '氣態']} anchor="start" color="#7dd3fc" hit="suction-label" />
+      <StateText x={700} y={116} lines={['高溫高壓', '氣態']} anchor="start" color={TEXT.discharge} hit="discharge-label" />
+      <StateText x={122} y={160} lines={['中溫中壓', '液態']} anchor="end" color={TEXT.liquid} hit="liquid-label" />
+      <StateText x={122} y={378} lines={['液氣', '混合']} anchor="end" color={TEXT.mixture} hit="mixture-label" />
+      <StateText x={700} y={358} lines={['低溫低壓', '氣態']} anchor="start" color={TEXT.suction} hit="suction-label" />
 
       {/* 冷凝器 */}
-      <rect x="250" y="50" width="320" height="84" rx="14" fill="#f97316" fillOpacity="0.08" stroke="#fb923c" strokeOpacity="0.55" strokeWidth={2} />
-      <Label x={410} y={166} title="② 冷凝器" sub="CONDENSER" hit="cond-label" />
+      <rect x="250" y="50" width="320" height="84" rx="12" fill="#ffffff" stroke={COLORS.discharge} strokeOpacity="0.55" strokeWidth={2} />
+      <Label x={410} y={166} title="② 冷凝器" sub="Condenser" hit="cond-label" />
 
       {/* 蒸發器 */}
-      <rect x="250" y="426" width="320" height="84" rx="14" fill="#0ea5e9" fillOpacity="0.08" stroke="#38bdf8" strokeOpacity="0.55" strokeWidth={2} />
-      <Label x={410} y={384} title="④ 蒸發器" sub="EVAPORATOR" hit="evap-label" />
+      <rect x="250" y="426" width="320" height="84" rx="12" fill="#ffffff" stroke={COLORS.suction} strokeOpacity="0.55" strokeWidth={2} />
+      <Label x={410} y={384} title="④ 蒸發器" sub="Evaporator" hit="evap-label" />
 
       {/* 壓縮機 */}
-      <circle cx="680" cy="280" r="58" fill="url(#cycle-comp)" stroke="#cbd5e1" strokeWidth={3} />
-      <path d="M 648 312 L 666 250 M 712 312 L 694 250" stroke="#e2e8f0" strokeWidth={3} strokeLinecap="round" />
-      <rect x="470" y="254" width="140" height="52" rx="12" fill="#0a1328" stroke="#ffffff" strokeOpacity="0.12" />
-      <Label x={540} y={276} title="① 壓縮機" sub="COMPRESSOR" />
+      <circle cx="680" cy="280" r="58" fill="#ffffff" stroke={INK2} strokeWidth={3} />
+      <path d="M 648 312 L 666 250 M 712 312 L 694 250" stroke={INK2} strokeWidth={3} strokeLinecap="round" />
+      <rect x="470" y="254" width="140" height="52" rx="10" fill="#ffffff" stroke="#c9d6e5" />
+      <Label x={540} y={276} title="① 壓縮機" sub="Compressor" />
 
       {/* 膨脹閥 */}
-      <polygon points="114,250 166,250 140,280" fill="#0f1b36" stroke="#5eead4" strokeWidth={3} strokeLinejoin="round" />
-      <polygon points="114,310 166,310 140,280" fill="#0f1b36" stroke="#5eead4" strokeWidth={3} strokeLinejoin="round" />
-      <rect x="180" y="254" width="150" height="52" rx="12" fill="#0a1328" stroke="#ffffff" strokeOpacity="0.12" />
-      <Label x={255} y={276} title="③ 膨脹閥" sub="EXPANSION" />
+      <polygon points="114,250 166,250 140,280" fill="#ffffff" stroke={INK2} strokeWidth={3} strokeLinejoin="round" />
+      <polygon points="114,310 166,310 140,280" fill="#ffffff" stroke={INK2} strokeWidth={3} strokeLinejoin="round" />
+      <rect x="180" y="254" width="150" height="52" rx="10" fill="#ffffff" stroke="#c9d6e5" />
+      <Label x={255} y={276} title="③ 膨脹閥" sub="Expansion valve" />
 
       <SmallParts />
 
@@ -373,7 +371,7 @@ export function CycleDiagram({ className, interactive = false, selected = null, 
           {(Object.keys(PART_HITS) as (keyof typeof PART_HITS)[]).map((id) => {
             const labelBox = id === 'cond' || id === 'evap' ? (boxes[`${id}-label`] ?? LABEL_FALLBACK[id]) : null
             return (
-              <g key={id} {...hitProps(id, PART_HITS[id].label)} fill={selected === id ? 'rgba(251,191,36,0.12)' : 'transparent'} stroke={selected === id ? '#fbbf24' : 'transparent'} strokeWidth={3}>
+              <g key={id} {...hitProps(id, PART_HITS[id].label)} fill={selected === id ? SELECT.fill : 'transparent'} stroke={selected === id ? SELECT.stroke : 'transparent'} strokeWidth={3}>
                 {PART_HITS[id].shapes}
                 {labelBox && <rect x={labelBox.x} y={labelBox.y} width={labelBox.w} height={labelBox.h} rx={10} />}
               </g>
@@ -389,8 +387,8 @@ export function CycleDiagram({ className, interactive = false, selected = null, 
                   width={h.w}
                   height={h.h}
                   rx={8}
-                  fill={selected === id ? 'rgba(251,191,36,0.14)' : 'transparent'}
-                  stroke={selected === id ? '#fbbf24' : 'transparent'}
+                  fill={selected === id ? SELECT.fill : 'transparent'}
+                  stroke={selected === id ? SELECT.stroke : 'transparent'}
                   strokeWidth={2.5}
                 />
               </g>

@@ -152,20 +152,20 @@ export function FenConverter({ mobile = false }: { mobile?: boolean }) {
         onFocus={(e) => e.currentTarget.select()}
         placeholder="例：3分、3/8″、1-1/8、15.9mm、2.2公分"
         aria-label="輸入尺寸（幾分、英吋、mm 或公分都可以）"
-        className={cn('w-full rounded-2xl bg-black/30 px-5 font-black text-white outline-none ring-2 ring-sky-400/40 placeholder:font-semibold placeholder:text-slate-500 focus:ring-sky-300', t.input, mobile ? 'py-2' : 'py-3')}
+        className={cn('w-full rounded-2xl bg-card px-5 font-black text-ink outline-none ring-2 ring-sky-500/45 placeholder:font-semibold placeholder:text-slate-500 focus:ring-sky-500', t.input, mobile ? 'py-2' : 'py-3')}
       />
       <div className="flex flex-wrap gap-2">
         {EXAMPLES.map((ex) => (
-          <button key={ex.value} type="button" onClick={() => setInput(ex.value)} className={cn('rounded-full bg-sky-400/15 font-semibold text-sky-200 transition hover:bg-sky-400/25', t.chip, focusRing)}>
+          <button key={ex.value} type="button" onClick={() => setInput(ex.value)} className={cn('rounded-full border border-sky-500/40 bg-sky-950 font-semibold text-sky-200 transition hover:border-sky-500', t.chip, focusRing)}>
             {ex.label}
           </button>
         ))}
       </div>
 
       {reading && fen !== null ? (
-        <div className={cn('rounded-[22px] bg-white/[0.05]', mobile ? 'p-3' : 'px-5 py-4')}>
+        <div className={cn('rounded-[18px] border border-line bg-card', mobile ? 'p-3' : 'px-5 py-4')}>
           <p className={cn('text-slate-400', t.small)}>我讀成：{reading.as}</p>
-          <dl className={cn('mt-2 grid grid-cols-4', mobile ? 'gap-2' : 'gap-4')}>
+          <dl className={cn('mt-2 grid', mobile ? 'grid-cols-2 gap-x-3 gap-y-2' : 'grid-cols-4 gap-4')}>
             {[
               ['叫法', fenName(fen)],
               ['英吋', `${fenInch(fen)}″`],
@@ -200,19 +200,19 @@ export function FenConverter({ mobile = false }: { mobile?: boolean }) {
           </div>
         </div>
       ) : (
-        <p className={cn('rounded-[22px] bg-white/[0.05] text-amber-200', t.body, mobile ? 'p-3' : 'p-5')}>
+        <p className={cn('rounded-[18px] border border-amber-500/50 bg-amber-950 text-amber-200', t.body, mobile ? 'p-3' : 'p-5')}>
           {input.trim() ? '看不懂這個寫法；試試「3分」「3/8″」「1吋1分」「15.9mm」「2.2公分」。' : '輸入客人說的、單子寫的或卡尺量的尺寸。'}
         </p>
       )}
 
-      <p className={cn('rounded-2xl bg-white/[0.04] text-slate-300', t.small, mobile ? 'p-2.5' : 'px-4 py-3')}>
-        <b className="text-white">看型號知道幾分：</b>Danfoss DML 08<b className="text-sky-200">3</b> 最後一碼＝3 分；尾巴 S＝焊接，沒有＝喇叭口
+      <p className={cn('rounded-2xl border border-line bg-card text-slate-300', t.small, mobile ? 'p-2.5' : 'px-4 py-3')}>
+        <b className="text-white">看型號知道幾分：</b>Danfoss DML 08<b className="text-sky-300">3</b> 最後一碼＝3 分；尾巴 S＝焊接，沒有＝喇叭口
       </p>
 
-      <div className={cn('rounded-[22px] bg-emerald-400/[0.07]', mobile ? 'p-3' : 'mt-auto px-5 py-4')}>
+      <div className={cn('rounded-[18px] border border-emerald-500/35 bg-emerald-950/60', mobile ? 'p-3' : 'mt-auto px-5 py-4')}>
         <div className="flex items-center justify-between gap-2">
           <p className={cn('font-bold text-emerald-200', t.body)}>考考我：{quiz.q}</p>
-          <button type="button" onClick={nextQuiz} className={cn('flex shrink-0 items-center gap-1 rounded-full bg-white/[0.08] font-semibold text-sky-300 hover:bg-white/[0.12]', t.chip, focusRing)}>
+          <button type="button" onClick={nextQuiz} className={cn('flex shrink-0 items-center gap-1 rounded-full border border-line bg-card font-semibold text-sky-300 hover:border-sky-500/50', t.chip, focusRing)}>
             <Shuffle className="size-4" aria-hidden />
             換一題
           </button>
@@ -230,10 +230,10 @@ export function FenConverter({ mobile = false }: { mobile?: boolean }) {
                 className={cn(
                   'rounded-full font-black transition',
                   mobile ? 'px-4 py-1.5 text-[16px]' : 'px-6 py-2 text-[21px]',
-                  !show && 'bg-white/[0.08] text-slate-100 hover:bg-white/[0.14]',
-                  show && isAnswer && 'bg-emerald-400/25 text-emerald-100',
-                  show && !isAnswer && picked === o && 'bg-red-500/20 text-red-200',
-                  show && !isAnswer && picked !== o && 'bg-white/[0.03] text-slate-500',
+                  !show && 'border border-line bg-card text-slate-100 hover:border-sky-500/50',
+                  show && isAnswer && 'border border-emerald-500 bg-emerald-950 text-emerald-100',
+                  show && !isAnswer && picked === o && 'border border-red-500 bg-red-950 text-red-200',
+                  show && !isAnswer && picked !== o && 'border border-line bg-card text-slate-500',
                   focusRing,
                 )}
               >
@@ -275,18 +275,18 @@ export function FenConverter({ mobile = false }: { mobile?: boolean }) {
               <tr
                 key={f}
                 onClick={() => setInput(fenName(f))}
-                className={cn('cursor-pointer border-t border-white/[0.06] transition-colors', on ? 'bg-sky-400/15' : 'hover:bg-white/[0.05]')}
+                className={cn('cursor-pointer border-t border-line transition-colors', on ? 'bg-sky-950' : 'hover:bg-white/[0.04]')}
               >
                 {!mobile && (
                   <td className="py-0.5">
                     <span
-                      className={cn('mx-auto block rounded-full border-2', on ? 'border-sky-300 bg-sky-400/20' : 'border-amber-300/70 bg-amber-400/10')}
+                      className={cn('mx-auto block rounded-full border-2', on ? 'border-sky-400 bg-sky-500/25' : 'border-amber-500 bg-amber-500/15')}
                       style={{ width: Math.max(6, (fenMm(f) / maxMm) * 32), height: Math.max(6, (fenMm(f) / maxMm) * 32) }}
                       aria-hidden
                     />
                   </td>
                 )}
-                <td className={cn('py-1 text-left font-black', mobile ? 'text-[16px]' : 'text-[22px]', on ? 'text-sky-200' : 'text-white')}>
+                <td className={cn('text-left font-black', mobile ? 'py-2.5 text-[16px]' : 'py-1 text-[22px]', on ? 'text-sky-300' : 'text-ink')}>
                   <button type="button" onClick={() => setInput(fenName(f))} className={cn('rounded', focusRing)}>
                     {fenName(f)}
                   </button>
@@ -307,7 +307,7 @@ export function FenConverter({ mobile = false }: { mobile?: boolean }) {
     return (
       <div className="flex flex-col gap-4">
         {helper}
-        <div className="rounded-2xl bg-white/[0.04] p-3">
+        <div className="rounded-2xl border border-line bg-card p-3">
           <p className="mb-2 text-[16px] font-bold text-white">冷媒銅管尺寸對照（外徑）</p>
           {table}
         </div>

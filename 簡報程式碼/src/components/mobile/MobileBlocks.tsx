@@ -8,10 +8,12 @@ import { slides } from '../../data/slides'
 import { isNew } from '../../data/whatsNew'
 import { recordingOf } from '../../data/recordings'
 
-/** 這一批新增的頁：學習地圖的連結後面加 🆕；查閱頁加（查閱） */
+/** 這一批新增的頁：學習地圖的連結後面加綠色「新」；查閱頁加（查閱） */
 const newIds = new Set(slides.filter((s) => isNew(s.added)).map((s) => s.id))
 const refIds = new Set(slides.filter((s) => s.tier === 'ref').map((s) => s.id))
 import { cn, pad } from '../../lib/cn'
+import { glyphFor } from '../../lib/partGlyph'
+import { PartGlyph } from '../ui/PartGlyph'
 import { toneStyles } from '../../lib/tone'
 import { Segmented } from '../ui/Segmented'
 import { DataTable } from '../blocks/DataTable'
@@ -40,14 +42,16 @@ const formatTime = (sec: number) => `${pad(Math.floor(sec / 60))}:${pad(Math.flo
 function Card({ nested, tone, className, children }: { nested?: boolean; tone?: Tone; className?: string; children: ReactNode }) {
   if (nested) return <div className={cn('py-1', className)}>{children}</div>
   return (
-    <div className={cn('rounded-2xl border bg-white/[0.03] p-4', tone ? toneStyles[tone].border : 'border-white/10', className)}>{children}</div>
+    <div className={cn('rounded-2xl border bg-card p-4', tone ? toneStyles[tone].border : 'border-line', className)}>{children}</div>
   )
 }
 
 function Title({ icon: Icon, tone = 'ice', children, small }: { icon?: React.ElementType; tone?: Tone; children: ReactNode; small?: boolean }) {
+  // 標題講的是零件 → 零件線稿（跟電腦版同一套）
+  const glyph = glyphFor(children)
   return (
     <h3 className={cn('flex items-center gap-2 font-bold leading-snug text-white', small ? 'text-[17px]' : 'text-[19px]')}>
-      {Icon && <Icon className={cn('size-5 shrink-0', toneStyles[tone].text)} aria-hidden />}
+      {glyph ? <PartGlyph id={glyph} size={28} className="-my-1 shrink-0 text-ink-2" /> : Icon && <Icon className={cn('size-5 shrink-0', toneStyles[tone].text)} aria-hidden />}
       <span>{children}</span>
     </h3>
   )
@@ -77,7 +81,7 @@ export function PageLink({ slide, children }: { slide: string; children: ReactNo
     <button
       type="button"
       onClick={() => goToId(slide)}
-      className="inline-flex items-center gap-1 rounded-lg border border-white/15 px-2.5 py-1 text-[15px] font-semibold text-slate-100 active:bg-white/10"
+      className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-line bg-card px-2.5 py-1 text-left text-[15px] font-semibold text-slate-100 active:bg-sky-950"
     >
       {children}
       <span className="font-mono text-[13px] text-slate-400">P.{pad(numberOf(slide))}</span>
@@ -108,7 +112,7 @@ function Clip({ src, at, label }: { src: string; at: number; label: string }) {
       <button
         type="button"
         onClick={toggle}
-        className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-400/40 bg-emerald-400/10 px-3 py-1.5 text-[15px] font-semibold text-emerald-100 active:bg-emerald-400/25"
+        className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-emerald-500/45 bg-emerald-950 px-3 py-1.5 text-[15px] font-semibold text-emerald-100 active:border-emerald-500"
       >
         {playing ? <Pause className="size-4" aria-hidden /> : <Headphones className="size-4" aria-hidden />}
         {playing ? '暫停' : label} <span className="font-mono">{formatTime(at)}</span>
@@ -134,7 +138,7 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
           <Title icon={block.icon} tone={block.tone}>
             {block.title}
           </Title>
-          <div className="mt-3 space-y-4 divide-y divide-white/[0.07] [&>*:not(:first-child)]:pt-4">
+          <div className="mt-3 space-y-4 divide-y divide-line [&>*:not(:first-child)]:pt-4">
             {block.children.map((child, i) => (
               <MobileBlock key={i} block={child} nested />
             ))}
@@ -332,7 +336,7 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
           <Title icon={block.icon} tone={block.tone} small={nested}>
             {block.title}
           </Title>
-          <ol className="mt-2 space-y-2 border-l border-white/15 pl-4">
+          <ol className="mt-2 space-y-2 border-l border-line pl-4">
             {block.items.map((item) => (
               <li key={item.gen}>
                 <p className={cn('font-bold', toneStyles[item.tone].text)}>
@@ -443,7 +447,7 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
                   <PageLink key={c.slide + c.code} slide={c.slide}>
                     {c.code} {c.title}
                     {refIds.has(c.slide) ? '（查閱）' : ''}
-                    {newIds.has(c.slide) ? ' 🆕' : ''}
+                    {newIds.has(c.slide) && <span className="ml-1 rounded bg-emerald-400 px-1.5 text-[12px] font-black leading-5 text-paper">新</span>}
                   </PageLink>
                 ))}
               </div>
@@ -721,7 +725,7 @@ function QuizMobile({ items }: { items: { q: ReactNode; a: ReactNode; slide?: st
               onClick={() => setOpen((o) => (shown ? o.filter((x) => x !== i) : [...o, i]))}
               className={cn(
                 'w-full rounded-2xl border p-4 text-left',
-                shown ? 'border-emerald-400/40 bg-emerald-400/[0.07]' : 'border-dashed border-white/20 bg-white/[0.03]',
+                shown ? 'border-emerald-500/40 bg-emerald-500/[0.07]' : 'border-dashed border-white/20 bg-white/[0.03]',
               )}
             >
               <span className="flex gap-2.5">
@@ -824,7 +828,7 @@ function Checklist({ id, title, items, nested }: { id: string; title: string; it
                 <span
                   className={cn(
                     'mt-1 flex size-5 shrink-0 items-center justify-center rounded border',
-                    on ? 'border-emerald-400 bg-emerald-400 text-navy-950' : 'border-slate-500',
+                    on ? 'border-emerald-400 bg-emerald-400 text-paper' : 'border-slate-500 bg-card',
                   )}
                 >
                   {on && <Check className="size-4" aria-hidden />}
@@ -871,7 +875,7 @@ function CycleLessonMobile() {
             type="button"
             aria-pressed={cut}
             onClick={() => setCut((c) => !c)}
-            className={cn('rounded-full px-3 py-1.5 text-[14px] font-semibold', cut ? 'bg-sky-400 text-navy-950' : 'bg-white/[0.08] text-sky-300')}
+            className={cn('rounded-full px-3 py-1.5 text-[14px] font-semibold', cut ? 'bg-sky-400 text-paper' : 'border border-line bg-card text-sky-300')}
           >
             {cut ? '合起來' : '剖開看內部'}
           </button>
@@ -879,7 +883,7 @@ function CycleLessonMobile() {
       </div>
       <p className="text-[15px] text-slate-300">{view === '2d' ? '點圖上的虛線框或下面的按鈕，看說明、聽錄音。' : '按「啟動冷凍系統」看冷媒跑一圈；手指拖曳旋轉、兩指縮放，點零件名稱看說明。'}</p>
       {view === '2d' ? (
-        <div className="relative rounded-2xl border border-white/10 bg-navy-900" style={{ aspectRatio: '820 / 560' }}>
+        <div className="relative rounded-2xl border border-line bg-card" style={{ aspectRatio: '820 / 560' }}>
           <CycleDiagram className="absolute inset-0 h-full w-full" interactive selected={selected} onSelect={(id) => pick(id, false)} />
         </div>
       ) : (
@@ -893,7 +897,7 @@ function CycleLessonMobile() {
       )}
       <div ref={noteRef} style={{ scrollMarginTop: 64 }}>
         {note && (
-          <div className={cn('rounded-2xl border bg-navy-900 p-4', toneStyles[note.tone].border)}>
+          <div className={cn('rounded-2xl border bg-card p-4', toneStyles[note.tone].border)}>
             <p className="text-[21px] font-black text-white">{note.title}</p>
             <p className={cn('text-[15px] font-semibold', toneStyles[note.tone].text)}>{note.alias}</p>
             <p className={cn('mt-2 inline-flex rounded-lg border px-2.5 py-0.5 text-[15px] font-bold', toneStyles[note.tone].chip)}>{note.state}</p>
@@ -924,7 +928,7 @@ function CycleLessonMobile() {
                 <button
                   type="button"
                   onClick={() => setViewId(note.id)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-sky-400/50 bg-sky-400/15 px-3 py-1.5 text-[15px] font-semibold text-sky-100 active:bg-sky-400/25"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-sky-500/50 bg-sky-500/15 px-3 py-1.5 text-[15px] font-semibold text-sky-100 active:bg-sky-500/25"
                 >
                   <Box className="size-4" aria-hidden />
                   3D 看構造
@@ -948,7 +952,7 @@ function CycleLessonMobile() {
                 onClick={() => pick(id, true)}
                 className={cn(
                   'rounded-lg border px-3 py-1.5 text-[15px] font-semibold',
-                  selected === id ? toneStyles[cycleNotes[id].tone].chip : 'border-white/15 text-slate-200',
+                  selected === id ? toneStyles[cycleNotes[id].tone].chip : 'border-line text-slate-200',
                 )}
               >
                 {cycleNotes[id].title}
@@ -968,7 +972,7 @@ function HotspotsMobile({ block }: { block: HotspotsBlock }) {
   return (
     <div className="space-y-4">
       {view && viewModel && <PartViewer id={viewModel} title={view.title} alias={`講義型號 ${view.code}`} onClose={() => setView(null)} />}
-      <a href={block.image} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-2xl border border-white/10 bg-white">
+      <a href={block.image} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-2xl border border-line bg-card">
         <img src={block.image} alt={block.alt} className="w-full" />
       </a>
       <p className="flex items-center gap-1.5 text-[14px] text-slate-400">
@@ -982,7 +986,7 @@ function HotspotsMobile({ block }: { block: HotspotsBlock }) {
         return (
           <Card key={group} tone={g.tone}>
             <p className={cn('font-bold', toneStyles[g.tone].text)}>{g.label}</p>
-            <ul className="mt-2 divide-y divide-white/[0.07]">
+            <ul className="mt-2 divide-y divide-line">
               {items.map((item) => (
                 <li key={item.id} className="py-2.5">
                   <p className="flex flex-wrap items-center gap-2">
@@ -996,7 +1000,7 @@ function HotspotsMobile({ block }: { block: HotspotsBlock }) {
                         <button
                           type="button"
                           onClick={() => setView({ id: item.id, title: item.name, code: item.code })}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-sky-400/50 bg-sky-400/15 px-3 py-1.5 text-[15px] font-semibold text-sky-100 active:bg-sky-400/25"
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-sky-500/50 bg-sky-500/15 px-3 py-1.5 text-[15px] font-semibold text-sky-100 active:bg-sky-500/25"
                         >
                           <Box className="size-4" aria-hidden />
                           3D 看構造
@@ -1027,7 +1031,7 @@ function RecordingsMobile({ block }: { block: RecordingsIndexBlock }) {
         const on = open === item.slide
         return (
           <Card key={item.slide} tone={on ? 'emerald' : undefined}>
-            <button type="button" onClick={() => setOpen(on ? null : item.slide)} aria-expanded={on} className="flex w-full items-center gap-3 text-left">
+            <button type="button" onClick={() => setOpen(on ? null : item.slide)} aria-expanded={on} className="flex min-h-11 w-full items-center gap-3 text-left">
               <span className={cn('w-[80px] shrink-0 font-mono text-[14px] font-bold', on ? 'text-emerald-300' : 'text-slate-400')}>{item.code}</span>
               <span className="min-w-0 flex-1 text-[16px] font-semibold text-white">{rec?.title ?? item.slide}</span>
               <span className="shrink-0 font-mono text-[13px] text-slate-500">{rec?.duration}</span>
@@ -1077,7 +1081,7 @@ function AudioMobile({ block }: { block: AudioBlock }) {
 
   return (
     <div className="space-y-3">
-      <div className="rounded-2xl border border-emerald-400/30 bg-emerald-500/[0.06] p-4">
+      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] p-4">
         <Title icon={Headphones} tone="emerald">
           {block.title}
           {tracks.length > 1 && <span className="ml-2 text-[15px] font-semibold text-slate-400">第 {tracks[track].label} 段</span>}
@@ -1105,13 +1109,13 @@ function AudioMobile({ block }: { block: AudioBlock }) {
           </>
         )}
       </div>
-      <ol className="divide-y divide-white/[0.07] rounded-2xl border border-white/10">
+      <ol className="divide-y divide-line rounded-2xl border border-line">
         {block.chapters.map((c, i) => (
           <li key={i}>
             <button
               type="button"
               onClick={() => play(i)}
-              className={cn('flex w-full gap-3 px-4 py-3 text-left active:bg-white/5', active === i && 'bg-emerald-400/10')}
+              className={cn('flex w-full gap-3 px-4 py-3 text-left active:bg-white/5', active === i && 'bg-emerald-500/10')}
             >
               <span className="w-[4.2em] shrink-0 pt-0.5 font-mono text-[14px] font-bold text-emerald-300">
                 {tracks.length > 1 && `${tracks[c.track ?? 0].label}·`}

@@ -10,7 +10,7 @@ function polar(hour: number, r: number) {
 
 function Bulb({ hour, ok }: { hour: number; ok: boolean }) {
   const { x, y } = polar(hour, BULB_R)
-  const stroke = ok ? '#34d399' : '#f87171'
+  const stroke = ok ? '#15a06e' : '#d23f2e'
   return (
     <g>
       <circle cx={x} cy={y} r={16} fill={stroke} fillOpacity={0.2} stroke={stroke} strokeWidth={2.5} />
@@ -33,11 +33,11 @@ export function BulbClock({ className }: { className?: string }) {
       {Array.from({ length: 12 }, (_, i) => {
         const a = polar(i + 1, 104)
         const b = polar(i + 1, 110)
-        return <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="#64748b" strokeWidth={2} strokeLinecap="round" />
+        return <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="#9aabc0" strokeWidth={2} strokeLinecap="round" />
       })}
-      <circle cx={CENTER} cy={CENTER} r={74} fill="#0f1b36" stroke="#94a3b8" strokeWidth={8} />
+      <circle cx={CENTER} cy={CENTER} r={74} fill="#ffffff" stroke="#2e7bc8" strokeWidth={8} />
       {/* 管底沉油 */}
-      <path d="M 66.4 165 A 70 70 0 0 0 173.6 165 Z" fill="#f59e0b" fillOpacity={0.45} />
+      <path d="M 66.4 165 A 70 70 0 0 0 173.6 165 Z" fill="#e0a01b" fillOpacity={0.4} />
       <text x={CENTER} y={184} textAnchor="middle" fontSize={14} fontWeight={700} className="fill-amber-100">
         沉積油膜
       </text>

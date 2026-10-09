@@ -178,18 +178,18 @@ function Ruler({
         onKeyDown={onKey}
         onTouchStart={(e) => e.stopPropagation()}
         onTouchEnd={(e) => e.stopPropagation()}
-        className={cn('relative min-h-0 flex-1 cursor-ns-resize touch-none select-none overflow-hidden rounded-2xl bg-white/[0.05]', focusRing)}
+        className={cn('relative min-h-0 flex-1 cursor-ns-resize touch-none select-none overflow-hidden rounded-2xl border border-line bg-card', focusRing)}
       >
         {/* 尺：讓目前溫度永遠在中間細線 */}
         <svg width={W} height={H + 40} className="absolute left-1/2 -translate-x-1/2" style={{ top: `calc(50% - ${yOf(temp) + 20}px)` }} aria-hidden>
           <g transform="translate(0 20)">
-            <line x1={spineP} x2={spineP} y1={0} y2={H} stroke="#f87171" strokeOpacity={0.5} />
-            <line x1={spineT} x2={spineT} y1={0} y2={H} stroke="#7dd3fc" strokeOpacity={0.5} />
+            <line x1={spineP} x2={spineP} y1={0} y2={H} stroke="#d23f2e" strokeOpacity={0.55} />
+            <line x1={spineT} x2={spineT} y1={0} y2={H} stroke="#2e7bc8" strokeOpacity={0.55} />
             {pressureTicks.map((p, i) => (
               <g key={i}>
-                <line x1={spineP - (p.label ? 16 : 7)} x2={spineP} y1={p.y} y2={p.y} stroke="#f87171" strokeWidth={p.label ? 1.6 : 1} />
+                <line x1={spineP - (p.label ? 16 : 7)} x2={spineP} y1={p.y} y2={p.y} stroke="#d23f2e" strokeWidth={p.label ? 1.6 : 1} />
                 {p.label && (
-                  <text x={spineP - 22} y={p.y} fill="#fca5a5" fontSize={font} fontWeight={600} textAnchor="end" dominantBaseline="middle">
+                  <text x={spineP - 22} y={p.y} fill="#8a2216" fontSize={font} fontWeight={600} textAnchor="end" dominantBaseline="middle">
                     {p.label}
                   </text>
                 )}
@@ -197,9 +197,9 @@ function Ruler({
             ))}
             {PT_TEMPS.map((t) => (
               <g key={t}>
-                <line x1={spineT} x2={spineT + (t % 10 === 0 ? 16 : t % 5 === 0 ? 11 : 6)} y1={yOf(t)} y2={yOf(t)} stroke="#7dd3fc" strokeWidth={t % 10 === 0 ? 1.6 : 1} />
+                <line x1={spineT} x2={spineT + (t % 10 === 0 ? 16 : t % 5 === 0 ? 11 : 6)} y1={yOf(t)} y2={yOf(t)} stroke="#2e7bc8" strokeWidth={t % 10 === 0 ? 1.6 : 1} />
                 {t % 10 === 0 && (
-                  <text x={spineT + 22} y={yOf(t)} fill="#bae6fd" fontSize={font} fontWeight={600} dominantBaseline="middle">
+                  <text x={spineT + 22} y={yOf(t)} fill="#164d84" fontSize={font} fontWeight={600} dominantBaseline="middle">
                     {t}
                   </text>
                 )}
@@ -221,8 +221,8 @@ function Ruler({
             aria-label={`溫度 ${d > 0 ? '加' : '減'} ${Math.abs(d)}°C`}
             {...repeat(nudge(d))}
             className={cn(
-              'touch-none select-none rounded-xl bg-white/[0.08] font-bold tabular-nums text-slate-100 transition hover:bg-white/[0.14] active:bg-white/[0.2]',
-              mobile ? 'py-1.5 text-[12px]' : 'py-2 text-[16px]',
+              'touch-none select-none rounded-xl border border-line bg-card font-bold tabular-nums text-slate-100 transition hover:border-sky-500/50 active:bg-sky-950',
+              mobile ? 'min-h-11 py-1.5 text-[14px]' : 'py-2 text-[16px]',
               focusRing,
             )}
           >
@@ -334,7 +334,7 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
               type="button"
               aria-pressed={id === r}
               onClick={() => setId(r)}
-              className={cn('rounded-full font-bold transition', s.chip, id === r ? 'bg-sky-400 text-navy-950' : 'bg-white/[0.08] text-slate-200 hover:bg-white/[0.14]', focusRing)}
+              className={cn('rounded-full font-bold transition', s.chip, id === r ? 'bg-sky-400 text-paper' : 'border border-line bg-card text-slate-200 hover:border-sky-500/50', focusRing)}
             >
               {r}
             </button>
@@ -349,8 +349,8 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
         </div>
 
         <div className={cn('grid', mobile ? 'grid-cols-1 gap-2' : 'grid-cols-2 gap-3')}>
-          {valueCard('p', pShown, unitLabel(unit, abs), 'bg-red-400/[0.1]')}
-          {valueCard('t', t, blend ? `°C（${curve === 'dew' ? '露點' : '泡點'}）` : '°C', 'bg-sky-400/[0.1]')}
+          {valueCard('p', pShown, unitLabel(unit, abs), 'border border-red-500/35 bg-red-950')}
+          {valueCard('t', t, blend ? `°C（${curve === 'dew' ? '露點' : '泡點'}）` : '°C', 'border border-sky-500/35 bg-sky-950')}
         </div>
         {!abs && pShown < 0 && <p className={cn('text-amber-200', s.small)}>錶壓是負的＝真空（低於 1 大氣壓）</p>}
 
@@ -365,7 +365,7 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
               className={cn(
                 'rounded-full font-semibold tabular-nums transition',
                 mobile ? 'px-2.5 py-1 text-[13px]' : 'px-3.5 py-1 text-[17px]',
-                Math.abs(t - q.t) < 0.005 ? 'bg-sky-400/25 text-sky-100' : 'bg-white/[0.06] text-slate-200 hover:bg-white/[0.12]',
+                Math.abs(t - q.t) < 0.005 ? 'border border-sky-500 bg-sky-950 text-sky-200' : 'border border-line bg-card text-slate-200 hover:border-sky-500/50',
                 focusRing,
               )}
             >
@@ -374,7 +374,7 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
           ))}
         </div>
 
-        <dl className={cn('rounded-2xl bg-white/[0.05]', mobile ? 'p-3 text-[13px]' : 'px-5 py-3 text-[17px]')}>
+        <dl className={cn('rounded-2xl border border-line bg-card', mobile ? 'p-3 text-[13px]' : 'px-5 py-3 text-[17px]')}>
           {infoRows.map(([k, v, color]) => (
             <div key={k} className="flex items-center justify-between gap-3 py-0.5">
               <dt className="text-slate-300">{k}</dt>
@@ -395,7 +395,7 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
               setAbs(false)
               setTempNow(temperatureAt('R22', 210 / PSI_PER_BAR + ATM))
             }}
-            className={cn('flex items-center gap-1.5 rounded-full bg-sky-400/15 font-semibold text-sky-200 transition hover:bg-sky-400/25', s.chip, focusRing)}
+            className={cn('flex items-center gap-1.5 rounded-full border border-sky-500/40 bg-sky-950 font-semibold text-sky-200 transition hover:border-sky-500', s.chip, focusRing)}
           >
             <RotateCcw className="size-4" aria-hidden />
             預設

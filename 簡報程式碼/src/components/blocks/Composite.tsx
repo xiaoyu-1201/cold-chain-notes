@@ -4,8 +4,8 @@ import { cn } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
 import { BulbClock } from '../diagrams/BulbClock'
 import { CycleExplorer } from '../diagrams/CycleExplorer'
-import { IconChip } from '../ui/IconChip'
 import { Panel } from '../ui/Panel'
+import { ItemIcon } from './Cards'
 
 type RenderChild = (child: Block, index: number) => ReactNode
 
@@ -22,19 +22,15 @@ export function SectionPanel({ block, renderChild }: { block: SectionBlock; rend
 export function InsightCard({ block, renderChild }: { block: InsightBlock; renderChild: RenderChild }) {
   const t = toneStyles[block.tone]
   return (
-    <section className="relative flex h-full flex-col overflow-hidden rounded-[24px] border border-white/10 bg-linear-to-b from-white/[0.06] to-white/[0.015] p-7">
-      <span aria-hidden className={cn('absolute inset-x-0 top-0 h-1 bg-linear-to-r', t.gradient)} />
-      <div className="flex items-start justify-between">
-        <IconChip icon={block.icon} tone={block.tone} size="lg" />
-        <span className={cn('bg-linear-to-br bg-clip-text font-mono text-[64px] font-black leading-none text-transparent', t.gradient)}>
-          {block.no}
-        </span>
-      </div>
+    <section className="relative flex h-full flex-col overflow-hidden rounded-[18px] border border-line bg-card p-7">
+      <span aria-hidden className={cn('absolute inset-x-0 top-0 h-1', t.bar)} />
+      <ItemIcon icon={block.icon} title={block.title} tone={block.tone} size="md" />
       <h3 className="mt-4 text-[32px] font-black leading-tight text-white">{block.title}</h3>
       <p className={cn('mt-1 font-mono text-[16px] uppercase tracking-[0.2em]', t.text)}>{block.en}</p>
       {block.subtitle && <p className={cn('mt-3 text-[22px] font-bold', t.strong)}>{block.subtitle}</p>}
       {block.body && <p className="mt-3 text-[21px] leading-[1.6] text-slate-300">{block.body}</p>}
-      {block.children && <div className="mt-5 min-h-0 flex-1">{block.children.map(renderChild)}</div>}
+      {/* 子區塊在剩下的空間垂直置中：三欄內容多寡不同時，短的那欄不會下半部全空 */}
+      {block.children && <div className="mt-5 flex min-h-0 flex-1 flex-col justify-center [&>*]:h-auto">{block.children.map(renderChild)}</div>}
     </section>
   )
 }

@@ -12,7 +12,7 @@ function Term({ term, compact, emphasis }: { term: EquationTerm; compact?: boole
         'flex min-w-0 flex-1 flex-col items-center justify-center rounded-2xl border text-center',
         compact ? 'px-2 py-3' : 'px-4 py-5',
         t.border,
-        emphasis ? t.soft : 'bg-white/[0.03]',
+        emphasis ? t.soft : 'bg-card',
       )}
     >
       <span className={cn('font-mono font-extrabold leading-none', compact ? 'text-[30px]' : 'text-[44px]', t.strong)}>
@@ -59,9 +59,9 @@ export function Equation({ block }: { block: EquationBlock }) {
           {terms}
         </div>
         {block.note && (
-          <div className="flex items-center gap-4 rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-3">
+          <div className="flex items-center gap-4 rounded-xl border border-amber-500/50 bg-amber-950 px-4 py-3">
             {block.highlight && (
-              <span className="shrink-0 rounded-lg bg-amber-400/20 px-3 py-1 font-mono text-[24px] font-extrabold text-amber-200 ring-1 ring-inset ring-amber-400/40">
+              <span className="shrink-0 rounded-lg bg-card px-3 py-1 font-mono text-[24px] font-extrabold text-amber-200 ring-1 ring-inset ring-amber-500/60">
                 {block.highlight}
               </span>
             )}

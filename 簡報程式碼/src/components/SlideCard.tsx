@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { Target } from 'lucide-react'
-import { parts } from '../data/parts'
+import { PART_NO, parts } from '../data/parts'
 import { slides } from '../data/slides'
 import type { SlideData } from '../data/types'
 import { NEW_LABEL, isNew } from '../data/whatsNew'
@@ -30,6 +30,8 @@ export function SlideCard({ slide }: { slide: SlideData }) {
   // 在本篇的第幾頁（方便知道自己在哪）
   const siblings = slides.filter((s) => s.part === slide.part)
   const position = siblings.indexOf(slide) + 1
+  // 小節名稱開頭跟篇名重複（「進階」篇的「進階 Insight」）就省掉重複的字
+  const chapterLabel = slide.chapter?.startsWith(part.short) ? slide.chapter.slice(part.short.length).trim() : slide.chapter
 
   return (
     <motion.article
@@ -42,17 +44,21 @@ export function SlideCard({ slide }: { slide: SlideData }) {
         <div className="min-w-0">
           {/* 眉標：篇章・小節・本篇第幾頁（安靜的一行字，取代一排標籤） */}
           <p className="flex min-w-0 items-center gap-2.5 text-[20px] font-semibold">
-            <span className={toneStyles[part.tone].text}>{part.short}</span>
-            {slide.chapter && <span className="text-slate-300">· {slide.chapter}</span>}
-            <span className="text-slate-500">
-              · {position}／{siblings.length}
+            {/* 工程圖號：圖 篇-頁｜共幾頁（像圖紙右下角的圖號欄） */}
+            <span className="drawing-no mr-1 inline-flex shrink-0 items-stretch overflow-hidden rounded-[4px] border border-ink/45 text-[18px] leading-none text-ink">
+              <span className="px-2.5 py-1.5 font-bold">
+                圖 {PART_NO[slide.part]}-{position}
+              </span>
+              <span className="border-l border-ink/30 px-2 py-1.5 text-ink-3">共 {siblings.length}</span>
             </span>
+            <span className={toneStyles[part.tone].text}>{part.short}</span>
+            {chapterLabel && <span className="text-slate-300">· {chapterLabel}</span>}
             {slide.source && (
               <span title={SOURCE_TIP[slide.source]} className="text-slate-500">
                 · {SOURCE_LABEL[slide.source]}
               </span>
             )}
-            {slide.advanced && <span className="text-amber-300">· 進階</span>}
+            {slide.advanced && slide.part !== 'advanced' && <span className="text-amber-300">· 進階</span>}
             {slide.tier === 'ref' && (
               <span className="text-slate-400" title="查閱手冊：規格、對照、型號怎麼讀；需要時再翻，不用背">
                 · 查閱

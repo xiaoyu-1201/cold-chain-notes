@@ -6,9 +6,13 @@ import { Badge } from '../ui/Badge'
 import { Chain } from '../ui/Chain'
 import { Formula } from '../ui/Formula'
 import { Panel } from '../ui/Panel'
+import { PartGlyph } from '../ui/PartGlyph'
+import { glyphFor } from '../../lib/partGlyph'
 
 export function ConceptCard({ block }: { block: ConceptBlock }) {
   const t = toneStyles[block.tone]
+  // 講零件的行程（壓縮、冷凝、膨脹、蒸發）：中間空出來的地方放一張大的零件線稿
+  const glyph = glyphFor(block.title)
   return (
     <Panel
       icon={block.icon}
@@ -29,6 +33,11 @@ export function ConceptCard({ block }: { block: ConceptBlock }) {
               </li>
             ))}
           </ul>
+        )}
+        {glyph && (
+          <div className="flex min-h-0 flex-1 items-center justify-center rounded-xl border border-dashed border-line bg-paper py-3" aria-hidden>
+            <PartGlyph id={glyph} size={150} className="h-full max-h-[150px] w-auto text-ink-2" />
+          </div>
         )}
         {block.pairs && (
           <div className="mt-auto grid grid-cols-2 gap-3">

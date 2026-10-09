@@ -67,21 +67,21 @@ function TubeSheet({ rows, tubes, mode, mobile }: { rows: number; tubes: number;
     const free = Array.from({ length: tubes }, (_, i) => i).filter((i) => !used[r].has(i))
     for (let k = 0; k + 1 < free.length; k += 2) if (free[k + 1] - free[k] === 1) bends.push({ a: pos(r, free[k]), b: pos(r, free[k + 1]), flat: true })
   }
-  const rowTone = ['#38bdf8', '#a78bfa', '#34d399', '#fbbf24', '#f472b6', '#60a5fa', '#f87171', '#2dd4bf']
+  const rowTone = ['#2e7bc8', '#6a3fbf', '#15a06e', '#e0a01b', '#c2417a', '#1f64a8', '#d23f2e', '#1a9c8e']
   const tubeCol = 0
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className={cn('h-full w-full', mobile ? 'max-h-[380px]' : '')} role="img" aria-label={`散熱器穿管面示意：${rows} 排 × ${tubes} 支`}>
       {/* 風的方向：一排一排穿過去 */}
       <g opacity={mode === 'rows' ? 1 : 0.45}>
-        <line x1={padX - 30} x2={W - padX + 30} y1={22} y2={22} stroke="#7dd3fc" strokeWidth={2} markerEnd="url(#coil-arrow)" />
-        <text x={W / 2} y={14} textAnchor="middle" fill="#bae6fd" fontSize={13} fontWeight={600}>
+        <line x1={padX - 30} x2={W - padX + 30} y1={22} y2={22} stroke="#2e7bc8" strokeWidth={2} markerEnd="url(#coil-arrow)" />
+        <text x={W / 2} y={14} textAnchor="middle" fill="#164d84" fontSize={13} fontWeight={600}>
           風吹過去的方向
         </text>
       </g>
       <defs>
         <marker id="coil-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-          <path d="M0 0 10 5 0 10z" fill="#7dd3fc" />
+          <path d="M0 0 10 5 0 10z" fill="#2e7bc8" />
         </marker>
       </defs>
       {/* 數排：每一排一個色帶＋編號 */}
@@ -92,7 +92,7 @@ function TubeSheet({ rows, tubes, mode, mobile }: { rows: number; tubes: number;
           return (
             <g key={r}>
               <rect x={top.x - 13} y={top.y - 15} width={26} height={bot.y - top.y + 30} rx={13} fill={rowTone[r % rowTone.length]} opacity={0.16} />
-              <text x={top.x} y={H - 8} textAnchor="middle" fill={rowTone[r % rowTone.length]} fontSize={16} fontWeight={800}>
+              <text x={top.x} y={H - 8} textAnchor="middle" fill="#3e5677" fontSize={16} fontWeight={800}>
                 {r + 1}
               </text>
             </g>
@@ -100,11 +100,11 @@ function TubeSheet({ rows, tubes, mode, mobile }: { rows: number; tubes: number;
         })}
       {/* 數支：沿著第 1 排的直線數洞 */}
       {mode === 'tubes' && (
-        <rect x={pos(tubeCol, 0).x - 14} y={pos(tubeCol, 0).y - 15} width={28} height={(tubes - 1) * P + 30} rx={14} fill="#38bdf8" opacity={0.18} />
+        <rect x={pos(tubeCol, 0).x - 14} y={pos(tubeCol, 0).y - 15} width={28} height={(tubes - 1) * P + 30} rx={14} fill="#2e7bc8" opacity={0.16} />
       )}
       {/* 彎頭 */}
       {bends.map((b, i) => {
-        const hi = mode === 'flat' ? (b.flat ? '#34d399' : '#fbbf24') : mode === 'rows' && !b.flat ? '#fbbf24' : '#c2733d'
+        const hi = mode === 'flat' ? (b.flat ? '#15a06e' : '#e0a01b') : mode === 'rows' && !b.flat ? '#e0a01b' : '#c2733d'
         return <line key={i} x1={b.a.x} y1={b.a.y} x2={b.b.x} y2={b.b.y} stroke={hi} strokeWidth={9} strokeLinecap="round" opacity={mode === 'tubes' ? 0.55 : 0.95} />
       })}
       {/* 孔（銅管口） */}
@@ -114,9 +114,9 @@ function TubeSheet({ rows, tubes, mode, mobile }: { rows: number; tubes: number;
           const on = mode === 'tubes' && r === tubeCol
           return (
             <g key={`${r}-${t}`}>
-              <circle cx={p.x} cy={p.y} r={7.5} fill="#0d1117" stroke={on ? '#7dd3fc' : '#e7a46b'} strokeWidth={on ? 3 : 2} />
+              <circle cx={p.x} cy={p.y} r={7.5} fill="#ffffff" stroke={on ? '#2e7bc8' : '#b8642a'} strokeWidth={on ? 3 : 2} />
               {on && (
-                <text x={p.x - 16} y={p.y} textAnchor="end" dominantBaseline="middle" fill="#bae6fd" fontSize={13} fontWeight={700}>
+                <text x={p.x - 16} y={p.y} textAnchor="end" dominantBaseline="middle" fill="#164d84" fontSize={13} fontWeight={700}>
                   {t + 1}
                 </text>
               )}
@@ -148,7 +148,7 @@ export function CoilReader({ mobile = false }: { mobile?: boolean }) {
   }
 
   const diagram = (
-    <div className={cn('flex min-h-0 flex-col rounded-[22px] bg-white/[0.05]', mobile ? 'gap-2 p-3' : 'h-full gap-3 p-5')}>
+    <div className={cn('flex min-h-0 flex-col rounded-[18px] border border-line bg-card', mobile ? 'gap-2 p-3' : 'h-full gap-3 p-5')}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className={cn('font-bold text-white', t.body)}>穿管面（全部都是彎頭的那一面）</p>
         <Segmented size={mobile ? 'sm' : 'md'} value={mode} onChange={setMode} options={MODES} />
@@ -170,7 +170,7 @@ export function CoilReader({ mobile = false }: { mobile?: boolean }) {
         onFocus={(e) => e.currentTarget.select()}
         placeholder="輸入規格，例：4×11×330"
         aria-label="輸入散熱器規格：排×支×鏡面"
-        className={cn('w-full rounded-2xl bg-black/30 px-5 font-black text-white outline-none ring-2 ring-sky-400/40 placeholder:font-semibold placeholder:text-slate-500 focus:ring-sky-300', t.input, mobile ? 'py-2' : 'py-3')}
+        className={cn('w-full rounded-2xl bg-card px-5 font-mono font-black text-ink outline-none ring-2 ring-sky-500/45 placeholder:font-sans placeholder:font-semibold placeholder:text-slate-500 focus:ring-sky-500', t.input, mobile ? 'py-2' : 'py-3')}
       />
       <div className="flex flex-wrap items-center gap-2">
         <span className={cn('font-semibold text-slate-400', t.small)}>試試</span>
@@ -180,7 +180,7 @@ export function CoilReader({ mobile = false }: { mobile?: boolean }) {
             type="button"
             onClick={() => setInput(ex)}
             aria-pressed={input === ex}
-            className={cn('rounded-full font-semibold tabular-nums transition', t.chip, input === ex ? 'bg-sky-400/25 text-sky-100' : 'bg-white/[0.07] text-slate-200 hover:bg-white/[0.12]', focusRing)}
+            className={cn('rounded-full font-semibold tabular-nums transition', t.chip, input === ex ? 'border border-sky-500 bg-sky-950 text-sky-200' : 'border border-line bg-card text-slate-200 hover:border-sky-500/50', focusRing)}
           >
             {ex}
           </button>
@@ -188,19 +188,19 @@ export function CoilReader({ mobile = false }: { mobile?: boolean }) {
       </div>
       {spec ? (
         <dl className={cn('grid', mobile ? 'grid-cols-1 gap-2' : 'grid-cols-3 gap-3')}>
-          <div className={cn('rounded-2xl bg-violet-400/[0.1]', t.card)}>
+          <div className={cn('rounded-2xl bg-violet-500/[0.1]', t.card)}>
             <dt className={cn('font-semibold text-violet-200', t.small)}>排（深度）</dt>
             <dd className={cn('font-black tabular-nums text-white', t.value)}>{spec.rows} 排</dd>
             <p className={cn('text-slate-300', t.small)}>風要穿過 {spec.rows} 層銅管；排越多越厚</p>
           </div>
-          <div className={cn('rounded-2xl bg-sky-400/[0.1]', t.card)}>
+          <div className={cn('rounded-2xl bg-sky-500/[0.1]', t.card)}>
             <dt className={cn('font-semibold text-sky-200', t.small)}>支（高度）</dt>
             <dd className={cn('font-black tabular-nums text-white', t.value)}>{spec.tubes} 支</dd>
             <p className={cn('text-slate-300', t.small)}>
               {h ? `高約 ${h.cm} 公分、配 ${h.fan}風車` : `高約 ${Math.round(spec.tubes * 2.6)} 公分（估算，以型錄為準）`}
             </p>
           </div>
-          <div className={cn('rounded-2xl bg-emerald-400/[0.1]', t.card)}>
+          <div className={cn('rounded-2xl bg-emerald-500/[0.1]', t.card)}>
             <dt className={cn('font-semibold text-emerald-200', t.small)}>鏡面＝實內（長度）</dt>
             <dd className={cn('font-black tabular-nums text-white', t.value)}>{spec.len !== null ? `${spec.len} mm` : '—'}</dd>
             <p className={cn('text-slate-300', t.small)}>
@@ -209,9 +209,9 @@ export function CoilReader({ mobile = false }: { mobile?: boolean }) {
           </div>
         </dl>
       ) : (
-        <p className={cn('rounded-2xl bg-white/[0.05] text-amber-200', t.body, t.card)}>看不懂這個寫法；規格是「排×支×鏡面」，例如 4×11×330。</p>
+        <p className={cn('rounded-2xl border border-amber-500/50 bg-amber-950 text-amber-200', t.body, t.card)}>看不懂這個寫法；規格是「排×支×鏡面」，例如 4×11×330。</p>
       )}
-      <div className={cn('rounded-[22px] bg-white/[0.05]', mobile ? 'p-3' : 'px-5 py-4')}>
+      <div className={cn('rounded-[18px] border border-line bg-card', mobile ? 'p-3' : 'px-5 py-4')}>
         <p className={cn('font-bold text-white', t.body)}>支數 → 高度、風車（看高度就知道幾支）</p>
         <div className={cn('mt-2 grid grid-cols-4', mobile ? 'gap-1.5' : 'gap-3')}>
           {Object.entries(HEIGHT).map(([n, v]) => {
@@ -222,7 +222,7 @@ export function CoilReader({ mobile = false }: { mobile?: boolean }) {
                 type="button"
                 onClick={() => setInput(`${spec?.rows ?? 4}×${n}${spec?.len ? `×${spec.len}` : ''}`)}
                 aria-pressed={on}
-                className={cn('rounded-2xl text-left transition', mobile ? 'p-2' : 'px-4 py-3', on ? 'bg-sky-400/20 ring-2 ring-sky-300/60' : 'bg-white/[0.05] hover:bg-white/[0.09]', focusRing)}
+                className={cn('rounded-2xl text-left transition', mobile ? 'p-2' : 'px-4 py-3', on ? 'bg-sky-950 ring-2 ring-sky-500/70' : 'border border-line bg-paper hover:border-sky-500/50', focusRing)}
               >
                 <span className={cn('block font-black tabular-nums text-white', mobile ? 'text-[18px]' : 'text-[26px]')}>{n} 支</span>
                 <span className={cn('block text-slate-300', t.small)}>
@@ -235,7 +235,7 @@ export function CoilReader({ mobile = false }: { mobile?: boolean }) {
           })}
         </div>
       </div>
-      <div className={cn('rounded-[22px] bg-white/[0.05] text-slate-200', t.body, mobile ? 'p-3' : 'mt-auto px-5 py-4')}>
+      <div className={cn('rounded-[18px] border border-line bg-card text-slate-200', t.body, mobile ? 'p-3' : 'mt-auto px-5 py-4')}>
         <p className="font-bold text-white">老闆的看法</p>
         <ul className={cn('mt-1.5 list-disc space-y-1 pl-6', t.small)}>
           <li>「鏡面」很多人聽不懂；老闆叫「實內」＝有鰭片、風吹得到的有效長度。只有銅管、沒有鰭片的地方幫助很小。</li>

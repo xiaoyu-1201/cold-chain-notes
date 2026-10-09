@@ -63,7 +63,7 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-navy-950/90 p-3 backdrop-blur-sm sm:p-6"
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-ink/40 p-3 sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-label={`${title} 構造`}
@@ -76,8 +76,8 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
         if (e.target === e.currentTarget) onClose()
       }}
     >
-      <div className="flex h-full max-h-[900px] w-full max-w-[1400px] flex-col overflow-hidden rounded-3xl border border-white/10 bg-navy-900">
-        <header className="flex flex-wrap items-center gap-3 border-b border-white/10 px-4 py-3 sm:px-6">
+      <div className="flex h-full max-h-[900px] w-full max-w-[1400px] flex-col overflow-hidden rounded-[20px] border border-line bg-paper shadow-[0_24px_64px_-24px_rgba(15,36,64,0.5)]">
+        <header className="flex flex-wrap items-center gap-3 border-b border-line bg-card px-4 py-3 sm:px-6">
           <div className="min-w-0 flex-1">
             <p className="text-[22px] font-black text-white sm:text-[26px]">{title}</p>
             {alias && <p className="text-[15px] font-semibold text-sky-300">{alias}</p>}
@@ -92,14 +92,14 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
               照片
             </button>
           </div>
-          <button type="button" onClick={onClose} aria-label="關閉（Esc）" className={cn('rounded-xl border border-white/15 p-2 text-slate-200 hover:border-sky-300/60', focusRing)}>
+          <button type="button" onClick={onClose} aria-label="關閉（Esc）" className={cn('rounded-xl border border-line bg-card p-2 text-slate-200 hover:border-sky-500/60', focusRing)}>
             <X className="size-5" aria-hidden />
           </button>
         </header>
 
         {tab === '3d' ? (
           <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-            <div className="relative min-h-[280px] flex-1 bg-[radial-gradient(ellipse_at_center,rgba(56,189,248,0.12),transparent_70%)]">
+            <div className="theme-dark viewport-blueprint relative min-h-[280px] flex-1">
               <Suspense fallback={<p className="absolute inset-0 flex items-center justify-center text-[16px] text-slate-400">3D 模型載入中…</p>}>
                 <Part3D id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} />
               </Suspense>
@@ -115,13 +115,13 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
               </div>
               <p className="pointer-events-none absolute right-3 top-3 rounded-lg bg-navy-950/70 px-2.5 py-1 text-[13px] text-slate-300">拖曳旋轉・滾輪往游標放大・雙擊還原</p>
             </div>
-            <aside className="max-h-[42%] overflow-y-auto border-t border-white/10 p-4 lg:max-h-none lg:w-[380px] lg:border-l lg:border-t-0">
+            <aside className="max-h-[42%] overflow-y-auto border-t border-line bg-card p-4 lg:max-h-none lg:w-[380px] lg:border-l lg:border-t-0">
               {control && (
-                <section className="mb-4 rounded-2xl bg-sky-400/[0.1] p-4">
+                <section className="mb-4 rounded-2xl border border-sky-500/35 bg-sky-950 p-4">
                   <p className="text-[15px] font-bold text-sky-200">動手試試：{control.label}</p>
                   {control.kind === 'slider' ? (
                     <>
-                      <input type="range" min={0} max={1} step={0.01} value={op} onChange={(e) => operate(Number(e.target.value))} aria-label={control.label} className="mt-3 w-full accent-sky-400" />
+                      <input type="range" min={0} max={1} step={0.01} value={op} onChange={(e) => operate(Number(e.target.value))} aria-label={control.label} className="mt-3 w-full accent-sky-500" />
                       <div className="flex justify-between text-[13px] text-slate-400">
                         <span>{control.off}</span>
                         <span>{control.on}</span>
@@ -139,7 +139,7 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
               <ul className="space-y-2.5">
                 {legend.map((item) => (
                   <li key={item.name} className="flex gap-2.5">
-                    <span className="mt-1.5 size-3.5 shrink-0 rounded-full border border-white/30" style={{ background: item.color }} aria-hidden />
+                    <span className="mt-1.5 size-3.5 shrink-0 rounded-full border border-ink/25" style={{ background: item.color }} aria-hidden />
                     <span>
                       <span className="block text-[17px] font-bold text-white">{item.name}</span>
                       <span className="block text-[15px] leading-snug text-slate-300">{item.desc}</span>
@@ -154,7 +154,7 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
           <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 p-4">
             {photo && credit ? (
               <>
-                <img src={photo} alt={title} className="min-h-0 max-w-full flex-1 rounded-2xl bg-white object-contain" />
+                <img src={photo} alt={title} className="min-h-0 max-w-full flex-1 rounded-2xl border border-line bg-card object-contain" />
                 <p className="max-w-3xl text-center text-[17px] font-semibold leading-snug text-amber-100">{credit.note}</p>
                 <p className="text-center text-[13px] text-slate-400">
                   照片：{credit.title}・{credit.author}・
@@ -169,7 +169,7 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
                 </p>
               </>
             ) : (
-              <div className="max-w-md rounded-2xl border border-dashed border-white/20 p-6 text-center">
+              <div className="max-w-md rounded-2xl border border-dashed border-line bg-card p-6 text-center">
                 <Camera className="mx-auto size-10 text-slate-500" aria-hidden />
                 <p className="mt-3 text-[18px] font-bold text-slate-200">照片待補</p>
                 <p className="mt-1 text-[15px] text-slate-400">網路上找不到可自由使用的清楚照片；到店裡拍實品最準，拍好放進資料夾就會出現。先看「3D 構造」。</p>

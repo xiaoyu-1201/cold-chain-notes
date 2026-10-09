@@ -66,7 +66,7 @@ export const FAULTS: Fault[] = [
         fx: { removed: 'dml', ice: true, flow: allOff, compOn: false, condFan: false, evapFan: false, hotPuffs: false, coldPuffs: false, alarm: { at: 'kp15', text: '低壓跳脫', tone: 'amber' }, focus: 'kp15' },
       },
     ],
-    lesson: '系統裡只能有冷媒、不能有水：乾燥過濾器一定要裝，系統打開維修過就要換新。',
+    lesson: '系統裡只能有冷媒、不能有水：乾燥過濾器一定要裝，它也是常常更換的東西。',
   },
   {
     id: 'no-evr',

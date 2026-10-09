@@ -109,10 +109,10 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 02 老闆開場 ───────────────────────── */
   {
     id: 'owner',
-    source: 'extra',
+    added: '2026-10-09',
     part: 'intro',
     mark: 'WELCOME',
-    title: '老闆開場：新人要懂的三件事',
+    title: '老闆開場：懂原理，才有辦法賣',
     en: "Owner's Briefing",
     blocks: [
       {
@@ -123,10 +123,10 @@ const slideList: SlideData[] = [
             type: 'quote',
             text: (
               <>
-                我們賣的不是零件，是讓客戶的冷庫<Hl>「不停機」</Hl>。
+                我們就是賣這些零件，講白就是這樣子……但是<Hl>你要懂這些東西，你才有辦法賣</Hl>。
               </>
             ),
-            author: '冷凍材料行老闆的第一堂課',
+            author: '老闆〔錄音01 05:16、錄音02 20:48〕',
           },
           {
             type: 'grid',
@@ -134,27 +134,27 @@ const slideList: SlideData[] = [
             children: [
               {
                 type: 'info',
-                icon: Boxes,
+                icon: Lightbulb,
+                tone: 'ice',
+                title: '原理要很熟',
+                en: 'Know the Cycle',
+                body: '「你這個原理都要很熟，再來就是我們賣了哪些零件。」計算不用理，「我們又不是要考工程師」。〔錄音02 19:25、20:02〕',
+              },
+              {
+                type: 'info',
+                icon: MessagesSquare,
                 tone: 'violet',
-                title: '懂產品｜材料專家',
-                en: 'Product Know-how',
-                body: '熟悉品項、規格與替代料號，客人一開口就知道要拿什麼、缺貨時能給替代方案。',
+                title: '先問清楚再拿',
+                en: 'Ask First',
+                body: '客人說幾坪的冷藏庫，先問冰什麼；客人要換壓縮機，先問熱排、冷排多大。〔錄音02 06:07、錄音10 00:45〕',
               },
               {
                 type: 'info',
                 icon: Handshake,
                 tone: 'emerald',
-                title: '懂客戶｜技術夥伴',
-                en: 'Customer Partner',
-                body: '聽得懂技師的語言，先問對問題、再給對零件，減少退換貨與技師白跑一趟。',
-              },
-              {
-                type: 'info',
-                icon: Lightbulb,
-                tone: 'ice',
-                title: '懂原理｜冷鏈顧問',
-                en: 'System Thinking',
-                body: '看懂熱力循環，才能判斷「真正的問題」在哪，而不只是把東西賣出去。',
+                title: '比人家多關心他',
+                en: 'Care More',
+                body: '「為什麼客戶會跟你買……就是我們比人家多關心他。」話都講在前面；客人拿壓縮機去是要賺錢，不是再多賠一顆。〔錄音10 03:04、04:36、06:08〕',
               },
             ],
           },
@@ -162,23 +162,23 @@ const slideList: SlideData[] = [
             type: 'timeline',
             icon: GraduationCap,
             tone: 'violet',
-            title: '新人成長路線',
-            en: 'Growth Path',
+            title: '老闆說的學習順序',
+            en: 'Learning Order',
             items: [
-              { gen: '第 1 週', example: '認識品項與庫位', note: '貨架、料號、常用規格', tone: 'slate' },
-              { gen: '第 1 個月', example: '會接單問診', note: '接單六問、開單不出錯', tone: 'teal' },
-              { gen: '第 3 個月', example: '看懂系統', note: '冷媒一圈、單位、故障判讀', tone: 'ice' },
-              { gen: '半年', example: '協助選型報價', note: '新建庫房整套配料', tone: 'emerald' },
+              { gen: '①', example: '原理', note: '冷媒一圈、四大金剛', tone: 'teal' },
+              { gen: '②', example: '單位', note: '管徑幾分、溫度和壓力', tone: 'amber' },
+              { gen: '③', example: '裝置', note: '客人的裝置用在哪', tone: 'violet' },
+              { gen: '④', example: '壓縮機 → 零配件', note: '光壓縮機就二三十種', tone: 'ice' },
             ],
           },
         ],
       },
     ],
     conclusion: {
-      label: '老闆叮嚀',
+      label: '老闆說',
       text: (
         <>
-          客戶信任我們，是因為我們<Hl>問對問題、給對零件</Hl>——技術，就是材料行最好的服務。
+          先知道<Hl>物理現象</Hl>，再講控制，再認識我們賣的零件；原理熟了，才知道怎麼跟客人溝通。〔錄音02 18:38、錄音05 01:42〕
         </>
       ),
     },
@@ -516,15 +516,16 @@ const slideList: SlideData[] = [
   {
     id: 'ch2',
     source: 'handbook',
+    added: '2026-10-09',
     part: 'components',
     chapter: '第 2 章',
-    title: '系統心臟——壓縮機',
+    title: '壓縮機：系統的龍頭',
     en: 'Compressor',
     store: {
       products: ['全密閉壓縮機', '半密閉壓縮機', '冷凍油', '乾燥過濾器'],
       tip: (
         <>
-          客人要換壓縮機，一定要問：冷媒、電源（單相或三相）、<Em>低溫機或高溫機</Em>、馬力，最好看原機銘牌；壓縮機燒毀的案子，要一起換乾燥過濾器。
+          客人要換壓縮機，一定要問：冷媒、電源（單相或三相）、<Em>低溫機或高溫機</Em>、馬力，最好看機器上的型號牌；壓縮機燒毀的案子，要一起換乾燥過濾器。
         </>
       ),
     },
@@ -618,7 +619,7 @@ const slideList: SlideData[] = [
               {
                 icon: Ban,
                 title: '嚴禁液壓縮',
-                value: '只吃氣',
+                value: '不能壓液體',
                 desc: (
                   <>
                     壓縮機只能壓氣體；液體進去會<Em>直接打壞閥片和連桿</Em>。
@@ -635,7 +636,7 @@ const slideList: SlideData[] = [
     conclusion: {
       text: (
         <>
-          壓縮機<Hl>只吃氣不吃液</Hl>。壓比越大，效率越差；現場維護要守住<Hl>排氣溫度</Hl>和<Hl>吸氣過熱度</Hl>。
+          壓縮機<Hl>只能壓氣體</Hl>，壓到液體會壞。壓比越大，效率越差；現場維護要守住<Hl>排氣溫度</Hl>和<Hl>吸氣過熱度</Hl>。
         </>
       ),
     },
@@ -815,7 +816,7 @@ const slideList: SlideData[] = [
   {
     id: 'comp-temp',
     tier: 'ref',
-    added: '2026-10-07',
+    added: '2026-10-09',
     part: 'components',
     chapter: '壓縮機貨架',
     mark: 'TEMP',
@@ -836,9 +837,9 @@ const slideList: SlideData[] = [
             steps: [
               { title: 'CR＝高溫（冷藏）', desc: '打冷藏用；價格最低', icon: Thermometer, tone: 'amber', tag: '高溫' },
               { title: 'CS＝中溫', desc: '介於中間：打冷藏可以、打冷凍也可以', icon: ThermometerSnowflake, tone: 'teal', tag: '中溫' },
-              { title: 'CF＝低溫（冷凍）', desc: '純低溫，-20°C 的冷凍庫；越低溫越貴，一馬半的低溫機比兩馬半的中溫機還貴', icon: Snowflake, tone: 'ice', tag: '低溫' },
+              { title: 'CF＝低溫（冷凍）', desc: '純低溫，-20°C 的冷凍庫；越低溫越貴：一馬半的低溫機，價錢就跟兩馬半的中溫機一樣', icon: Snowflake, tone: 'ice', tag: '低溫' },
             ],
-            result: { label: '規則', text: '低溫可以往上打（打冷藏），高溫不能往下打（打冷凍）；所以缺貨時用「更低溫的」代替，不能反過來' },
+            result: { label: '老闆怎麼代替', text: '中溫兩邊都能打：低溫缺貨時，可以拿大一點的中溫代替（例：CF 09K 缺貨，用 CS 20K）。冷藏一般用高溫，因為比較便宜。〔錄音13 39:56〕' },
           },
           {
             type: 'grid',
@@ -863,9 +864,9 @@ const slideList: SlideData[] = [
                 title: '代替的三個條件',
                 en: 'Substitution Rules',
                 items: [
-                  { icon: Scale, title: '能力要對', desc: '對 BTU 和排氣量；大小不能差一級' },
+                  { icon: Scale, title: '能力要對', desc: '對 BTU 和排氣量；拿中溫代低溫，要選大一點的（09K → 20K）' },
                   { icon: Zap, title: '電壓、相位要一樣', desc: '單相換單相、三相換三相' },
-                  { icon: ThermometerSnowflake, title: '溫度只能往低的換', desc: '低溫缺貨不能拿高溫代；中溫可以代高溫' },
+                  { icon: ThermometerSnowflake, title: '中溫兩邊都能打', desc: '冷藏可以用、冷凍也可以用；高溫是打冷藏、低溫是打冷凍' },
                 ],
               },
             ],
@@ -877,14 +878,14 @@ const slideList: SlideData[] = [
       label: '一句話',
       text: (
         <>
-          冷藏用<Hl>高溫機</Hl>、冷凍用<Hl>低溫機</Hl>，中溫兩邊都能打；代替只能拿<Em>更低溫</Em>的，能力和電壓還是要對。
+          冷藏用<Hl>高溫機</Hl>、冷凍用<Hl>低溫機</Hl>，<Hl>中溫兩邊都能打</Hl>；低溫缺貨可以拿大一點的中溫代替，能力和電壓還是要對。
         </>
       ),
     },
   },
   {
     id: 'comp-pick',
-    added: '2026-10-07',
+    added: '2026-10-09',
     part: 'components',
     chapter: '壓縮機貨架',
     mark: 'PICK',
@@ -905,7 +906,7 @@ const slideList: SlideData[] = [
               <>電壓對了嗎：110 還是 220？三相是 220 還是 380？</>,
               <>單相有沒有拿配件盒；三相有沒有拿角座</>,
               <>溫度對嗎：冷藏拿高溫機，冷凍拿低溫機</>,
-              <>箱子上的字跟型號牌一樣嗎（紙箱有時候是重新包的）</>,
+              <>不要只看架上的位置：有時候會放錯，拿出來還要再看一次型號〔錄音13 22:33〕</>,
               <>客人要的是哪一顆，不是「長得一樣」的那一顆（2446 和 2464 長得一模一樣，能力不同）</>,
             ],
           },
@@ -1405,7 +1406,7 @@ const slideList: SlideData[] = [
         chapters: [
           { track: 0, at: 0, title: '檢查筆記：先記住每個零件做什麼', summary: '先搞懂壓縮機、油分離器這些零件各做什麼；筆記內容大致都對' },
           { track: 0, at: 105, title: '散熱器、儲液器、乾燥過濾器', summary: '散熱器會吸灰塵；講義右下角的小圓是儲液器（沒標名稱）；乾燥過濾器一定要裝' },
-          { track: 0, at: 156, title: '視液鏡會變色、電磁閥常閉', summary: '視液鏡的含水指示環會變色：綠＝乾燥、變淡＝快超標、黃＝含水，很多人不知道' },
+          { track: 0, at: 156, title: '視液鏡會變色、電磁閥常閉', summary: '視液鏡會變色、有三種顏色，很多人不知道；電磁閥常閉、通電才開' },
           { track: 0, at: 208, title: '冷藏＋冷凍一對二很難做', summary: '一台壓縮機同時帶冷藏和冷凍很難控制，KVP 這類閥一年賣不到兩顆；一般一對一，兩庫同溫才一對二' },
           { track: 0, at: 259, title: '下一步：學單位，再看實品', summary: '冷藏、冷凍主要差在溫控：冷凍要除霜' },
           { track: 1, at: 51, title: '散熱器擺哪裡很重要', summary: '裸露型（台語「無穿衫」）便宜，但放在鐵皮屋上，夏天環境溫度會到 50 度' },
@@ -1659,7 +1660,7 @@ const slideList: SlideData[] = [
           { at: 1859, title: '怎麼抱、幾支管', summary: '不要抓管子；兩支管＝高壓吐出、低壓吸入，第三支是充灌閥' },
           { at: 2155, title: '高溫、中溫、低溫', summary: 'CR 高溫打冷藏、CS 中溫兩邊都能、CF 低溫打冷凍；越低溫越貴' },
           { at: 2314, title: 'K6、K7 世代', summary: 'K6 墨西哥＝中溫、K7 印度＝代替 CR 的冷藏機；同樣叫 CS 不是同一顆' },
-          { at: 2407, title: '缺貨怎麼代替', summary: '中溫可以代低溫、代冷藏；對得到能力就能換，但不要反過來' },
+          { at: 2396, title: '缺貨怎麼代替', summary: '中溫可以打低溫、也可以打冷藏：09K 缺貨可以用 20K 代替；對得到能力就能換' },
           { at: 2630, title: 'Danfoss（現在叫 Secop）：G 和 CL', summary: 'G＝只灌 R134a（冷藏）；CL＝R404A 等（冷凍）；客人說 12C 就是 12CL' },
           { at: 2915, title: '看型號牌找相位', summary: '箱子不用看，看機器上的型號牌：PH 3 就是三相' },
         ],
@@ -1701,7 +1702,7 @@ const slideList: SlideData[] = [
           { at: 779, title: '客人來拿保溫管', summary: '先問「包什麼」：銅管還是水管、幾分、多厚；抽出來就塞不回去' },
           { at: 848, title: '黑色＝水管尺寸', summary: '客人說包四分水管，要拿「7分」洞的；黑色硬、保溫好但難包' },
           { at: 919, title: '灰色＝銅管尺寸 15 種', summary: '3、4、5、6、7 分五種洞 × 3、4、6 分三種厚度；一八一以上放倉庫' },
-          { at: 1009, title: '洞×厚怎麼唸', summary: '「六四」＝6分洞、4分厚；六四、六六、六一（1 吋厚）' },
+          { at: 996, title: '洞×厚怎麼唸', summary: '「六四」＝6分洞、4分厚；要包一八一銅管，就拿 6分水管的：六四、六六、六一（1 吋厚）' },
           { at: 1180, title: '客人說包水管先問溫度', summary: '冷氣排水用最薄的就好；冰水管 7°C 要包厚；聽得懂就知道你內行' },
           { at: 1369, title: '六分回管最常用', summary: '黑金剛的渦捲、往復式回管（氣管）都是六分，所以六分保溫管用最多' },
           { at: 1483, title: '配機組要問回管幾分', summary: '壓縮機、冷熱排講好之後，配件以三分為主，最後看回管幾分配保溫管' },
@@ -2214,6 +2215,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 核心圖解：冷凍循環（可持續擴充） ───────────────────────── */
   {
     id: 'cycle-lesson',
+    added: '2026-10-09',
     part: 'basics',
     chapter: '核心圖解',
     mark: 'CYCLE',
@@ -2233,6 +2235,7 @@ const slideList: SlideData[] = [
   {
     id: 'handout',
     tier: 'ref',
+    added: '2026-10-09',
     part: 'components',
     chapter: '講義',
     title: '講義：系統零件總覽圖',
@@ -2306,7 +2309,7 @@ const slideList: SlideData[] = [
             en: 'Filter Drier',
             group: 'liquid',
             points: [{ x: 51.5, y: 79.4 }],
-            func: '冷凍系統裡只能有冷媒、不能有水：水會結冰堵住管路。乾燥過濾器裡的分子篩會吸水、濾雜質，一定要裝；系統打開維修過就要換新。',
+            func: '冷凍系統裡只能有冷媒、不能有水：水會結冰堵住管路。乾燥過濾器裡的分子篩會吸水、濾雜質，一定要裝；它也是常常更換的東西。',
             slide: 'ch9',
             chapter: '第 9 章',
             audioAt: 2 * 60 + 33,
@@ -2410,7 +2413,7 @@ const slideList: SlideData[] = [
             en: 'Compressor',
             group: 'discharge',
             points: [{ x: 67.25, y: 68.2 }],
-            func: '壓縮機是四大金剛之首：把低溫低壓的冷媒氣體壓成高溫高壓，送到冷凝器散熱。只能壓氣體，不能壓液體。',
+            func: '壓縮機是龍頭，沒有它什麼都不行：把低溫低壓的冷媒氣體壓成高溫高壓，送到冷凝器散熱。只能壓氣體，不能壓液體。',
             slide: 'ch2',
             chapter: '第 2 章',
             audioAt: 11 * 60 + 57,
@@ -2645,6 +2648,7 @@ const slideList: SlideData[] = [
   {
     id: 'coil-store',
     tier: 'ref',
+    added: '2026-10-09',
     part: 'practice',
     chapter: '門市：散熱器',
     mark: 'STORE',
@@ -2682,7 +2686,7 @@ const slideList: SlideData[] = [
                 items: [
                   { icon: Layers, title: '「底板」＝底部的板子', desc: '可能是放壓縮機的「基板」，也可能是把底封住的「封底板」；先問「要放壓縮機嗎？」' },
                   { icon: Package, title: '庫存只做兩種', desc: '附基板、封底（不附基板）；只換散熱器的，拆掉封底板就能裝' },
-                  { icon: Fan, title: '「室外機散熱器」', desc: '問「馬達在外面還是裡面？」馬達外露＝一般散熱器（無穿衫，要加遮雨板）；有外殼＝屋外型' },
+                  { icon: Fan, title: '「室外機散熱器」', desc: '問「馬達在外面還是裡面？」馬達外露＝一般散熱器（無穿衫，可以加遮雨板）；有外殼＝屋外型' },
                 ],
               },
               {
@@ -2780,6 +2784,7 @@ const slideList: SlideData[] = [
   {
     id: 'outdoor-units',
     tier: 'ref',
+    added: '2026-10-09',
     part: 'components',
     chapter: '散熱器種類',
     mark: 'UNITS',
@@ -2797,9 +2802,9 @@ const slideList: SlideData[] = [
             title: '一般散熱器',
             en: 'Open Type',
             items: [
-              { icon: Fan, title: '馬達外露', desc: '台語叫「無穿衫」；便宜，店裡最常賣', badge: { label: '最常見', tone: 'amber' } },
+              { icon: Fan, title: '馬達外露', desc: '人家說「無穿衫」；便宜，店裡最常賣', badge: { label: '最常見', tone: 'amber' } },
               { icon: Refrigerator, title: '兩種用法都行', desc: '放冰箱頂上（機上型），或拉到外面（散熱外移）' },
-              { icon: ShieldAlert, title: '放室外要加遮雨板', desc: '不然馬達會淋到雨；聲音也比屋外型大' },
+              { icon: ShieldAlert, title: '放室外可以加遮雨板', desc: '要不要加看位置，有屋簷擋的就不用；聲音比屋外型大' },
             ],
           },
           {
@@ -2957,7 +2962,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 新人業務怎麼開始 ───────────────────────── */
   {
     id: 'newbie-sales',
-    added: '2026-10-07',
+    added: '2026-10-09',
     source: 'extra',
     part: 'practice',
     chapter: '新人業務',
@@ -2978,9 +2983,9 @@ const slideList: SlideData[] = [
             en: 'Four Habits',
             steps: [
               { title: '把產品認熟', desc: '業務不是靠口才，是客人問什麼都答得出來；客人只問壓縮機，我們多問熱排、冷排、裝什麼設備〔錄音09、10〕', icon: Boxes },
-              { title: '從來不拿錯貨', desc: '壓縮機焊過就不能退：型號一個字一個字對、電壓對、出門前再對一次。新人最快建立信任的方法是不出錯〔錄音13〕', icon: ShieldCheck },
+              { title: '從來不拿錯貨', desc: '壓縮機焊過就不能退：型號一個字一個字對、電壓對，先對壓縮機、再對配件〔錄音13〕', icon: ShieldCheck },
               { title: '話先講在前頭、講結論', desc: '買賣說斷斷：請客人施工前先測，有問題馬上換；客人不是來上課的，講他聽得懂的結論〔錄音09、14〕', icon: MessagesSquare },
-              { title: '不懂就問，每天記', desc: '問老闆、問客人「這裝在哪？」沒人會看輕你，拿錯才會；被問倒的問題記下來，一個月後會發現就那幾十種', icon: Lightbulb },
+              { title: '不懂就問，每天記（補充建議）', desc: '問老闆、問客人「這裝在哪？」；被問倒的問題記下來，一個月後會發現就那幾十種', icon: Lightbulb },
             ],
           },
           {
@@ -3476,6 +3481,7 @@ const slideList: SlideData[] = [
   {
     id: 'sop',
     source: 'extra',
+    added: '2026-10-09',
     part: 'practice',
     chapter: '門市實戰',
     mark: 'COUNTER',
@@ -3497,7 +3503,7 @@ const slideList: SlideData[] = [
               { icon: Plug, title: '電源規格？', desc: '單相 110V / 220V、三相 220V / 380V' },
               { icon: Thermometer, title: '使用溫度？', desc: '冷凍（低溫機）或冷藏（高溫機）' },
               { icon: Gauge, title: '能力規格？', desc: '馬力 HP、冷凍能力 kcal/h 或 kW' },
-              { icon: Camera, title: '原機型號？', desc: '請客人拍銘牌照片最準確' },
+              { icon: Camera, title: '原機型號？', desc: '請客人拍機器上的型號牌最準確' },
               { icon: Ruler, title: '接管尺寸與方式？', desc: '英制管徑；焊接或喇叭口' },
             ],
           },
@@ -3573,6 +3579,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 四大行程（冷媒一圈的四件事） ───────────────────────── */
   {
     id: 'strokes',
+    added: '2026-10-09',
     part: 'basics',
     chapter: '四大行程',
     mark: 'CYCLE',
@@ -3624,7 +3631,7 @@ const slideList: SlideData[] = [
             tone: 'teal',
             title: '節流膨脹',
             badge: { label: '③ 膨脹閥', tone: 'teal' },
-            body: '高壓常溫的液體通過窄小的閥口，壓力一下子降下來，變成低壓、很容易蒸發的液氣混合。',
+            body: '中溫中壓的液體通過窄小的閥口，壓力一下子降下來，變成很容易蒸發的液氣混合。',
             chain: ['中溫中壓液態', '液氣混合（濕蒸汽）'],
             points: ['術語：等焓降壓節流', '像洗車時壓住水管口'],
           },
@@ -3657,6 +3664,7 @@ const slideList: SlideData[] = [
   {
     id: 'reftools',
     tier: 'ref',
+    added: '2026-10-09',
     part: 'units',
     chapter: 'Ref Tools',
     mark: 'P-T',
@@ -3683,7 +3691,7 @@ const slideList: SlideData[] = [
             title: '真的 App 怎麼用（Danfoss Ref Tools，免費）',
             steps: [
               { title: '打開「冷媒尺」', desc: 'App Store／Google Play 搜尋「Ref Tools」，開啟後點下方第一個「冷媒尺」' },
-              { title: '換冷媒', desc: '點右上的冷媒名稱（例如 R404A）；看機器銘牌或鋼瓶上的型號' },
+              { title: '換冷媒', desc: '點右上的冷媒名稱（例如 R404A）；看機器上的型號牌或鋼瓶上的型號' },
               { title: '滑動左邊的尺', desc: '中間那條線對到的：左邊紅字＝壓力、右邊藍字＝溫度；也可以點右邊的數字直接輸入' },
               { title: '「絕對壓力」要關掉', desc: '壓力錶讀的是錶壓，關掉才對得上錶；混合冷媒開著「露點溫度」' },
               { title: '對照看看', desc: 'R22 210 psig＝40.42°C，跟老闆的手寫表一樣（按左邊「預設」）' },
@@ -3840,6 +3848,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 估價練習（只用錄音講過的規則） ───────────────────────── */
   {
     id: 'estimate',
+    added: '2026-10-09',
     part: 'practice',
     chapter: '估價練習',
     mark: 'QUOTE',
@@ -3888,7 +3897,7 @@ const slideList: SlideData[] = [
       label: '估價心法',
       text: (
         <>
-          先問<Hl>冰什麼</Hl>，壓縮機決定一切；散熱器配 2 倍，<Hl>乾燥過濾器、壓力開關一定要</Hl>，膨脹閥系統加儲液器，散熱外移加電磁閥。
+          先問<Hl>冰什麼</Hl>，壓縮機是龍頭、其他都跟著它配；散熱器配 2 倍，<Hl>乾燥過濾器、壓力開關一定要</Hl>，膨脹閥系統加儲液器，散熱外移加電磁閥。
         </>
       ),
     },
@@ -3897,7 +3906,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 每篇結尾：記住三件事 ───────────────────────── */
   {
     id: 'recap-1',
-    added: '2026-10-08',
+    added: '2026-10-09',
     part: 'basics',
     chapter: '記住三件事',
     mark: 'RECAP 1',
@@ -3910,7 +3919,7 @@ const slideList: SlideData[] = [
         items: [
           { title: '會冷，是因為熱被吸走', desc: '液態變成氣態才會吸熱：冷排在庫內把熱吸走，所以會冷；熱排在室外把熱排掉，所以吹出來是熱風。', slide: 'strokes' },
           { title: '冷媒一圈四個狀態', desc: '高溫高壓氣態 → 中溫中壓液態 → 液氣混合 → 低溫低壓氣態，回到壓縮機再來一圈。', slide: 'cycle-lesson' },
-          { title: '四大金剛各做一件事', desc: '壓縮機壓氣體（只吃氣不吃液）、冷凝器放熱、膨脹閥降壓、蒸發器吸熱；其他零件都是在保護這四個。', slide: 'cycle-lesson' },
+          { title: '四大金剛各做一件事', desc: '壓縮機壓氣體（不能壓液體，壓到會壞）、冷凝器散熱、膨脹閥降壓、蒸發器吸熱；乾燥過濾器、壓力開關一定要裝。', slide: 'cycle-lesson' },
         ],
         refs: [],
       },
@@ -3945,7 +3954,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'recap-3',
-    added: '2026-10-08',
+    added: '2026-10-09',
     part: 'industry',
     chapter: '記住三件事',
     mark: 'RECAP 3',
@@ -3956,7 +3965,7 @@ const slideList: SlideData[] = [
         type: 'recap',
         tone: 'violet',
         items: [
-          { title: '我們在代理商和工程行之間', desc: '備貨庫存、技術諮詢、急件調貨、規格替代——客人找我們是因為我們比別人多懂一點。', slide: 'industry' },
+          { title: '我們在代理商和工程行之間', desc: '我們就是賣這些零件，讓師傅自己組裝；客人會跟我們買，是因為我們比人家多關心他。', slide: 'industry' },
           { title: '客人說幾坪，先問「冰什麼」', desc: '冰什麼決定溫度，溫度決定壓縮機多大；整套估價才是主要生意。', slide: 'estimate' },
           { title: '冰箱看尺寸和用途', desc: '兩尺、兩尺半、四尺、六尺；全凍、半凍半藏、全藏，配的壓縮機、冷排、熱排都不一樣大。', slide: 'fridge-types' },
         ],
@@ -3999,7 +4008,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'recap-5',
-    added: '2026-10-08',
+    added: '2026-10-09',
     part: 'practice',
     chapter: '記住三件事',
     mark: 'RECAP 5',
@@ -4011,7 +4020,7 @@ const slideList: SlideData[] = [
         tone: 'indigo',
         items: [
           { title: '多問一句、話先講在前頭、講結論', desc: '客人只問壓縮機，我們多問熱排冷排；買賣說斷斷；客人不是來上課的。', slide: 'store-mindset' },
-          { title: '不拿錯貨，是新人最快建立信任的方法', desc: '型號一字不漏、電壓對、出門前再對一次；送貨當面對、請對方打勾，有價格的單不給客戶的客戶看。', slide: 'delivery-sop' },
+          { title: '壓縮機焊過就不能退：一個字一個字對', desc: '型號一字不漏、電壓對、配件對；送貨當面對、請對方打勾，有價格的單不給客戶的客戶看。', slide: 'delivery-sop' },
           { title: '故障先看高壓、低壓各查哪裡', desc: '高壓高先看冷凝器；低壓低先看蒸發器和視液鏡；反覆補冷媒的先找漏點。', slide: 'sop' },
         ],
         refs: [
@@ -4028,7 +4037,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 錄音索引（取代一頁一段的錄音頁） ───────────────────────── */
   {
     id: 'recordings',
-    added: '2026-10-08',
+    added: '2026-10-09',
     part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO',
@@ -4065,6 +4074,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 名詞翻卡（間隔重複） ───────────────────────── */
   {
     id: 'glossary',
+    added: '2026-10-09',
     part: 'review',
     chapter: '名詞翻卡',
     mark: 'WORDS',
@@ -4074,7 +4084,7 @@ const slideList: SlideData[] = [
       {
         type: 'flashcards',
         cards: [
-          { group: '四大元件', term: '壓縮機', alias: '系統心臟', en: 'Compressor', tip: '不能壓縮液體；其他元件都跟著它配', part: 'comp' },
+          { group: '四大元件', term: '壓縮機', added: '2026-10-09', alias: '龍頭（老闆的說法）', en: 'Compressor', tip: '不能壓縮液體；其他元件都跟著它配', part: 'comp' },
           { group: '四大元件', term: '冷凝器', alias: '散熱器、熱排（台語）', en: 'Condenser', tip: '把熱排到室外，氣態冷凝成液態', part: 'cond', tw: { rec: 1, from: 109.4, to: 113, say: '換這個台語叫做熱排' } },
           { group: '四大元件', term: '裸露型散熱器', alias: '無穿衫（台語：沒穿衣服）', en: 'Open-type Condenser', tip: '馬達外露、便宜；別放鐵皮屋上', part: 'cond', tw: { rec: 2, from: 408.2, to: 410.4, say: '人說無穿衫，就是這個' } },
           { group: '四大元件', term: '蒸發器', alias: '冷排（台語）', en: 'Evaporator', tip: '在庫內吸熱，液態蒸發成氣態', part: 'evap', tw: { rec: 1, from: 513.9, to: 518.5, say: '吸熱、冷排……因為這些是台語' } },
@@ -4089,7 +4099,7 @@ const slideList: SlideData[] = [
           { group: '小零件', term: '壓力開關', alias: '高低壓開關', en: 'Pressure Switch（KP 15）', tip: '一定要裝，保護壓縮機', part: 'kp15' },
           { group: '小零件', term: '手閥', alias: '球閥', en: 'Ball Valve（GBC）', tip: '換零件時前後關起來', part: 'gbc' },
           { group: '小零件', term: '油分離器', alias: '分油器', en: 'Oil Separator（OUB）', tip: '把跟著跑出去的冷凍油拉回壓縮機', part: 'oub' },
-          { group: '小零件', term: '溫控器', alias: '感溫棒（放庫內）', en: 'Thermostat', tip: '庫內到溫就停機，回溫再啟動', part: 'tc' },
+          { group: '小零件', term: '溫控器', added: '2026-10-09', alias: '溫控', en: 'Thermostat', tip: '靠感溫棒量庫內溫度：到溫就讓壓縮機停，回升 4°C 再啟動', part: 'tc' },
           { group: '小零件', term: '除霜電熱管', alias: '除霜', en: 'Defrost Heater', tip: '冷凍庫的冷排會結霜，要定時除霜' },
           { group: '散熱器', term: '排×支×鏡面', alias: '散熱器規格', en: 'Rows × Tubes × Fin Length', tip: '例 4×11×330：4 排、每排 11 支、鏡面 330 mm' },
           { group: '散熱器', term: '鏡面', alias: '實內（老闆的叫法）', en: 'Fin Length', tip: '有鰭片、風吹得到的有效長度；含兩側彎頭大約多 6 公分', tw: { rec: 9, from: 130.7, to: 138.7, say: '他們都講鏡面，那我習慣講實內，實際的內部，就是有效的' } },
@@ -4122,13 +4132,13 @@ const slideList: SlideData[] = [
           { group: '壓縮機', term: '角座', added: '2026-10-07', alias: '固定壓縮機的腳', en: 'Mounting Feet', tip: '三相的只要角座：四個角座加中間的柱子，螺絲從底板鎖上去', tw: { rec: 13, from: 990.8, to: 998.0, say: '它不用配件，它只要角座，角座這四個角座' } },
           { group: '壓縮機', term: '單相配件盒', added: '2026-10-07', alias: '繼電器＋兩顆電容', en: 'Start Kit', tip: '單相壓縮機要配：繼電器（Relay）、啟動電容、運轉電容，原廠配好一盒；不同型號內容不一樣', tw: { rec: 13, from: 1101.8, to: 1112.7, say: 'RELAY，然後一個啟動電容，一個運轉電容……然後有一個 RELAY 在裡面' } },
           { group: '壓縮機', term: '充灌閥', added: '2026-10-07', alias: '第三支管', en: 'Service Valve', tip: '壓縮機的第三支管：灌冷媒、測壓力用；兩支管的壓縮機沒有，師傅自己接', tw: { rec: 13, from: 1935.1, to: 1945.8, say: '它這個接一個充灌閥……充灌冷媒就是要關跟開，然後測試壓力' } },
-          { group: '壓縮機', term: '高溫機／低溫機', added: '2026-10-07', alias: 'CR／CS／CF', en: 'High / Medium / Low Temp', tip: '黑金剛：CR 高溫打冷藏、CS 中溫兩邊都能、CF 低溫打冷凍；越低溫越貴；缺貨只能拿更低溫的代替', part: 'comp', tw: { rec: 13, from: 2155.6, to: 2164.9, say: '有分高溫中溫低溫；CR 是屬於高溫，中溫是 CS，低溫是 CF' } },
+          { group: '壓縮機', term: '高溫機／低溫機', added: '2026-10-09', alias: 'CR／CS／CF', en: 'High / Medium / Low Temp', tip: '黑金剛：CR 高溫打冷藏、CS 中溫兩邊都能、CF 低溫打冷凍；越低溫越貴；低溫缺貨可以拿大一點的中溫代替', part: 'comp', tw: { rec: 13, from: 2155.6, to: 2164.9, say: '有分高溫中溫低溫；CR 是屬於高溫，中溫是 CS，低溫是 CF' } },
           { group: '壓縮機', term: 'TF5／PFV', added: '2026-10-07', alias: '三相／單相', en: 'Three-phase / Single-phase', tip: '黑金剛型號後面：TF5＝三相 200～230V，PFV＝單相；型號牌上看 PH 1 或 PH 3', tw: { rec: 13, from: 1253.3, to: 1261.6, say: 'PFV，我們看 PFV 代表就是 PH-1，TF-5 代表就是三相' } },
           { group: '壓縮機', term: '拿錯不能退', added: '2026-10-07', alias: '焊過就算用過', en: 'No Return After Brazing', tip: '壓縮機的管子焊上去就沒人要了；型號、電壓拿錯公司要自己吸收，所以一個字一個字對', tw: { rec: 13, from: 462.0, to: 469.2, say: '它只要焊接上去沒有人要了，等於是使用後就沒有人要了' } },
           { group: '散熱器', term: '站壓', alias: '抓漏', en: 'Pressure Test', tip: '從充灌閥灌氮氣、泡水找漏點；散熱器沒有充灌閥', tw: { rec: 9, from: 569.8, to: 578.1, say: '這叫抓漏，自己站壓……站壓或是抓漏' } },
           { group: '散熱器', term: '內膨', alias: '膨脹閥鎖在蒸發器箱內', en: 'Internal TXV Mounting', tip: '冷凍做內膨（膨脹閥會結冰滴水）；冷氣是外膨' },
           { group: '管路', term: '液管', alias: '講義上的黃色線', en: 'Liquid Line', tip: '中溫中壓液態' },
-          { group: '管路', term: '高壓氣管', alias: '講義上的紅色線', en: 'Discharge Line', tip: '高溫高壓氣態' },
+          { group: '管路', term: '高壓氣管', added: '2026-10-09', alias: '吐出管、講義上的紅色線', en: 'Discharge Line', tip: '壓縮機吐出去、高溫高壓氣態；老闆說「沒有人會講高壓氣管」，口語叫吐出管' },
           { group: '管路', term: '吸氣管', alias: '講義上的藍色線', en: 'Suction Line', tip: '低溫低壓氣態回到壓縮機' },
           { group: '管路', term: '高壓幾分、低壓幾分', alias: '接管規格', en: 'Discharge／Suction Size', tip: '壓縮機和零件都會寫：高壓（排氣）、低壓（吸氣）接管各幾分' },
           { group: '單位與冷媒', term: '馬', alias: '馬力（口語）', en: 'HP（正確單位是 BTU）', tip: '客人都講幾馬', tw: { rec: 2, from: 304.2, to: 306.3, say: '口語的話就講幾馬' } },
@@ -4174,7 +4184,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'abbr-specs',
-    added: '2026-10-08',
+    added: '2026-10-09',
     part: 'review',
     chapter: '英文縮寫 2/3',
     mark: 'ABBR 2',
@@ -4362,6 +4372,7 @@ const slideList: SlideData[] = [
   {
     id: 'insights',
     source: 'handbook',
+    added: '2026-10-09',
     part: 'advanced',
     advanced: true,
     chapter: '進階 Insight',
@@ -4382,7 +4393,7 @@ const slideList: SlideData[] = [
             en: 'Energy Conservation',
             body: (
               <>
-                冷凍系統就像<Hl>熱量輸送帶</Hl>：冷凝器（室外機）的熱散不掉，蒸發器就吸不走庫內的熱。
+                冷凝器（室外機）的熱<Hl>排不掉</Hl>，蒸發器就吸不走庫內的熱：散熱器沒保養、配太小，後面就不會冷。
               </>
             ),
             children: [
@@ -4462,7 +4473,7 @@ const slideList: SlideData[] = [
     conclusion: {
       text: (
         <>
-          熱要<Hl>搬得走</Hl>、邊界要<Hl>守得住</Hl>、查修要<Hl>先物理後冷媒</Hl>——這就是冷鏈工程的底層邏輯。
+          熱要<Hl>排得掉</Hl>、四個數字要<Hl>守得住</Hl>、查修要<Hl>先看風扇鰭片，最後才動冷媒</Hl>。
         </>
       ),
     },

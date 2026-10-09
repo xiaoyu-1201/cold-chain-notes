@@ -48,7 +48,7 @@ export const ABBR_SPECS: AbbrBlock['groups'] = [
       { abbr: 'IPS', en: 'Iron Pipe Size', zh: '水管尺寸', tip: '黑色保溫管照水管尺寸標：4分水管＝7分銅管', slide: 'insulation-sizes' },
       { abbr: 'PH', en: 'Phase', zh: '相位', tip: '型號牌 PH 1＝單相、PH 3＝三相', slide: 'comp-power' },
       { abbr: 'PFV / TF5', en: 'Copeland 電源代號（P＝單相 Phase 1、T＝三相 Three）', zh: '單相／三相', tip: '尾碼是電壓代號；拿錯一個字就燒掉', slide: 'comp-brands' },
-      { abbr: 'CR / CS / CF', en: 'Copeland 往復式系列（記法：R＝Refrigerator 冷藏、F＝Freezer 冷凍）', zh: '高溫／中溫／低溫', tip: '不是縮寫，是系列代號；只能拿更低溫的代替', slide: 'comp-temp' },
+      { abbr: 'CR / CS / CF', en: 'Copeland 往復式系列（記法：R＝Refrigerator 冷藏、F＝Freezer 冷凍）', zh: '高溫／中溫／低溫', tip: '不是縮寫，是系列代號；中溫兩邊都能打，低溫缺貨可以拿大一點的中溫代替', slide: 'comp-temp' },
       { abbr: 'ZS / ZB / ZF', en: 'Copeland 渦捲式系列（Z＝Scroll）', zh: '渦捲壓縮機', tip: 'Z 開頭都是渦捲：ZS／ZB 中溫、ZF 低溫', slide: 'comp-brands' },
       { abbr: 'LBP / MBP / HBP', en: 'Low / Medium / High Back Pressure', zh: '低溫機／中溫機／高溫機', tip: '「背壓」＝吸氣壓力：冷凍庫吸氣壓力低，所以低溫機叫 LBP', slide: 'comp-temp' },
     ],

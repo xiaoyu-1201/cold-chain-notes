@@ -77,6 +77,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 01 封面 ───────────────────────── */
   {
     id: 'cover',
+    added: '2026-10-10',
     part: 'intro',
     layout: 'cover',
     title: '氣冷式冷凍冷藏系統',
@@ -714,7 +715,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'comp-power',
-    added: '2026-10-07',
+    added: '2026-10-10',
     part: 'components',
     chapter: '壓縮機貨架',
     mark: 'POWER',
@@ -740,7 +741,7 @@ const slideList: SlideData[] = [
                   { label: '110V', value: '2 條線', unit: '單相', tone: 'amber', note: '只有一馬以下的小顆才有；110 和 120 不能混用' },
                   { label: '220V', value: '2 條線', unit: '單相', tone: 'ice', note: '最常見；三相（3 條線）只有大顆的才有，220 或 380' },
                 ],
-                footnote: <>客人要 220、你拿 110，通電就燒掉；<Hl>壓縮機焊過就不能退</Hl>，公司要自己吸收。〔錄音13 00:54、07:45〕</>,
+                footnote: <>客人要 220、你拿 110，通電就燒掉；<Hl>壓縮機焊過就不能退</Hl>，老闆：「拿錯了我公司沒辦法幫你負擔」。〔錄音13 00:54、07:45〕</>,
               },
               {
                 type: 'compare',
@@ -885,7 +886,7 @@ const slideList: SlideData[] = [
   },
   {
     id: 'comp-pick',
-    added: '2026-10-09',
+    added: '2026-10-10',
     part: 'components',
     chapter: '壓縮機貨架',
     mark: 'PICK',
@@ -933,7 +934,7 @@ const slideList: SlideData[] = [
                 tone: 'red',
                 title: '為什麼壓縮機特別嚴',
                 en: 'No Returns',
-                body: <>管子一焊上去就算用過，<Hl>原廠一概不負責</Hl>，每個牌子都一樣。拿錯型號或電壓，客人不會認，公司只能自己吸收。〔錄音13 07:45〕</>,
+                body: <>管子一焊上去就算用過，<Hl>原廠一概不負責</Hl>，每個牌子都一樣。型號拿錯、電壓拿錯都不行，老闆：「拿錯了我公司沒辦法幫你負擔」。〔錄音13 07:45〕</>,
               },
             ],
           },
@@ -954,7 +955,7 @@ const slideList: SlideData[] = [
   {
     id: 'ch3',
     source: 'handbook',
-    added: '2026-10-09',
+    added: '2026-10-10',
     part: 'components',
     chapter: '第 3 章',
     title: '冷凝器（熱排）：把熱散到室外',
@@ -1061,7 +1062,7 @@ const slideList: SlideData[] = [
   {
     id: 'ch4',
     source: 'handbook',
-    added: '2026-10-09',
+    added: '2026-10-10',
     part: 'components',
     chapter: '第 4 章',
     title: '蒸發器（冷排）：把熱吸走＋除霜',
@@ -1195,7 +1196,7 @@ const slideList: SlideData[] = [
   {
     id: 'ch5',
     source: 'handbook',
-    added: '2026-10-09',
+    added: '2026-10-10',
     part: 'components',
     chapter: '第 5 章',
     title: '控制與保護閥件',
@@ -3583,7 +3584,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 四大行程（冷媒一圈的四件事） ───────────────────────── */
   {
     id: 'strokes',
-    added: '2026-10-09',
+    added: '2026-10-10',
     part: 'basics',
     chapter: '四大行程',
     mark: 'CYCLE',
@@ -4041,7 +4042,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 錄音索引（取代一頁一段的錄音頁） ───────────────────────── */
   {
     id: 'recordings',
-    added: '2026-10-09',
+    added: '2026-10-10',
     part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO',
@@ -4147,7 +4148,7 @@ const slideList: SlideData[] = [
           { group: '壓縮機', term: '充灌閥', added: '2026-10-07', alias: '第三支管', en: 'Service Valve', tip: '壓縮機的第三支管：灌冷媒、測壓力用；兩支管的壓縮機沒有，師傅自己接', tw: { rec: 13, from: 1935.1, to: 1945.8, say: '它這個接一個充灌閥……充灌冷媒就是要關跟開，然後測試壓力' } },
           { group: '壓縮機', term: '高溫機／低溫機', added: '2026-10-09', alias: 'CR／CS／CF', en: 'High / Medium / Low Temp', tip: '黑金剛：CR 高溫打冷藏、CS 中溫兩邊都能、CF 低溫打冷凍；越低溫越貴；低溫缺貨可以拿大一點的中溫代替', part: 'comp', tw: { rec: 13, from: 2155.6, to: 2164.9, say: '有分高溫中溫低溫；CR 是屬於高溫，中溫是 CS，低溫是 CF' } },
           { group: '壓縮機', term: 'TF5／PFV', added: '2026-10-07', alias: '三相／單相', en: 'Three-phase / Single-phase', tip: '黑金剛型號後面：TF5＝三相 200～230V，PFV＝單相；型號牌上看 PH 1 或 PH 3', tw: { rec: 13, from: 1253.3, to: 1261.6, say: 'PFV，我們看 PFV 代表就是 PH-1，TF-5 代表就是三相' } },
-          { group: '壓縮機', term: '拿錯不能退', added: '2026-10-07', alias: '焊過就算用過', en: 'No Return After Brazing', tip: '壓縮機的管子焊上去就沒人要了；型號、電壓拿錯公司要自己吸收，所以一個字一個字對', tw: { rec: 13, from: 462.0, to: 469.2, say: '它只要焊接上去沒有人要了，等於是使用後就沒有人要了' } },
+          { group: '壓縮機', term: '拿錯不能退', added: '2026-10-10', alias: '焊過就算用過', en: 'No Return After Brazing', tip: '壓縮機的管子焊上去就沒人要了；型號、電壓拿錯，老闆說公司沒辦法幫你負擔，所以一個字一個字對', tw: { rec: 13, from: 462.0, to: 469.2, say: '它只要焊接上去沒有人要了，等於是使用後就沒有人要了' } },
           { group: '散熱器', term: '站壓', alias: '抓漏', en: 'Pressure Test', tip: '從充灌閥灌氮氣、泡水找漏點；散熱器沒有充灌閥', tw: { rec: 9, from: 569.8, to: 578.1, say: '這叫抓漏，自己站壓……站壓或是抓漏' } },
           { group: '散熱器', term: '內膨', alias: '膨脹閥鎖在蒸發器箱內', en: 'Internal TXV Mounting', tip: '冷凍做內膨（膨脹閥會結冰滴水）；冷氣是外膨' },
           { group: '管路', term: '液管', alias: '講義上的黃色線', en: 'Liquid Line', tip: '中溫中壓液態' },

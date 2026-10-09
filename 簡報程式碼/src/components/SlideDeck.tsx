@@ -12,6 +12,8 @@ import { MobileDeck } from './MobileDeck'
 import { ChapterDrawer } from './ChapterDrawer'
 import { ProgressBar } from './ProgressBar'
 import { SearchPanel } from './SearchPanel'
+import { ProgressPanel } from './ProgressPanel'
+import { markSeen } from '../lib/learn'
 import { SlideCard } from './SlideCard'
 import { SlideNav } from './SlideNav'
 import { FrostBackground } from './ui/FrostBackground'
@@ -53,6 +55,7 @@ export function SlideDeck() {
   const [page, setPage] = useState(() => ({ index: indexFromHash(), dir: 0 }))
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [progressOpen, setProgressOpen] = useState(false)
   /** 從頁內連結跳轉前所在的頁，用來顯示「返回」按鈕 */
   const [returnTo, setReturnTo] = useState<number | null>(null)
   const indexRef = useRef(page.index)
@@ -106,6 +109,7 @@ export function SlideDeck() {
     indexRef.current = page.index
     const hash = `#/${page.index + 1}`
     if (window.location.hash !== hash) window.history.replaceState(null, '', hash)
+    markSeen(slides[page.index].id)
   }, [page.index])
 
   useEffect(() => {
@@ -222,6 +226,7 @@ export function SlideDeck() {
             onGoTo={goTo}
             onOpenMenu={() => setDrawerOpen(true)}
             onSearch={() => setSearchOpen(true)}
+            onProgress={() => setProgressOpen(true)}
             onToggleFullscreen={toggleFullscreen}
             back={showBack && returnTo !== null ? { number: returnTo + 1, title: slides[returnTo].title } : null}
             onBack={goBack}
@@ -239,6 +244,7 @@ export function SlideDeck() {
             }}
           />
           <SearchPanel open={searchOpen} onClose={() => setSearchOpen(false)} onSelect={jumpTo} />
+          <ProgressPanel open={progressOpen} onClose={() => setProgressOpen(false)} onSelect={goTo} />
         </div>
       </DeckContext.Provider>
     </MotionConfig>

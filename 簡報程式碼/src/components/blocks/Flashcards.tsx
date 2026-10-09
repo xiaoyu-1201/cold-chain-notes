@@ -242,7 +242,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
 
   const groups = [...new Set(cards.map((c) => c.group))]
   const menu = (
-    <div className={cn('flex flex-col', mobile ? 'gap-3' : 'h-full gap-4')}>
+    <div className={cn('flex flex-col', mobile ? 'gap-3' : 'min-h-full gap-4')}>
       {groups.map((g) => (
         <div key={g}>
           <p className={cn('mb-1.5 font-semibold text-slate-500', size.small)}>
@@ -351,7 +351,10 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
       {main}
       <section className="flex min-h-0 flex-col rounded-[28px] bg-white/[0.045] p-6">
         <p className="mb-3 text-[24px] font-semibold text-white">全部名詞・點一個直接跳過去</p>
-        <div className="min-h-0 flex-1">{menu}</div>
+        {/* 名詞越來越多：清單可以捲（之前最下面「管路」那組會被切掉看不到） */}
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pr-2" data-no-swipe>
+          {menu}
+        </div>
       </section>
     </div>
   )

@@ -1,6 +1,7 @@
 import { isValidElement } from 'react'
 import { slideById, slides } from '../data/slides'
 import { recordingOf } from '../data/recordings'
+import { PRACTICE } from '../data/practice'
 import type { Block, RecordingsIndexBlock, SlideData } from '../data/types'
 
 /**
@@ -100,6 +101,8 @@ function build(): SearchEntry[] {
     if (slide.store) chunks.push({ label: '門市實戰', text: clean(textOf(slide.store)) })
     slide.blocks.forEach((b) => chunksOf(b, slide.chapter ?? '', chunks))
     chunks.push({ label: slide.conclusion.label ?? '本章小結論', text: clean(textOf(slide.conclusion.text)) })
+    const pq = PRACTICE[slide.id]
+    if (pq) chunks.push({ label: '學完馬上練', text: clean(`${pq.q} ${pq.options[pq.answer]} ${pq.why}`) })
     const head = clean([slide.title, slide.chapter, slide.en].filter(Boolean).join(' '))
     const all = (head + ' ' + chunks.map((c) => c.label + ' ' + c.text).join(' ')).toLowerCase()
     return { index, slide, head, chunks, all }

@@ -8,6 +8,7 @@ import { cn } from '../lib/cn'
 import { toneStyles } from '../lib/tone'
 import { BlockRenderer } from './blocks/BlockRenderer'
 import { CoverLayout } from './CoverLayout'
+import { PracticeButton } from './Practice'
 import { ConclusionCallout } from './ui/ConclusionCallout'
 import { fadeUp, staggerParent } from './ui/motion'
 import { StoreTipCard } from './ui/StoreTipCard'
@@ -81,8 +82,12 @@ export function SlideCard({ slide }: { slide: SlideData }) {
         ))}
       </div>
 
-      <motion.div variants={fadeUp} className="relative mt-6">
-        <ConclusionCallout label={slide.conclusion.label} text={slide.conclusion.text} />
+      {/* 小結論＋「學完馬上練」（必讀頁才有一題；點了在畫布上開小視窗） */}
+      <motion.div variants={fadeUp} className="mt-6 flex items-stretch gap-4">
+        <div className="min-w-0 flex-1">
+          <ConclusionCallout label={slide.conclusion.label} text={slide.conclusion.text} />
+        </div>
+        <PracticeButton id={slide.id} />
       </motion.div>
     </motion.article>
   )

@@ -1,4 +1,4 @@
-import { BookOpen, ChevronLeft, ChevronRight, CornerUpLeft, Maximize, Menu, Minimize, Pointer, Search } from 'lucide-react'
+import { BookOpen, BookOpenCheck, ChevronLeft, ChevronRight, CornerUpLeft, Maximize, Menu, Minimize, Pointer, Search } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState, type MouseEvent, type PointerEvent as ReactPointerEvent, type ReactNode, type WheelEvent as ReactWheelEvent } from 'react'
 import { parts } from '../data/parts'
 import { slides } from '../data/slides'
@@ -19,6 +19,7 @@ interface SlideNavProps {
   onGoTo: (index: number) => void
   onOpenMenu: () => void
   onSearch: () => void
+  onProgress: () => void
   onToggleFullscreen: () => void
   /** 頁內連結跳轉後才出現的「返回」目標 */
   back: { number: number; title: string } | null
@@ -73,6 +74,7 @@ export function SlideNav({
   onGoTo,
   onOpenMenu,
   onSearch,
+  onProgress,
   onToggleFullscreen,
   back,
   onBack,
@@ -95,6 +97,11 @@ export function SlideNav({
           <span className="hidden text-sm font-bold xl:inline">搜尋</span>
           {/* 10/8 新功能：綠點（NEW_SINCE 往後移就自動退掉） */}
           {isNew('2026-10-08') && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-emerald-400" />}
+        </NavButton>
+        <NavButton label="今天讀什麼：讀到哪、今天這 3 頁、錯題複習" onClick={onProgress} className="relative">
+          <BookOpenCheck className="size-5" aria-hidden />
+          <span className="hidden text-sm font-bold xl:inline">今天</span>
+          {isNew('2026-10-09') && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-emerald-400" />}
         </NavButton>
         {back ? (
           <NavButton

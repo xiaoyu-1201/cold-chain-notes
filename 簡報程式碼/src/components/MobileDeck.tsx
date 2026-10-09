@@ -1,5 +1,5 @@
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight, CornerUpLeft, Menu, Pin, Pointer, Presentation, Search, Store } from 'lucide-react'
+import { BookOpenCheck, ChevronLeft, ChevronRight, CornerUpLeft, Menu, PencilLine, Pin, Pointer, Presentation, Search, Store } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
 import { DeckContext, type DeckApi } from '../context/deck'
 import { parts } from '../data/parts'
@@ -12,6 +12,10 @@ import { toneStyles } from '../lib/tone'
 import { ChapterDrawer } from './ChapterDrawer'
 import { MobileBlock } from './mobile/MobileBlocks'
 import { SearchPanel } from './SearchPanel'
+import { ProgressPanel } from './ProgressPanel'
+import { PracticeQuestion } from './Practice'
+import { PRACTICE } from '../data/practice'
+import { markSeen, useLearn } from '../lib/learn'
 import { SOURCE_LABEL } from './SlideCard'
 import { FrostBackground } from './ui/FrostBackground'
 
@@ -39,6 +43,7 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
   const [page, setPage] = useState(() => ({ index: indexFromHash(), dir: 0 }))
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [progressOpen, setProgressOpen] = useState(false)
   const [returnTo, setReturnTo] = useState<number | null>(null)
   const indexRef = useRef(page.index)
   const scroller = useRef<HTMLDivElement>(null)
@@ -58,6 +63,7 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
     const hash = `#/${page.index + 1}`
     if (window.location.hash !== hash) window.history.replaceState(null, '', hash)
     scroller.current?.scrollTo({ top: 0 })
+    markSeen(slides[page.index].id)
   }, [page.index])
   useEffect(() => {
     const onHashChange = () => goTo(indexFromHash())
@@ -140,6 +146,15 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
               <Search className="size-5" aria-hidden />
               {isNew('2026-10-08') && <span aria-hidden className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-emerald-400" />}
             </button>
+            <button
+              type="button"
+              onClick={() => setProgressOpen(true)}
+              aria-label="今天讀什麼"
+              className="relative flex size-10 shrink-0 items-center justify-center rounded-lg border border-white/10 text-slate-100 active:bg-white/10"
+            >
+              <BookOpenCheck className="size-5" aria-hidden />
+              {isNew('2026-10-09') && <span aria-hidden className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-emerald-400" />}
+            </button>
             {showBack ? (
               <button
                 type="button"
@@ -221,6 +236,7 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
             goTo(i)
           }}
         />
+        <ProgressPanel open={progressOpen} mobile onClose={() => setProgressOpen(false)} onSelect={(i) => goTo(i)} />
         <SearchPanel
           open={searchOpen}
           mobile
@@ -317,6 +333,23 @@ function MobileSlide({ slide, index }: { slide: SlideData; index: number }) {
         </p>
         <p className="mt-1 font-semibold text-white">{slide.conclusion.text}</p>
       </aside>
+
+      {PRACTICE[slide.id] && <MobilePractice id={slide.id} />}
+    </section>
+  )
+}
+
+/** 手機版：每頁最下面的「學完馬上練」 */
+function MobilePractice({ id }: { id: string }) {
+  const learn = useLearn()
+  return (
+    <section className="mt-5 rounded-2xl border border-sky-400/30 bg-sky-400/[0.06] p-4" data-no-swipe>
+      <p className="mb-3 flex items-center gap-2 text-[15px] font-bold text-sky-300">
+        <PencilLine className="size-5" aria-hidden />
+        學完馬上練
+        {learn.done[id] && <span className="ml-auto rounded-md bg-emerald-400/20 px-2 py-0.5 text-[13px] text-emerald-200">已練過</span>}
+      </p>
+      <PracticeQuestion key={id} id={id} />
     </section>
   )
 }

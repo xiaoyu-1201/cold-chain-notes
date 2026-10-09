@@ -213,7 +213,7 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
             >
               <ChevronLeft className="size-5 shrink-0 text-slate-400" aria-hidden />
               <span className="min-w-0">
-                <span className="block text-[12px] text-slate-500">上一頁</span>
+                <span className="block text-[13px] text-slate-500">上一頁</span>
                 <span className="block truncate text-[14px] font-semibold text-slate-200">{prevSlide?.title ?? '—'}</span>
               </span>
             </button>
@@ -224,7 +224,7 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
               className="flex h-12 items-center justify-end gap-1 rounded-xl border border-sky-500/50 bg-sky-950 px-3 text-right active:border-sky-500 disabled:opacity-35"
             >
               <span className="min-w-0">
-                <span className="block text-[12px] text-sky-300">下一頁</span>
+                <span className="block text-[13px] text-sky-300">下一頁</span>
                 <span className="block truncate text-[14px] font-semibold text-sky-50">{nextSlide?.title ?? '—'}</span>
               </span>
               <ChevronRight className="size-5 shrink-0 text-sky-400" aria-hidden />

@@ -180,8 +180,8 @@ function Result({ hit, terms, active, i, onHover, onPick, mobile }: { hit: Searc
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
             <span className={cn('text-[13px] font-semibold', toneStyles[part.tone].text)}>{part.short}</span>
-            {isNew(s.added) && <span className="rounded bg-emerald-400 px-1.5 text-[11px] font-black text-paper">新</span>}
-            {s.tier === 'ref' && <span className="text-[12px] text-slate-500">查閱</span>}
+            {isNew(s.added) && <span className="rounded bg-emerald-400 px-1.5 text-[13px] font-black text-paper">新</span>}
+            {s.tier === 'ref' && <span className="text-[13px] text-slate-500">查閱</span>}
           </span>
           <span className={cn('block font-bold leading-snug text-white', mobile ? 'text-[16px]' : 'text-[17px]')}>
             <Mark text={s.title} terms={terms} />

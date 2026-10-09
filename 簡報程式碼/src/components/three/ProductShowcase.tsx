@@ -161,7 +161,7 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
               )}
               <img src={photo} alt={part.label} className="min-h-0 max-w-full flex-1 rounded-2xl border border-line bg-card object-contain" />
               <p className={cn('text-center font-semibold leading-snug text-amber-100', t.body)}>{credit.note}</p>
-              <p className={cn('text-center text-slate-500', mobile ? 'text-[12px]' : 'text-[16px]')}>
+              <p className={cn('text-center text-slate-500', mobile ? 'text-[13px]' : 'text-[16px]')}>
                 照片：{credit.author}
                 {credit.licenseUrl && (
                   <>

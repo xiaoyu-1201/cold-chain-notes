@@ -81,26 +81,28 @@ export function SlideNav({
   onReader,
   hints,
 }: SlideNavProps) {
+  const labelCls = back ? 'hidden' : 'hidden text-sm font-bold xl:inline'
   return (
     <nav
       aria-label="簡報控制"
       className="flex h-16 shrink-0 items-center gap-4 border-t border-line bg-paper px-3 sm:px-5"
     >
+      {/* 有「返回」鈕時，左邊三顆只留圖示（文字在說明裡），返回鈕才不會壓到篇章列（10/10 QA：1920 寬重疊 14px） */}
       {/* 篇章列是固定寬，大螢幕時左邊先保留一塊給提示／標題，不然會被篇章列吃光；平板（<1280）按鈕只留圖示 */}
       <div className="flex flex-1 items-center gap-3 min-[1600px]:min-w-[260px]">
         <NavButton label="章節目錄 (M)" onClick={onOpenMenu}>
           <Menu className="size-5" aria-hidden />
-          <span className="hidden text-sm font-bold xl:inline">目錄</span>
+          <span className={labelCls}>目錄</span>
         </NavButton>
         <NavButton label="搜尋關鍵字 ( / )" onClick={onSearch} className="relative">
           <Search className="size-5" aria-hidden />
-          <span className="hidden text-sm font-bold xl:inline">搜尋</span>
+          <span className={labelCls}>搜尋</span>
           {/* 10/8 新功能：綠點（NEW_SINCE 往後移就自動退掉） */}
           {isNew('2026-10-08') && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-emerald-400" />}
         </NavButton>
         <NavButton label="今天讀什麼：讀到哪、今天這 3 頁、錯題複習" onClick={onProgress} className="relative">
           <BookOpenCheck className="size-5" aria-hidden />
-          <span className="hidden text-sm font-bold xl:inline">今天</span>
+          <span className={labelCls}>今天</span>
           {isNew('2026-10-09') && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-emerald-400" />}
         </NavButton>
         {back ? (
@@ -129,7 +131,7 @@ export function SlideNav({
             !back && (
               <div className="absolute inset-0 hidden flex-col justify-center min-[1700px]:flex">
                 <p className="truncate text-sm font-bold text-slate-100">冷凍材料行培訓筆記</p>
-                <p className="truncate text-xs text-slate-400">
+                <p className="truncate text-[13px] text-slate-400">
                   {partLabel}・{title}
                 </p>
               </div>
@@ -154,7 +156,7 @@ export function SlideNav({
       </div>
 
       <div className="flex flex-1 items-center justify-end gap-3">
-        <div className="hidden items-center gap-1.5 whitespace-nowrap text-xs text-slate-400 min-[1900px]:flex">
+        <div className="hidden items-center gap-1.5 whitespace-nowrap text-[13px] text-slate-400 min-[1900px]:flex">
           <Kbd>←</Kbd>
           <Kbd>→</Kbd>
           <span className="mr-2">翻頁</span>
@@ -412,7 +414,7 @@ function Tip({ i, x }: { i: number; x: number }) {
     <span style={{ left: x }} className="pointer-events-none absolute bottom-full z-50 mb-3 -translate-x-1/2 whitespace-nowrap rounded-lg border border-line bg-card px-3 py-1.5 text-[13px] font-semibold text-slate-100 shadow-[0_6px_18px_-8px_rgba(15,36,64,0.3)]">
       <span className="font-mono text-sky-400">P.{pad(i + 1)}</span>
       <span className={cn('mx-1.5', toneStyles[parts[s.part].tone].text)}>{parts[s.part].short}</span>
-      {isNew(s.added) && <span className="mr-1.5 rounded bg-emerald-400 px-1.5 text-[12px] font-black text-paper">新</span>}
+      {isNew(s.added) && <span className="mr-1.5 rounded bg-emerald-400 px-1.5 text-[13px] font-black text-paper">新</span>}
       {s.tier === 'ref' && <span className="mr-1.5 text-slate-400">查閱 ·</span>}
       {s.title}
     </span>

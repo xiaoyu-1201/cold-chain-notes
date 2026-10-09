@@ -290,7 +290,7 @@ export function FenConverter({ mobile = false }: { mobile?: boolean }) {
                   <button type="button" onClick={() => setInput(fenName(f))} className={cn('rounded', focusRing)}>
                     {fenName(f)}
                   </button>
-                  {!ACR.includes(f) && <span className={cn('ml-2 rounded-md bg-white/[0.08] px-1.5 align-middle font-semibold text-slate-400', mobile ? 'text-[12px]' : 'text-[16px]')}>8 分・少見</span>}
+                  {!ACR.includes(f) && <span className={cn('ml-2 rounded-md bg-white/[0.08] px-1.5 align-middle font-semibold text-slate-400', mobile ? 'text-[13px]' : 'text-[16px]')}>8 分・少見</span>}
                 </td>
                 <td className={cn('py-1 font-semibold tabular-nums text-slate-100', mobile ? 'text-[15px]' : 'text-[21px]')}>{fenInch(f)}″</td>
                 <td className={cn('py-1 font-semibold tabular-nums text-slate-100', mobile ? 'text-[15px]' : 'text-[21px]')}>{fenMm(f)}</td>

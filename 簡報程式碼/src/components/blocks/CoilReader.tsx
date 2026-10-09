@@ -73,12 +73,11 @@ function TubeSheet({ rows, tubes, mode, mobile }: { rows: number; tubes: number;
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className={cn('h-full w-full', mobile ? 'max-h-[380px]' : '')} role="img" aria-label={`散熱器穿管面示意：${rows} 排 × ${tubes} 支`}>
       {/* 風的方向：一排一排穿過去 */}
-      <g opacity={mode === 'rows' ? 1 : 0.45}>
-        <line x1={padX - 30} x2={W - padX + 30} y1={22} y2={22} stroke="#2e7bc8" strokeWidth={2} markerEnd="url(#coil-arrow)" />
-        <text x={W / 2} y={14} textAnchor="middle" fill="#164d84" fontSize={13} fontWeight={600}>
-          風吹過去的方向
-        </text>
-      </g>
+      {/* 箭頭可以變淡，字不行：淡色底上 45% 透明的字對比只有 2.3:1（10/10 QA） */}
+      <line x1={padX - 30} x2={W - padX + 30} y1={22} y2={22} stroke="#2e7bc8" strokeWidth={2} markerEnd="url(#coil-arrow)" opacity={mode === 'rows' ? 1 : 0.45} />
+      <text x={W / 2} y={14} textAnchor="middle" fill="#164d84" fontSize={13} fontWeight={600}>
+        風吹過去的方向
+      </text>
       <defs>
         <marker id="coil-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
           <path d="M0 0 10 5 0 10z" fill="#2e7bc8" />

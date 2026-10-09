@@ -169,6 +169,24 @@
     height: 100%;
   }
 
+  /*
+   * 斷行不要留一個字在最後一行（10/10 QA：手機大標「賣」「子」「頭」單獨一行、內文「凍」「時」單獨一行）：
+   * 標題平均分行，內文避免孤字。舊瀏覽器不支援就照原本斷，不會壞。
+   */
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+  p,
+  li,
+  dd,
+  figcaption,
+  blockquote {
+    text-wrap: pretty;
+  }
+
   body {
     margin: 0;
     overflow: hidden;

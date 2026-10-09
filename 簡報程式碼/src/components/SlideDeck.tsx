@@ -259,7 +259,7 @@ export function SlideDeck() {
             }}
           />
           <SearchPanel open={searchOpen} onClose={() => setSearchOpen(false)} onSelect={jumpTo} />
-          <ProgressPanel open={progressOpen} currentId={slide.id} onClose={() => setProgressOpen(false)} onSelect={goTo} />
+          <ProgressPanel open={progressOpen} currentId={slide.id} onClose={() => setProgressOpen(false)} onSelect={jumpTo} />
         </div>
       </DeckContext.Provider>
     </MotionConfig>

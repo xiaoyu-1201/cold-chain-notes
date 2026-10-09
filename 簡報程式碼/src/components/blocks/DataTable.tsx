@@ -85,7 +85,7 @@ export function DataTable({ block, mobile = false }: { block: TableBlock; mobile
                   </div>
                   <span className="w-[6.4em] shrink-0 text-right text-[14px] tabular-nums text-slate-100">
                     {v}
-                    <span className={cn('ml-1 text-[12px]', col === bars.baseCol ? 'text-emerald-300' : deltaColor(v, base))}>
+                    <span className={cn('ml-1 text-[max(13px,0.8em)]', col === bars.baseCol ? 'text-emerald-300' : deltaColor(v, base))}>
                       {col === bars.baseCol ? '基準' : delta(v, base)}
                     </span>
                   </span>

@@ -91,18 +91,30 @@ export function resumeId(currentId?: string): string | null {
  * 回答「學完馬上練」：答對記 done、從錯題拿掉；答錯放進錯題，也取消「已練過」
  * （10/09 QA：練過的題再答錯，會同時算學會又出現在錯題裡）。
  */
-export function answer(id: string, correct: boolean) {
+export type AnswerResult = 'learned' | 'wrong' | 'tomorrow'
+
+const sameDay = (a: number, b: number) => new Date(a).toDateString() === new Date(b).toDateString()
+
+/**
+ * 回答之後的結果：learned＝算學會；wrong＝放進錯題；
+ * tomorrow＝答對了，但今天才答錯、看過答案 → 先留在錯題，明天再答對才算學會
+ * （10/10 QA：答錯後關掉再打開，照剛看到的答案按就算學會）。
+ */
+export function answer(id: string, correct: boolean): AnswerResult {
   const now = Date.now()
   if (correct) {
+    const w = state.wrong[id]
+    if (w && sameDay(w.at, now)) return 'tomorrow'
     const wrong = { ...state.wrong }
     delete wrong[id]
     commit({ ...state, done: { ...state.done, [id]: state.done[id] ?? now }, wrong })
-  } else {
-    const prev = state.wrong[id]
-    const done = { ...state.done }
-    delete done[id]
-    commit({ ...state, done, wrong: { ...state.wrong, [id]: { at: now, n: (prev?.n ?? 0) + 1 } } })
+    return 'learned'
   }
+  const prev = state.wrong[id]
+  const done = { ...state.done }
+  delete done[id]
+  commit({ ...state, done, wrong: { ...state.wrong, [id]: { at: now, n: (prev?.n ?? 0) + 1 } } })
+  return 'wrong'
 }
 
 /** 重新開始：「繼續上次」也一起清掉 */

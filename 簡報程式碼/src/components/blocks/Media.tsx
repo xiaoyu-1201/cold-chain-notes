@@ -32,8 +32,8 @@ function MissingAudio() {
 /** 公開網站沒有完整上課錄音（裡面有客人名字、價格）：告訴他去哪裡聽 */
 export function OfflineOnlyAudio({ small }: { small?: boolean }) {
   return (
-    <p className={cn('rounded-xl border border-sky-500/40 bg-sky-950 leading-snug text-sky-100', small ? 'px-3 py-2 text-[14px]' : 'px-4 py-3 text-[18px]')}>
-      完整錄音只放在公司版（離線檔「冷凍材料行培訓筆記.html」），公開網站不放；這裡可以先看每一段在講什麼。
+    <p className={cn('rounded-xl border border-sky-500/40 bg-sky-950 leading-snug text-sky-100', small ? 'px-3 py-2 text-[16px]' : 'px-4 py-3 text-[18px]')}>
+      完整錄音只放在公司版（要登入）和離線檔，公開網站不放；這裡可以先看每一段在講什麼。
     </p>
   )
 }
@@ -364,7 +364,7 @@ export function AudioChapters({ block }: { block: AudioBlock }) {
                   <span className="block text-[17px] leading-snug text-slate-300">{c.summary}</span>
                   {noAudio && asked === i && (
                     <span role="status" className="mt-1.5 block text-[16px] font-semibold text-sky-300">
-                      完整錄音只放在公司版（離線檔），公開網站不能播。
+                      完整錄音只放在公司版（要登入）和離線檔，公開網站不能播。
                     </span>
                   )}
                 </span>

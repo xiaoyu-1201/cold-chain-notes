@@ -40,7 +40,8 @@ export function DiagnosisMatrix({ block }: { block: MatrixBlock }) {
               )}
             >
               {f.label}
-              {f.hint && <span className="text-[17px] font-medium opacity-75">（{f.hint}）</span>}
+              {/* 不加透明度：淡色底上對比會掉到 3.4:1（10/10 QA） */}
+              {f.hint && <span className="text-[17px] font-medium">（{f.hint}）</span>}
             </button>
           )
         })}

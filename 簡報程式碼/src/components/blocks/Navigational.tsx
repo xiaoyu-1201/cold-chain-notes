@@ -50,6 +50,19 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
           const chapters = item.chapters.filter((ch) => !coreOnly || !refIds.has(ch.slide))
           const hasGlyph = chapters.some((c) => glyphFor(c.title))
           const tight = chapters.length > 5
+          // 很多列的篇（全部模式的配件篇）：字小一級，1440 寬（畫布 1920）才放得下、不疊字（10/10 QA）
+          const dense = chapters.length > 7
+          // 一列可能代表好幾頁（例：「壓縮機：牌子、電壓、拿貨」＝P.21～24）：其中一頁是新的，這列就標「新」
+          const starts = item.chapters.map((c) => slides.findIndex((s) => s.id === c.slide))
+          const rowIsNew = (slideId: string) => {
+            const start = slides.findIndex((s) => s.id === slideId)
+            for (let j = start; j >= 0 && j < slides.length; j++) {
+              const s = slides[j]
+              if (j > start && (starts.includes(j) || s.part !== item.part || s.id.startsWith('recap-') || s.id.startsWith('check-'))) break
+              if (newIds.has(s.id)) return true
+            }
+            return false
+          }
           // 章節少的篇（兩、三頁）：每列多放一句「這頁的小結論」當預覽，卡片不會下半部空一大塊
           const previewLines = chapters.length <= 2 ? 4 : chapters.length <= 4 ? 1 : 0
           return (
@@ -76,7 +89,8 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
                 {part.goal && (
                   <p className={cn('mt-2.5 text-[17px] leading-snug text-slate-300', tight && 'line-clamp-2')}>
                     <span className={cn('mr-1.5 font-bold', t.text)}>學完你會</span>
-                    {part.goal}
+                    {/* goal 本身多半是「會…」開頭：去掉一個，不會變成「學完你會會…」（10/10 QA） */}
+                    {part.goal.replace(/^會/, '')}
                   </p>
                 )}
                 <ul className={cn('flex min-h-0 flex-col', tight ? 'mt-2 gap-1' : 'mt-3 gap-2')}>
@@ -98,9 +112,9 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
                         >
                           <span className={cn('w-12 shrink-0 font-mono text-[16px] font-bold', t.text)}>{ch.code}</span>
                           {hasGlyph && <span className="flex w-6 shrink-0 justify-center text-ink-2">{g && <PartGlyph id={g} size={26} />}</span>}
-                          <span className="min-w-0 flex-1 text-[18px] font-semibold leading-snug text-slate-100">
+                          <span className={cn('min-w-0 flex-1 text-balance font-semibold leading-snug text-slate-100', dense ? 'text-[17px]' : 'text-[18px]')}>
                             {ch.title}
-                            {newIds.has(ch.slide) && <span className="ml-1.5 inline-block rounded bg-emerald-400 px-1.5 align-[1px] text-[16px] font-black leading-6 text-paper">新</span>}
+                            {rowIsNew(ch.slide) && <span className="ml-1.5 inline-block rounded bg-emerald-400 px-1.5 align-[1px] text-[16px] font-black leading-6 text-paper">新</span>}
                             {isRef && <span className="ml-1.5 inline-block text-[16px] font-semibold text-slate-500">查閱</span>}
                             {preview && (
                               <span className={cn('mt-1 text-[16px] font-normal leading-snug text-slate-400', previewLines === 4 ? 'line-clamp-4' : 'line-clamp-1')}>{preview}</span>
@@ -169,6 +183,7 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
             )}
           >
             {link.title}
+            {newIds.has(link.slide) && <span className="inline-block rounded bg-emerald-400 px-1.5 text-[16px] font-black leading-6 text-paper">新</span>}
             <span className="font-mono text-[16px] text-slate-500">P.{pad(numberOf(link.slide))}</span>
           </button>
         ))}

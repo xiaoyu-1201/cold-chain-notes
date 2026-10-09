@@ -14,7 +14,10 @@ export function ConclusionCallout({ label = '本章小結論', text }: Conclusio
         <Pin className="size-5" aria-hidden />
         {label}
       </span>
-      <p className="flex items-center px-7 py-5 text-[25px] font-medium leading-normal text-ink">{text}</p>
+      {/* 垂直置中交給外層 div；<p> 本身不能是 flex，不然有重點字的句子會被拆成好幾欄、變直排（10/10 QA） */}
+      <div className="flex min-w-0 flex-1 items-center px-7 py-5">
+        <p className="text-[25px] font-medium leading-normal text-ink">{text}</p>
+      </div>
     </aside>
   )
 }

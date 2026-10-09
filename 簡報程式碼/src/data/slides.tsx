@@ -118,7 +118,7 @@ const slideList: SlideData[] = [
     blocks: [
       {
         type: 'grid',
-        className: 'grid-rows-[auto_minmax(0,1fr)_auto]',
+        className: 'grid-rows-[auto_auto_auto] content-center',
         children: [
           {
             type: 'quote',
@@ -826,7 +826,7 @@ const slideList: SlideData[] = [
     blocks: [
       {
         type: 'grid',
-        className: 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
+        className: 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)] content-center',
         children: [
           {
             type: 'flow',
@@ -1299,7 +1299,7 @@ const slideList: SlideData[] = [
     conclusion: {
       text: (
         <>
-          控制件是系統的神經。沒有<Hl>抽空停機（Pump Down）</Hl>和<Hl>液氣分離器</Hl>，壓縮機隨時可能被<Warn>液態冷媒打壞</Warn>。
+          沒有<Hl>抽空停機（Pump Down）</Hl>和<Hl>液氣分離器</Hl>，壓縮機隨時可能被<Warn>液態冷媒打壞</Warn>；老闆說：「壓縮機想要壓縮到液態，它會死掉。」
         </>
       ),
     },
@@ -2164,7 +2164,7 @@ const slideList: SlideData[] = [
     blocks: [
       {
         type: 'grid',
-        className: 'grid-cols-3',
+        className: 'grid-cols-3 content-center',
         children: [
           {
             type: 'list',
@@ -2798,7 +2798,7 @@ const slideList: SlideData[] = [
     blocks: [
       {
         type: 'grid',
-        className: 'grid-cols-3',
+        className: 'grid-cols-3 content-center',
         children: [
           {
             type: 'list',
@@ -3047,7 +3047,7 @@ const slideList: SlideData[] = [
     blocks: [
       {
         type: 'grid',
-        className: 'grid-cols-3',
+        className: 'grid-cols-3 content-center',
         children: [
           {
             type: 'insight',
@@ -4077,7 +4077,7 @@ const slideList: SlideData[] = [
             </>
           ) : (
             <>
-              這裡是每段錄音<Hl>在講什麼</Hl>；完整錄音只放在公司版（要登入）和離線檔。
+              這裡是每段錄音<Hl>在講什麼</Hl>；完整錄音只放在公司版（要登入）和離線檔，公開網站不放。
             </>
           )}
         </>
@@ -4396,7 +4396,7 @@ const slideList: SlideData[] = [
     blocks: [
       {
         type: 'grid',
-        className: 'grid-cols-3',
+        className: 'grid-cols-3 content-center',
         children: [
           {
             type: 'insight',

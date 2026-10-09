@@ -114,7 +114,7 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
                             </span>
                             <span className="min-w-0 flex-1">
                               <span className={cn('block truncate text-[16px] font-semibold', active ? 'text-sky-100' : 'text-slate-100')}>
-                                {isNew(slide.added) && <span className="mr-1.5 rounded bg-emerald-400 px-1.5 text-[12px] font-black text-paper">新</span>}
+                                {isNew(slide.added) && <span className="mr-1.5 rounded bg-emerald-400 px-1.5 text-[13px] font-black text-paper">新</span>}
                                 {slide.title}
                               </span>
                               {slide.chapter && (
@@ -125,7 +125,7 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
                                 </span>
                               )}
                             </span>
-                            {active && <span className="shrink-0 rounded-full bg-sky-400 px-2 py-0.5 text-[12px] font-bold text-paper">目前</span>}
+                            {active && <span className="shrink-0 rounded-full bg-sky-400 px-2 py-0.5 text-[13px] font-bold text-paper">目前</span>}
                           </button>
                         </li>
                       )
@@ -136,8 +136,8 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
             </div>
 
             <footer className="border-t border-line px-6 pb-5 pt-3">
-              <p className="mb-2 text-xs font-bold text-slate-400">鍵盤快捷鍵</p>
-              <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-slate-400">
+              <p className="mb-2 text-[13px] font-bold text-slate-400">鍵盤快捷鍵</p>
+              <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[13px] text-slate-400">
                 {shortcuts.map((s) => (
                   <div key={s.label} className="flex items-center gap-1.5">
                     <dt className="flex gap-1">

@@ -400,7 +400,7 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
             <RotateCcw className="size-4" aria-hidden />
             預設
           </button>
-          <p className={cn('min-w-0 flex-1 text-slate-500', mobile ? 'text-[12px]' : 'text-[16px]')}>
+          <p className={cn('min-w-0 flex-1 text-slate-500', mobile ? 'text-[13px]' : 'text-[16px]')}>
             CoolProp 計算（與 NIST 交叉比對）；混合冷媒預設露點，跟 Ref Tools 相同。R438A、R408A 請用 App。
           </p>
         </div>

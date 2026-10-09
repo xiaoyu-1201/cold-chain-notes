@@ -192,7 +192,8 @@ function ProgressDialog({ onClose, onSelect, mobile, currentId }: { onClose: () 
                     </button>
                     {isOpen && (
                       <div className="px-3 pb-3">
-                        <PracticeQuestion key={id} id={id} />
+                        {/* 題目已經寫在上面那列，這裡不再重複（10/10 QA） */}
+                        <PracticeQuestion key={id} id={id} hideQuestion />
                         <div className="mt-2 flex flex-wrap items-center gap-2">
                           <button type="button" onClick={() => go(id)} className="inline-flex min-h-11 items-center rounded-xl px-3 text-[15px] font-bold text-sky-300 hover:bg-sky-950">
                             回去看 P.{pad(i + 1)} →

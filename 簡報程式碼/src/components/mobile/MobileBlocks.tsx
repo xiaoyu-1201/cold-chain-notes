@@ -447,7 +447,7 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
                   <PageLink key={c.slide + c.code} slide={c.slide}>
                     {c.code} {c.title}
                     {refIds.has(c.slide) ? '（查閱）' : ''}
-                    {newIds.has(c.slide) && <span className="ml-1 rounded bg-emerald-400 px-1.5 text-[12px] font-black leading-5 text-paper">新</span>}
+                    {newIds.has(c.slide) && <span className="ml-1 rounded bg-emerald-400 px-1.5 text-[13px] font-black leading-5 text-paper">新</span>}
                   </PageLink>
                 ))}
               </div>

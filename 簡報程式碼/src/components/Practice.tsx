@@ -5,7 +5,7 @@ import { useDeck } from '../context/deck'
 import { PRACTICE } from '../data/practice'
 import { slides } from '../data/slides'
 import { cn } from '../lib/cn'
-import { answer, useLearn } from '../lib/learn'
+import { answer, useLearn, type AnswerResult } from '../lib/learn'
 
 /** 洗牌（選項每次打開順序都不一樣，記位置沒有用） */
 function shuffled(n: number) {
@@ -29,15 +29,19 @@ export function PracticeQuestion({
   onCorrect,
   onAnswered,
   firstRef,
+  hideQuestion,
 }: {
   id: string
   size?: 'canvas' | 'screen'
   onCorrect?: () => void
   onAnswered?: (correct: boolean) => void
   firstRef?: Ref<HTMLButtonElement>
+  /** 題目已經顯示在外面（錯題複習那一列）就不再重複 */
+  hideQuestion?: boolean
 }) {
   const p = PRACTICE[id]
   const [picked, setPicked] = useState<number | null>(null)
+  const [result, setResult] = useState<AnswerResult | null>(null)
   // 打開時洗一次牌（之後不再變，答完也不會跳）
   const [order] = useState(() => shuffled(p?.options.length ?? 0))
   // 答完選項都會停用、焦點會掉到頁面上：移到結果說明（外層要換焦點的話會在之後蓋過去）（10/10 code review）
@@ -54,14 +58,14 @@ export function PracticeQuestion({
   const choose = (i: number) => {
     if (done) return
     setPicked(i)
-    answer(id, i === p.answer)
+    setResult(answer(id, i === p.answer))
     onAnswered?.(i === p.answer)
     if (i === p.answer) onCorrect?.()
   }
   return (
     <div>
-      <p className={cn('font-bold leading-snug text-ink', big ? 'text-[30px]' : 'text-[17px]')}>{p.q}</p>
-      <div className={cn('flex flex-col', big ? 'mt-5 gap-3' : 'mt-3 gap-2')}>
+      {!hideQuestion && <p className={cn('font-bold leading-snug text-ink', big ? 'text-[30px]' : 'text-[17px]')}>{p.q}</p>}
+      <div className={cn('flex flex-col', hideQuestion ? '' : big ? 'mt-5' : 'mt-3', big ? 'gap-3' : 'gap-2')}>
         {order.map((i, k) => {
           const o = p.options[i]
           const isAns = i === p.answer
@@ -94,7 +98,10 @@ export function PracticeQuestion({
         <div ref={statusRef} tabIndex={-1} className={cn('rounded-2xl outline-none', big ? 'mt-5 px-6 py-4' : 'mt-3 px-4 py-3', right ? 'bg-emerald-950' : 'bg-red-950')} role="status">
           <p className={cn('font-bold', big ? 'text-[24px]' : 'text-[16px]', right ? 'text-emerald-300' : 'text-red-300')}>{right ? '答對了！' : '答錯了：正確答案是綠色那個'}</p>
           <p className={cn('mt-1 leading-relaxed text-slate-200', big ? 'text-[21px]' : 'text-[15px]')}>{p.why}</p>
-          {!right && <p className={cn('mt-2 text-slate-400', big ? 'text-[19px]' : 'text-[14px]')}>已放進「今天」的錯題複習，下次再答對就會拿掉。</p>}
+          {!right && <p className={cn('mt-2 text-slate-400', big ? 'text-[19px]' : 'text-[14px]')}>已放進「今天」的錯題複習，明天再答對就會拿掉。</p>}
+          {result === 'tomorrow' && (
+            <p className={cn('mt-2 text-slate-400', big ? 'text-[19px]' : 'text-[14px]')}>這題今天才答錯過、看過答案，先留在錯題複習；明天再答對一次，才算學會。</p>
+          )}
         </div>
       )}
     </div>

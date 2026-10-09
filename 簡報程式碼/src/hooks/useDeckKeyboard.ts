@@ -40,6 +40,9 @@ export function useDeckKeyboard({
         return
       }
       if (e.altKey || e.ctrlKey || e.metaKey) return
+      // 有小視窗開著（學完馬上練、今天、搜尋、放大圖）：翻頁鍵都不處理，免得背後偷偷換頁（10/09 QA）
+      // 目錄抽屜例外：它本來就靠 M／Esc 開關
+      if (document.querySelector('[aria-modal="true"]:not([data-deck-drawer]):not([aria-label="章節導覽"])')) return
 
       const target = e.target as HTMLElement | null
       const tag = target?.tagName

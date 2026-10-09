@@ -69,7 +69,7 @@ import insulationImg from '../assets/1005-insulation-chart.jpg'
 import refrigerantTableImg from '../assets/refrigerant-table.jpg'
 import { Danger, Em, Exp, Frac, Hl, Sub, Warn } from '../components/ui/rich'
 import { ABBR_PARTS, ABBR_SPECS, ABBR_THERMO } from './abbr'
-import { CLASS_AUDIO, CLASS_AUDIO_10, CLASS_AUDIO_11, CLASS_AUDIO_12, CLASS_AUDIO_13, CLASS_AUDIO_14, CLASS_AUDIO_15, CLASS_AUDIO_2, CLASS_AUDIO_3, CLASS_AUDIO_4, CLASS_AUDIO_5, CLASS_AUDIO_6, CLASS_AUDIO_7, CLASS_AUDIO_8, CLASS_AUDIO_9 } from './media'
+import { CLASS_AUDIO, CLASS_AUDIO_10, CLASS_AUDIO_11, CLASS_AUDIO_12, CLASS_AUDIO_13, CLASS_AUDIO_14, CLASS_AUDIO_15, CLASS_AUDIO_2, CLASS_AUDIO_3, CLASS_AUDIO_4, CLASS_AUDIO_5, CLASS_AUDIO_6, CLASS_AUDIO_7, CLASS_AUDIO_8, CLASS_AUDIO_9, HAS_CLASS_AUDIO } from './media'
 import type { SlideData } from './types'
 
 /** 各頁定義（定義順序不等於顯示順序，顯示順序見檔案最後的 ORDER） */
@@ -86,7 +86,7 @@ const slideList: SlideData[] = [
       titleAccent: '冷凍冷藏系統',
       subtitle: '技術核心解析與新人培訓實務手冊',
       audience: '冷凍材料行新人全方位培訓：產業 × 產品 × 原理 × 門市實戰',
-      source: '依據一丞工程手冊架構提煉',
+      source: '依據老闆上課錄音整理，工程手冊當補充',
       tags: [
         { label: '工程培訓', icon: GraduationCap },
         { label: '冷凍循環', icon: RefreshCw },
@@ -100,7 +100,7 @@ const slideList: SlideData[] = [
       label: '引言',
       text: (
         <>
-          建立<Hl>熱力動態平衡思維</Hl>，掌握冷鏈工程底層邏輯。
+          老闆：「你要懂這些東西，<Hl>你才有辦法賣</Hl>。」
         </>
       ),
     },
@@ -954,9 +954,10 @@ const slideList: SlideData[] = [
   {
     id: 'ch3',
     source: 'handbook',
+    added: '2026-10-09',
     part: 'components',
     chapter: '第 3 章',
-    title: '散熱之肺——氣冷式冷凝器',
+    title: '冷凝器（熱排）：把熱散到室外',
     en: 'Air-Cooled Condenser',
     store: {
       products: ['冷凝機組', '風扇馬達', '風扇調速器', '鰭片清洗劑'],
@@ -1060,9 +1061,10 @@ const slideList: SlideData[] = [
   {
     id: 'ch4',
     source: 'handbook',
+    added: '2026-10-09',
     part: 'components',
     chapter: '第 4 章',
-    title: '吸熱核心——蒸發器與除霜',
+    title: '蒸發器（冷排）：把熱吸走＋除霜',
     en: 'Evaporator & Defrost',
     store: {
       products: ['冷風機', '除霜電熱管', '溫度感測器', '風扇馬達'],
@@ -1193,9 +1195,10 @@ const slideList: SlideData[] = [
   {
     id: 'ch5',
     source: 'handbook',
+    added: '2026-10-09',
     part: 'components',
     chapter: '第 5 章',
-    title: '神經與防護——控制與保護閥件',
+    title: '控制與保護閥件',
     en: 'Controls & Protection',
     store: {
       products: ['膨脹閥 / 閥芯', '電磁閥', '視液鏡', '高低壓開關'],
@@ -3595,10 +3598,10 @@ const slideList: SlideData[] = [
             type: 'info',
             icon: Flame,
             tone: 'amber',
-            title: '冷凍靠的是「潛熱」',
+            title: '要有「兩態變化」才會冷',
             body: (
               <>
-                冷媒<Hl>變相</Hl>（氣↔液）時吸收或放出的熱叫潛熱：溫度不變、相態改變，量比單純升降溫的顯熱大得多。冷凝器（氣→液）放熱、蒸發器（液→氣）吸熱，靠的都是潛熱。
+                老闆：<Hl>液態變氣態</Hl>，才會產生吸熱的效果，冷度才會出來；「沒有兩態變化，你就吸不到熱」。熱排是氣變液、把熱放掉，冷排是液變氣、把熱吸走。課本叫它「潛熱」，老闆說我們不用去算。〔錄音02 14:05、20:48〕
               </>
             ),
           },
@@ -3614,7 +3617,7 @@ const slideList: SlideData[] = [
             badge: { label: '① 壓縮機', tone: 'red' },
             body: '低溫低壓的氣體被吸進壓縮機，壓縮成高溫高壓的氣體——壓力升高，溫度也跟著升高。',
             chain: ['低溫低壓氣態', '高溫高壓氣態'],
-            points: ['術語：等熵升壓升溫', '只能壓氣體，不能壓液體'],
+            points: ['老闆：壓縮機是系統的龍頭', '只能壓氣體，不能壓液體'],
           },
           {
             type: 'concept',
@@ -3622,9 +3625,9 @@ const slideList: SlideData[] = [
             tone: 'amber',
             title: '冷凝行程',
             badge: { label: '② 冷凝器', tone: 'amber' },
-            body: '冷媒在高壓下把熱放掉，從氣體凝結成液體；放出的熱（潛熱）由風扇吹到室外。',
+            body: '冷媒在高壓下把熱放掉，從氣體凝結成液體；放出的熱由風扇吹到室外。',
             chain: ['高溫高壓氣態', '中溫中壓液態'],
-            points: ['術語：高壓等壓放熱液化', '散熱不好，冷媒就液化不完全'],
+            points: ['又叫熱排、散熱器', '散熱不好，冷媒就液化不完全'],
           },
           {
             type: 'concept',
@@ -3633,8 +3636,8 @@ const slideList: SlideData[] = [
             title: '節流膨脹',
             badge: { label: '③ 膨脹閥', tone: 'teal' },
             body: '中溫中壓的液體通過窄小的閥口，壓力一下子降下來，變成很容易蒸發的液氣混合。',
-            chain: ['中溫中壓液態', '液氣混合（濕蒸汽）'],
-            points: ['術語：等焓降壓節流', '像洗車時壓住水管口'],
+            chain: ['中溫中壓液態', '液氣混合'],
+            points: ['老闆：膨脹閥就是降壓節流', '像洗車時壓住水管口'],
           },
           {
             type: 'concept',
@@ -3644,7 +3647,7 @@ const slideList: SlideData[] = [
             badge: { label: '④ 蒸發器', tone: 'ice' },
             body: '液態冷媒在低壓下吸熱、蒸發成氣體，把庫房和貨物的熱吸走——這就是我們要的「冷」。',
             chain: ['液氣混合', '低溫低壓氣態'],
-            points: ['術語：等壓等溫吸熱汽化', '要完全蒸發才回壓縮機'],
+            points: ['又叫冷排、室內機', '要完全蒸發才回壓縮機'],
           },
             ],
           },
@@ -4042,7 +4045,8 @@ const slideList: SlideData[] = [
     part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO',
-    title: '課堂錄音：15 段，點一段就能聽',
+    // 公開網站沒有完整錄音（只在公司版、離線檔）：標題不能寫「點一段就能聽」（10/09 QA）
+    title: HAS_CLASS_AUDIO ? '課堂錄音：15 段，點一段就能聽' : '課堂錄音：15 段各講什麼',
     en: 'Recordings',
     blocks: [
       {
@@ -4066,7 +4070,15 @@ const slideList: SlideData[] = [
       label: '一句話',
       text: (
         <>
-          錄音是<Hl>複習用</Hl>的：內容頁讀過之後，隔幾天回來聽老闆怎麼講，記得最牢。
+          {HAS_CLASS_AUDIO ? (
+            <>
+              錄音是<Hl>複習用</Hl>的：內容頁讀過之後，隔幾天回來聽老闆怎麼講，記得最牢。
+            </>
+          ) : (
+            <>
+              這裡是每段錄音<Hl>在講什麼</Hl>；完整錄音只放在公司版（要登入）和離線檔。
+            </>
+          )}
         </>
       ),
     },

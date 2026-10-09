@@ -7,7 +7,7 @@ import { pad } from '../../lib/cn'
 export function StoreTipCard({ store }: { store: StoreTip }) {
   const { goToId, numberOf } = useDeck()
   return (
-    <aside className="relative w-[740px] shrink-0 rounded-[24px] bg-emerald-400/[0.07] px-6 py-4">
+    <aside className="relative w-[740px] shrink-0 rounded-[14px] border border-emerald-500/35 bg-emerald-950/70 px-6 py-4">
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
@@ -21,7 +21,7 @@ export function StoreTipCard({ store }: { store: StoreTip }) {
           <ArrowUpRight className="size-4" aria-hidden />
         </button>
         {store.products.map((p) => (
-          <span key={p} className="rounded-full bg-white/[0.07] px-3 py-0.5 text-[17px] font-semibold text-slate-100">
+          <span key={p} className="rounded-full border border-line bg-card px-3 py-0.5 text-[17px] font-semibold text-slate-100">
             {p}
           </span>
         ))}

@@ -23,7 +23,7 @@ export function QuizCards({ block }: { block: QuizBlock }) {
         <button
           type="button"
           onClick={() => setOpen([])}
-          className={cn('flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 font-semibold text-slate-200 hover:border-sky-400/40', focusRing)}
+          className={cn('flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 font-semibold text-slate-200 hover:border-sky-500/40', focusRing)}
         >
           <RotateCcw className="size-4" aria-hidden />
           全部蓋回去
@@ -48,11 +48,11 @@ export function QuizCards({ block }: { block: QuizBlock }) {
                 className={cn(
                   'flex h-full cursor-pointer gap-4 rounded-2xl border transition',
                   big ? 'items-center px-8 py-5' : 'px-5 py-3',
-                  shown ? 'border-emerald-400/40 bg-emerald-400/[0.07]' : 'border-white/10 bg-white/[0.03] hover:border-sky-400/40',
+                  shown ? 'border-emerald-500/50 bg-emerald-950' : 'border-line bg-card hover:border-sky-500/50',
                   focusRing,
                 )}
               >
-                <span className={cn('font-mono font-black text-sky-300', big ? 'text-[30px]' : 'text-[20px]')}>{pad(i + 1)}</span>
+                <span className={cn('font-mono font-black text-sky-400', big ? 'text-[30px]' : 'text-[20px]')}>{pad(i + 1)}</span>
                 <div className="min-w-0 flex-1">
                   <p className={cn('font-bold leading-snug text-white', big ? 'text-[30px]' : 'text-[21px]')}>{item.q}</p>
                   {shown ? (

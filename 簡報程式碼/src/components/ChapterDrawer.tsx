@@ -52,7 +52,7 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
         <>
           <motion.div
             key="overlay"
-            className="fixed inset-0 z-40 bg-navy-950/70 backdrop-blur-sm"
+            className="fixed inset-0 z-40 bg-ink/25"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -63,7 +63,9 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
             role="dialog"
             aria-modal="true"
             aria-label="章節導覽"
-            className="fixed inset-y-0 left-0 z-50 flex w-[min(460px,92vw)] flex-col bg-[#0b1626]/85 shadow-2xl shadow-black/60 backdrop-blur-xl"
+            // 鍵盤翻頁：有 aria-modal 的視窗開著時不翻頁，但目錄抽屜例外（useDeckKeyboard 用這個屬性排除）
+            data-deck-drawer
+            className="fixed inset-y-0 left-0 z-50 flex w-[min(460px,92vw)] flex-col border-r border-line bg-paper shadow-[0_24px_64px_-24px_rgba(15,36,64,0.45)]"
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
@@ -79,7 +81,7 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
                 type="button"
                 onClick={onClose}
                 aria-label="關閉目錄 (Esc)"
-                className="flex size-10 items-center justify-center rounded-full bg-white/[0.08] text-slate-300 transition hover:bg-white/[0.14] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
+                className="flex size-10 items-center justify-center rounded-full border border-line bg-card text-slate-300 transition hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
               >
                 <X className="size-5" aria-hidden />
               </button>
@@ -93,7 +95,7 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
                     {group.part.label}
                   </h3>
                   {group.part.goal && <p className="mb-2 px-3 text-[13px] leading-relaxed text-slate-500">學完你會：{group.part.goal}</p>}
-                  <ul className="divide-y divide-white/[0.06] overflow-hidden rounded-2xl bg-white/[0.05]">
+                  <ul className="divide-y divide-line overflow-hidden rounded-[14px] border border-line bg-card">
                     {group.items.map(({ slide, index: i }) => {
                       const active = i === index
                       return (
@@ -103,16 +105,16 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
                             onClick={() => onSelect(i)}
                             aria-current={active ? 'page' : undefined}
                             className={cn(
-                              'flex w-full items-center gap-3 px-4 py-3 text-left transition focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300',
-                              active ? 'bg-sky-400/20' : 'hover:bg-white/[0.06]',
+                              'flex w-full items-center gap-3 px-4 py-3 text-left transition focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-500',
+                              active ? 'bg-sky-950' : 'hover:bg-white/[0.04]',
                             )}
                           >
-                            <span className={cn('font-mono text-sm font-bold', active ? 'text-sky-300' : 'text-slate-500')}>
+                            <span className={cn('font-mono text-sm font-bold', active ? 'text-sky-400' : 'text-slate-500')}>
                               {pad(i + 1)}
                             </span>
                             <span className="min-w-0 flex-1">
                               <span className={cn('block truncate text-[16px] font-semibold', active ? 'text-sky-100' : 'text-slate-100')}>
-                                {isNew(slide.added) && <span className="mr-1.5 rounded bg-emerald-400 px-1.5 text-[12px] font-black text-navy-950">新</span>}
+                                {isNew(slide.added) && <span className="mr-1.5 rounded bg-emerald-400 px-1.5 text-[12px] font-black text-paper">新</span>}
                                 {slide.title}
                               </span>
                               {slide.chapter && (
@@ -123,7 +125,7 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
                                 </span>
                               )}
                             </span>
-                            {active && <span className="shrink-0 rounded-full bg-sky-400 px-2 py-0.5 text-[12px] font-bold text-navy-950">目前</span>}
+                            {active && <span className="shrink-0 rounded-full bg-sky-400 px-2 py-0.5 text-[12px] font-bold text-paper">目前</span>}
                           </button>
                         </li>
                       )
@@ -133,7 +135,7 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
               ))}
             </div>
 
-            <footer className="px-6 pb-5 pt-3">
+            <footer className="border-t border-line px-6 pb-5 pt-3">
               <p className="mb-2 text-xs font-bold text-slate-400">鍵盤快捷鍵</p>
               <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-slate-400">
                 {shortcuts.map((s) => (

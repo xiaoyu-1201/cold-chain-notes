@@ -54,7 +54,7 @@ function NavButton({
       onMouseDown={keepFocus}
       disabled={disabled}
       className={cn(
-        'flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-white/[0.07] px-3.5 text-slate-200 transition hover:bg-white/[0.14] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 disabled:pointer-events-none disabled:opacity-30',
+        'flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-line bg-card px-3.5 text-slate-200 transition hover:border-sky-500/50 hover:text-sky-300 active:bg-sky-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 disabled:pointer-events-none disabled:opacity-35',
         className,
       )}
     >
@@ -84,7 +84,7 @@ export function SlideNav({
   return (
     <nav
       aria-label="簡報控制"
-      className="flex h-16 shrink-0 items-center gap-4 bg-[#0b1626]/90 px-3 backdrop-blur sm:px-5"
+      className="flex h-16 shrink-0 items-center gap-4 border-t border-line bg-paper px-3 sm:px-5"
     >
       {/* 篇章列是固定寬，大螢幕時左邊先保留一塊給提示／標題，不然會被篇章列吃光；平板（<1280）按鈕只留圖示 */}
       <div className="flex flex-1 items-center gap-3 min-[1600px]:min-w-[260px]">
@@ -104,16 +104,14 @@ export function SlideNav({
           {isNew('2026-10-09') && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-emerald-400" />}
         </NavButton>
         {back ? (
+          // 只寫「返回 P.52」：完整標題放在說明（滑鼠停留、讀屏都聽得到），按鈕可以縮小，不會擠到中間的篇章列
           <NavButton
             label={`返回 P.${pad(back.number)} ${back.title}（Backspace）`}
             onClick={onBack}
-            className="min-w-0 bg-amber-400/20 text-amber-50 hover:bg-amber-400/30"
+            className="min-w-0 shrink border-amber-500/60 bg-amber-950 text-amber-100 hover:border-amber-500 hover:text-amber-100"
           >
             <CornerUpLeft className="size-5 shrink-0" aria-hidden />
-            <span className="truncate text-sm font-bold">
-              返回 P.{pad(back.number)}
-              <span className="ml-1.5 hidden font-medium text-amber-100/80 sm:inline">{back.title}</span>
-            </span>
+            <span className="truncate text-sm font-bold">返回 P.{pad(back.number)}</span>
           </NavButton>
         ) : null}
         {/* 提示放在絕對定位層：只用剩下的空間，不會把左半邊撐大、擠到中間的篇章列 */}
@@ -121,9 +119,9 @@ export function SlideNav({
           {hints.length > 0 ? (
             <p
               title={hints.join('；')}
-              className="absolute left-0 top-1/2 hidden max-w-full -translate-y-1/2 items-center gap-2 overflow-hidden rounded-full bg-sky-400/10 px-3.5 py-1.5 text-sm font-semibold text-sky-100 min-[1600px]:flex"
+              className="absolute left-0 top-1/2 hidden max-w-full -translate-y-1/2 items-center gap-2 overflow-hidden rounded-full bg-sky-950 px-3.5 py-1.5 text-sm font-semibold text-sky-100 min-[1600px]:flex"
             >
-              <Pointer className="size-4 shrink-0 animate-pulse text-sky-300" aria-hidden />
+              <Pointer className="size-4 shrink-0 text-sky-400" aria-hidden />
               <span className="shrink-0 text-sky-300">本頁可以點</span>
               <span className="min-w-0 truncate">{hints.join('；')}</span>
             </p>
@@ -193,9 +191,9 @@ const groupLabel = (p: PartId) => {
   return part.step ? part.short.replace(' ', '') : part.short
 }
 
-const arrowCls = 'absolute top-1/2 z-20 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-navy-800/90 text-slate-200 shadow-md ring-1 ring-white/15 transition hover:bg-navy-700 hover:text-white focus-visible:outline-2 focus-visible:outline-sky-300'
-const stripCls = 'relative flex items-center overflow-x-auto rounded-full bg-white/[0.06] p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
-const focusRing = 'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300'
+const arrowCls = 'absolute top-1/2 z-20 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-card text-slate-200 ring-1 ring-line transition hover:text-sky-300 hover:ring-sky-500/50 focus-visible:outline-2 focus-visible:outline-sky-500'
+const stripCls = 'relative flex items-center overflow-x-auto rounded-full border border-line bg-card p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+const focusRing = 'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-500'
 
 /** 目前這一頁屬於哪一篇 */
 const groupOf = (index: number) => dotGroups.find((g) => g.items.includes(index)) ?? dotGroups[0]
@@ -325,8 +323,8 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
               aria-label={`${part.short}：${group.items.length} 頁，跳到第一頁`}
               aria-current={current ? 'true' : undefined}
               className={cn(
-                'relative shrink-0 whitespace-nowrap rounded-full px-2.5 py-1.5 text-[13px] font-semibold leading-tight transition 2xl:px-3 2xl:text-[14px]',
-                current ? cn('bg-white/[0.12] font-bold', toneStyles[part.tone].text) : 'text-slate-400 hover:bg-white/[0.08] hover:text-white',
+                'relative shrink-0 whitespace-nowrap rounded-full px-[5px] py-1.5 text-[13px] font-semibold leading-tight transition xl:px-2.5 2xl:px-3 2xl:text-[14px]',
+                current ? cn('font-bold', toneStyles[part.tone].soft, toneStyles[part.tone].text) : 'text-slate-400 hover:bg-white/[0.05] hover:text-ink',
                 focusRing,
               )}
             >
@@ -368,7 +366,7 @@ function PageStrip({ index, onGoTo }: { index: number; onGoTo: (index: number) =
         onScroll={() => (measure(), clear())}
         style={{ maskImage: mask, WebkitMaskImage: mask }}
         aria-label={`${parts[cur.part].short}的頁碼`}
-        className={cn(stripCls, 'w-[200px]', scrollable && 'cursor-grab active:cursor-grabbing')}
+        className={cn(stripCls, 'w-[204px] xl:w-[232px]', scrollable && 'cursor-grab active:cursor-grabbing')}
       >
         {/* mx-auto：不滿 7 顆時置中；超過時 auto margin 變 0，左邊不會被切掉 */}
         <div className="mx-auto flex shrink-0 items-center gap-1">
@@ -387,12 +385,12 @@ function PageStrip({ index, onGoTo }: { index: number; onGoTo: (index: number) =
                 onFocus={show(i)}
                 className={cn(
                   // after:：看不見的外圈，平板手指點得到（觸控範圍 36px）
-                  'relative flex size-6 shrink-0 items-center justify-center rounded-full font-mono text-[12px] font-bold transition after:absolute after:-inset-1.5 after:content-[""]',
-                  on ? 'bg-sky-300 text-navy-950' : 'text-slate-300 hover:bg-white/[0.14] hover:text-white',
+                  'relative flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-bold transition after:absolute after:-inset-1.5 after:content-[""]',
+                  on ? 'bg-sky-300 text-paper' : 'text-slate-300 hover:bg-white/[0.07] hover:text-ink',
                   // 查閱頁：字淡一點（必讀的才是實心）
                   !on && slides[i].tier === 'ref' && 'text-slate-500',
                   // 這一批新增的頁：綠色外框＋右上角小點（目前頁用綠框就夠）
-                  isNew(slides[i].added) && (on ? 'ring-2 ring-emerald-400' : 'ring-1 ring-emerald-400/80 text-emerald-200'),
+                  isNew(slides[i].added) && (on ? 'ring-2 ring-emerald-400' : 'ring-1 ring-emerald-500/80 text-emerald-200'),
                   focusRing,
                 )}
               >
@@ -411,10 +409,10 @@ function PageStrip({ index, onGoTo }: { index: number; onGoTo: (index: number) =
 function Tip({ i, x }: { i: number; x: number }) {
   const s = slides[i]
   return (
-    <span style={{ left: x }} className="pointer-events-none absolute bottom-full z-50 mb-3 -translate-x-1/2 whitespace-nowrap rounded-xl bg-navy-800/95 px-3 py-1.5 text-[13px] font-semibold text-slate-100 shadow-lg backdrop-blur">
-      <span className="font-mono text-sky-300">P.{pad(i + 1)}</span>
+    <span style={{ left: x }} className="pointer-events-none absolute bottom-full z-50 mb-3 -translate-x-1/2 whitespace-nowrap rounded-lg border border-line bg-card px-3 py-1.5 text-[13px] font-semibold text-slate-100 shadow-[0_6px_18px_-8px_rgba(15,36,64,0.3)]">
+      <span className="font-mono text-sky-400">P.{pad(i + 1)}</span>
       <span className={cn('mx-1.5', toneStyles[parts[s.part].tone].text)}>{parts[s.part].short}</span>
-      {isNew(s.added) && <span className="mr-1.5 rounded bg-emerald-400 px-1.5 text-[12px] font-black text-navy-950">新</span>}
+      {isNew(s.added) && <span className="mr-1.5 rounded bg-emerald-400 px-1.5 text-[12px] font-black text-paper">新</span>}
       {s.tier === 'ref' && <span className="mr-1.5 text-slate-400">查閱 ·</span>}
       {s.title}
     </span>

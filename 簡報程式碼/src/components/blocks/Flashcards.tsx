@@ -5,10 +5,13 @@ import { CLASS_AUDIO, loadPlayable, RECORDINGS } from '../../data/media'
 import type { FlashCard, FlashcardsBlock } from '../../data/types'
 import { isNew } from '../../data/whatsNew'
 import { useStickyState } from '../../hooks/useStickyState'
+import { useScrollFade } from '../../hooks/useScrollFade'
 import { cn } from '../../lib/cn'
 import { part3DFor } from '../three/ids'
 import { PartViewer } from '../three/PartViewer'
 import { Segmented } from '../ui/Segmented'
+import { PartGlyph } from '../ui/PartGlyph'
+import { glyphFor } from '../../lib/partGlyph'
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
 type Status = 'known' | 'learning'
@@ -93,6 +96,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
   const [mode, setMode] = useStickyState<'term' | 'en'>('cards:mode', 'term')
   const [flipped, setFlipped] = useState(false)
   const [viewer, setViewer] = useState(false)
+  const menuFade = useScrollFade<HTMLDivElement>()
 
   // 卡片數量變了（新增名詞）就重新排
   const safeOrder = order.length === total ? order : cards.map((_, i) => i)
@@ -101,6 +105,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
   const card = current !== undefined ? cards[current] : null
   const known = cards.filter((c) => status[c.term] === 'known').length
   const model = card?.part ? part3DFor(card.part) : null
+  const glyph = card ? glyphFor(card.term) : null
 
   const show = (i: number) => {
     setCur(i)
@@ -157,7 +162,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
       <button type="button" onClick={(e) => {
         stop(e)
         speakEnglish(c)
-      }} className={cn(pill, 'bg-sky-400/15 text-sky-200 hover:bg-sky-400/25')} aria-label={`播放英文發音：${c.en}`}>
+      }} className={cn(pill, 'bg-sky-500/15 text-sky-200 hover:bg-sky-500/25')} aria-label={`播放英文發音：${c.en}`}>
         <Volume2 className="size-4" aria-hidden />
         英文
       </button>
@@ -167,7 +172,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
       <button type="button" onClick={(e) => {
         stop(e)
         playClip(c)
-      }} className={cn(pill, 'bg-amber-400/15 text-amber-200 hover:bg-amber-400/25')} title={`錄音${String(c.tw.rec).padStart(2, '0')} ${mmss(c.tw.from)}：「${c.tw.say}」`}>
+      }} className={cn(pill, 'bg-amber-500/15 text-amber-200 hover:bg-amber-500/25')} title={`錄音${String(c.tw.rec).padStart(2, '0')} ${mmss(c.tw.from)}：「${c.tw.say}」`}>
         <Volume2 className="size-4" aria-hidden />
         老闆說（錄音{String(c.tw.rec).padStart(2, '0')} {mmss(c.tw.from)}）
       </button>
@@ -181,15 +186,17 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
       onKeyDown={onCardKey}
       aria-label={flipped ? '翻回正面' : '翻面看答案'}
       className={cn(
-        'flex w-full cursor-pointer flex-col items-center justify-center rounded-[28px] text-center transition-colors',
-        mobile ? 'min-h-[260px] p-5' : 'min-h-0 flex-1 px-12 py-8',
-        flipped ? 'bg-emerald-400/[0.08]' : 'bg-sky-400/[0.07] hover:bg-sky-400/[0.11]',
+        'flex w-full cursor-pointer flex-col items-center justify-center rounded-[20px] text-center transition-colors',
+        mobile ? 'min-h-[420px] p-5' : 'min-h-0 flex-1 px-12 py-8',
+        flipped ? 'border border-emerald-500/45 bg-emerald-950/45' : 'border border-sky-500/35 bg-card hover:border-sky-500/70',
         focusRing,
       )}
     >
+      {/* 零件卡：放零件線稿（看英文的正面不放，免得直接看圖就知道答案） */}
+      {glyph && (mode === 'term' || flipped) && <PartGlyph id={glyph} size={mobile ? 56 : flipped ? 80 : 104} className="mb-2 text-ink-2" />}
       <p className={cn('mb-3 flex items-center gap-2 font-semibold text-slate-500', size.small)}>
         {card.group}
-        {isNew(card.added) && <span className="rounded bg-emerald-400 px-1.5 text-[13px] font-black leading-5 text-navy-950">新</span>}
+        {isNew(card.added) && <span className={cn('rounded bg-emerald-400 px-2 font-black text-paper', mobile ? 'text-[14px] leading-6' : 'text-[18px] leading-7')}>新</span>}
       </p>
       {mode === 'term' || flipped ? (
         <span className={cn('font-black text-white', flipped ? (mobile ? 'text-[28px]' : 'text-[52px]') : size.term)}>{card.term}</span>
@@ -212,7 +219,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
             <button type="button" onClick={(e) => {
                 stop(e)
                 setViewer(true)
-              }} className={cn(pill, 'mt-1 bg-sky-400 text-navy-950 hover:bg-sky-300')}>
+              }} className={cn(pill, 'mt-1 bg-sky-400 text-paper hover:bg-sky-300')}>
               <Box className="size-4" aria-hidden />
               3D／照片看構造
             </button>
@@ -223,7 +230,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
       )}
     </div>
   ) : (
-    <div className={cn('flex w-full flex-col items-center justify-center rounded-[28px] bg-emerald-400/[0.08] text-center', mobile ? 'min-h-[260px] p-5' : 'min-h-0 flex-1')}>
+    <div className={cn('flex w-full flex-col items-center justify-center rounded-[20px] border border-emerald-500/45 bg-emerald-950/45 text-center', mobile ? 'min-h-[420px] p-5' : 'min-h-0 flex-1')}>
       <span className={cn('font-black text-emerald-200', mobile ? 'text-[26px]' : 'text-[52px]')}>全部會了！</span>
       <span className={cn('mt-2 text-slate-300', size.small)}>隔幾天再來一次，記得更牢</span>
     </div>
@@ -235,7 +242,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
       onClick={() => go(dir)}
       disabled={visible.length < 2}
       aria-label={dir < 0 ? '上一張' : '下一張'}
-      className={cn('flex shrink-0 items-center justify-center rounded-full bg-white/[0.08] text-slate-100 transition hover:bg-white/[0.14] disabled:opacity-30', mobile ? 'size-10' : 'size-14', focusRing)}
+      className={cn('flex shrink-0 items-center justify-center self-center rounded-full border border-line bg-card text-slate-100 transition hover:border-sky-500/60 hover:text-sky-300 disabled:opacity-35', mobile ? 'size-11' : 'size-14', focusRing)}
     >
       {dir < 0 ? <ChevronLeft className={mobile ? 'size-5' : 'size-7'} aria-hidden /> : <ChevronRight className={mobile ? 'size-5' : 'size-7'} aria-hidden />}
     </button>
@@ -245,10 +252,11 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
   const menu = (
     <div className={cn('flex flex-col', mobile ? 'gap-3' : 'min-h-full gap-4')}>
       {groups.map((g) => (
-        <div key={g}>
-          <p className={cn('mb-1.5 font-semibold text-slate-500', size.small)}>
+        // 每一組上面一條細線＋組名加粗：「管路」「管路配件」這種名字很像的組才分得開
+        <div key={g} className="border-t border-line pt-3 first:border-t-0 first:pt-0">
+          <p className={cn('mb-1.5 font-bold text-slate-200', size.small)}>
             {g}
-            <span className="ml-2 text-slate-600">
+            <span className="ml-2 text-slate-500">
               {cards.filter((c) => c.group === g && status[c.term] === 'known').length}/{cards.filter((c) => c.group === g).length}
             </span>
           </p>
@@ -263,7 +271,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
                   className={cn(
                     'rounded-full font-semibold transition',
                     size.chip,
-                    i === current ? 'bg-slate-100 text-navy-950' : status[c.term] === 'known' ? 'bg-emerald-400/15 text-emerald-200' : status[c.term] === 'learning' ? 'bg-amber-400/15 text-amber-200' : 'bg-white/[0.07] text-slate-200 hover:bg-white/[0.12]',
+                    i === current ? 'bg-slate-100 text-navy-950' : status[c.term] === 'known' ? 'bg-emerald-500/15 text-emerald-200' : status[c.term] === 'learning' ? 'bg-amber-500/15 text-amber-200' : 'border border-line bg-card text-slate-200 hover:border-sky-500/50',
                     focusRing,
                   )}
                 >
@@ -304,7 +312,8 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
           {card && visible.length > 0 && <span className="ml-3 text-slate-500">第 {visible.indexOf(current!) + 1} / {visible.length} 張</span>}
         </span>
       </div>
-      <div className={cn('flex min-h-0 items-center', mobile ? 'gap-2' : 'flex-1 gap-4')}>
+      {/* 卡片固定高（撐滿這一列），翻面時不會忽高忽低 */}
+      <div className={cn('flex min-h-0 items-stretch', mobile ? 'gap-2' : 'flex-1 gap-4')}>
         {navButton(-1)}
         {cardView}
         {navButton(1)}
@@ -312,22 +321,22 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
       <div className="flex flex-wrap justify-center gap-3">
         {card ? (
           <>
-            <button type="button" onClick={() => mark('learning')} className={cn(actionBtn, 'bg-amber-400/15 text-amber-100 hover:bg-amber-400/25')}>
+            <button type="button" onClick={() => mark('learning')} className={cn(actionBtn, 'bg-amber-500/15 text-amber-100 hover:bg-amber-500/25')}>
               <Repeat className="size-5" aria-hidden />
               還不熟
             </button>
-            <button type="button" onClick={() => mark('known')} className={cn(actionBtn, 'bg-emerald-400/15 text-emerald-100 hover:bg-emerald-400/25')}>
+            <button type="button" onClick={() => mark('known')} className={cn(actionBtn, 'bg-emerald-500/15 text-emerald-100 hover:bg-emerald-500/25')}>
               <Check className="size-5" aria-hidden />
               會了
             </button>
           </>
         ) : (
-          <button type="button" onClick={resetAll} className={cn(actionBtn, 'bg-white/[0.08] text-slate-100 hover:bg-white/[0.14]')}>
+          <button type="button" onClick={resetAll} className={cn(actionBtn, 'border border-line bg-card text-slate-100 hover:border-sky-500/50')}>
             <RotateCcw className="size-5" aria-hidden />
             全部重來
           </button>
         )}
-        <button type="button" onClick={reshuffle} className={cn(actionBtn, 'bg-white/[0.08] text-slate-200 hover:bg-white/[0.14]')}>
+        <button type="button" onClick={reshuffle} className={cn(actionBtn, 'border border-line bg-card text-slate-200 hover:border-sky-500/50')}>
           <Shuffle className="size-5" aria-hidden />
           洗牌
         </button>
@@ -340,7 +349,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
     return (
       <div className="flex flex-col gap-4">
         {main}
-        <details className="rounded-2xl bg-white/[0.04] p-3">
+        <details className="rounded-2xl border border-line bg-card p-3">
           <summary className="cursor-pointer text-[16px] font-bold text-white">全部名詞（{total}）・點一個直接跳過去</summary>
           <div className="mt-3">{menu}</div>
         </details>
@@ -350,12 +359,13 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
   return (
     <div className="grid h-full min-h-0 grid-cols-[minmax(0,1fr)_480px] gap-6">
       {main}
-      <section className="flex min-h-0 flex-col rounded-[28px] bg-white/[0.045] p-6">
+      <section className="flex min-h-0 flex-col rounded-[18px] border border-line bg-card p-6">
         <p className="mb-3 text-[24px] font-semibold text-white">全部名詞・點一個直接跳過去</p>
         {/* 名詞越來越多：清單可以捲（之前最下面「管路」那組會被切掉看不到） */}
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pr-2" data-no-swipe>
+        <div ref={menuFade.ref} onScroll={menuFade.measure} style={menuFade.style} className="min-h-0 flex-1 overflow-y-auto overscroll-contain pr-2 [scrollbar-width:thin]" data-no-swipe>
           {menu}
         </div>
+        {menuFade.more && <p className="mt-2 text-center text-[16px] font-semibold text-slate-400">往下捲還有 ↓</p>}
       </section>
     </div>
   )

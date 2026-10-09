@@ -14,7 +14,7 @@ export function Abbr({ block, mobile }: { block: AbbrBlock; mobile?: boolean }) 
   return (
     <div className={cn(mobile ? 'space-y-5' : 'grid h-full min-h-0 gap-6', !mobile && (block.groups.length > 1 ? 'grid-cols-2' : 'grid-cols-1'))}>
       {block.groups.map((g) => (
-        <section key={g.label} className={cn('flex min-h-0 flex-col', !mobile && 'rounded-[22px] border border-white/10 bg-white/[0.03] p-5')}>
+        <section key={g.label} className={cn('flex min-h-0 flex-col', !mobile && 'rounded-[18px] border border-line bg-card p-5')}>
           <h3 className={cn('flex items-center gap-2 font-bold text-slate-100', mobile ? 'text-[17px]' : 'text-[21px]')}>
             <span aria-hidden className={cn('size-2.5 rounded-full', toneStyles[g.tone].dot)} />
             {g.label}
@@ -44,18 +44,18 @@ function Row({ item, tone, mobile }: { item: AbbrItem; tone: Tone; mobile?: bool
         </span>
       </span>
       {item.slide && (
-        <span className={cn('shrink-0 flex items-center gap-0.5 font-mono text-slate-500', mobile ? 'text-[13px]' : 'text-[15px]')}>
+        <span className={cn('shrink-0 flex items-center gap-0.5 font-mono text-slate-500', mobile ? 'text-[13px]' : 'text-[16px]')}>
           P.{pad(numberOf(item.slide))}
           <ArrowUpRight className="size-3.5" aria-hidden />
         </span>
       )}
     </>
   )
-  const cls = cn('flex w-full items-start gap-3 rounded-xl text-left', mobile ? 'border border-white/10 bg-white/[0.03] px-3 py-2.5' : 'bg-navy-900/40 px-4 py-2')
+  const cls = cn('flex w-full items-start gap-3 rounded-xl text-left', mobile ? 'border border-line bg-white/[0.03] px-3 py-2.5' : 'bg-navy-900/40 px-4 py-2')
   return (
     <li className="min-h-0">
       {item.slide ? (
-        <button type="button" onClick={() => goToId(item.slide!)} className={cn(cls, 'transition hover:bg-sky-400/10', focusRing)}>
+        <button type="button" onClick={() => goToId(item.slide!)} className={cn(cls, 'transition hover:bg-sky-950', focusRing)}>
           {body}
         </button>
       ) : (

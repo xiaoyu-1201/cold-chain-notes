@@ -4,8 +4,8 @@ import type { FlowBlock } from '../../data/types'
 import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
 import { Badge } from '../ui/Badge'
-import { IconChip } from '../ui/IconChip'
 import { Panel } from '../ui/Panel'
+import { ItemIcon } from './Cards'
 
 export function FlowSteps({ block }: { block: FlowBlock }) {
   if (block.direction === 'row' && block.compact) return <CompactRow block={block} />
@@ -15,7 +15,7 @@ export function FlowSteps({ block }: { block: FlowBlock }) {
   const body = block.result ? (
     <div className="flex h-full flex-col gap-3">
       <div className="min-h-0 flex-1">{steps}</div>
-      <p className="flex flex-wrap items-baseline gap-x-3 rounded-2xl bg-emerald-400/[0.08] px-4 py-2.5">
+      <p className="flex flex-wrap items-baseline gap-x-3 rounded-xl bg-emerald-950 px-4 py-2.5">
         <span className="text-[17px] font-bold text-emerald-300">{block.result.label}</span>
         <span className="text-[19px] font-semibold leading-snug text-emerald-50">{block.result.text}</span>
       </p>
@@ -46,9 +46,11 @@ function RowFlow({ block }: { block: FlowBlock }) {
                 <ChevronRight className="size-7 text-slate-500" />
               </div>
             )}
-            <div className={cn('relative flex min-w-0 flex-1 flex-col rounded-2xl border bg-white/[0.03] px-5 py-4', t.border)}>
+            <div className={cn('relative flex min-w-0 flex-1 flex-col rounded-2xl border bg-card px-5 py-4', t.border)}>
               <div className="flex items-center justify-between gap-2">
-                <span className={cn('font-mono text-[17px] font-bold tracking-wider', t.text)}>STEP {pad(i + 1)}</span>
+                <span className={cn('text-[17px] font-bold', t.text)}>
+                  步驟 <span className="font-mono">{pad(i + 1)}</span>
+                </span>
                 {step.tag ? (
                   <Badge tone={tone} size="sm">
                     {step.tag}
@@ -93,7 +95,7 @@ function ColFlow({ block }: { block: FlowBlock }) {
               >
                 {i + 1}
               </span>
-              {!isLast && <span className={cn('w-0.5 flex-1 rounded bg-linear-to-b from-slate-500/60 to-slate-500/10', compact ? 'mt-0.5' : 'mt-1')} />}
+              {!isLast && <span className={cn('w-0.5 flex-1 rounded bg-line', compact ? 'mt-0.5' : 'mt-1')} />}
             </div>
             <div className={cn('min-w-0 flex-1', compact ? 'pt-0.5' : 'pb-1 pt-1.5')}>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -120,15 +122,15 @@ function ColFlow({ block }: { block: FlowBlock }) {
 function CompactRow({ block }: { block: FlowBlock }) {
   const t = toneStyles[block.tone]
   return (
-    <section className="flow-row flex h-full items-center gap-6 rounded-[22px] border border-white/10 bg-linear-to-r from-white/[0.055] to-white/[0.015] px-6 py-4">
+    <section className="flow-row flex h-full items-center gap-6 rounded-[18px] border border-line bg-card px-6 py-4">
       <div className="flex shrink-0 items-center gap-4">
-        {block.icon && <IconChip icon={block.icon} tone={block.tone} />}
+        {block.icon && <ItemIcon icon={block.icon} title={block.title} tone={block.tone} size="md" />}
         <div>
           <h3 className="text-[25px] font-bold leading-tight text-slate-50">{block.title}</h3>
           {block.en && <p className="mt-0.5 font-mono text-[16px] uppercase tracking-[0.18em] text-slate-400">{block.en}</p>}
         </div>
       </div>
-      <div className="h-12 w-px shrink-0 bg-white/10" aria-hidden />
+      <div className="h-12 w-px shrink-0 bg-line" aria-hidden />
       <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-2">
         {block.steps.map((step, i) => (
           <Fragment key={i}>
@@ -141,7 +143,7 @@ function CompactRow({ block }: { block: FlowBlock }) {
         ))}
       </div>
       {block.result && (
-        <div className="flex shrink-0 items-center gap-2.5 rounded-xl border border-emerald-400/35 bg-emerald-400/10 px-4 py-2.5">
+        <div className="flex shrink-0 items-center gap-2.5 rounded-xl border border-emerald-500/45 bg-emerald-950 px-4 py-2.5">
           <Target className="size-5 text-emerald-300" aria-hidden />
           <span className="text-[17px] font-bold text-emerald-300">{block.result.label}</span>
           <span className="text-[19px] font-semibold text-emerald-50">{block.result.text}</span>

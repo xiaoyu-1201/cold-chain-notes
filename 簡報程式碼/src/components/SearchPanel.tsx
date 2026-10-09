@@ -65,22 +65,22 @@ export function SearchPanel({ open, onClose, onSelect, mobile }: SearchPanelProp
       {open && (
         <>
           {/* 只有進場動畫、沒有退場：退場動畫在背景分頁會跑不完，視窗會留在畫面上關不掉 */}
-          <motion.div key="overlay" className="fixed inset-0 z-[60] bg-navy-950/70 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={onClose} />
+          <motion.div key="overlay" className="fixed inset-0 z-[60] bg-ink/25" initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={onClose} />
           <motion.div
             key="panel"
             role="dialog"
             aria-modal="true"
             aria-label="搜尋"
             className={cn(
-              'fixed z-[70] flex flex-col bg-[#0b1626]/95 shadow-2xl shadow-black/60 backdrop-blur-xl',
-              mobile ? 'inset-0' : 'inset-x-0 top-[7vh] mx-auto max-h-[82vh] w-[min(760px,94vw)] rounded-[24px] border border-white/10',
+              'fixed z-[70] flex flex-col bg-paper shadow-[0_24px_64px_-24px_rgba(15,36,64,0.45)]',
+              mobile ? 'inset-0' : 'inset-x-0 top-[7vh] mx-auto max-h-[82vh] w-[min(760px,94vw)] rounded-[18px] border border-line',
             )}
             initial={mobile ? { opacity: 0, y: 24 } : { opacity: 0, y: -12, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.18 }}
           >
-            <div className={cn('flex items-center gap-3 border-b border-white/10', mobile ? 'px-3 py-2.5' : 'px-5 py-4')}>
-              <Search className="size-5 shrink-0 text-sky-300" aria-hidden />
+            <div className={cn('flex items-center gap-3 border-b border-line bg-card', mobile ? 'rounded-none px-3 py-2.5' : 'rounded-t-[18px] px-5 py-4')}>
+              <Search className="size-5 shrink-0 text-sky-400" aria-hidden />
               <input
                 ref={input}
                 value={q}
@@ -93,7 +93,7 @@ export function SearchPanel({ open, onClose, onSelect, mobile }: SearchPanelProp
                 className={cn('min-w-0 flex-1 bg-transparent font-semibold text-white outline-none placeholder:text-slate-500', mobile ? 'h-10 text-[17px]' : 'h-11 text-[19px]')}
               />
               {q && (
-                <button type="button" onClick={() => setQ('')} aria-label="清除" className="flex size-8 items-center justify-center rounded-full text-slate-400 hover:bg-white/10 hover:text-white">
+                <button type="button" onClick={() => setQ('')} aria-label="清除" className="flex size-8 items-center justify-center rounded-full text-slate-400 hover:bg-white/[0.06] hover:text-ink">
                   <X className="size-4" aria-hidden />
                 </button>
               )}
@@ -101,7 +101,7 @@ export function SearchPanel({ open, onClose, onSelect, mobile }: SearchPanelProp
                 type="button"
                 onClick={onClose}
                 aria-label="關閉搜尋 (Esc)"
-                className={cn('shrink-0 rounded-full bg-white/[0.08] font-bold text-slate-200 hover:bg-white/[0.14]', mobile ? 'h-10 px-3 text-[15px]' : 'flex size-10 items-center justify-center')}
+                className={cn('shrink-0 rounded-full border border-line bg-card font-bold text-slate-200 hover:text-ink', mobile ? 'h-10 px-3 text-[15px]' : 'flex size-10 items-center justify-center')}
               >
                 {mobile ? '取消' : <X className="size-5" aria-hidden />}
               </button>
@@ -115,7 +115,7 @@ export function SearchPanel({ open, onClose, onSelect, mobile }: SearchPanelProp
                   <p className="mt-4 text-[13px] font-bold text-slate-500">試試看</p>
                   <div className="mt-1.5 flex flex-wrap gap-1.5">
                     {EXAMPLES.map((e) => (
-                      <button key={e} type="button" onClick={() => setQ(e)} className="rounded-full border border-white/15 px-3 py-1 text-[14px] font-semibold text-slate-200 hover:border-sky-400/40 hover:bg-sky-400/10">
+                      <button key={e} type="button" onClick={() => setQ(e)} className="rounded-full border border-line bg-card px-3 py-1 text-[14px] font-semibold text-slate-200 hover:border-sky-500/50 hover:bg-sky-950">
                         {e}
                       </button>
                     ))}
@@ -160,19 +160,19 @@ function Result({ hit, terms, active, i, onHover, onPick, mobile }: { hit: Searc
         onClick={onPick}
         onMouseMove={onHover}
         aria-current={active ? 'true' : undefined}
-        className={cn('flex w-full items-start gap-3 rounded-2xl px-3 py-2.5 text-left transition', active ? 'bg-sky-400/15' : 'hover:bg-white/[0.05]')}
+        className={cn('flex w-full items-start gap-3 rounded-2xl px-3 py-2.5 text-left transition', active ? 'bg-sky-950 ring-1 ring-inset ring-sky-500/30' : 'hover:bg-white/[0.04]')}
       >
-        <span className={cn('mt-0.5 w-10 shrink-0 font-mono text-[14px] font-bold', active ? 'text-sky-300' : 'text-slate-500')}>P.{pad(hit.entry.index + 1)}</span>
+        <span className={cn('mt-0.5 w-10 shrink-0 font-mono text-[14px] font-bold', active ? 'text-sky-400' : 'text-slate-500')}>P.{pad(hit.entry.index + 1)}</span>
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
             <span className={cn('text-[13px] font-semibold', toneStyles[part.tone].text)}>{part.short}</span>
-            {isNew(s.added) && <span className="rounded bg-emerald-400 px-1.5 text-[11px] font-black text-navy-950">新</span>}
+            {isNew(s.added) && <span className="rounded bg-emerald-400 px-1.5 text-[11px] font-black text-paper">新</span>}
             {s.tier === 'ref' && <span className="text-[12px] text-slate-500">查閱</span>}
           </span>
           <span className={cn('block font-bold leading-snug text-white', mobile ? 'text-[16px]' : 'text-[17px]')}>
             <Mark text={s.title} terms={terms} />
           </span>
-          {hit.chunks.map((c, k) => (
+          {(mobile ? hit.chunks.slice(0, 1) : hit.chunks).map((c, k) => (
             <span key={k} className={cn('mt-1 block leading-snug text-slate-300', mobile ? 'text-[14px]' : 'text-[14px]')}>
               {c.label && <span className="mr-1.5 text-slate-500">{c.label} ·</span>}
               <Mark text={snippet(c.text, terms)} terms={terms} />
@@ -193,7 +193,7 @@ function Mark({ text, terms }: { text: string; terms: string[] }): ReactNode {
   const parts = text.split(re)
   return parts.map((p, i) =>
     i % 2 === 1 ? (
-      <mark key={i} className="rounded-sm bg-amber-300/30 px-0.5 text-amber-100">
+      <mark key={i} className="rounded-sm bg-amber-500/35 px-0.5 text-amber-50">
         {p}
       </mark>
     ) : (

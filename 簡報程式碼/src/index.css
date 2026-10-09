@@ -1,42 +1,131 @@
 @import 'tailwindcss';
 
+/*
+ * 技術藍圖（10/09 改版）：淡色紙底＋工程方格線＋墨色字；顏色只拿來表達意思。
+ * 管路三色＝全站顏色語言（跟老闆講義一樣）：紅＝吐出管（高溫高壓氣態）、黃＝液管、藍＝吸氣管（低溫低壓）。
+ *
+ * 做法：原本是深色版，元件裡寫的是 text-white、bg-white/[0.05]、text-sky-300 這類「深底用」的色名。
+ * 這裡把色票整組反過來：
+ *   - white＝墨色（text-white 是墨色字；bg-white/[0.05] 是淡淡的墨色填色；border-white/10 是墨色細線）
+ *   - slate 50～300＝墨色→次要字，400～500＝更淡的字（仍有 4.5:1 對比）
+ *   - navy 950～700＝紙色→淡灰藍（原本的深底）
+ *   - 各色 50～300（原本在深底當字色）＝深色字；400＝強調字／圓點；500＝亮色（管路色，給淡底色、細框用）；950＝淺底
+ * 新寫的元件請直接用語意色：bg-paper、bg-card、border-line、text-ink、text-ink-2、text-ink-3、pipe-red／pipe-yellow／pipe-blue。
+ * 3D 檢視窗、照片放大這種要保留深色的地方，外層加 class「theme-dark」就會換回深色版色票。
+ * 舊版瀏覽器（如 Chrome 109 / Win7）不支援 oklch()：用到的顏色一律在這裡給 hex。
+ */
 @theme {
   --font-sans: 'Noto Sans TC', 'Microsoft JhengHei', 'PingFang TC', 'Heiti TC', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Cascadia Mono', Consolas, ui-monospace, monospace;
 
+  /* 語意色 */
+  --color-paper: #f6f9fc;
+  --color-desk: #e9eff6;
+  --color-grid: #e2eaf3;
+  --color-card: #ffffff;
+  --color-line: #c9d6e5;
+  --color-ink: #0f2440;
+  --color-ink-2: #3e5677;
+  --color-ink-3: #5a6e88;
+  --color-pipe-red: #d23f2e;
+  --color-pipe-yellow: #e0a01b;
+  --color-pipe-blue: #2e7bc8;
 
-  /* 舊版瀏覽器（如 Chrome 109 / Win7）不支援 oklch()：改用 hex 色碼，避免白字變黑 */
-  --color-amber-100: #fef3c6;
-  --color-amber-200: #fee685;
-  --color-amber-300: #ffd230;
-  --color-amber-400: #ffb900;
-  --color-amber-50: #fffbeb;
-  --color-amber-500: #fe9a00;
-  --color-amber-950: #461901;
-  --color-cyan-200: #a2f4fd;
-  --color-cyan-300: #53eafd;
-  --color-cyan-400: #00d3f2;
-  --color-emerald-100: #d0fae5;
-  --color-emerald-200: #a4f4cf;
-  --color-emerald-300: #5ee9b5;
-  --color-emerald-400: #00d492;
-  --color-emerald-50: #ecfdf5;
-  --color-emerald-500: #00bc7d;
-  --color-fuchsia-300: #f4a8ff;
-  --color-rose-300: #ffa1ad;
-  --color-indigo-100: #e0e7ff;
-  --color-indigo-200: #c6d2ff;
-  --color-indigo-300: #a3b3ff;
-  --color-indigo-400: #7c86ff;
-  --color-indigo-500: #615fff;
-  --color-orange-400: #ff8904;
-  --color-red-100: #ffe2e2;
-  --color-red-200: #ffc9c9;
-  --color-red-300: #ffa2a2;
-  --color-red-400: #ff6467;
-  --color-red-50: #fef2f2;
-  --color-red-500: #fb2c36;
-  --color-red-950: #460809;
+  /* 反過來的中性色 */
+  --color-white: #0f2440;
+  --color-slate-50: #0f2440;
+  --color-slate-100: #13294a;
+  --color-slate-200: #213a5c;
+  --color-slate-300: #3e5677;
+  --color-slate-400: #4f6684;
+  --color-slate-500: #5a6e88;
+  --color-slate-600: #9aabc0;
+  --color-slate-800: #e2eaf3;
+  --color-navy-700: #d6e0ec;
+  --color-navy-800: #e4ebf3;
+  --color-navy-900: #eef3f8;
+  --color-navy-950: #f6f9fc;
+
+  /* 藍＝吸氣管（低溫低壓）、冷、可以點 */
+  --color-sky-50: #0b2e55;
+  --color-sky-100: #103a68;
+  --color-sky-200: #134577;
+  --color-sky-300: #164d84;
+  --color-sky-400: #2569ad;
+  --color-sky-500: #2e7bc8;
+  --color-sky-600: #1f64a8;
+  --color-sky-950: #e2eefa;
+  --color-cyan-200: #0e5560;
+  --color-cyan-300: #11646f;
+  --color-cyan-400: #0f7c88;
+
+  /* 紅＝吐出管（高溫高壓氣態）、熱、危險 */
+  --color-red-50: #5e150c;
+  --color-red-100: #6b190f;
+  --color-red-200: #7a1e13;
+  --color-red-300: #8a2216;
+  --color-red-400: #b0301f;
+  --color-red-500: #d23f2e;
+  --color-red-950: #fbe7e3;
+  --color-rose-300: #9b2342;
+  --color-orange-400: #b4520f;
+  --color-fuchsia-300: #8a2a8f;
+
+  /* 黃＝液管（中溫中壓液態）、要確認、警告 */
+  --color-amber-50: #4a3204;
+  --color-amber-100: #573b05;
+  --color-amber-200: #664506;
+  --color-amber-300: #7a5306;
+  --color-amber-400: #8f6207;
+  --color-amber-500: #e0a01b;
+  --color-amber-950: #fcf1d8;
+
+  /* 綠＝正確、完成、新 */
+  --color-emerald-50: #053d2b;
+  --color-emerald-100: #064a34;
+  --color-emerald-200: #07573d;
+  --color-emerald-300: #0a6446;
+  --color-emerald-400: #0e7a55;
+  --color-emerald-500: #15a06e;
+  --color-emerald-950: #dff3ea;
+
+  /* 其他分類色（篇章）：在淡底上好讀的深色版 */
+  --color-teal-100: #0b4a44;
+  --color-teal-200: #0d5750;
+  --color-teal-300: #0f655c;
+  --color-teal-400: #127a70;
+  --color-teal-500: #1a9c8e;
+  --color-teal-950: #ddf2ef;
+  --color-indigo-100: #232a6e;
+  --color-indigo-200: #2a3280;
+  --color-indigo-300: #333c93;
+  --color-indigo-400: #4a50b5;
+  --color-indigo-500: #6366d9;
+  --color-indigo-950: #e6e8fa;
+  --color-violet-100: #3d1f73;
+  --color-violet-200: #472585;
+  --color-violet-300: #532c97;
+  --color-violet-400: #6a3fbf;
+  --color-violet-500: #8b5cf6;
+  --color-violet-950: #eee7fb;
+}
+
+/* 深色檢視窗（3D、照片放大）：換回深色版色票，裡面的元件照舊 */
+.theme-dark {
+  color-scheme: dark;
+  --color-white: #ffffff;
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cad5e2;
+  --color-slate-400: #90a1b9;
+  --color-slate-500: #62748e;
+  --color-slate-600: #45556c;
+  --color-slate-800: #1d293d;
+  --color-navy-700: #16264a;
+  --color-navy-800: #0f1b36;
+  --color-navy-900: #0a1328;
+  --color-navy-950: #050a17;
   --color-sky-50: #f0f9ff;
   --color-sky-100: #dff2fe;
   --color-sky-200: #b8e6fe;
@@ -44,34 +133,34 @@
   --color-sky-400: #00bcff;
   --color-sky-500: #00a6f4;
   --color-sky-600: #0084d1;
-  --color-slate-100: #f1f5f9;
-  --color-slate-200: #e2e8f0;
-  --color-slate-300: #cad5e2;
-  --color-slate-400: #90a1b9;
-  --color-slate-50: #f8fafc;
-  --color-slate-500: #62748e;
-  --color-slate-600: #45556c;
-  --color-slate-800: #1d293d;
-  --color-teal-100: #cbfbf1;
-  --color-teal-200: #96f7e4;
+  --color-red-50: #fef2f2;
+  --color-red-100: #ffe2e2;
+  --color-red-200: #ffc9c9;
+  --color-red-300: #ffa2a2;
+  --color-red-400: #ff6467;
+  --color-red-500: #fb2c36;
+  --color-amber-50: #fffbeb;
+  --color-amber-100: #fef3c6;
+  --color-amber-200: #fee685;
+  --color-amber-300: #ffd230;
+  --color-amber-400: #ffb900;
+  --color-amber-500: #fe9a00;
+  --color-emerald-50: #ecfdf5;
+  --color-emerald-100: #d0fae5;
+  --color-emerald-200: #a4f4cf;
+  --color-emerald-300: #5ee9b5;
+  --color-emerald-400: #00d492;
+  --color-emerald-500: #00bc7d;
   --color-teal-300: #46ecd5;
   --color-teal-400: #00d5be;
-  --color-teal-500: #00bba7;
-  --color-violet-100: #ede9fe;
-  --color-violet-200: #ddd6ff;
+  --color-indigo-300: #a3b3ff;
   --color-violet-300: #c4b4ff;
-  --color-violet-400: #a684ff;
-  --color-violet-500: #8e51ff;
-
-  --color-navy-700: #16264a;
-  --color-navy-800: #0f1b36;
-  --color-navy-900: #0a1328;
-  --color-navy-950: #050a17;
+  color: var(--color-slate-100);
 }
 
 @layer base {
   html {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   html,
@@ -83,41 +172,62 @@
   body {
     margin: 0;
     overflow: hidden;
-    background-color: var(--color-navy-950);
-    color: var(--color-slate-100);
+    background-color: var(--color-desk);
+    color: var(--color-ink);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   ::selection {
-    background: rgb(56 189 248 / 0.35);
+    background: rgb(46 123 200 / 0.22);
   }
 }
 
-/* 警示卡頂端的細色條（Apple 風格：一條安靜的色線，取代斜紋） */
+/* 工程方格紙：16px 細格＋每 5 格一條稍深的線（只在背景，取代以前的霜花） */
+.blueprint-paper {
+  background-color: var(--color-paper);
+  background-image:
+    linear-gradient(to right, rgb(201 214 229 / 0.55) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(201 214 229 / 0.55) 1px, transparent 1px),
+    linear-gradient(to right, var(--color-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-grid) 1px, transparent 1px);
+  background-size:
+    80px 80px,
+    80px 80px,
+    16px 16px,
+    16px 16px;
+}
+
+/* 3D 檢視窗＝「藍曬圖」：深藍底＋淡淡的白色方格（跟淡色紙同一套格線，只是反過來）；外層同時加 theme-dark */
+.viewport-blueprint {
+  background-color: #10243d;
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.075) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.075) 1px, transparent 1px),
+    linear-gradient(to right, rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size:
+    80px 80px,
+    80px 80px,
+    16px 16px,
+    16px 16px;
+}
+
+/* 警示卡頂端的細色條（一條安靜的管路色線） */
 .hazard-red {
   height: 4px;
-  background: rgb(248 113 113 / 0.85);
+  background: var(--color-pipe-red);
 }
 
 .hazard-amber {
   height: 4px;
-  background: rgb(251 191 36 / 0.85);
+  background: var(--color-pipe-yellow);
 }
 
-/* 主題「冷凍庫玻璃」：面板上緣一條細亮線像玻璃反光。
-   不用 backdrop-filter 模糊：換頁滑動時每一格都要重算模糊，舊電腦會卡；背景很暗，有沒有模糊幾乎看不出來 */
-.deck-hover :is(section, aside)[class*='bg-white/'] {
-  box-shadow: inset 0 1px 0 rgb(186 230 253 / 0.08);
-}
-
-/* Apple 風格（只作用在投影片畫布與閱讀模式）：不顯示英文 mono 小標；中性外框改無框，靠填色分區 */
+/* 不顯示英文 mono 全大寫小標（使用者不要英文小標） */
 .deck-hover .font-mono.uppercase {
   display: none;
-}
-.deck-hover :is(div, section, aside, li, figure, article)[class*='border-white/'] {
-  border-color: transparent;
 }
 
 /* 冷媒流動動畫 */
@@ -145,7 +255,7 @@
 }
 .cycle-idle > rect,
 .cycle-idle > circle {
-  stroke: #7dd3fc;
+  stroke: var(--color-pipe-blue);
   stroke-width: 2;
   stroke-dasharray: 5 4;
   animation: cycle-pulse 2.8s ease-in-out infinite;
@@ -154,51 +264,54 @@
 .cycle-hit:hover > circle,
 .cycle-hit:focus-visible > rect,
 .cycle-hit:focus-visible > circle {
-  fill: rgb(251 191 36 / 0.12);
-  stroke: #fbbf24;
+  fill: rgb(224 160 27 / 0.14);
+  stroke: #b07d12;
   stroke-opacity: 1;
   stroke-dasharray: none;
   animation: none;
 }
 .cycle-hit:hover > path {
-  stroke: rgb(251 191 36 / 0.25);
+  stroke: rgb(224 160 27 / 0.3);
 }
 @keyframes cycle-pulse {
   0%,
   100% {
-    stroke-opacity: 0.1;
+    stroke-opacity: 0.25;
   }
   50% {
-    stroke-opacity: 0.65;
+    stroke-opacity: 0.85;
   }
 }
 @media (prefers-reduced-motion: reduce) {
   .cycle-idle > rect,
   .cycle-idle > circle {
     animation: none;
-    stroke-opacity: 0.35;
+    stroke-opacity: 0.55;
   }
 }
 
-/* 卡片 hover 凸顯：只亮游標所在的最內層卡片；可點的卡片再上浮一點 */
+/* 卡片 hover：只把游標所在最內層卡片的細框換成藍色（簡報時好指；不浮起、不發光） */
 .deck-hover :is([class*='rounded-xl'], [class*='rounded-2xl'], [class*='rounded-3xl'], [class*='rounded-['])[class~='border'] {
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  transition: border-color 0.2s ease, transform 0.2s ease;
 }
 .deck-hover :is(button, [role='button'], [role='tab']):not(:disabled) {
   cursor: pointer;
 }
 @media (hover: hover) {
   .deck-hover :is([class*='rounded-xl'], [class*='rounded-2xl'], [class*='rounded-3xl'], [class*='rounded-['])[class~='border']:hover:not(:has(:is([class*='rounded-xl'], [class*='rounded-2xl'], [class*='rounded-3xl'], [class*='rounded-['])[class~='border']:hover)) {
-    border-color: rgb(125 211 252 / 0.55);
-    box-shadow: 0 0 0 1px rgb(125 211 252 / 0.2), 0 18px 40px -22px rgb(56 189 248 / 0.65);
-  }
-  .deck-hover :is(button, [role='button'], [role='tab']):not(:disabled):is([class*='rounded-xl'], [class*='rounded-2xl'], [class*='rounded-3xl'], [class*='rounded-['])[class~='border']:hover {
-    transform: translateY(-3px);
+    border-color: rgb(46 123 200 / 0.65);
   }
 }
 @media (hover: none) {
   .deck-hover :is(button, [role='button'], [role='tab']):not(:disabled):active {
-    border-color: rgb(125 211 252 / 0.6);
+    border-color: rgb(46 123 200 / 0.7);
     transform: scale(0.98);
   }
+}
+
+/* 工程圖號（眉標「圖 4-2」）：等寬字、細框 */
+.drawing-no {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
 }

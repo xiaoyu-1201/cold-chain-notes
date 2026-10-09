@@ -16,7 +16,7 @@ import { ProgressPanel } from './ProgressPanel'
 import { markSeen } from '../lib/learn'
 import { SlideCard } from './SlideCard'
 import { SlideNav } from './SlideNav'
-import { FrostBackground } from './ui/FrostBackground'
+import { BlueprintBackground } from './ui/BlueprintBackground'
 
 /** 排版檢查模式（網址加 ?audit）：不播換頁動畫，視窗在背景時量測也準 */
 const AUDIT = typeof location !== 'undefined' && new URLSearchParams(location.search).has('audit')
@@ -127,8 +127,9 @@ export function SlideDeck() {
         goTo(i)
       },
       numberOf: (id) => slides.findIndex((s) => s.id === id) + 1,
+      next: () => step(1),
     }),
-    [goTo],
+    [goTo, step],
   )
 
   /**
@@ -169,13 +170,13 @@ export function SlideDeck() {
   return (
     <MotionConfig reducedMotion={AUDIT ? 'always' : 'user'}>
       <DeckContext.Provider value={api}>
-        <div className="flex h-dvh w-full flex-col bg-navy-950 text-slate-100">
+        <div className="flex h-dvh w-full flex-col bg-desk text-ink">
           <ProgressBar index={page.index} total={TOTAL} />
 
           <main className="relative min-h-0 flex-1" onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
             <div ref={stageRef} className="absolute inset-2 sm:inset-3" />
             <div
-              className="absolute left-1/2 top-1/2 overflow-clip rounded-[14px] shadow-[0_40px_120px_-40px_rgba(0,0,0,0.8)]"
+              className="absolute left-1/2 top-1/2 overflow-clip rounded-[10px] ring-1 ring-line"
               style={{ width: STAGE_W * scale, height: STAGE_H * scale, transform: 'translate(-50%, -50%)' }}
               // 畫布是縮放過的，瀏覽器會誤以為下方按鈕在可視範圍外而捲動；overflow-clip 不能捲，這裡再保險歸零
               onScroll={(e) => {
@@ -184,10 +185,10 @@ export function SlideDeck() {
               }}
             >
               <div
-                className="deck-hover relative origin-top-left bg-[#081526]"
+                className="deck-hover relative origin-top-left bg-paper"
                 style={{ width: STAGE_W, height: STAGE_H, transform: `scale(${scale})` }}
               >
-                <FrostBackground />
+                <BlueprintBackground frame width={STAGE_W} />
                 {AUDIT ? (
                   <div className="absolute inset-0">
                     <SlideCard key={slide.id} slide={slide} />
@@ -244,7 +245,7 @@ export function SlideDeck() {
             }}
           />
           <SearchPanel open={searchOpen} onClose={() => setSearchOpen(false)} onSelect={jumpTo} />
-          <ProgressPanel open={progressOpen} onClose={() => setProgressOpen(false)} onSelect={goTo} />
+          <ProgressPanel open={progressOpen} currentId={slide.id} onClose={() => setProgressOpen(false)} onSelect={goTo} />
         </div>
       </DeckContext.Provider>
     </MotionConfig>

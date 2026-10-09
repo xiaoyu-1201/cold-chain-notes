@@ -33,6 +33,18 @@ export function PartGlyph({ id, size = 40, ...rest }: { id: PartGlyphId; size?: 
   )
 }
 
+/** 零件線稿放在一格「圖紙小方格」裡（像零件型錄的縮圖）：細框、紙色底，不是彩色方塊 */
+export function GlyphCell({ id, size = 56, className }: { id: PartGlyphId; size?: number; className?: string }) {
+  return (
+    <span
+      className={'inline-flex shrink-0 items-center justify-center rounded-[10px] border border-line bg-paper text-ink-2 ' + (className ?? '')}
+      style={{ width: size, height: size }}
+    >
+      <PartGlyph id={id} size={Math.round(size * 0.78)} />
+    </span>
+  )
+}
+
 const GLYPHS: Record<PartGlyphId, React.ReactNode> = {
   // 壓縮機：圓頂的機身＋底座，吸氣（藍）進、吐出（紅）出
   compressor: (

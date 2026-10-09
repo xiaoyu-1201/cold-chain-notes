@@ -36,7 +36,7 @@ export function DiagnosisMatrix({ block }: { block: MatrixBlock }) {
               onClick={() => setFocus(f.id)}
               className={cn(
                 'flex items-center gap-2 rounded-full border px-4 py-1.5 text-[18px] font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300',
-                active ? t.chip : 'border-white/10 bg-white/[0.03] text-slate-400 hover:border-white/25 hover:text-slate-200',
+                active ? t.chip : 'border-line bg-card text-slate-400 hover:border-white/25 hover:text-slate-200',
               )}
             >
               {f.label}
@@ -50,13 +50,13 @@ export function DiagnosisMatrix({ block }: { block: MatrixBlock }) {
         {block.columns.map((col) => {
           const t = toneStyles[col.tone]
           return (
-            <section key={col.title} className="flex min-h-0 flex-col overflow-hidden rounded-[20px] border border-white/10 bg-white/[0.025]">
-              <header className={cn('relative border-b border-white/10 bg-linear-to-br px-5 py-4', t.wash)}>
+            <section key={col.title} className="flex min-h-0 flex-col overflow-hidden rounded-[18px] border border-line bg-card">
+              <header className={cn('relative border-b border-line px-5 py-4', t.soft)}>
                 <div className="flex items-center gap-3">
                   <IconChip icon={col.icon} tone={col.tone} />
                   <div className="min-w-0">
                     <h3 className="text-[26px] font-black leading-tight text-white">{col.title}</h3>
-                    <p className="mt-0.5 font-mono text-[16px] uppercase tracking-[0.14em] text-slate-300/80">{col.en}</p>
+                    <p className="mt-0.5 font-mono text-[16px] uppercase tracking-[0.14em] text-slate-400">{col.en}</p>
                   </div>
                 </div>
                 {col.flag && (
@@ -75,7 +75,7 @@ export function DiagnosisMatrix({ block }: { block: MatrixBlock }) {
                       key={i}
                       className={cn(
                         'rounded-xl border px-4 py-3 transition duration-300',
-                        dimmed ? 'border-white/5 bg-transparent opacity-25' : 'border-white/[0.08] bg-navy-900/70',
+                        dimmed ? 'border-line bg-transparent opacity-25' : 'border-line bg-paper',
                         focus !== 'all' && !dimmed && toneStyles[groupTone[group]].border,
                       )}
                     >

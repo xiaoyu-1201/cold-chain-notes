@@ -14,7 +14,7 @@ export function Lightbox({ src, label, onClose }: { src: string; label: string; 
       onClick={onClose}
       onTouchStart={(e) => e.stopPropagation()}
       onTouchEnd={(e) => e.stopPropagation()}
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-navy-950/90 p-4 backdrop-blur-sm"
+      className="theme-dark fixed inset-0 z-[70] flex items-center justify-center bg-navy-950/90 p-4"
     >
       <img src={src} alt={label} className="max-h-full max-w-full rounded-xl bg-white object-contain" />
       <button type="button" aria-label="關閉" className={cn('absolute right-4 top-4 rounded-full bg-white/15 p-2 text-white', focusRing)}>

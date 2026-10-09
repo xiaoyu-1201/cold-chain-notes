@@ -12,7 +12,7 @@ import { part3DFor } from '../three/ids'
 import { PartViewer } from '../three/PartViewer'
 import { CycleDiagram } from './CycleDiagram'
 
-const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
+const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500'
 
 function formatTime(sec: number) {
   return `${pad(Math.floor(sec / 60))}:${pad(Math.floor(sec % 60))}`
@@ -51,7 +51,7 @@ export function CycleExplorer({ selected, onSelect, expandable = true, large = f
           onClick={() => setExpanded(true)}
           title="放大檢視"
           className={cn(
-            'absolute right-2 top-2 flex items-center gap-1.5 rounded-lg border border-white/15 bg-navy-950/80 px-2.5 py-1.5 text-[16px] font-semibold text-slate-100 transition hover:border-sky-400/50 hover:text-white',
+            'absolute right-2 top-2 flex items-center gap-1.5 rounded-lg border border-line bg-card px-2.5 py-1.5 text-[16px] font-semibold text-slate-100 transition hover:border-sky-500/50 hover:text-sky-300',
             focusRing,
           )}
         >
@@ -101,7 +101,7 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
       exit={{ opacity: 0, scale: 0.96 }}
       transition={{ duration: 0.18 }}
       className={cn(
-        'absolute z-20 rounded-2xl border bg-navy-900/95 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.9)] backdrop-blur',
+        'absolute z-20 rounded-2xl border bg-card shadow-[0_18px_44px_-18px_rgba(15,36,64,0.4)]',
         large ? 'p-6' : 'p-4',
         t.border,
       )}
@@ -116,7 +116,7 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
           type="button"
           onClick={onClose}
           aria-label="關閉說明"
-          className={cn('rounded-lg border border-white/10 p-1 text-slate-300 transition hover:text-white', focusRing)}
+          className={cn('rounded-lg border border-line p-1 text-slate-300 transition hover:text-ink', focusRing)}
         >
           <X className={large ? 'size-5' : 'size-4'} aria-hidden />
         </button>
@@ -125,7 +125,7 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
       <div className={cn('mt-3 inline-flex rounded-lg border px-2.5 py-1 font-mono font-bold', t.chip, large ? 'text-[18px]' : 'text-[16px]')}>{note.state}</div>
 
       {note.quote && (
-        <blockquote className={cn('mt-3 flex gap-2 rounded-xl bg-white/[0.04] px-3 py-2.5 leading-snug text-slate-100', large ? 'text-[20px]' : 'text-[17px]')}>
+        <blockquote className={cn('mt-3 flex gap-2 rounded-xl bg-paper px-3 py-2.5 leading-snug text-slate-100', large ? 'text-[20px]' : 'text-[17px]')}>
           <Quote className={cn('mt-0.5 shrink-0 text-emerald-300', large ? 'size-5' : 'size-4')} aria-hidden />
           <span>{note.quote}</span>
         </blockquote>
@@ -154,7 +154,7 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
             type="button"
             onClick={() => setView(true)}
             className={cn(
-              'flex items-center gap-1.5 rounded-lg border border-sky-400/50 bg-sky-400/15 font-semibold text-sky-100 transition hover:bg-sky-400/25',
+              'flex items-center gap-1.5 rounded-lg border border-sky-500/50 bg-sky-950 font-semibold text-sky-100 transition hover:border-sky-500',
               large ? 'px-3.5 py-2 text-[17px]' : 'px-2.5 py-1 text-[16px]',
               focusRing,
             )}
@@ -170,7 +170,7 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
             type="button"
             onClick={() => goToId(note.slide!)}
             className={cn(
-              'flex items-center gap-1 rounded-lg border border-white/15 font-semibold text-slate-100 transition hover:border-sky-400/50',
+              'flex items-center gap-1 rounded-lg border border-line bg-card font-semibold text-slate-100 transition hover:border-sky-500/50',
               large ? 'px-3.5 py-2 text-[17px]' : 'px-2.5 py-1 text-[16px]',
               focusRing,
             )}
@@ -208,7 +208,7 @@ function ExpandedView({ initial, onClose }: { initial: CycleNodeId | null; onClo
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="pointer-events-auto absolute inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-navy-950/92 p-10 backdrop-blur-sm"
+      className="blueprint-paper pointer-events-auto absolute inset-0 z-50 flex flex-col items-center justify-center gap-4 p-10"
     >
       <div className="flex w-full max-w-[1500px] items-center justify-between">
         <p className="text-[28px] font-black text-white">
@@ -219,7 +219,7 @@ function ExpandedView({ initial, onClose }: { initial: CycleNodeId | null; onClo
           type="button"
           onClick={onClose}
           className={cn(
-            'flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-[18px] font-semibold text-slate-100 hover:border-sky-400/50',
+            'flex items-center gap-2 rounded-xl border border-line bg-card px-4 py-2 text-[18px] font-semibold text-slate-100 hover:border-sky-500/50',
             focusRing,
           )}
         >
@@ -227,7 +227,7 @@ function ExpandedView({ initial, onClose }: { initial: CycleNodeId | null; onClo
           關閉（Esc）
         </button>
       </div>
-      <div className="rounded-[28px] border border-white/10 bg-navy-900/80 p-4">
+      <div className="rounded-[18px] border border-line bg-card p-4">
         <CycleExplorer large expandable={false} selected={selected} onSelect={setSelected} style={{ height: 880 }} />
       </div>
     </motion.div>,
@@ -266,7 +266,7 @@ export function ClipButton({ src, at, label, large }: { src: string; at: number;
         type="button"
         onClick={toggle}
         className={cn(
-          'flex items-center gap-1.5 rounded-lg border border-emerald-400/40 bg-emerald-400/10 font-semibold text-emerald-100 transition hover:bg-emerald-400/20',
+          'flex items-center gap-1.5 rounded-lg border border-emerald-500/45 bg-emerald-950 font-semibold text-emerald-100 transition hover:border-emerald-500',
           large ? 'px-3.5 py-2 text-[17px]' : 'px-2.5 py-1 text-[16px]',
           focusRing,
         )}

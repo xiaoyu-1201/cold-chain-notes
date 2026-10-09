@@ -6,7 +6,7 @@ interface Props {
 
 /** 冰藍重點 */
 export function Hl({ children }: Props) {
-  return <strong className="font-bold text-sky-200">{children}</strong>
+  return <strong className="font-bold text-sky-300">{children}</strong>
 }
 
 /** 琥珀警示 */
@@ -29,7 +29,7 @@ export function Exp() {
   return (
     <span
       title="一丞手冊未列，屬業界常用參考值"
-      className="ml-1.5 inline-flex items-center whitespace-nowrap rounded-md bg-slate-400/15 px-1.5 py-px align-middle text-[max(0.62em,16px)] font-semibold leading-normal text-slate-300"
+      className="ml-1.5 inline-flex items-center whitespace-nowrap rounded-md bg-slate-500/15 px-1.5 py-px align-middle text-[max(0.62em,16px)] font-semibold leading-normal text-slate-300"
     >
       業界經驗
     </span>

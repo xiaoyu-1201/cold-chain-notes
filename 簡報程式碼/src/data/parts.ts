@@ -90,3 +90,16 @@ export const parts: Record<PartId, Part> = {
 
 /** 學習路徑五步（給導覽列、學習地圖用） */
 export const pathSteps = Object.values(parts).filter((p) => p.step !== undefined)
+
+/** 工程圖號的篇號（照簡報順序：導覽 0、五步 1～5、複習 6、總結 7、進階 8）：眉標「圖 4-2」 */
+export const PART_NO: Record<PartId, number> = {
+  intro: 0,
+  basics: 1,
+  units: 2,
+  industry: 3,
+  components: 4,
+  practice: 5,
+  review: 6,
+  summary: 7,
+  advanced: 8,
+}

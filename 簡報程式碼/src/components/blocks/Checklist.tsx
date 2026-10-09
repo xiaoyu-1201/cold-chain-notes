@@ -44,13 +44,13 @@ export function Checklist({ block }: { block: ChecklistBlock }) {
       en={block.en}
       right={
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[22px] font-extrabold text-emerald-200">
+          <span className="font-mono text-[22px] font-extrabold text-emerald-300">
             {done} / {total}
           </span>
           <button
             type="button"
             onClick={() => setChecked(Array.from({ length: total }, () => false))}
-            className="flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-[17px] font-semibold text-slate-400 transition hover:border-white/25 hover:text-slate-200 focus-visible:outline-2 focus-visible:outline-sky-300"
+            className="flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-[17px] font-semibold text-slate-400 transition hover:border-white/25 hover:text-slate-200 focus-visible:outline-2 focus-visible:outline-sky-300"
           >
             <RotateCcw className="size-4" aria-hidden />
             重設
@@ -59,9 +59,9 @@ export function Checklist({ block }: { block: ChecklistBlock }) {
       }
     >
       <div className="flex h-full flex-col gap-3">
-        <div className="h-2 overflow-hidden rounded-full bg-white/10" aria-hidden>
+        <div className="h-2 overflow-hidden rounded-full bg-white/[0.08]" aria-hidden>
           <div
-            className="h-full rounded-full bg-linear-to-r from-emerald-400 to-teal-300 transition-[width] duration-500"
+            className="h-full rounded-full bg-emerald-500 transition-[width] duration-500"
             style={{ width: `${(done / total) * 100}%` }}
           />
         </div>
@@ -78,14 +78,14 @@ export function Checklist({ block }: { block: ChecklistBlock }) {
                   className={cn(
                     'flex w-full items-center gap-4 rounded-xl border px-4 py-2 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300',
                     on
-                      ? 'border-emerald-400/40 bg-emerald-400/10'
-                      : 'border-white/[0.08] bg-navy-900/50 hover:border-white/20 hover:bg-white/[0.04]',
+                      ? 'border-emerald-500/50 bg-emerald-950'
+                      : 'border-line bg-card hover:border-white/20',
                   )}
                 >
                   <span
                     className={cn(
                       'flex size-8 shrink-0 items-center justify-center rounded-lg border-2 transition',
-                      on ? 'border-emerald-400 bg-emerald-400 text-navy-950' : 'border-slate-500',
+                      on ? 'border-emerald-400 bg-emerald-400 text-paper' : 'border-slate-500 bg-card',
                     )}
                   >
                     {on && <Check className="size-5" strokeWidth={3} aria-hidden />}
@@ -97,7 +97,7 @@ export function Checklist({ block }: { block: ChecklistBlock }) {
           })}
         </ul>
         {allDone && (
-          <p className="flex items-center gap-2 rounded-xl bg-emerald-400/15 px-4 py-2 text-[19px] font-bold text-emerald-200">
+          <p className="flex items-center gap-2 rounded-xl bg-emerald-950 px-4 py-2 text-[19px] font-bold text-emerald-200">
             <PartyPopper className="size-5" aria-hidden />
             全部完成！具備上線跟班的基本功。
           </p>

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type Ref } from 'react'
 import { createPortal } from 'react-dom'
 import { useDeck } from '../context/deck'
 import { PRACTICE } from '../data/practice'
+import { slides } from '../data/slides'
 import { cn } from '../lib/cn'
 import { answer, useLearn } from '../lib/learn'
 
@@ -39,6 +40,13 @@ export function PracticeQuestion({
   const [picked, setPicked] = useState<number | null>(null)
   // 打開時洗一次牌（之後不再變，答完也不會跳）
   const [order] = useState(() => shuffled(p?.options.length ?? 0))
+  // 答完選項都會停用、焦點會掉到頁面上：移到結果說明（外層要換焦點的話會在之後蓋過去）（10/10 code review）
+  const statusRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (picked === null) return
+    const a = document.activeElement
+    if (!a || a === document.body || (a instanceof HTMLButtonElement && a.disabled)) statusRef.current?.focus({ preventScroll: true })
+  }, [picked])
   if (!p) return null
   const big = size === 'canvas'
   const done = picked !== null
@@ -83,7 +91,7 @@ export function PracticeQuestion({
         })}
       </div>
       {done && (
-        <div className={cn('rounded-2xl', big ? 'mt-5 px-6 py-4' : 'mt-3 px-4 py-3', right ? 'bg-emerald-950' : 'bg-red-950')} role="status">
+        <div ref={statusRef} tabIndex={-1} className={cn('rounded-2xl outline-none', big ? 'mt-5 px-6 py-4' : 'mt-3 px-4 py-3', right ? 'bg-emerald-950' : 'bg-red-950')} role="status">
           <p className={cn('font-bold', big ? 'text-[24px]' : 'text-[16px]', right ? 'text-emerald-300' : 'text-red-300')}>{right ? '答對了！' : '答錯了：正確答案是綠色那個'}</p>
           <p className={cn('mt-1 leading-relaxed text-slate-200', big ? 'text-[21px]' : 'text-[15px]')}>{p.why}</p>
           {!right && <p className={cn('mt-2 text-slate-400', big ? 'text-[19px]' : 'text-[14px]')}>已放進「今天」的錯題複習，下次再答對就會拿掉。</p>}
@@ -162,7 +170,8 @@ function PracticeDialog({ id, onClose }: { id: string; onClose: () => void }) {
           </button>
         </div>
         <PracticeQuestion id={id} size="canvas" firstRef={first} onCorrect={() => setCorrect(true)} />
-        {correct && (
+        {/* 最後一頁沒有下一頁，不顯示（10/10 code review） */}
+        {correct && slides[slides.length - 1]?.id !== id && (
           <div className="mt-6 flex justify-end">
             <button
               ref={nextRef}

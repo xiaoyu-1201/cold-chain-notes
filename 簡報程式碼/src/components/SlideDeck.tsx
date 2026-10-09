@@ -102,15 +102,29 @@ export function SlideDeck() {
     setReturnTo(null)
   }, [returnTo, goTo])
 
-  useDeckKeyboard({ next, prev, first, last, toggleFullscreen, toggleDrawer, closeDrawer, back: goBack, toggleSearch })
+  useDeckKeyboard({ next, prev, first, last, toggleFullscreen, toggleDrawer, closeDrawer, back: goBack, toggleSearch, enabled: !reader })
 
-  // 頁碼同步到網址（#/5），重新整理後停留在同一頁
+  // 頁碼同步到網址（#/5），重新整理後停留在同一頁。
+  // 閱讀模式時網址和進度由 MobileDeck 管；切回簡報版時先照網址對齊頁碼（10/10 code review）
+  const wasReader = useRef(reader)
   useEffect(() => {
+    if (reader) {
+      wasReader.current = true
+      return
+    }
+    if (wasReader.current) {
+      wasReader.current = false
+      const fromHash = indexFromHash()
+      if (fromHash !== page.index) {
+        goTo(fromHash)
+        return
+      }
+    }
     indexRef.current = page.index
     const hash = `#/${page.index + 1}`
     if (window.location.hash !== hash) window.history.replaceState(null, '', hash)
     markSeen(slides[page.index].id)
-  }, [page.index])
+  }, [page.index, reader, goTo])
 
   useEffect(() => {
     const onHashChange = () => goTo(indexFromHash())

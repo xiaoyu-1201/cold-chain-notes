@@ -90,8 +90,16 @@ function chunksOf(block: Block, prefix: string, out: SearchChunk[]) {
     recordingChunks(block, out)
     return
   }
-  const t = clean(`${textOf(block)} ${COMPONENT_TEXT[block.type] ?? ''}`)
+  const t = clean(textOf(block))
   if (t) out.push({ label, text: t })
+}
+
+/** 互動元件補的關鍵字：只拿來比對，不顯示在搜尋結果的摘要裡（10/10 code review：會出現「3分 3 分 9.53 mm」這種機器字） */
+function componentText(blocks: Block[]): string {
+  return blocks
+    .map((b) => (b.type === 'grid' ? componentText(b.children) : (COMPONENT_TEXT[b.type] ?? '')))
+    .filter(Boolean)
+    .join(' ')
 }
 
 /** 錄音索引頁：每段錄音的每個段落各一段（搜「散熱器」會對到老闆講到的那一段） */
@@ -118,7 +126,7 @@ function build(): SearchEntry[] {
     const pq = PRACTICE[slide.id]
     if (pq) chunks.push({ label: '學完馬上練', text: clean(pq.q) })
     const head = clean([slide.title, slide.chapter, slide.en, HEAD_ALIAS[slide.id]].filter(Boolean).join(' '))
-    const all = (head + ' ' + chunks.map((c) => c.label + ' ' + c.text).join(' ')).toLowerCase()
+    const all = (head + ' ' + chunks.map((c) => c.label + ' ' + c.text).join(' ') + ' ' + componentText(slide.blocks)).toLowerCase()
     return { index, slide, head, chunks, all }
   })
 }
@@ -136,7 +144,8 @@ const SYNONYMS: string[][] = [
   ['乾燥過濾器', '乾燥器', 'drier'],
   ['視液鏡', '視窗', 'sight glass'],
   ['膨脹閥', 'txv', 'expansion valve'],
-  ['壓縮機', '龍頭', 'compressor'],
+  // 「龍頭」不放：會對到「水龍頭」（10/10 code review）
+  ['壓縮機', 'compressor'],
   ['電磁閥', 'solenoid'],
   ['液氣分離器', 'accumulator'],
   ['儲液器', 'receiver'],
@@ -154,6 +163,7 @@ function variantsOf(term: string): string[] {
     const d = CN_DIGIT[fen[1]] ?? fen[1]
     const cn = '一二三四五六七八'[Number(d) - 1]
     out.add(`${d}分`).add(`${d} 分`).add(`${cn}分`)
+    if (d === '2') out.add('兩分')
   }
   for (const g of SYNONYMS) if (g.includes(term)) g.forEach((w) => out.add(w))
   return [...out]

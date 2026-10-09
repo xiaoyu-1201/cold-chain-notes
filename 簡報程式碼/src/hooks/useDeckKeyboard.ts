@@ -12,6 +12,8 @@ interface DeckKeyHandlers {
   back: () => void
   /** 開關關鍵字搜尋（/ 或 Ctrl+K） */
   toggleSearch?: () => void
+  /** false＝不聽鍵盤（閱讀模式時簡報版還在背後，不能偷偷翻頁、記錯進度：10/10 code review） */
+  enabled?: boolean
 }
 
 /**
@@ -29,20 +31,27 @@ export function useDeckKeyboard({
   closeDrawer,
   back,
   toggleSearch,
+  enabled = true,
 }: DeckKeyHandlers) {
   useEffect(() => {
+    if (!enabled) return
+    /** 有小視窗開著（學完馬上練、今天、搜尋、放大圖）；目錄抽屜例外，它本來就靠 M／Esc 開關 */
+    const modalOpen = (exceptSearch = false) =>
+      !!document.querySelector(
+        `[aria-modal="true"]:not([data-deck-drawer]):not([aria-label="章節導覽"])${exceptSearch ? ':not([data-search-panel])' : ''}`,
+      )
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.defaultPrevented || e.isComposing) return
-      // Ctrl+K／Cmd+K：搜尋（在輸入框裡也可以按）
+      // Ctrl+K／Cmd+K：搜尋（在輸入框裡也可以按）；別的小視窗開著時不疊開第二個視窗
       if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key === 'k' || e.key === 'K') && toggleSearch) {
+        if (modalOpen(true)) return
         e.preventDefault()
         toggleSearch()
         return
       }
       if (e.altKey || e.ctrlKey || e.metaKey) return
-      // 有小視窗開著（學完馬上練、今天、搜尋、放大圖）：翻頁鍵都不處理，免得背後偷偷換頁（10/09 QA）
-      // 目錄抽屜例外：它本來就靠 M／Esc 開關
-      if (document.querySelector('[aria-modal="true"]:not([data-deck-drawer]):not([aria-label="章節導覽"])')) return
+      // 小視窗開著：翻頁鍵都不處理，免得背後偷偷換頁（10/09 QA）
+      if (modalOpen()) return
 
       const target = e.target as HTMLElement | null
       const tag = target?.tagName
@@ -104,5 +113,5 @@ export function useDeckKeyboard({
 
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [next, prev, first, last, toggleFullscreen, toggleDrawer, closeDrawer, back, toggleSearch])
+  }, [next, prev, first, last, toggleFullscreen, toggleDrawer, closeDrawer, back, toggleSearch, enabled])
 }

@@ -38,9 +38,18 @@ const listeners = new Set<() => void>()
  * 「繼續上次」：開網頁當下記著的上次頁（10/09 QA：一開頁就被封面／目前頁蓋掉，永遠顯示目前這頁）。
  * 這次打開之後已經看過那頁，就不用再提醒。
  */
-const resumeAtLoad = state.last
+let resumeAtLoad = state.last
 const seenThisVisit = new Set<string>()
 const coverId = () => slides[0]?.id
+
+// 同時開兩個分頁：另一個分頁存了進度，這邊跟著更新，才不會用記憶體裡的舊資料蓋回去（10/10 code review）
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (e) => {
+    if (e.key !== KEY && e.key !== null) return
+    state = load()
+    listeners.forEach((l) => l())
+  })
+}
 
 function commit(next: LearnState) {
   state = next
@@ -96,7 +105,9 @@ export function answer(id: string, correct: boolean) {
   }
 }
 
+/** 重新開始：「繼續上次」也一起清掉 */
 export function resetLearn() {
+  resumeAtLoad = undefined
   commit(empty())
 }
 

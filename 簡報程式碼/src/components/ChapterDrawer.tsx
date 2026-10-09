@@ -81,7 +81,7 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
                 type="button"
                 onClick={onClose}
                 aria-label="關閉目錄 (Esc)"
-                className="flex size-10 items-center justify-center rounded-full border border-line bg-card text-slate-300 transition hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+                className="flex size-11 items-center justify-center rounded-full border border-line bg-card text-slate-300 transition hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
               >
                 <X className="size-5" aria-hidden />
               </button>

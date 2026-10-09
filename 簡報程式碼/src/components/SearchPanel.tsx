@@ -36,7 +36,23 @@ export function SearchPanel({ open, onClose, onSelect, mobile }: SearchPanelProp
     const t = window.setTimeout(() => input.current?.focus(), 50)
     return () => window.clearTimeout(t)
   }, [open])
+  // Esc：焦點不在輸入框（點了「試試看」、清除鈕之後）也要關得掉（10/10 code review）
+  useEffect(() => {
+    if (!open) return
+    const onEsc = (e: globalThis.KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      e.preventDefault()
+      onClose()
+    }
+    window.addEventListener('keydown', onEsc, true)
+    return () => window.removeEventListener('keydown', onEsc, true)
+  }, [open, onClose])
   useEffect(() => setCursor(0), [q])
+  /** 點了按鈕之後把焦點放回輸入框：↑↓、Enter 才能繼續用 */
+  const setQuery = (v: string) => {
+    setQ(v)
+    input.current?.focus()
+  }
   useEffect(() => {
     list.current?.querySelector<HTMLElement>(`[data-i="${cursor}"]`)?.scrollIntoView({ block: 'nearest' })
   }, [cursor])
@@ -54,9 +70,6 @@ export function SearchPanel({ open, onClose, onSelect, mobile }: SearchPanelProp
       setCursor((c) => Math.max(c - 1, 0))
     } else if (e.key === 'Enter') {
       if (hits[cursor]) pick(hits[cursor])
-    } else if (e.key === 'Escape') {
-      e.preventDefault()
-      onClose()
     }
   }
 
@@ -71,6 +84,7 @@ export function SearchPanel({ open, onClose, onSelect, mobile }: SearchPanelProp
             role="dialog"
             aria-modal="true"
             aria-label="搜尋"
+            data-search-panel
             className={cn(
               'fixed z-[70] flex flex-col bg-paper shadow-[0_24px_64px_-24px_rgba(15,36,64,0.45)]',
               mobile ? 'inset-0' : 'inset-x-0 top-[7vh] mx-auto max-h-[82vh] w-[min(760px,94vw)] rounded-[18px] border border-line',
@@ -93,7 +107,7 @@ export function SearchPanel({ open, onClose, onSelect, mobile }: SearchPanelProp
                 className={cn('min-w-0 flex-1 bg-transparent font-semibold text-white outline-none placeholder:text-slate-500', mobile ? 'h-10 text-[17px]' : 'h-11 text-[19px]')}
               />
               {q && (
-                <button type="button" onClick={() => setQ('')} aria-label="清除" className="flex size-8 items-center justify-center rounded-full text-slate-400 hover:bg-white/[0.06] hover:text-ink">
+                <button type="button" onClick={() => setQuery('')} aria-label="清除" className="-my-1 flex size-11 shrink-0 items-center justify-center rounded-full text-slate-400 hover:bg-white/[0.06] hover:text-ink">
                   <X className="size-4" aria-hidden />
                 </button>
               )}
@@ -101,7 +115,7 @@ export function SearchPanel({ open, onClose, onSelect, mobile }: SearchPanelProp
                 type="button"
                 onClick={onClose}
                 aria-label="關閉搜尋 (Esc)"
-                className={cn('shrink-0 rounded-full border border-line bg-card font-bold text-slate-200 hover:text-ink', mobile ? 'h-10 px-3 text-[15px]' : 'flex size-10 items-center justify-center')}
+                className={cn('shrink-0 rounded-full border border-line bg-card font-bold text-slate-200 hover:text-ink', mobile ? 'h-11 px-3 text-[15px]' : 'flex size-11 items-center justify-center')}
               >
                 {mobile ? '取消' : <X className="size-5" aria-hidden />}
               </button>
@@ -115,7 +129,7 @@ export function SearchPanel({ open, onClose, onSelect, mobile }: SearchPanelProp
                   <p className="mt-4 text-[13px] font-bold text-slate-500">試試看</p>
                   <div className="mt-1.5 flex flex-wrap gap-1.5">
                     {EXAMPLES.map((e) => (
-                      <button key={e} type="button" onClick={() => setQ(e)} className="rounded-full border border-line bg-card px-3 py-1 text-[14px] font-semibold text-slate-200 hover:border-sky-500/50 hover:bg-sky-950">
+                      <button key={e} type="button" onClick={() => setQuery(e)} className="rounded-full border border-line bg-card px-3 py-1 text-[14px] font-semibold text-slate-200 hover:border-sky-500/50 hover:bg-sky-950">
                         {e}
                       </button>
                     ))}

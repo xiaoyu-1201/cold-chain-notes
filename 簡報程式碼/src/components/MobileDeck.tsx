@@ -128,7 +128,7 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
             <button
               type="button"
               onClick={() => setDrawerOpen(true)}
-              className="flex h-10 items-center gap-1.5 rounded-lg border border-line bg-card px-3 text-[16px] font-bold text-slate-100 active:bg-sky-950"
+              className="relative flex h-10 items-center gap-1.5 after:absolute after:-inset-0.5 after:content-[''] rounded-lg border border-line bg-card px-3 text-[16px] font-bold text-slate-100 active:bg-sky-950"
             >
               <Menu className="size-5" aria-hidden />
               目錄
@@ -144,7 +144,7 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
               type="button"
               onClick={() => setSearchOpen(true)}
               aria-label="搜尋關鍵字"
-              className="relative flex size-10 shrink-0 items-center justify-center rounded-lg border border-line bg-card text-slate-100 active:bg-sky-950"
+              className="relative flex size-10 shrink-0 after:absolute after:-inset-0.5 after:content-[''] items-center justify-center rounded-lg border border-line bg-card text-slate-100 active:bg-sky-950"
             >
               <Search className="size-5" aria-hidden />
               {isNew('2026-10-08') && <span aria-hidden className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-emerald-400" />}
@@ -153,7 +153,7 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
               type="button"
               onClick={() => setProgressOpen(true)}
               aria-label="今天讀什麼"
-              className="relative flex h-10 shrink-0 items-center justify-center gap-1 rounded-lg border border-line bg-card px-2.5 text-[15px] font-bold text-slate-100 active:bg-sky-950"
+              className="relative flex h-10 shrink-0 after:absolute after:-inset-0.5 after:content-[''] items-center justify-center gap-1 rounded-lg border border-line bg-card px-2.5 text-[15px] font-bold text-slate-100 active:bg-sky-950"
             >
               <BookOpenCheck className="size-5" aria-hidden />
               今天
@@ -166,7 +166,7 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
                   if (returnTo !== null) goTo(returnTo)
                   setReturnTo(null)
                 }}
-                className="flex h-10 items-center gap-1.5 rounded-lg border border-emerald-500/50 bg-emerald-950 px-3 text-[15px] font-bold text-emerald-100"
+                className="relative flex h-10 items-center gap-1.5 after:absolute after:-inset-0.5 after:content-[''] rounded-lg border border-emerald-500/50 bg-emerald-950 px-3 text-[15px] font-bold text-emerald-100"
               >
                 <CornerUpLeft className="size-5" aria-hidden />
                 返回 P.{pad(returnTo! + 1)}
@@ -177,7 +177,7 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
                 onClick={onExit}
                 aria-label="切換到電腦版（投影片）"
                 title="電腦版（投影片）"
-                className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-line bg-card text-slate-200 active:bg-sky-950"
+                className="relative flex size-10 shrink-0 after:absolute after:-inset-0.5 after:content-[''] items-center justify-center rounded-lg border border-line bg-card text-slate-200 active:bg-sky-950"
               >
                 <Presentation className="size-5" aria-hidden />
               </button>

@@ -14,10 +14,22 @@ export function useScrollFade<T extends HTMLElement>() {
   useEffect(() => {
     const el = ref.current
     if (!el) return
+    // 容器和每一個子元素都要看：清單裡某一列多出提示字變高，也要重新量（10/10 code review）
     const ro = new ResizeObserver(measure)
-    ro.observe(el)
-    if (el.firstElementChild) ro.observe(el.firstElementChild)
-    return () => ro.disconnect()
+    const watchAll = () => {
+      ro.disconnect()
+      ro.observe(el)
+      for (const c of Array.from(el.children)) ro.observe(c)
+      for (const c of Array.from(el.firstElementChild?.children ?? [])) ro.observe(c)
+      measure()
+    }
+    watchAll()
+    const mo = new MutationObserver(watchAll)
+    mo.observe(el, { childList: true, subtree: true })
+    return () => {
+      ro.disconnect()
+      mo.disconnect()
+    }
   }, [measure])
   const mask =
     edge.top || edge.bottom

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { ArrowRight, BookOpenCheck, Check, ChevronDown, CornerDownRight, RotateCcw, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { HAS_CLASS_AUDIO } from '../data/media'
 import { parts } from '../data/parts'
 import { PRACTICE } from '../data/practice'
 import { slides } from '../data/slides'
@@ -30,6 +31,8 @@ function ProgressDialog({ onClose, onSelect, mobile, currentId }: { onClose: () 
       resume,
       today: todayPages(learn, 3, [currentId, ...(resume ? [resume] : [])]),
       wrong: PRACTICE_IDS.filter((id) => learn.wrong[id]),
+      /** 還沒練過的頁（含目前這頁、繼續上次那頁）：today 空了不代表全部練完（10/10 code review） */
+      left: PRACTICE_IDS.filter((id) => !learn.done[id]),
     }
   })
   const [openWrong, setOpenWrong] = useState<string | null>(null)
@@ -114,9 +117,28 @@ function ProgressDialog({ onClose, onSelect, mobile, currentId }: { onClose: () 
             </button>
           )}
 
-          <h3 className="px-1 text-[15px] font-bold text-slate-300">今天讀這 {snap.today.length || 3} 頁</h3>
-          {snap.today.length === 0 ? (
-            <p className="mt-2 rounded-xl bg-emerald-950 px-4 py-3 text-[15px] text-emerald-200">有練習題的頁全部練過了！接下來看查閱頁、聽錄音，或做錯題複習。</p>
+          <h3 className="px-1 text-[15px] font-bold text-slate-300">{snap.today.length ? `今天讀這 ${snap.today.length} 頁` : '還沒練的頁'}</h3>
+          {snap.today.length === 0 && snap.left.length === 0 ? (
+            <p className="mt-2 rounded-xl bg-emerald-950 px-4 py-3 text-[15px] text-emerald-200">
+              有練習題的頁全部練過了！接下來看查閱頁{HAS_CLASS_AUDIO ? '、聽錄音' : ''}，或做錯題複習。
+            </p>
+          ) : snap.today.length === 0 ? (
+            <p className="mt-2 rounded-xl bg-sky-950 px-4 py-3 text-[15px] text-ink">
+              只剩{' '}
+              {snap.left.map((id, k) => (
+                <span key={id}>
+                  {k > 0 && '、'}
+                  {id === currentId ? (
+                    <b>你現在這頁（P.{pad(indexOf(id) + 1)}）</b>
+                  ) : (
+                    <button type="button" onClick={() => go(id)} className="font-bold text-sky-300 underline underline-offset-2">
+                      P.{pad(indexOf(id) + 1)} {slides[indexOf(id)].title}
+                    </button>
+                  )}
+                </span>
+              ))}{' '}
+              還沒練，答完就全部練過了。
+            </p>
           ) : (
             <ol className="mt-1.5">
               {snap.today.map((id, k) => {

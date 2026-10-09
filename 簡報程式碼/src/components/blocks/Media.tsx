@@ -189,20 +189,22 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
                     .filter((i) => i.group === g)
                     .map((item) => {
                       const active = item.id === selected.id
+                      // 公開網站沒有錄音：不標耳機（沒有播放器、也沒有說明耳機是什麼）（10/10 code review）
+                      const inRec = !!block.audioSrc && (item.audioAt !== undefined || item.audioAt2 !== undefined)
                       return (
                         <button
                           key={item.id}
                           type="button"
                           onClick={() => setSelectedId(item.id)}
                           aria-pressed={active}
-                          title={item.audioAt !== undefined || item.audioAt2 !== undefined ? '錄音中有講解' : '錄音未講解'}
+                          title={block.audioSrc ? (inRec ? '錄音中有講解' : '錄音未講解') : undefined}
                           className={cn(
                             'flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[17px] font-semibold transition',
                             focusRing,
                             active ? 'border-pipe-red bg-red-950 text-red-100 ring-1 ring-pipe-red' : cn(t.chip, 'hover:brightness-95'),
                           )}
                         >
-                          {(item.audioAt !== undefined || item.audioAt2 !== undefined) && <Headphones className="size-3.5 opacity-80" aria-label="錄音中有講解" />}
+                          {inRec && <Headphones className="size-3.5 opacity-80" aria-label="錄音中有講解" />}
                           {item.code}
                         </button>
                       )
@@ -355,7 +357,7 @@ export function AudioChapters({ block }: { block: AudioBlock }) {
                 <span className={cn('flex shrink-0 items-center gap-1.5 pt-0.5 font-mono text-[17px] font-bold', active ? 'text-emerald-300' : 'text-slate-400 group-hover:text-slate-200')}>
                   {!noAudio && <Play className="size-4" aria-hidden />}
                   {block.tracks && <span className="text-[16px]">{tracks[t].label}</span>}
-                  {formatTime(c.at)}
+                  {!noAudio && formatTime(c.at)}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className={cn('block text-[20px] font-bold leading-snug', active ? 'text-ink' : 'text-slate-100')}>{c.title}</span>

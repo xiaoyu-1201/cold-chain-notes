@@ -1,3 +1,4 @@
+import { HAS_CLASS_AUDIO } from '../data/media'
 import type { Block, SlideData } from '../data/types'
 
 /** 各互動區塊的操作提示：[電腦, 手機] */
@@ -35,6 +36,8 @@ export function interactionHints(slide: SlideData, mobile = false): string[] {
   const types = new Set<Block['type']>()
   collect(slide.blocks, types)
   const hints = [...types].flatMap((t) => {
+    // 公開網站沒有完整錄音：錄音頁不提示「點段落播放」
+    if (t === 'audio' && !HAS_CLASS_AUDIO) return []
     const hint = HINTS[t]
     return hint ? [hint[mobile ? 1 : 0]] : []
   })

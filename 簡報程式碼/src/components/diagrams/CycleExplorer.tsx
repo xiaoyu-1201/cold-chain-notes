@@ -163,8 +163,8 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
             3D 看構造
           </button>
         )}
-        {note.audioAt !== undefined && <ClipButton src={CLASS_AUDIO} at={note.audioAt} label="錄音01" large={large} />}
-        {note.audio2At !== undefined && <ClipButton src={CLASS_AUDIO_2} at={note.audio2At} label="錄音02" large={large} />}
+        {note.audioAt !== undefined && CLASS_AUDIO && <ClipButton src={CLASS_AUDIO} at={note.audioAt} label="錄音01" large={large} />}
+        {note.audio2At !== undefined && CLASS_AUDIO_2 && <ClipButton src={CLASS_AUDIO_2} at={note.audio2At} label="錄音02" large={large} />}
         {note.slide && (
           <button
             type="button"

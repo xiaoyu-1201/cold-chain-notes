@@ -15,6 +15,7 @@ import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
 import { Segmented } from '../ui/Segmented'
 import { DataTable } from '../blocks/DataTable'
+import { OfflineOnlyAudio } from '../blocks/Media'
 import { PhotoCard } from '../blocks/PhotoCard'
 import { EstimatePractice } from '../blocks/Estimate'
 import { CoilReader } from '../blocks/CoilReader'
@@ -929,8 +930,8 @@ function CycleLessonMobile() {
                   3D 看構造
                 </button>
               )}
-              {note.audioAt !== undefined && <Clip key={`${note.id}-1`} src={CLASS_AUDIO} at={note.audioAt} label="錄音01" />}
-              {note.audio2At !== undefined && <Clip key={`${note.id}-2`} src={CLASS_AUDIO_2} at={note.audio2At} label="錄音02" />}
+              {note.audioAt !== undefined && CLASS_AUDIO && <Clip key={`${note.id}-1`} src={CLASS_AUDIO} at={note.audioAt} label="錄音01" />}
+              {note.audio2At !== undefined && CLASS_AUDIO_2 && <Clip key={`${note.id}-2`} src={CLASS_AUDIO_2} at={note.audio2At} label="錄音02" />}
               {note.slide && <PageLink slide={note.slide}>{note.chapter}</PageLink>}
             </div>
           </div>
@@ -1081,20 +1082,28 @@ function AudioMobile({ block }: { block: AudioBlock }) {
           {block.title}
           {tracks.length > 1 && <span className="ml-2 text-[15px] font-semibold text-slate-400">第 {tracks[track].label} 段</span>}
         </Title>
-        <audio
-          ref={ref}
-          src={trackUrl}
-          controls
-          preload="metadata"
-          onLoadedMetadata={(e) => {
-            if (pendingSeek.current === null) return
-            e.currentTarget.currentTime = pendingSeek.current
-            pendingSeek.current = null
-            e.currentTarget.play().catch(() => {})
-          }}
-          className="mt-3 w-full"
-        />
-        <p className="mt-2 text-[14px] text-slate-400">點下面的段落，直接從那裡開始播。</p>
+        {!tracks[track].src ? (
+          <div className="mt-3">
+            <OfflineOnlyAudio small />
+          </div>
+        ) : (
+          <>
+            <audio
+              ref={ref}
+              src={trackUrl}
+              controls
+              preload="metadata"
+              onLoadedMetadata={(e) => {
+                if (pendingSeek.current === null) return
+                e.currentTarget.currentTime = pendingSeek.current
+                pendingSeek.current = null
+                e.currentTarget.play().catch(() => {})
+              }}
+              className="mt-3 w-full"
+            />
+            <p className="mt-2 text-[14px] text-slate-400">點下面的段落，直接從那裡開始播。</p>
+          </>
+        )}
       </div>
       <ol className="divide-y divide-white/[0.07] rounded-2xl border border-white/10">
         {block.chapters.map((c, i) => (

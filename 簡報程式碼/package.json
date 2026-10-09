@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "build:pages": "tsc -b && vite build --base ./ --outDir ../docs --emptyOutDir",
+    "build:pages": "tsc -b && vite build --mode pages --base ./ --outDir ../docs --emptyOutDir",
     "build:offline": "tsc -b && vite build --config vite.offline.config.ts && node scripts/copy-offline.mjs",
     "lint": "eslint .",
     "preview": "vite preview"

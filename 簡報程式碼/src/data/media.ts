@@ -5,21 +5,13 @@
  * 以前是一打開簡報就全部轉換（錄音越多、開越久）；現在改成「要播的時候才轉」＋「閒下來時在背景先轉好」。
  */
 import { useEffect, useState } from 'react'
-import part1Url from '../assets/class-0101-part1.m4a'
-import part2Url from '../assets/class-0101-part2.m4a'
-import part3Url from '../assets/class-0101-part3.m4a'
-import part4Url from '../assets/class-0101-part4.m4a'
-import part5Url from '../assets/class-0101-part5.m4a'
-import part6Url from '../assets/class-1002-part1.m4a'
-import part7Url from '../assets/class-1002-part2.m4a'
-import part8Url from '../assets/class-1002-part3-1.m4a'
-import part9Url from '../assets/class-1002-part3-2.m4a'
-import part10Url from '../assets/class-1002-part3-3.m4a'
-import part11Url from '../assets/class-1002-part3-4.m4a'
-import part12Url from '../assets/class-1005-part1.m4a'
-import part13Url from '../assets/class-1006-part1.m4a'
-import part14Url from '../assets/class-1006-part2.m4a'
-import part15Url from '../assets/class-1007-part1.m4a'
+// 公開網站版會被 vite.config 換成 classAudio.public.ts（沒有錄音）
+import { CLASS_AUDIO_URLS } from './classAudio'
+
+const [part1Url, part2Url, part3Url, part4Url, part5Url, part6Url, part7Url, part8Url, part9Url, part10Url, part11Url, part12Url, part13Url, part14Url, part15Url] = CLASS_AUDIO_URLS
+
+/** 這個版本有沒有完整上課錄音（公開網站沒有，離線檔有） */
+export const HAS_CLASS_AUDIO = CLASS_AUDIO_URLS.some(Boolean)
 
 export const CLASS_AUDIO = part1Url
 export const CLASS_AUDIO_2 = part2Url

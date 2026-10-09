@@ -57,7 +57,8 @@ function playClip(card: FlashCard) {
   if (file) return playSmall(file)
   if (!cardAudio) cardAudio = new Audio()
   const audio = cardAudio
-  const src = RECORDINGS[tw.rec - 1] ?? CLASS_AUDIO
+  const src = RECORDINGS[tw.rec - 1] || CLASS_AUDIO
+  if (!src) return // 公開網站沒有完整錄音，也沒有剪好的小檔
   if (clipStop) audio.removeEventListener('timeupdate', clipStop)
   clipStop = () => {
     if (audio.currentTime >= tw.to) audio.pause()

@@ -26,6 +26,15 @@ function MissingAudio() {
   )
 }
 
+/** 公開網站沒有完整上課錄音（裡面有客人名字、價格）：告訴他去哪裡聽 */
+export function OfflineOnlyAudio({ small }: { small?: boolean }) {
+  return (
+    <p className={cn('rounded-xl border border-sky-400/30 bg-sky-400/10 leading-snug text-sky-100', small ? 'px-3 py-2 text-[14px]' : 'px-4 py-3 text-[18px]')}>
+      完整錄音只放在公司版（離線檔「冷凍材料行培訓筆記.html」），公開網站不放；這裡可以先看每一段在講什麼。
+    </p>
+  )
+}
+
 /** 講義圖片 + 可點擊的零件標記 */
 export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
   const { goToId, numberOf } = useDeck()
@@ -290,7 +299,9 @@ export function AudioChapters({ block }: { block: AudioBlock }) {
           <span className="font-mono text-[22px] text-slate-400">/ {tracks[track].duration}</span>
         </div>
         <div className="mt-4">
-          {audioError ? (
+          {!tracks[track].src ? (
+            <OfflineOnlyAudio />
+          ) : audioError ? (
             <MissingAudio />
           ) : (
             <audio

@@ -645,7 +645,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 壓縮機貨架（錄音13） ───────────────────────── */
   {
     id: 'comp-brands',
-    added: '2026-10-07',
+    added: '2026-10-09',
     part: 'components',
     chapter: '壓縮機貨架',
     mark: 'BRANDS',
@@ -664,7 +664,7 @@ const slideList: SlideData[] = [
             en: 'Four Brands',
             items: [
               { icon: Package, title: '英博格（Embraco）', desc: '小顆的，一馬以下；義大利品牌、斯洛伐克製造（標籤上有寫）。只有 110、220 單相，沒有三相', badge: { label: '小顆', tone: 'ice' } },
-              { icon: Factory, title: '鐵甲（Tecumseh）', desc: '以法國廠為主（型號 GAJ、AW 開頭），泰國廠 KK 系列；巴西廠店裡不賣、美國廠已退出。在台灣超過 50 年', badge: { label: '中小顆', tone: 'teal' } },
+              { icon: Factory, title: '鐵甲（Tecumseh）', desc: '以法國廠為主（型號 GAJ 開頭）；泰國廠是 KK 系列（型號 AW 開頭，例 AW2464）；巴西廠店裡不賣、美國廠已退出。在台灣超過 50 年', badge: { label: '中小顆', tone: 'teal' } },
               { icon: Cylinder, title: 'Copeland（黑金剛）', desc: '店裡賣最多，口語叫黑金剛、孔不爛；CS、CR、CF 系列，分高溫、中溫、低溫；印度廠和墨西哥廠都有', badge: { label: '賣最多', tone: 'amber' } },
               { icon: Snowflake, title: 'Danfoss（現在叫 Secop）', desc: '壓縮機部門已改名 Secop，很多人還是叫 Danfoss。型號裡有 G 的灌 R134a（冷藏）、有 CL 的灌 R404A（冷凍）；數字越大越大顆', badge: { label: '看冷媒', tone: 'violet' } },
             ],
@@ -1775,6 +1775,7 @@ const slideList: SlideData[] = [
   {
     id: 'drier-sizes',
     tier: 'ref',
+    added: '2026-10-09',
     part: 'components',
     chapter: '乾燥過濾器',
     mark: 'DRIER',
@@ -1822,7 +1823,7 @@ const slideList: SlideData[] = [
                 en: 'Install & Swap',
                 items: [
                   { icon: Route, title: '照 IN → OUT 裝', desc: '有方向；貼紙可能貼反，以本體上的箭頭為準' },
-                  { icon: Ruler, title: '數字越大，支越大', desc: '前兩碼是乾燥劑容量（立方吋，Danfoss 規格書）；系統越大，用大一點的' },
+                  { icon: Ruler, title: '數字越大，支越長越大', desc: '老闆的記法：164 大約 16 公分長、305 大約 30 公分；規格書上前兩碼是乾燥劑容量（立方吋）。系統越大，用大一點的' },
                   { icon: ArrowLeftRight, title: '同規格各牌可以互換', desc: '例：Danfoss DML 083＝Emerson ADK 083＝Sanhua FD-083（3分、喇叭口）；各牌長度不同，維修換一樣長的比較好裝' },
                 ],
               },

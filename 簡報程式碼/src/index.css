@@ -273,6 +273,8 @@
   }
   .glass-strong {
     --glass-bg: var(--glass-bg-strong);
+    /* 視窗裡的淡灰字（提示、說明）在玻璃上、後面剛好是深色照片時只有 4.2～4.4：玻璃裡換深一階（slate-400），≥4.5 */
+    --color-slate-500: #4f6684;
   }
   .glass-bar {
     --glass-bg: var(--glass-bg-bar);

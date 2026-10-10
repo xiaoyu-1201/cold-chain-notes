@@ -8,6 +8,7 @@ import { isNew } from '../data/whatsNew'
 import { cn, pad } from '../lib/cn'
 import { toneStyles } from '../lib/tone'
 import { Kbd } from './ui/Kbd'
+import { useModal } from '../hooks/useModal'
 
 /** 依篇章分組（保持投影片順序） */
 const groups = slides.reduce<{ part: Part; items: { slide: SlideData; index: number }[] }[]>((acc, slide, index) => {
@@ -32,11 +33,15 @@ interface ChapterDrawerProps {
   index: number
   onClose: () => void
   onSelect: (index: number) => void
+  /** 手機版：鍵盤翻頁停用，抽屜自己聽 Esc；不顯示鍵盤快捷鍵 */
+  mobile?: boolean
 }
 
-export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerProps) {
+export function ChapterDrawer({ open, index, onClose, onSelect, mobile = false }: ChapterDrawerProps) {
   const closeRef = useRef<HTMLButtonElement>(null)
   const activeRef = useRef<HTMLLIElement>(null)
+  // 電腦版的 Esc／M 由 useDeckKeyboard 處理；手機版（閱讀模式）鍵盤停用，抽屜自己接 Esc（10/10 QA）
+  useModal(open && mobile, onClose, closeRef)
 
   useEffect(() => {
     if (!open) return
@@ -135,6 +140,7 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
               ))}
             </div>
 
+            {!mobile && (
             <footer className="border-t border-line px-6 pb-5 pt-3">
               <p className="mb-2 text-[13px] font-bold text-slate-400">鍵盤快捷鍵</p>
               <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[13px] text-slate-400">
@@ -150,6 +156,7 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
                 ))}
               </dl>
             </footer>
+            )}
           </motion.aside>
         </>
       )}

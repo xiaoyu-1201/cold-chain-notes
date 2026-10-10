@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { useLensTrack, useLiquidLens } from '../../hooks/useLiquidLens'
+import { lensBindings, useLensTrack, useLiquidLens } from '../../hooks/useLiquidLens'
 import { cn } from '../../lib/cn'
 import { LensMagnify, LensView } from './LiquidLens'
 
@@ -15,16 +15,14 @@ export function Segmented<T extends string>({ value, options, onChange, size = '
   const box = useRef<HTMLDivElement>(null)
   const items = useRef<(HTMLButtonElement | null)[]>([])
   const current = options.findIndex((o) => o.value === value)
-  const track = useLensTrack({ lens, container: box, items, count: options.length, rest: current, pressMoves: true, onCommit: (i) => onChange(options[i].value) })
+  const track = useLensTrack({ lens, container: box, items, rest: current, pressMoves: true, onCommit: (i) => onChange(options[i].value) })
   return (
     <div
       ref={box}
-      role="tablist"
+      role="radiogroup"
       data-no-swipe
-      onPointerDown={track.onPointerDown}
-      onPointerMove={track.onPointerMove}
-      onPointerUp={track.onPointerUp}
-      onPointerCancel={track.onPointerCancel}
+      data-lens-group
+      {...lensBindings(track)}
       className="relative inline-flex touch-pan-y select-none rounded-full bg-white/[0.07] p-1"
     >
       <LensView lens={lens} className="inset-y-1" restClassName="bg-card" />
@@ -35,12 +33,13 @@ export function Segmented<T extends string>({ value, options, onChange, size = '
             items.current[i] = el
           }}
           type="button"
-          role="tab"
-          aria-selected={value === o.value}
+          role="radio"
+          aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
           className={cn(
-            'relative rounded-full font-semibold transition-colors',
-            size === 'lg' ? 'px-6 py-2 text-[20px]' : size === 'md' ? 'px-4 py-1.5 text-[17px]' : 'px-4 py-1.5 text-[15px]',
+            'relative whitespace-nowrap rounded-full font-semibold transition-colors',
+            // sm＝手機：按鈕至少 44px 高（手指點得到）
+            size === 'lg' ? 'px-6 py-2 text-[20px]' : size === 'md' ? 'px-4 py-1.5 text-[17px]' : 'min-h-11 px-4 py-1.5 text-[15px]',
             value === o.value ? 'text-ink' : 'text-slate-300 hover:bg-[rgba(15,36,64,0.05)] hover:text-ink',
             focusRing,
           )}

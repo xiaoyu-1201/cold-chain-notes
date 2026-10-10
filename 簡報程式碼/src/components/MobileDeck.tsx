@@ -19,7 +19,7 @@ import { markSeen, useLearn } from '../lib/learn'
 import { SOURCE_LABEL } from './SlideCard'
 import { BlueprintBackground } from './ui/BlueprintBackground'
 import { LensMagnify, LensView } from './ui/LiquidLens'
-import { useLensTrack, useLiquidLens } from '../hooks/useLiquidLens'
+import { lensBindings, useLensTrack, useLiquidLens } from '../hooks/useLiquidLens'
 
 /**
  * 手機版簡報：一頁一張卡（跟電腦版同一份內容，直式單欄排法）。
@@ -199,6 +199,7 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
           </nav>
         </div>
         <ChapterDrawer
+          mobile
           open={drawerOpen}
           index={page.index}
           onClose={() => setDrawerOpen(false)}
@@ -325,7 +326,7 @@ function MobileDock({ index, prev, next, onPrev, onNext, onMenu }: { index: numb
   const bar = useRef<HTMLDivElement>(null)
   const items = useRef<(HTMLButtonElement | null)[]>([])
   const actions = [onPrev, onMenu, onNext]
-  const track = useLensTrack({ lens, container: bar, items, count: 3, rest: 1, pressMoves: true, onCommit: (i) => actions[i]() })
+  const track = useLensTrack({ lens, container: bar, items, rest: 1, pressMoves: true, onCommit: (i) => actions[i]() })
   const setItem = (i: number) => (el: HTMLButtonElement | null) => {
     items.current[i] = el
   }
@@ -333,10 +334,8 @@ function MobileDock({ index, prev, next, onPrev, onNext, onMenu }: { index: numb
     <div
       ref={bar}
       data-no-swipe
-      onPointerDown={track.onPointerDown}
-      onPointerMove={track.onPointerMove}
-      onPointerUp={track.onPointerUp}
-      onPointerCancel={track.onPointerCancel}
+      data-lens-group
+      {...lensBindings(track)}
       className="glass pointer-events-auto relative grid h-[60px] w-full max-w-[440px] touch-none select-none grid-cols-[1fr_auto_1fr] items-center rounded-full px-2 [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none]"
     >
       <LensView lens={lens} className="top-[7px] h-11" restClassName="bg-[rgba(15,36,64,0.07)]" />

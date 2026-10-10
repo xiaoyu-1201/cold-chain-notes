@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerE
 import { ATM, isBlend, KG_PER_BAR, PSI_PER_BAR, pressureAt, PT_TEMPS, REFRIGERANTS, temperatureAt, type RefrigerantId } from '../../data/refrigerants'
 import { useStickyState } from '../../hooks/useStickyState'
 import { cn } from '../../lib/cn'
+import { GlassButtonGroup } from '../ui/GlassButtonGroup'
 import { Segmented } from '../ui/Segmented'
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
@@ -320,14 +321,24 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
     ['鋼瓶／標籤顏色', info.colorName ?? '—', info.color ?? undefined],
   ]
 
+  // 錶壓／絕對壓力、單位、露點／泡點：手機版放在最上面整排（右欄只有 100 多 px，放不下，10/10 QA：「公斤」被擠成兩行、360 寬超出卡片）
+  const toggles = (
+    <div className={cn('flex flex-wrap items-center', mobile ? 'gap-2' : 'gap-3')}>
+      <Segmented size={mobile ? 'sm' : 'md'} value={abs ? 'abs' : 'gauge'} onChange={(v) => setAbs(v === 'abs')} options={[{ value: 'gauge', label: '錶壓' }, { value: 'abs', label: '絕對壓力' }]} />
+      <Segmented size={mobile ? 'sm' : 'md'} value={unit} onChange={setUnit} options={[{ value: 'psig', label: 'psi' }, { value: 'kg', label: '公斤' }, { value: 'bar', label: 'bar' }]} />
+      {blend && <Segmented size={mobile ? 'sm' : 'md'} value={curve} onChange={setCurve} options={[{ value: 'dew', label: '露點' }, { value: 'bubble', label: '泡點' }]} />}
+    </div>
+  )
+
   return (
     <div className={cn('grid min-h-0', mobile ? 'grid-cols-[150px_minmax(0,1fr)] gap-3' : 'h-full grid-cols-[280px_minmax(0,1fr)] gap-6')}>
+      {mobile && <div className="col-span-2">{toggles}</div>}
       <div className={mobile ? 'h-[460px]' : 'min-h-0'}>
         <Ruler id={id} curve={curve} unit={unit} abs={abs} temp={t} onTemp={setTempNow} onJump={jumpTo} mobile={mobile} />
       </div>
 
       <div className={cn('flex min-w-0 flex-col', mobile ? 'gap-2.5' : 'gap-3.5')}>
-        <div className="flex flex-wrap gap-1.5" role="group" aria-label="選冷媒">
+        <GlassButtonGroup className="flex flex-wrap gap-1.5" label="選冷媒">
           {IDS.map((r) => (
             <button
               key={r}
@@ -339,14 +350,10 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
               {r}
             </button>
           ))}
-        </div>
+        </GlassButtonGroup>
         <p className={cn('text-slate-400', s.small)}>{REFRIGERANTS[id].use}</p>
 
-        <div className={cn('flex flex-wrap items-center', mobile ? 'gap-2' : 'gap-3')}>
-          <Segmented size={mobile ? 'sm' : 'md'} value={abs ? 'abs' : 'gauge'} onChange={(v) => setAbs(v === 'abs')} options={[{ value: 'gauge', label: '錶壓' }, { value: 'abs', label: '絕對壓力' }]} />
-          <Segmented size={mobile ? 'sm' : 'md'} value={unit} onChange={setUnit} options={[{ value: 'psig', label: 'psi' }, { value: 'kg', label: '公斤' }, { value: 'bar', label: 'bar' }]} />
-          {blend && <Segmented size={mobile ? 'sm' : 'md'} value={curve} onChange={setCurve} options={[{ value: 'dew', label: '露點' }, { value: 'bubble', label: '泡點' }]} />}
-        </div>
+        {!mobile && toggles}
 
         <div className={cn('grid', mobile ? 'grid-cols-1 gap-2' : 'grid-cols-2 gap-3')}>
           {valueCard('p', pShown, unitLabel(unit, abs), 'border border-red-500/35 bg-red-950')}
@@ -354,7 +361,7 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
         </div>
         {!abs && pShown < 0 && <p className={cn('text-amber-200', s.small)}>錶壓是負的＝真空（低於 1 大氣壓）</p>}
 
-        <div className={cn('flex flex-wrap items-center', mobile ? 'gap-1.5' : 'gap-2')} role="group" aria-label="跳到常用溫度">
+        <GlassButtonGroup className={cn('flex flex-wrap items-center', mobile ? 'gap-1.5' : 'gap-2')} label="跳到常用溫度">
           <span className={cn('font-semibold text-slate-400', s.small)}>跳到（°C）</span>
           {QUICK.map((q) => (
             <button
@@ -372,7 +379,7 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
               {q.label}
             </button>
           ))}
-        </div>
+        </GlassButtonGroup>
 
         <dl className={cn('rounded-2xl border border-line bg-card', mobile ? 'p-3 text-[13px]' : 'px-5 py-3 text-[17px]')}>
           {infoRows.map(([k, v, color]) => (

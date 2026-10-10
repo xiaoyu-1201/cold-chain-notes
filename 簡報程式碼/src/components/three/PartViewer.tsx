@@ -3,6 +3,7 @@ import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { photoCredits } from '../../data/photoCredits'
 import { cn } from '../../lib/cn'
+import { GlassButtonGroup } from '../ui/GlassButtonGroup'
 import { Segmented } from '../ui/Segmented'
 import type { LegendItem, Part3DId, PartControl } from './models'
 
@@ -62,7 +63,7 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
     )
 
   const floatToggle = (on: boolean) =>
-    cn('flex min-h-11 items-center gap-1.5 rounded-full px-4 py-2 text-[15px] font-semibold transition', on ? 'bg-sky-400 text-navy-950' : 'glass text-slate-100', focusRing)
+    cn('flex min-h-11 items-center gap-1.5 rounded-full px-4 py-2 text-[15px] font-semibold transition', on ? 'border border-transparent bg-sky-400 text-navy-950' : 'glass text-slate-100', focusRing)
 
   return createPortal(
     <div
@@ -106,7 +107,7 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
               <Suspense fallback={<p className="absolute inset-0 flex items-center justify-center text-[16px] text-slate-400">3D 模型載入中…</p>}>
                 <Part3D id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} />
               </Suspense>
-              <div className="absolute bottom-3 left-3 flex flex-wrap gap-2">
+              <GlassButtonGroup className="absolute bottom-3 left-3 flex flex-wrap gap-2" label="3D 檢視">
                 <button type="button" aria-pressed={cut} onClick={() => setCut((c) => !c)} className={floatToggle(cut)}>
                   <Layers className="size-4" aria-hidden />
                   {cut ? '合起來' : '剖開看內部'}
@@ -115,7 +116,7 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
                   <RotateCw className="size-4" aria-hidden />
                   自動旋轉
                 </button>
-              </div>
+              </GlassButtonGroup>
               <p className="glass pointer-events-none absolute right-3 top-3 rounded-full px-3 py-1 text-[13px] text-slate-200">拖曳旋轉・滾輪往游標放大・雙擊還原</p>
             </div>
             <aside className="max-h-[42%] overflow-y-auto border-t border-line bg-card p-4 lg:max-h-none lg:w-[380px] lg:border-l lg:border-t-0">

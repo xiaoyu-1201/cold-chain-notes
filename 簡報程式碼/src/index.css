@@ -271,8 +271,11 @@
     -webkit-backdrop-filter: var(--glass-filter);
     backdrop-filter: var(--glass-filter);
   }
+  /* 90% 白已經看不出模糊：不模糊，省效能（10/10 code review） */
   .glass-strong {
     --glass-bg: var(--glass-bg-strong);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     /* 視窗裡的淡灰字（提示、說明）在玻璃上、後面剛好是深色照片時只有 4.2～4.4：玻璃裡換深一階（slate-400），≥4.5 */
     --color-slate-500: #4f6684;
   }
@@ -307,11 +310,21 @@
       0 0 0 0.5px rgba(15, 36, 64, 0.14),
       0 8px 18px -8px rgba(15, 36, 64, 0.4);
   }
-  /* 電腦版畫布（縮放＋3D 每格重畫）裡的 3D 小按鈕：只半透明、不模糊，免得拖慢 */
-  .deck-hover .viewport-blueprint .glass {
+  /* 後面沒有東西捲過的玻璃（電腦版底部導覽列）：只留底色，不模糊 */
+  .glass-flat {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  /* 3D 上的小按鈕（電腦版畫布、手機、零件檢視窗都一樣）：3D 每格重畫，只半透明、不模糊，免得拖慢 */
+  .viewport-blueprint .glass {
     --glass-bg: rgba(255, 255, 255, 0.88);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+  }
+  /* 鏡片在按鈕後面：按鈕要是定位元素，才會畫在鏡片上面 */
+  [data-lens-group] > button,
+  [data-lens-group] > * > button {
+    position: relative;
   }
 
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -327,6 +340,173 @@
       -webkit-backdrop-filter: none;
       backdrop-filter: none;
     }
+  }
+}
+
+/*
+ * 液態玻璃按鈕（10/10，iOS 26 glass button）：全站按鈕「從源頭」一次套用，不用每個檔案各寫一套。
+ *   次要：淡藍灰半透明底＋1px 白邊＋頂端白色反光＋很淡的斜向高光＋柔和小陰影
+ *   主要（藍底）：藍色玻璃漸層＋頂端白色反光＋內側高光（字 #f6f9fc，對比 ≥4.5）
+ *   狀態晶片（淡紅／淡黃／淡綠／淡藍底）：保留原本的淡色，只加玻璃反光
+ * 自動套用：膠囊／小圓角的 <button>，原本寫 bg-card（或 bg-white/[…]）→ 次要；bg-sky-300/400/600 → 主要；
+ *   bg-emerald-400 → 綠色主要；bg-*-950、bg-amber-500 → 狀態晶片。新元件也可以直接寫 .glass-btn／.glass-btn-primary／.glass-btn-green／.glass-btn-tint。
+ *   不套：w-full（整列、卡片型按鈕）、已經是浮動玻璃（.glass）、data-no-glass。
+ * 按鈕底下多半是實心白卡：只做「玻璃感」，不加 backdrop-filter（電腦版畫布是縮放的，模糊很耗效能）。
+ * 按下：稍微放大 1.035＋高光變亮，放開用有一點 overshoot 的曲線回彈（只用 CSS；減少動態效果時不縮放）。
+ * 拖動的果凍變形在 hooks/useGlassJelly.ts（整個網頁一個事件委派）。
+ * 這段不放進 @layer：要蓋過按鈕上原本的 bg-card／border-line／shadow 工具 class。
+ */
+:root {
+  --gbtn-sheen: linear-gradient(165deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.12) 45%, rgba(255, 255, 255, 0) 62%);
+  --gbtn-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+:is(.glass-btn, .glass-btn-primary, .glass-btn-green, .glass-btn-tint),
+button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass]),
+button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600'], [class~='bg-emerald-400']):not([class~='w-full'], [data-no-glass]),
+button:is([class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl'], [class~='rounded-[14px]']):not([class~='w-full'], [data-no-glass]) {
+  /* 上下滑照常捲頁面；左右拖交給果凍效果 */
+  touch-action: pan-y;
+  transition:
+    scale 0.42s var(--gbtn-ease),
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+/* 次要 */
+:is(.glass-btn, button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass])) {
+  background-color: rgba(233, 239, 246, 0.6);
+  background-image: var(--gbtn-sheen);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(15, 36, 64, 0.05),
+    0 0 0 1px rgba(15, 36, 64, 0.13),
+    0 2px 6px -2px rgba(15, 36, 64, 0.16);
+}
+@media (hover: hover) {
+  :is(.glass-btn, button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass])):not(:disabled):hover {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -1px 0 rgba(15, 36, 64, 0.05),
+      0 0 0 1px rgba(46, 123, 200, 0.55),
+      0 3px 8px -3px rgba(15, 36, 64, 0.2);
+  }
+}
+/* 主要（藍） */
+:is(.glass-btn-primary, button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600']):not([class~='w-full'], [data-no-glass])) {
+  background-color: #2068ae;
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 42%),
+    linear-gradient(180deg, rgba(34, 104, 174, 0.95), rgba(25, 86, 148, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(16, 58, 104, 0.3),
+    0 4px 12px -4px rgba(31, 100, 168, 0.5);
+  color: #f6f9fc;
+}
+/* 主要（綠：學習地圖的連結鈕） */
+:is(.glass-btn-green, button[class~='bg-emerald-400']:not([class~='w-full'], [data-no-glass])) {
+  background-color: #0e7a55;
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 42%),
+    linear-gradient(180deg, rgba(14, 122, 85, 0.95), rgba(8, 96, 66, 0.97));
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 0 0 1px rgba(5, 61, 43, 0.3),
+    0 4px 12px -4px rgba(14, 122, 85, 0.45);
+  color: #f6f9fc;
+}
+/* 狀態晶片：保留原本的淡色底和管路色細框，只加玻璃反光 */
+:is(.glass-btn-tint, button:is([class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl'], [class~='rounded-[14px]']):not([class~='w-full'], [data-no-glass])) {
+  background-image: var(--gbtn-sheen);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0 rgba(15, 36, 64, 0.05),
+    0 2px 6px -2px rgba(15, 36, 64, 0.14);
+}
+/* 翻卡「會了／還不熟」這類淡管路色晶片：淡色直接寫 rgba（Tailwind 的 /15 在舊 Chrome 會退回實心亮色），加玻璃反光 */
+button:is([class~='bg-emerald-500/15'], [class~='bg-amber-500/15'], [class~='bg-red-500/15']) {
+  background-image: var(--gbtn-sheen);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 0 0 1px rgba(15, 36, 64, 0.1),
+    0 2px 6px -2px rgba(15, 36, 64, 0.14);
+  touch-action: pan-y;
+  transition: scale 0.42s var(--gbtn-ease), box-shadow 0.2s ease, background-color 0.2s ease;
+}
+button[class~='bg-emerald-500/15'] {
+  background-color: rgba(21, 160, 110, 0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 0 0 1px rgba(21, 160, 110, 0.35),
+    0 2px 6px -2px rgba(15, 36, 64, 0.14);
+}
+button[class~='bg-amber-500/15'] {
+  background-color: rgba(224, 160, 27, 0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 0 0 1px rgba(224, 160, 27, 0.4),
+    0 2px 6px -2px rgba(15, 36, 64, 0.14);
+}
+button[class~='bg-red-500/15'] {
+  background-color: rgba(210, 63, 46, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 0 0 1px rgba(210, 63, 46, 0.35),
+    0 2px 6px -2px rgba(15, 36, 64, 0.14);
+}
+button:is([class~='bg-emerald-500/15'], [class~='bg-amber-500/15'], [class~='bg-red-500/15']):not(:disabled):active {
+  scale: 1.035;
+  transition-duration: 0.12s;
+}
+
+/* 按下：放大一點＋高光變亮（彈簧回彈靠 transition 的曲線）。不用 CSS 巢狀（Chrome 109 不支援） */
+:is(
+    .glass-btn,
+    .glass-btn-primary,
+    .glass-btn-green,
+    .glass-btn-tint,
+    button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass]),
+    button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600'], [class~='bg-emerald-400']):not([class~='w-full'], [data-no-glass]),
+    button:is([class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl'], [class~='rounded-[14px]']):not([class~='w-full'], [data-no-glass])
+  ):not(:disabled):active {
+  scale: 1.035;
+  transition-duration: 0.12s;
+  filter: brightness(1.04);
+}
+@media (prefers-reduced-motion: reduce) {
+  button:not(:disabled):active {
+    scale: none !important;
+  }
+}
+/* 退路：減少透明度、不支援玻璃 → 實心、邊框清楚 */
+@media (prefers-reduced-transparency: reduce) {
+  :is(.glass-btn, button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass])) {
+    background-color: #ffffff;
+    background-image: none;
+    border-color: #c9d6e5;
+    box-shadow: none;
+  }
+  :is(.glass-btn-primary, .glass-btn-green, .glass-btn-tint, button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600'], [class~='bg-emerald-400'], [class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500'])) {
+    background-image: none;
+    box-shadow: none;
+  }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :is(.glass-btn, button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass])) {
+    background-color: #ffffff;
+    background-image: none;
+    border-color: #c9d6e5;
+    box-shadow: none;
+  }
+  :is(.glass-btn-primary, .glass-btn-green, .glass-btn-tint, button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600'], [class~='bg-emerald-400'], [class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500'])) {
+    background-image: none;
+    box-shadow: none;
   }
 }
 

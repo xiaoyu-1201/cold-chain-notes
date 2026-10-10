@@ -9,6 +9,7 @@ import { useScrollFade } from '../../hooks/useScrollFade'
 import { cn } from '../../lib/cn'
 import { part3DFor } from '../three/ids'
 import { PartViewer } from '../three/PartViewer'
+import { GlassButtonGroup } from '../ui/GlassButtonGroup'
 import { Segmented } from '../ui/Segmented'
 import { PartGlyph } from '../ui/PartGlyph'
 import { glyphFor } from '../../lib/partGlyph'
@@ -260,7 +261,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
               {cards.filter((c) => c.group === g && status[c.term] === 'known').length}/{cards.filter((c) => c.group === g).length}
             </span>
           </p>
-          <div className="flex flex-wrap gap-1.5">
+          <GlassButtonGroup className="flex flex-wrap gap-1.5" label={g}>
             {cards.map((c, i) =>
               c.group !== g ? null : (
                 <button
@@ -280,7 +281,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
                 </button>
               ),
             )}
-          </div>
+          </GlassButtonGroup>
         </div>
       ))}
       <p className={cn('text-slate-500', size.small, !mobile && 'mt-auto')}>綠色＝會了・橘色＝還不熟；記在這台電腦，下次打開還在。</p>
@@ -318,7 +319,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
         {cardView}
         {navButton(1)}
       </div>
-      <div className="flex flex-wrap justify-center gap-3">
+      <GlassButtonGroup className="flex flex-wrap justify-center gap-3" label="翻卡操作">
         {card ? (
           <>
             <button type="button" onClick={() => mark('learning')} className={cn(actionBtn, 'bg-amber-500/15 text-amber-100 hover:bg-amber-500/25')}>
@@ -340,7 +341,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
           <Shuffle className="size-5" aria-hidden />
           洗牌
         </button>
-      </div>
+      </GlassButtonGroup>
       {viewer && model && card && <PartViewer id={model} title={card.term} alias={card.alias} onClose={() => setViewer(false)} />}
     </div>
   )

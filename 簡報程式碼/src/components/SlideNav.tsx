@@ -87,7 +87,7 @@ export function SlideNav({
   return (
     <nav
       aria-label="簡報控制"
-      className="glass glass-bar relative z-10 flex h-16 shrink-0 items-center gap-4 border-t border-line px-3 sm:px-5"
+      className="glass glass-bar glass-flat relative z-10 flex h-16 shrink-0 items-center gap-4 border-t border-line px-3 sm:px-5"
     >
       {/* 有「返回」鈕時，左邊三顆只留圖示（文字在說明裡），返回鈕才不會壓到篇章列（10/10 QA：1920 寬重疊 14px） */}
       {/* 篇章列是固定寬，大螢幕時左邊先保留一塊給提示／標題，不然會被篇章列吃光；平板（<1280）按鈕只留圖示 */}
@@ -306,7 +306,7 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
   // 液態玻璃鏡片：目前這篇；按住鏡片（目前那篇）拖＝移動鏡片、放開跳到那一篇；在別的地方拖＝照舊捲動篇章列
   const lens = useLiquidLens({ liftScale: 1 })
   const items = useRef<(HTMLButtonElement | null)[]>([])
-  const track = useLensTrack({ lens, container: scroller, items, count: dotGroups.length, rest: curIdx, canStart: (i) => i === curIdx, onCommit: (i) => onGoTo(dotGroups[i].items[0]) })
+  const track = useLensTrack({ lens, container: scroller, items, rest: curIdx, canStart: (i) => i === curIdx, onCommit: (i) => i !== curIdx && onGoTo(dotGroups[i].items[0]) })
   return (
     <div ref={wrap} className="relative hidden min-w-0 lg:block" onMouseLeave={clear}>
       <Arrows fade={fade} slide={slide} label="篇章列" />
@@ -316,6 +316,7 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
         {...lensHandlers(track, handlers)}
         onScroll={() => (measure(), clear())}
         style={{ maskImage: mask, WebkitMaskImage: mask }}
+        data-lens-group
         className={cn(stripCls, scrollable && 'cursor-grab active:cursor-grabbing')}
       >
         <LensView lens={lens} className="inset-y-1" restClassName={toneStyles[parts[cur.part].tone].soft} />
@@ -369,7 +370,7 @@ function PageStrip({ index, onGoTo }: { index: number; onGoTo: (index: number) =
   // 液態玻璃鏡片：目前這頁；按住鏡片拖＝移動鏡片、放開跳到那一頁；在別的地方拖＝照舊捲動
   const lens = useLiquidLens({ liftScale: 1 })
   const items = useRef<(HTMLButtonElement | null)[]>([])
-  const track = useLensTrack({ lens, container: scroller, items, count: cur.items.length, rest: curIdx, canStart: (k) => k === curIdx, onCommit: (k) => onGoTo(cur.items[k]) })
+  const track = useLensTrack({ lens, container: scroller, items, rest: curIdx, canStart: (k) => k === curIdx, onCommit: (k) => k !== curIdx && onGoTo(cur.items[k]) })
   useEffect(() => {
     const el = scroller.current
     const btn = active.current
@@ -388,6 +389,7 @@ function PageStrip({ index, onGoTo }: { index: number; onGoTo: (index: number) =
         onScroll={() => (measure(), clear())}
         style={{ maskImage: mask, WebkitMaskImage: mask }}
         aria-label={`${parts[cur.part].short}的頁碼`}
+        data-lens-group
         className={cn(stripCls, 'w-[204px] xl:w-[232px]', scrollable && 'cursor-grab active:cursor-grabbing')}
       >
         <LensView lens={lens} className="inset-y-1" restClassName="bg-sky-950" />
@@ -447,6 +449,12 @@ function lensHandlers(track: ReturnType<typeof useLensTrack>, strip: ReturnType<
       strip.onPointerUp()
     },
     onPointerCancel: track.onPointerCancel,
+    // 滑鼠按下還沒拖就滑出去＝取消鏡片，也要照舊結束捲動拖曳
+    onPointerLeave: (e: ReactPointerEvent<HTMLDivElement>) => {
+      track.onPointerLeave(e)
+      strip.onPointerLeave()
+    },
+    onLostPointerCapture: track.onLostPointerCapture,
   }
 }
 

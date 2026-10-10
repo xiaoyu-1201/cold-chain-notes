@@ -365,12 +365,12 @@
   --gbtn-sheen: linear-gradient(165deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.12) 45%, rgba(255, 255, 255, 0) 62%);
   --gbtn-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
   /* 按鈕原本的 ring-*（選中、新頁的綠框）要留著：玻璃的陰影後面接上 Tailwind 的 ring */
-  --gbtn-ring: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000);
+  /* 注意：Tailwind 的 ring 要在按鈕自己身上展開（寫在 :root 會在 :root 當下就算成透明，子元素的 ring 全部不見；10/10 最後一輪 code review） */
 }
 /*
  * 選中狀態靠「邊框顏色」或 ring 表示的按鈕（照片熱點紅圈、地圖、步驟圓點）不能被蓋掉（10/10 code review）：
  *   - 只有原本是 border-line 的才把邊框換成白色半透明；其他顏色、粗細的邊框都照原本。
- *   - 陰影都接上 var(--gbtn-ring)。
+ *   - 陰影都接上 var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000)。
  *   - 不想要玻璃的加 data-no-glass。
  */
 :is(.glass-btn, .glass-btn-primary, .glass-btn-green, .glass-btn-tint, button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass]), button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600']):not([class~='w-full'], [data-no-glass]), button[class~='bg-emerald-400']:not([class~='w-full'], [data-no-glass]), button:is([class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl'], [class~='rounded-[14px]']):not([class~='w-full'], [data-no-glass]), button:is([class~='bg-emerald-500/15'], [class~='bg-amber-500/15'], [class~='bg-red-500/15']):not([class~='w-full'], [data-no-glass])) {
@@ -392,7 +392,7 @@
     inset 0 -1px 0 rgba(15, 36, 64, 0.05),
     0 0 0 1px rgba(15, 36, 64, 0.13),
     0 2px 6px -2px rgba(15, 36, 64, 0.16),
-    var(--gbtn-ring);
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000);
 }
 :is(.glass-btn, button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass]))[class~='border-line'] {
   border-color: rgba(255, 255, 255, 0.8);
@@ -404,7 +404,7 @@
       inset 0 -1px 0 rgba(15, 36, 64, 0.05),
       0 0 0 1px rgba(46, 123, 200, 0.55),
       0 3px 8px -3px rgba(15, 36, 64, 0.2),
-      var(--gbtn-ring);
+      var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000);
   }
 }
 /* 主要（藍）：頂端反光只到 22%、而且很淡；字所在的範圍（按鈕高度 10% 以下）對比 ≥4.9 */
@@ -419,7 +419,7 @@
     inset 0 0 0 1px rgba(255, 255, 255, 0.1),
     0 0 0 1px rgba(16, 58, 104, 0.3),
     0 4px 12px -4px rgba(31, 100, 168, 0.5),
-    var(--gbtn-ring);
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000);
   color: #f6f9fc;
 }
 /* 主要（綠：學習地圖的連結鈕） */
@@ -433,7 +433,7 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.55),
     0 0 0 1px rgba(5, 61, 43, 0.3),
     0 4px 12px -4px rgba(14, 122, 85, 0.45),
-    var(--gbtn-ring);
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000);
   color: #f6f9fc;
 }
 /* 狀態晶片：保留原本的淡色底和管路色邊框，只加玻璃反光 */
@@ -443,7 +443,7 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.85),
     inset 0 -1px 0 rgba(15, 36, 64, 0.05),
     0 2px 6px -2px rgba(15, 36, 64, 0.14),
-    var(--gbtn-ring);
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000);
 }
 /* 翻卡「會了／還不熟」這類淡管路色晶片：淡色直接寫 rgba（Tailwind 的 /15 在舊 Chrome 會退回實心亮色），加玻璃反光；邊框照原本 */
 button:is([class~='bg-emerald-500/15'], [class~='bg-amber-500/15'], [class~='bg-red-500/15']):not([class~='w-full'], [data-no-glass]) {
@@ -453,7 +453,7 @@ button:is([class~='bg-emerald-500/15'], [class~='bg-amber-500/15'], [class~='bg-
     inset 0 1px 0 rgba(255, 255, 255, 0.85),
     0 0 0 1px var(--gbtn-edge),
     0 2px 6px -2px rgba(15, 36, 64, 0.14),
-    var(--gbtn-ring);
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000);
 }
 button[class~='bg-emerald-500/15']:not([class~='w-full'], [data-no-glass]) {
   background-color: rgba(21, 160, 110, 0.15);
@@ -477,7 +477,7 @@ button[class~='bg-slate-100']:not([class~='w-full'], [data-no-glass]) {
     inset 0 1px 0 rgba(255, 255, 255, 0.35),
     0 0 0 1px rgba(15, 36, 64, 0.35),
     0 3px 10px -4px rgba(15, 36, 64, 0.45),
-    var(--gbtn-ring);
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000);
   color: #f6f9fc;
   touch-action: pan-y pinch-zoom;
   transition:
@@ -487,6 +487,12 @@ button[class~='bg-slate-100']:not([class~='w-full'], [data-no-glass]) {
 button[class~='bg-slate-100']:not([class~='w-full'], [data-no-glass], :disabled):active {
   scale: 1.035;
   transition-duration: 0.12s;
+}
+/* 手機版：「業界經驗」標籤自己放在段落下一行（接在字後面時，最後一行常常只剩「機。〔業界經驗〕」；10/10 最後一輪 QA） */
+.reader-mode .exp-tag {
+  display: flex;
+  width: fit-content;
+  margin: 4px 0 0;
 }
 .reader-mode button:is([class~='bg-slate-100'], [class~='bg-sky-500/15']):not([class~='w-full'], [data-no-glass], [class~='absolute'], [class~='fixed']) {
   position: relative;
@@ -507,7 +513,7 @@ button[class~='bg-sky-500/15']:not([class~='w-full'], [data-no-glass]) {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.85),
     0 2px 6px -2px rgba(15, 36, 64, 0.14),
-    var(--gbtn-ring);
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000);
   touch-action: pan-y pinch-zoom;
   transition:
     scale 0.42s var(--gbtn-ease),
@@ -535,22 +541,22 @@ button[class~='bg-sky-500/15']:not([class~='w-full'], [data-no-glass], :disabled
   :is(.glass-btn, button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass])) {
     background-color: #ffffff;
     background-image: none;
-    box-shadow: 0 0 0 1px #c9d6e5, var(--gbtn-ring);
+    box-shadow: 0 0 0 1px #c9d6e5, var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000);
   }
   :is(.glass-btn-primary, .glass-btn-green, .glass-btn-tint, button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600']):not([class~='w-full'], [data-no-glass]), button[class~='bg-emerald-400']:not([class~='w-full'], [data-no-glass]), button:is([class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl'], [class~='rounded-[14px]']):not([class~='w-full'], [data-no-glass]), button:is([class~='bg-emerald-500/15'], [class~='bg-amber-500/15'], [class~='bg-red-500/15']):not([class~='w-full'], [data-no-glass])) {
     background-image: none;
-    box-shadow: var(--gbtn-ring);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000);
   }
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   :is(.glass-btn, button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass])) {
     background-color: #ffffff;
     background-image: none;
-    box-shadow: 0 0 0 1px #c9d6e5, var(--gbtn-ring);
+    box-shadow: 0 0 0 1px #c9d6e5, var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000);
   }
   :is(.glass-btn-primary, .glass-btn-green, .glass-btn-tint, button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600']):not([class~='w-full'], [data-no-glass]), button[class~='bg-emerald-400']:not([class~='w-full'], [data-no-glass]), button:is([class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl'], [class~='rounded-[14px]']):not([class~='w-full'], [data-no-glass]), button:is([class~='bg-emerald-500/15'], [class~='bg-amber-500/15'], [class~='bg-red-500/15']):not([class~='w-full'], [data-no-glass])) {
     background-image: none;
-    box-shadow: var(--gbtn-ring);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000);
   }
 }
 

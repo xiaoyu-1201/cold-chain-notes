@@ -127,8 +127,12 @@ type Drag = { id: number; type: string; x0: number; moved: boolean; idx: number;
  * 名詞清單 70 顆幾乎整個螢幕都不能滑換頁）。只有真的開始水平拖才擋。
  */
 let dragging = false
+let draggingSince = 0
 let releasedAt = 0
+/** 保險：拖曳超過 3 秒還沒結束（例如元件在拖到一半被卸載、收不到放開），就不再擋換頁 */
+const MAX_DRAG_MS = 3000
 export function lensDragBusy() {
+  if (dragging && performance.now() - draggingSince > MAX_DRAG_MS) dragging = false
   return dragging || performance.now() - releasedAt < 400
 }
 
@@ -144,7 +148,15 @@ export function useLensTrack({ lens, container, items, rest, onCommit, canStart,
   })
   useEffect(() => {
     const list = timers.current
-    return () => list.forEach((t) => window.clearTimeout(t))
+    const d = drag
+    return () => {
+      list.forEach((t) => window.clearTimeout(t))
+      // 拖到一半被卸載（換頁、關掉 Lightbox／3D）：React 不會再送放開給它，「拖曳中」要在這裡解除，不然換頁會一直被擋（10/10 最後一輪 code review）
+      if (d.current?.moved) {
+        dragging = false
+        releasedAt = performance.now()
+      }
+    }
   }, [])
   const later = useCallback((fn: () => void, ms: number) => {
     const t = window.setTimeout(() => {
@@ -287,6 +299,7 @@ export function useLensTrack({ lens, container, items, rest, onCommit, canStart,
       if (Math.abs(e.clientX - d.x0) < slopFor(d.type)) return true
       d.moved = true
       dragging = true
+      draggingSince = performance.now()
       try {
         container.current?.setPointerCapture(e.pointerId)
       } catch {

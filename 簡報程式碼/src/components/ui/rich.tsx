@@ -29,7 +29,7 @@ export function Exp() {
   return (
     <span
       title="一丞手冊未列，屬業界常用參考值"
-      className="ml-1.5 inline-flex items-center whitespace-nowrap rounded-md bg-slate-500/15 px-1.5 py-px align-middle text-[max(0.62em,16px)] font-semibold leading-normal text-slate-300"
+      className="exp-tag ml-1.5 inline-flex items-center whitespace-nowrap rounded-md bg-slate-500/15 px-1.5 py-px align-middle text-[max(0.62em,16px)] font-semibold leading-normal text-slate-300"
     >
       業界經驗
     </span>

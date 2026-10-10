@@ -48,6 +48,8 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
     : { title: 'text-[24px]', small: 'text-[16px]', body: 'text-[17px]', pill: 'px-4 py-2 text-[16px]' }
   // 觸控範圍：手機 ≥44px；電腦畫布會縮放，給 52 畫布 px（10/10 QA：原本 34／29px）
   const pill = (on: boolean) => cn('flex items-center gap-1.5 rounded-full font-semibold transition', t.pill, mobile ? 'min-h-11' : 'min-h-[52px]', on ? 'bg-sky-400 text-navy-950' : 'bg-white/[0.1] text-slate-100 hover:bg-white/[0.16]', focusRing)
+  /** 浮在 3D 上的按鈕：沒按＝玻璃、按下＝實心藍 */
+  const floatPill = (on: boolean) => cn('flex items-center gap-1.5 rounded-full font-semibold transition', t.pill, mobile ? 'min-h-11' : 'min-h-[52px]', on ? 'bg-sky-400 text-navy-950' : 'glass text-slate-100', focusRing)
   const loading = <p className={cn('absolute inset-0 flex items-center justify-center text-slate-400', t.body)}>3D 模型載入中…</p>
 
   return (
@@ -100,16 +102,16 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
               </Deferred>
             </InView>
             <div className="absolute bottom-3 left-3 flex flex-wrap gap-2">
-              <button type="button" aria-pressed={cut} onClick={() => setCut((c) => !c)} className={pill(cut)}>
+              <button type="button" aria-pressed={cut} onClick={() => setCut((c) => !c)} className={floatPill(cut)}>
                 <Layers className="size-4" aria-hidden />
                 {cut ? '合起來' : '剖開看內部'}
               </button>
-              <button type="button" aria-pressed={spin} onClick={() => setSpin((s) => !s)} className={pill(spin)}>
+              <button type="button" aria-pressed={spin} onClick={() => setSpin((s) => !s)} className={floatPill(spin)}>
                 <RotateCw className="size-4" aria-hidden />
                 自動旋轉
               </button>
             </div>
-            <p className={cn('pointer-events-none absolute right-3 top-3 rounded-full bg-card/90 px-3 py-1 text-slate-300 ring-1 ring-line', t.small)}>{mobile ? '拖曳旋轉・兩指放大・點兩下還原' : '拖曳旋轉・滾輪往游標放大・雙擊還原'}</p>
+            <p className={cn('glass pointer-events-none absolute right-3 top-3 rounded-full px-3 py-1 text-slate-200', t.small)}>{mobile ? '拖曳旋轉・兩指放大・點兩下還原' : '拖曳旋轉・滾輪往游標放大・雙擊還原'}</p>
           </div>
 
           {control && (

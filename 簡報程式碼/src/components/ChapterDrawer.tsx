@@ -65,7 +65,7 @@ export function ChapterDrawer({ open, index, onClose, onSelect }: ChapterDrawerP
             aria-label="章節導覽"
             // 鍵盤翻頁：有 aria-modal 的視窗開著時不翻頁，但目錄抽屜例外（useDeckKeyboard 用這個屬性排除）
             data-deck-drawer
-            className="fixed inset-y-0 left-0 z-50 flex w-[min(460px,92vw)] flex-col border-r border-line bg-paper shadow-[0_24px_64px_-24px_rgba(15,36,64,0.45)]"
+            className="glass glass-strong fixed inset-y-0 left-0 z-50 flex w-[min(460px,92vw)] flex-col rounded-r-[18px]"
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}

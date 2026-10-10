@@ -640,7 +640,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
         <div ref={hostRef} className="absolute inset-0 touch-none" />
         {/* 鏡頭控制：放大、縮小、回到全覽（放大後才出現） */}
         <div className={cn('absolute flex flex-col items-end', compact ? 'right-2 top-2 gap-1.5' : 'right-4 top-4 gap-2')}>
-          <div className="flex flex-col overflow-hidden rounded-full bg-card/95 ring-1 ring-line">
+          <div className="glass flex flex-col overflow-hidden rounded-full">
             <button type="button" aria-label="放大" onClick={() => api.current?.zoom(0.7)} className={cn(zoomBtn, 'border-b border-line')}>
               <Plus className={icon} aria-hidden />
             </button>
@@ -652,14 +652,14 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
             <button
               type="button"
               onClick={() => api.current?.home()}
-              className={cn(btn, 'bg-card/95 text-sky-300 ring-1 ring-line hover:bg-card', compact ? 'px-3 py-1.5' : 'px-4 py-2')}
+              className={cn(btn, 'glass text-sky-200', compact ? 'px-3 py-1.5' : 'px-4 py-2')}
             >
               <Scan className={icon} aria-hidden />
               全覽
             </button>
           )}
         </div>
-        {!zoomed && !compact && <p className="pointer-events-none absolute left-5 top-4 text-[16px] text-slate-400">滾輪縮放・右鍵拖曳平移・雙擊零件放大</p>}
+        {!zoomed && !compact && <p className="glass pointer-events-none absolute left-5 top-4 rounded-full px-4 py-1.5 text-[16px] text-slate-200">滾輪縮放・右鍵拖曳平移・雙擊零件放大</p>}
       </div>
       {/* 控制列：停機 → 啟動按鈕；導覽中 → 這一步在做什麼；運轉中 → 重看／停機 */}
       <div className={cn('flex shrink-0 items-center', compact ? 'min-h-[64px] gap-2.5 px-3 py-2.5' : 'min-h-[92px] gap-5 px-7 py-4')}>

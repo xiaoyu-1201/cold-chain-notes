@@ -28,7 +28,7 @@ export function Lightbox({ src, label, onClose }: { src: string; label: string; 
         ref={closeBtn}
         type="button"
         aria-label="關閉 (Esc)"
-        className={cn('absolute right-4 top-4 flex size-11 items-center justify-center rounded-full bg-[rgba(255,255,255,0.15)] text-[#fff]', focusRing)}
+        className={cn('glass glass-dark absolute right-4 top-4 flex size-11 items-center justify-center rounded-full text-[#fff]', focusRing)}
       >
         <X className="size-5" aria-hidden />
       </button>

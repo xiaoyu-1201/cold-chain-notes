@@ -166,7 +166,7 @@ function PracticeDialog({ id, onClose }: { id: string; onClose: () => void }) {
   return (
     // 畫在畫布的覆蓋層（#canvas-overlay）：跟著畫布等比例縮放，不受卡片動畫的 transform 影響
     <div data-no-swipe className="pointer-events-auto absolute inset-0 z-50 flex items-center justify-center bg-ink/25" onClick={onClose}>
-      <div role="dialog" aria-modal="true" aria-label="學完馬上練" onClick={(e) => e.stopPropagation()} className="w-[1000px] rounded-[22px] border border-line bg-paper p-10 shadow-[0_24px_64px_-24px_rgba(15,36,64,0.45)]">
+      <div role="dialog" aria-modal="true" aria-label="學完馬上練" onClick={(e) => e.stopPropagation()} className="glass glass-strong w-[1000px] rounded-[22px] p-10">
         <div className="mb-6 flex items-center justify-between">
           <p className="flex items-center gap-3 text-[24px] font-bold text-sky-400">
             <PencilLine className="size-7" aria-hidden />

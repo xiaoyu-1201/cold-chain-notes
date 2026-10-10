@@ -83,11 +83,11 @@ function ProgressDialog({ onClose, onSelect, mobile, currentId }: { onClose: () 
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.18 }}
         className={cn(
-          'fixed z-[70] flex flex-col bg-paper text-slate-200 shadow-[0_24px_64px_-24px_rgba(15,36,64,0.45)]',
-          mobile ? 'inset-0' : 'inset-x-0 top-[6vh] mx-auto max-h-[86vh] w-[min(640px,94vw)] overflow-hidden rounded-[18px] border border-line',
+          'glass glass-strong fixed z-[70] flex flex-col text-slate-200',
+          mobile ? 'inset-0' : 'inset-x-0 top-[6vh] mx-auto max-h-[86vh] w-[min(640px,94vw)] overflow-hidden rounded-[18px]',
         )}
       >
-        <header className={cn('flex items-center gap-3 border-b border-line bg-card', mobile ? 'px-4 py-3' : 'px-6 py-4')}>
+        <header className={cn('flex items-center gap-3 border-b border-line', mobile ? 'px-4 py-3' : 'px-6 py-4')}>
           <BookOpenCheck className="size-6 shrink-0 text-emerald-300" aria-hidden />
           <div className="min-w-0 flex-1">
             <h2 className="text-[20px] font-bold text-ink">今天讀什麼</h2>

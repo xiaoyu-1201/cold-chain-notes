@@ -61,6 +61,9 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
       focusRing,
     )
 
+  const floatToggle = (on: boolean) =>
+    cn('flex min-h-11 items-center gap-1.5 rounded-full px-4 py-2 text-[15px] font-semibold transition', on ? 'bg-sky-400 text-navy-950' : 'glass text-slate-100', focusRing)
+
   return createPortal(
     <div
       className="fixed inset-0 z-[70] flex items-center justify-center bg-ink/40 p-3 sm:p-6"
@@ -104,16 +107,16 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
                 <Part3D id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} />
               </Suspense>
               <div className="absolute bottom-3 left-3 flex flex-wrap gap-2">
-                <button type="button" aria-pressed={cut} onClick={() => setCut((c) => !c)} className={toggle(cut)}>
+                <button type="button" aria-pressed={cut} onClick={() => setCut((c) => !c)} className={floatToggle(cut)}>
                   <Layers className="size-4" aria-hidden />
                   {cut ? '合起來' : '剖開看內部'}
                 </button>
-                <button type="button" aria-pressed={spin} onClick={() => setSpin((s) => !s)} className={toggle(spin)}>
+                <button type="button" aria-pressed={spin} onClick={() => setSpin((s) => !s)} className={floatToggle(spin)}>
                   <RotateCw className="size-4" aria-hidden />
                   自動旋轉
                 </button>
               </div>
-              <p className="pointer-events-none absolute right-3 top-3 rounded-lg bg-card/90 px-2.5 py-1 text-[13px] text-slate-300 ring-1 ring-line">拖曳旋轉・滾輪往游標放大・雙擊還原</p>
+              <p className="glass pointer-events-none absolute right-3 top-3 rounded-full px-3 py-1 text-[13px] text-slate-200">拖曳旋轉・滾輪往游標放大・雙擊還原</p>
             </div>
             <aside className="max-h-[42%] overflow-y-auto border-t border-line bg-card p-4 lg:max-h-none lg:w-[380px] lg:border-l lg:border-t-0">
               {control && (

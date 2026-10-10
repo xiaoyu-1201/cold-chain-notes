@@ -236,6 +236,98 @@
     16px 16px;
 }
 
+/*
+ * 液態玻璃（10/10）：只用在「浮在內容上面的那一層」——手機版上下列、電腦版底部導覽列、小視窗底板、3D 上的小按鈕、照片放大的關閉鈕。
+ * 卡片、表格、內文維持實心。顏色一律直接寫 rgba／hex（舊 Chrome 109、離線單檔版不能有 oklch）。
+ *   .glass          基本玻璃（白 72%＋模糊＋飽和＋1px 白邊＋頂端反光＋柔和陰影）
+ *   .glass-strong   加在 .glass 上：字多的視窗底板，白 90%（字對比夠）
+ *   .glass-bar      加在 .glass 上：貼齊螢幕邊的列，白 84%（後面捲過深色照片時，篇名的管路色字也有 4.5:1）；不要圓角、外框、浮起陰影，細線用 border-t／border-b 另外加
+ *   .glass-dark     加在 .glass 上：深色玻璃（照片放大）
+ * 退路：不支援 backdrop-filter、或使用者開「減少透明度」→ 改回實心。
+ * 效能：電腦版畫布是縮放的，3D 一直在重畫；畫布裡 3D 上的小按鈕只用半透明、不模糊（見下方 .deck-hover .viewport-blueprint）。
+ */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-bg-strong: rgba(255, 255, 255, 0.9);
+  --glass-bg-bar: rgba(255, 255, 255, 0.84);
+  --glass-solid: #ffffff;
+  --glass-border: rgba(255, 255, 255, 0.75);
+  --glass-edge: rgba(15, 36, 64, 0.1);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --glass-shadow: 0 10px 30px -12px rgba(15, 36, 64, 0.3), 0 2px 8px -4px rgba(15, 36, 64, 0.12);
+  --glass-sheen: linear-gradient(160deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 40%);
+  --glass-filter: blur(20px) saturate(1.7);
+}
+
+@layer components {
+  .glass {
+    background-color: var(--glass-bg);
+    background-image: var(--glass-sheen);
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      var(--glass-highlight),
+      0 0 0 0.5px var(--glass-edge),
+      var(--glass-shadow);
+    -webkit-backdrop-filter: var(--glass-filter);
+    backdrop-filter: var(--glass-filter);
+  }
+  .glass-strong {
+    --glass-bg: var(--glass-bg-strong);
+  }
+  .glass-bar {
+    --glass-bg: var(--glass-bg-bar);
+    --glass-sheen: none;
+    border-width: 0;
+    box-shadow: var(--glass-highlight);
+  }
+  .glass-dark {
+    --glass-bg: rgba(18, 24, 36, 0.58);
+    --glass-solid: #1b2333;
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-edge: rgba(0, 0, 0, 0.25);
+    --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    --glass-sheen: none;
+  }
+  /* 液態玻璃鏡片（hooks/useLiquidLens）：平常是淡色底＋白色反光邊；按住拖動時淡入更亮的透鏡 */
+  .liquid-lens-rest {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.85),
+      0 0 0 0.5px rgba(15, 36, 64, 0.1),
+      0 1px 3px rgba(15, 36, 64, 0.12);
+  }
+  .liquid-lens {
+    background-color: rgba(255, 255, 255, 0.62);
+    background-image: radial-gradient(120% 90% at 30% 0%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 60%);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.95),
+      inset 0 1px 1px rgba(255, 255, 255, 1),
+      inset 0 -1px 1px rgba(15, 36, 64, 0.06),
+      0 0 0 0.5px rgba(15, 36, 64, 0.14),
+      0 8px 18px -8px rgba(15, 36, 64, 0.4);
+  }
+  /* 電腦版畫布（縮放＋3D 每格重畫）裡的 3D 小按鈕：只半透明、不模糊，免得拖慢 */
+  .deck-hover .viewport-blueprint .glass {
+    --glass-bg: rgba(255, 255, 255, 0.88);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass {
+      background-color: var(--glass-solid);
+      background-image: none;
+    }
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .glass {
+      background-color: var(--glass-solid);
+      background-image: none;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+  }
+}
+
 /* 警示卡頂端的細色條（一條安靜的管路色線） */
 .hazard-red {
   height: 4px;

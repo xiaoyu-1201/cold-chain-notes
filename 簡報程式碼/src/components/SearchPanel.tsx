@@ -86,14 +86,14 @@ export function SearchPanel({ open, onClose, onSelect, mobile }: SearchPanelProp
             aria-label="搜尋"
             data-search-panel
             className={cn(
-              'fixed z-[70] flex flex-col bg-paper shadow-[0_24px_64px_-24px_rgba(15,36,64,0.45)]',
-              mobile ? 'inset-0' : 'inset-x-0 top-[7vh] mx-auto max-h-[82vh] w-[min(760px,94vw)] rounded-[18px] border border-line',
+              'glass glass-strong fixed z-[70] flex flex-col',
+              mobile ? 'inset-0' : 'inset-x-0 top-[7vh] mx-auto max-h-[82vh] w-[min(760px,94vw)] rounded-[18px]',
             )}
             initial={mobile ? { opacity: 0, y: 24 } : { opacity: 0, y: -12, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.18 }}
           >
-            <div className={cn('flex items-center gap-3 border-b border-line bg-card', mobile ? 'rounded-none px-3 py-2.5' : 'rounded-t-[18px] px-5 py-4')}>
+            <div className={cn('flex items-center gap-3 border-b border-line', mobile ? 'rounded-none px-3 py-2.5' : 'rounded-t-[18px] px-5 py-4')}>
               <Search className="size-5 shrink-0 text-sky-400" aria-hidden />
               <input
                 ref={input}

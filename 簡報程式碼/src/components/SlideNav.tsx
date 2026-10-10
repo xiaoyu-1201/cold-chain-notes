@@ -7,6 +7,8 @@ import type { PartId } from '../data/types'
 import { cn, pad } from '../lib/cn'
 import { toneStyles } from '../lib/tone'
 import { Kbd } from './ui/Kbd'
+import { LensMagnify, LensView } from './ui/LiquidLens'
+import { useLensTrack, useLiquidLens } from '../hooks/useLiquidLens'
 
 interface SlideNavProps {
   index: number
@@ -85,7 +87,7 @@ export function SlideNav({
   return (
     <nav
       aria-label="簡報控制"
-      className="flex h-16 shrink-0 items-center gap-4 border-t border-line bg-paper px-3 sm:px-5"
+      className="glass glass-bar relative z-10 flex h-16 shrink-0 items-center gap-4 border-t border-line px-3 sm:px-5"
     >
       {/* 有「返回」鈕時，左邊三顆只留圖示（文字在說明裡），返回鈕才不會壓到篇章列（10/10 QA：1920 寬重疊 14px） */}
       {/* 篇章列是固定寬，大螢幕時左邊先保留一塊給提示／標題，不然會被篇章列吃光；平板（<1280）按鈕只留圖示 */}
@@ -293,6 +295,7 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
   const { wrap, tip, show, clear } = useHoverTip()
   const { scroller, fade, mask, slide, handlers, measure, scrollable } = useStripScroll()
   const cur = groupOf(index)
+  const curIdx = dotGroups.indexOf(cur)
   const active = useRef<HTMLButtonElement>(null)
   useEffect(() => {
     const el = scroller.current
@@ -300,23 +303,32 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
     if (el && btn && el.scrollWidth > el.clientWidth) el.scrollLeft = btn.offsetLeft - el.clientWidth / 2 + btn.offsetWidth / 2
     measure()
   }, [cur, measure, scroller])
+  // 液態玻璃鏡片：目前這篇；按住鏡片（目前那篇）拖＝移動鏡片、放開跳到那一篇；在別的地方拖＝照舊捲動篇章列
+  const lens = useLiquidLens({ liftScale: 1 })
+  const items = useRef<(HTMLButtonElement | null)[]>([])
+  const track = useLensTrack({ lens, container: scroller, items, count: dotGroups.length, rest: curIdx, canStart: (i) => i === curIdx, onCommit: (i) => onGoTo(dotGroups[i].items[0]) })
   return (
     <div ref={wrap} className="relative hidden min-w-0 lg:block" onMouseLeave={clear}>
       <Arrows fade={fade} slide={slide} label="篇章列" />
       <div
         ref={scroller}
         {...handlers}
+        {...lensHandlers(track, handlers)}
         onScroll={() => (measure(), clear())}
         style={{ maskImage: mask, WebkitMaskImage: mask }}
         className={cn(stripCls, scrollable && 'cursor-grab active:cursor-grabbing')}
       >
-        {dotGroups.map((group) => {
+        <LensView lens={lens} className="inset-y-1" restClassName={toneStyles[parts[cur.part].tone].soft} />
+        {dotGroups.map((group, gi) => {
           const part = parts[group.part]
           const current = group === cur
           return (
             <button
               key={group.part}
-              ref={current ? active : undefined}
+              ref={(el) => {
+                items.current[gi] = el
+                if (current) active.current = el
+              }}
               type="button"
               onClick={() => onGoTo(group.items[0])}
               onMouseDown={keepFocus}
@@ -326,11 +338,13 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
               aria-current={current ? 'true' : undefined}
               className={cn(
                 'relative shrink-0 whitespace-nowrap rounded-full px-[5px] py-1.5 text-[13px] font-semibold leading-tight transition xl:px-2.5 2xl:px-3 2xl:text-[14px]',
-                current ? cn('font-bold', toneStyles[part.tone].soft, toneStyles[part.tone].text) : 'text-slate-400 hover:bg-white/[0.05] hover:text-ink',
+                current ? cn('touch-pan-y font-bold', toneStyles[part.tone].text) : 'text-slate-400 hover:bg-white/[0.05] hover:text-ink',
                 focusRing,
               )}
             >
-              {groupLabel(group.part)}
+              <LensMagnify lens={lens} geom={track.geom} index={gi}>
+                {groupLabel(group.part)}
+              </LensMagnify>
               {/* 這一篇裡有新頁：右上角綠點 */}
               {group.items.some((i) => isNew(slides[i].added)) && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-emerald-400" />}
             </button>
@@ -350,7 +364,12 @@ function PageStrip({ index, onGoTo }: { index: number; onGoTo: (index: number) =
   const { wrap, tip, show, clear } = useHoverTip()
   const { scroller, mask, handlers, measure, scrollable } = useStripScroll()
   const cur = groupOf(index)
+  const curIdx = cur.items.indexOf(index)
   const active = useRef<HTMLButtonElement>(null)
+  // 液態玻璃鏡片：目前這頁；按住鏡片拖＝移動鏡片、放開跳到那一頁；在別的地方拖＝照舊捲動
+  const lens = useLiquidLens({ liftScale: 1 })
+  const items = useRef<(HTMLButtonElement | null)[]>([])
+  const track = useLensTrack({ lens, container: scroller, items, count: cur.items.length, rest: curIdx, canStart: (k) => k === curIdx, onCommit: (k) => onGoTo(cur.items[k]) })
   useEffect(() => {
     const el = scroller.current
     const btn = active.current
@@ -365,11 +384,13 @@ function PageStrip({ index, onGoTo }: { index: number; onGoTo: (index: number) =
       <div
         ref={scroller}
         {...handlers}
+        {...lensHandlers(track, handlers)}
         onScroll={() => (measure(), clear())}
         style={{ maskImage: mask, WebkitMaskImage: mask }}
         aria-label={`${parts[cur.part].short}的頁碼`}
         className={cn(stripCls, 'w-[204px] xl:w-[232px]', scrollable && 'cursor-grab active:cursor-grabbing')}
       >
+        <LensView lens={lens} className="inset-y-1" restClassName="bg-sky-950" />
         {/* mx-auto：不滿 7 顆時置中；超過時 auto margin 變 0，左邊不會被切掉 */}
         <div className="mx-auto flex shrink-0 items-center gap-1">
           {cur.items.map((i, k) => {
@@ -377,7 +398,10 @@ function PageStrip({ index, onGoTo }: { index: number; onGoTo: (index: number) =
             return (
               <button
                 key={slides[i].id}
-                ref={on ? active : undefined}
+                ref={(el) => {
+                  items.current[k] = el
+                  if (on) active.current = el
+                }}
                 type="button"
                 aria-label={`第 ${i + 1} 頁：${slides[i].title}`}
                 aria-current={on ? 'page' : undefined}
@@ -388,7 +412,7 @@ function PageStrip({ index, onGoTo }: { index: number; onGoTo: (index: number) =
                 className={cn(
                   // after:：看不見的外圈，平板手指點得到（觸控範圍 36px）
                   'relative flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-bold transition after:absolute after:-inset-1.5 after:content-[""]',
-                  on ? 'bg-sky-300 text-paper' : 'text-slate-300 hover:bg-white/[0.07] hover:text-ink',
+                  on ? 'touch-pan-y font-black text-sky-200' : 'text-slate-300 hover:bg-white/[0.07] hover:text-ink',
                   // 查閱頁：字淡一點（必讀的才是實心）
                   !on && slides[i].tier === 'ref' && 'text-slate-500',
                   // 這一批新增的頁：綠色外框＋右上角小點（目前頁用綠框就夠）
@@ -396,7 +420,9 @@ function PageStrip({ index, onGoTo }: { index: number; onGoTo: (index: number) =
                   focusRing,
                 )}
               >
-                {k + 1}
+                <LensMagnify lens={lens} geom={track.geom} index={k}>
+                  {k + 1}
+                </LensMagnify>
                 {isNew(slides[i].added) && !on && <span aria-hidden className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-emerald-400" />}
               </button>
             )
@@ -407,6 +433,23 @@ function PageStrip({ index, onGoTo }: { index: number; onGoTo: (index: number) =
     </div>
   )
 }
+/** 篇章列／頁碼條：按在鏡片（目前那一項）上＝移動鏡片，其他地方照舊（滑鼠按住拖＝捲動） */
+function lensHandlers(track: ReturnType<typeof useLensTrack>, strip: ReturnType<typeof useStripScroll>['handlers']) {
+  return {
+    onPointerDown: (e: ReactPointerEvent<HTMLDivElement>) => {
+      if (!track.onPointerDown(e)) strip.onPointerDown(e)
+    },
+    onPointerMove: (e: ReactPointerEvent<HTMLDivElement>) => {
+      if (!track.onPointerMove(e)) strip.onPointerMove(e)
+    },
+    onPointerUp: (e: ReactPointerEvent<HTMLDivElement>) => {
+      track.onPointerUp(e)
+      strip.onPointerUp()
+    },
+    onPointerCancel: track.onPointerCancel,
+  }
+}
+
 /** 篇章列的浮出說明 */
 function Tip({ i, x }: { i: number; x: number }) {
   const s = slides[i]

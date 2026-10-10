@@ -923,12 +923,13 @@ function CycleLessonMobile() {
                 {note.field}
               </p>
             )}
-            <div className="mt-3 flex flex-wrap gap-2">
+            {/* 2 欄排、每顆撐滿：單數時最後一顆佔整排，不會有一顆半寬自己掉到下一行（10/10 QA） */}
+            <div className="mt-3 flex flex-wrap gap-2 [&>*]:grow [&>*]:basis-[calc(50%-4px)]">
               {part3DFor(note.id) && (
                 <button
                   type="button"
                   onClick={() => setViewId(note.id)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-sky-500/50 bg-sky-500/15 px-3 py-1.5 text-[15px] font-semibold text-sky-100 active:bg-sky-500/25"
+                  className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-sky-500/50 bg-sky-500/15 px-3 py-1.5 text-[15px] font-semibold text-sky-100 active:bg-sky-500/25"
                 >
                   <Box className="size-4" aria-hidden />
                   3D 看構造
@@ -944,15 +945,15 @@ function CycleLessonMobile() {
       {(['part', 'pipe', 'small'] as const).map((kind) => (
         <div key={kind}>
           <p className="mb-1.5 text-[14px] font-bold text-slate-400">{KIND_LABEL[kind]}</p>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {CYCLE_ORDER.filter((id) => cycleNotes[id].kind === kind).map((id) => (
               <button
                 key={id}
                 type="button"
                 onClick={() => pick(id, true)}
                 className={cn(
-                  'rounded-lg border px-3 py-1.5 text-[15px] font-semibold',
-                  selected === id ? toneStyles[cycleNotes[id].tone].chip : 'border-line text-slate-200',
+                  'min-h-11 rounded-lg border px-3 py-1.5 text-[15px] font-semibold',
+                  selected === id ? toneStyles[cycleNotes[id].tone].chip : 'border-line bg-card text-slate-200',
                 )}
               >
                 {cycleNotes[id].title}
@@ -995,12 +996,12 @@ function HotspotsMobile({ block }: { block: HotspotsBlock }) {
                   </p>
                   <p className="mt-1 text-[15px] text-slate-300">{item.func}</p>
                   {(item.audioAt !== undefined || item.audioAt2 !== undefined || item.slide || part3DFor(item.id)) && (
-                    <div className="mt-2 flex flex-wrap gap-2">
+                    <div className="mt-2 flex flex-wrap gap-2 [&>*]:grow [&>*]:basis-[calc(50%-4px)]">
                       {part3DFor(item.id) && (
                         <button
                           type="button"
                           onClick={() => setView({ id: item.id, title: item.name, code: item.code })}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-sky-500/50 bg-sky-500/15 px-3 py-1.5 text-[15px] font-semibold text-sky-100 active:bg-sky-500/25"
+                          className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-sky-500/50 bg-sky-500/15 px-3 py-1.5 text-[15px] font-semibold text-sky-100 active:bg-sky-500/25"
                         >
                           <Box className="size-4" aria-hidden />
                           3D 看構造
@@ -1033,8 +1034,11 @@ function RecordingsMobile({ block }: { block: RecordingsIndexBlock }) {
           <Card key={item.slide} tone={on ? 'emerald' : undefined}>
             <button type="button" onClick={() => setOpen(on ? null : item.slide)} aria-expanded={on} className="flex min-h-11 w-full items-center gap-3 text-left">
               <span className={cn('w-[80px] shrink-0 font-mono text-[14px] font-bold', on ? 'text-emerald-300' : 'text-slate-400')}>{item.code}</span>
-              <span className="min-w-0 flex-1 text-[16px] font-semibold text-white">{rec?.title ?? item.slide}</span>
-              <span className="shrink-0 font-mono text-[13px] text-slate-500">{rec?.duration}</span>
+              {/* 長度放到標題下面（10/10 QA：360 寬時長度那欄 143px，標題被擠成一字一行） */}
+              <span className="min-w-0 flex-1">
+                <span className="block text-[16px] font-semibold text-white">{rec?.title ?? item.slide}</span>
+                {rec?.duration && <span className="block font-mono text-[13px] text-slate-500">{rec.duration}</span>}
+              </span>
             </button>
             {on && rec && (
               <div className="mt-3 space-y-3">

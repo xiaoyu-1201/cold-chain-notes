@@ -19,7 +19,7 @@ import { markSeen, useLearn } from '../lib/learn'
 import { SOURCE_LABEL } from './SlideCard'
 import { BlueprintBackground } from './ui/BlueprintBackground'
 import { LensMagnify, LensView } from './ui/LiquidLens'
-import { lensBindings, useLensTrack, useLiquidLens } from '../hooks/useLiquidLens'
+import { lensBindings, lensDragBusy, useLensTrack, useLiquidLens } from '../hooks/useLiquidLens'
 
 /**
  * 手機版簡報：一頁一張卡（跟電腦版同一份內容，直式單欄排法）。
@@ -110,6 +110,8 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
   const onTouchEnd = (e: TouchEvent) => {
     const start = touchStart.current
     touchStart.current = null
+    // 剛剛在拖液態玻璃鏡片（一排按鈕）：不是要換頁
+    if (lensDragBusy()) return
     if (!start || start.multi || (window.visualViewport?.scale ?? 1) > 1.05) return
     const t = e.changedTouches[0]
     const dx = t.clientX - start.x
@@ -129,7 +131,7 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
   return (
     <MotionConfig reducedMotion="user">
       <DeckContext.Provider value={api}>
-        <div className="fixed inset-0 bg-paper text-[17px] leading-[1.7] text-slate-200">
+        <div className="reader-mode fixed inset-0 bg-paper text-[17px] leading-[1.7] text-slate-200">
           <BlueprintBackground fixed className="-z-10" />
 
           {/* 中：這一頁（整個畫面都能捲，內容會從上下的玻璃列後面透出來；左右滑換頁） */}

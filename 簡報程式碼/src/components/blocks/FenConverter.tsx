@@ -287,7 +287,7 @@ export function FenConverter({ mobile = false }: { mobile?: boolean }) {
                   </td>
                 )}
                 <td className={cn('text-left font-black', mobile ? 'py-2.5 text-[16px]' : 'py-1 text-[22px]', on ? 'text-sky-300' : 'text-ink')}>
-                  <button type="button" onClick={() => setInput(fenName(f))} className={cn('rounded', focusRing)}>
+                  <button type="button" onClick={() => setInput(fenName(f))} className={cn('rounded', mobile && "relative after:absolute after:-inset-x-3 after:-inset-y-2.5 after:content-['']", focusRing)}>
                     {fenName(f)}
                   </button>
                   {!ACR.includes(f) && <span className={cn('ml-2 rounded-md bg-white/[0.08] px-1.5 align-middle font-semibold text-slate-400', mobile ? 'text-[13px]' : 'text-[16px]')}>8 分・少見</span>}

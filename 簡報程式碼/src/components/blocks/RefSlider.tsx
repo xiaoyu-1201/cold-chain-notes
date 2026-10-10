@@ -282,11 +282,12 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
   const setPressure = (v: number) => setTempNow(clampT(temperatureAt(id, v / UNIT_PER_BAR[unit] + (abs ? 0 : ATM), curve)))
 
   const s = mobile
-    ? { small: 'text-[13px]', value: 'text-[24px]', chip: 'px-3 py-1.5 text-[14px]', card: 'p-3' }
+    ? { small: 'text-[14px]', value: 'text-[24px]', chip: 'min-h-11 px-1 py-1.5 text-[14px]', card: 'p-3' }
     : { small: 'text-[17px]', value: 'text-[40px]', chip: 'px-4 py-1.5 text-[19px]', card: 'px-5 py-3' }
 
   const valueCard = (field: 'p' | 't', value: number, unitText: string, tone: string) => (
-    <label className={cn('block rounded-2xl', s.card, tone)}>
+    <label className={cn('rounded-2xl', mobile ? 'flex h-full flex-col justify-center' : 'block', s.card, tone)}>
+      {mobile && <span className="mb-1 block text-[13px] font-semibold text-slate-300">{field === 'p' ? '壓力' : '飽和溫度'}</span>}
       <input
         type="number"
         inputMode="decimal"
@@ -321,96 +322,141 @@ export function RefSlider({ mobile = false }: { mobile?: boolean }) {
     ['鋼瓶／標籤顏色', info.colorName ?? '—', info.color ?? undefined],
   ]
 
-  // 錶壓／絕對壓力、單位、露點／泡點：手機版放在最上面整排（右欄只有 100 多 px，放不下，10/10 QA：「公斤」被擠成兩行、360 寬超出卡片）
-  const toggles = (
-    <div className={cn('flex flex-wrap items-center', mobile ? 'gap-2' : 'gap-3')}>
-      <Segmented size={mobile ? 'sm' : 'md'} value={abs ? 'abs' : 'gauge'} onChange={(v) => setAbs(v === 'abs')} options={[{ value: 'gauge', label: '錶壓' }, { value: 'abs', label: '絕對壓力' }]} />
-      <Segmented size={mobile ? 'sm' : 'md'} value={unit} onChange={setUnit} options={[{ value: 'psig', label: 'psi' }, { value: 'kg', label: '公斤' }, { value: 'bar', label: 'bar' }]} />
-      {blend && <Segmented size={mobile ? 'sm' : 'md'} value={curve} onChange={setCurve} options={[{ value: 'dew', label: '露點' }, { value: 'bubble', label: '泡點' }]} />}
+  // 錶壓／絕對壓力、單位：手機版放最上面、兩組平均撐滿一排（10/10 QA：右欄只有 100 多 px，「公斤」被擠成兩行）
+  const toggles = mobile ? (
+    <div className="grid grid-cols-1 gap-2 min-[340px]:grid-cols-2">
+      <Segmented size="sm" fill value={abs ? 'abs' : 'gauge'} onChange={(v) => setAbs(v === 'abs')} options={[{ value: 'gauge', label: '錶壓' }, { value: 'abs', label: '絕對壓力' }]} />
+      <Segmented size="sm" fill value={unit} onChange={setUnit} options={[{ value: 'psig', label: 'psi' }, { value: 'kg', label: '公斤' }, { value: 'bar', label: 'bar' }]} />
+      {blend && (
+        <div className="min-[340px]:col-span-2">
+          <Segmented size="sm" value={curve} onChange={setCurve} options={[{ value: 'dew', label: '露點' }, { value: 'bubble', label: '泡點' }]} />
+        </div>
+      )}
+    </div>
+  ) : (
+    <div className="flex flex-wrap items-center gap-3">
+      <Segmented size="md" value={abs ? 'abs' : 'gauge'} onChange={(v) => setAbs(v === 'abs')} options={[{ value: 'gauge', label: '錶壓' }, { value: 'abs', label: '絕對壓力' }]} />
+      <Segmented size="md" value={unit} onChange={setUnit} options={[{ value: 'psig', label: 'psi' }, { value: 'kg', label: '公斤' }, { value: 'bar', label: 'bar' }]} />
+      {blend && <Segmented size="md" value={curve} onChange={setCurve} options={[{ value: 'dew', label: '露點' }, { value: 'bubble', label: '泡點' }]} />}
     </div>
   )
 
-  return (
-    <div className={cn('grid min-h-0', mobile ? 'grid-cols-[150px_minmax(0,1fr)] gap-3' : 'h-full grid-cols-[280px_minmax(0,1fr)] gap-6')}>
-      {mobile && <div className="col-span-2">{toggles}</div>}
-      <div className={mobile ? 'h-[460px]' : 'min-h-0'}>
-        <Ruler id={id} curve={curve} unit={unit} abs={abs} temp={t} onTemp={setTempNow} onJump={jumpTo} mobile={mobile} />
+  const refChips = (
+    <GlassButtonGroup className={mobile ? 'grid grid-cols-4 gap-1.5' : 'flex flex-wrap gap-1.5'} label="選冷媒">
+      {IDS.map((r) => (
+        <button
+          key={r}
+          type="button"
+          aria-pressed={id === r}
+          onClick={() => setId(r)}
+          className={cn('whitespace-nowrap rounded-full font-bold transition', s.chip, id === r ? 'bg-sky-400 text-paper' : 'border border-line bg-card text-slate-200 hover:border-sky-500/50', focusRing)}
+        >
+          {r}
+        </button>
+      ))}
+    </GlassButtonGroup>
+  )
+  const useText = <p className={cn('text-slate-400', s.small)}>{REFRIGERANTS[id].use}</p>
+  const vacuum = !abs && pShown < 0 && <p className={cn('text-amber-200', s.small)}>錶壓是負的＝真空（低於 1 大氣壓）</p>
+  const pCard = valueCard('p', pShown, unitLabel(unit, abs), 'border border-red-500/35 bg-red-950')
+  const tCard = valueCard('t', t, blend ? `°C（${curve === 'dew' ? '露點' : '泡點'}）` : '°C', 'border border-sky-500/35 bg-sky-950')
+  const quick = (
+    <GlassButtonGroup className={cn('flex flex-wrap items-center', mobile ? 'gap-1.5' : 'gap-2')} label="跳到常用溫度">
+      <span className={cn('font-semibold text-slate-400', s.small)}>跳到（°C）</span>
+      {QUICK.map((q) => (
+        <button
+          key={q.t}
+          type="button"
+          onClick={() => jumpTo(q.t)}
+          aria-pressed={Math.abs(t - q.t) < 0.005}
+          className={cn(
+            // 每顆一樣寬（「0」不會比較窄）；手機至少 44px
+            'rounded-full font-semibold tabular-nums transition',
+            mobile ? 'min-h-11 min-w-12 px-2.5 py-1 text-[14px]' : 'min-w-[60px] px-3.5 py-1 text-[17px]',
+            Math.abs(t - q.t) < 0.005 ? 'border border-sky-500 bg-sky-950 text-sky-200' : 'border border-line bg-card text-slate-200 hover:border-sky-500/50',
+            focusRing,
+          )}
+        >
+          {q.label}
+        </button>
+      ))}
+    </GlassButtonGroup>
+  )
+  const infoTable = (
+    <dl className={cn('rounded-2xl border border-line bg-card', mobile ? 'p-3 text-[14px]' : 'px-5 py-3 text-[17px]')}>
+      {infoRows.map(([k, v, color]) => (
+        <div key={k} className="flex items-center justify-between gap-3 py-0.5">
+          <dt className="text-slate-300">{k}</dt>
+          <dd className="flex shrink-0 items-center gap-2 whitespace-nowrap font-semibold tabular-nums text-white">
+            {v}
+            {color && <span className="size-4 rounded-full" style={{ background: color }} aria-hidden />}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  )
+  const footer = (
+    <div className={cn('flex flex-wrap items-center gap-3', !mobile && 'mt-auto')}>
+      <button
+        type="button"
+        onClick={() => {
+          setId('R22')
+          setUnit('psig')
+          setAbs(false)
+          setTempNow(temperatureAt('R22', 210 / PSI_PER_BAR + ATM))
+        }}
+        className={cn('flex items-center gap-1.5 rounded-full border border-sky-500/40 bg-sky-950 font-semibold text-sky-200 transition hover:border-sky-500', mobile ? 'min-h-11 px-4 py-1.5 text-[14px]' : s.chip, focusRing)}
+      >
+        <RotateCcw className="size-4" aria-hidden />
+        預設
+      </button>
+      <p className={cn('min-w-0 text-slate-500', mobile ? 'basis-full text-[13px]' : 'flex-1 text-[16px]')}>
+        CoolProp 計算（與 NIST 交叉比對）；混合冷媒預設露點，跟 Ref Tools 相同。R438A、R408A 請用 App。
+      </p>
+    </div>
+  )
+
+  // 手機：上面切換鈕 → 左尺、右兩張數值卡 → 下面整寬：選冷媒、說明、跳到、資訊表、預設（10/10 QA：右欄 163px 放不下其他東西）
+  if (mobile) {
+    return (
+      <div className="flex flex-col gap-3">
+        {toggles}
+        <div className="grid grid-cols-[150px_minmax(0,1fr)] gap-3">
+          <div className="h-[460px]">
+            <Ruler id={id} curve={curve} unit={unit} abs={abs} temp={t} onTemp={setTempNow} onJump={jumpTo} mobile />
+          </div>
+          <div className="grid min-w-0 grid-rows-2 gap-3">
+            {pCard}
+            {tCard}
+          </div>
+        </div>
+        {vacuum}
+        {refChips}
+        {useText}
+        {quick}
+        {infoTable}
+        {footer}
       </div>
+    )
+  }
 
-      <div className={cn('flex min-w-0 flex-col', mobile ? 'gap-2.5' : 'gap-3.5')}>
-        <GlassButtonGroup className="flex flex-wrap gap-1.5" label="選冷媒">
-          {IDS.map((r) => (
-            <button
-              key={r}
-              type="button"
-              aria-pressed={id === r}
-              onClick={() => setId(r)}
-              className={cn('rounded-full font-bold transition', s.chip, id === r ? 'bg-sky-400 text-paper' : 'border border-line bg-card text-slate-200 hover:border-sky-500/50', focusRing)}
-            >
-              {r}
-            </button>
-          ))}
-        </GlassButtonGroup>
-        <p className={cn('text-slate-400', s.small)}>{REFRIGERANTS[id].use}</p>
-
-        {!mobile && toggles}
-
-        <div className={cn('grid', mobile ? 'grid-cols-1 gap-2' : 'grid-cols-2 gap-3')}>
-          {valueCard('p', pShown, unitLabel(unit, abs), 'border border-red-500/35 bg-red-950')}
-          {valueCard('t', t, blend ? `°C（${curve === 'dew' ? '露點' : '泡點'}）` : '°C', 'border border-sky-500/35 bg-sky-950')}
+  return (
+    <div className="grid h-full min-h-0 grid-cols-[280px_minmax(0,1fr)] gap-6">
+      <div className="min-h-0">
+        <Ruler id={id} curve={curve} unit={unit} abs={abs} temp={t} onTemp={setTempNow} onJump={jumpTo} mobile={false} />
+      </div>
+      <div className="flex min-w-0 flex-col gap-3.5">
+        {refChips}
+        {useText}
+        {toggles}
+        <div className="grid grid-cols-2 gap-3">
+          {pCard}
+          {tCard}
         </div>
-        {!abs && pShown < 0 && <p className={cn('text-amber-200', s.small)}>錶壓是負的＝真空（低於 1 大氣壓）</p>}
-
-        <GlassButtonGroup className={cn('flex flex-wrap items-center', mobile ? 'gap-1.5' : 'gap-2')} label="跳到常用溫度">
-          <span className={cn('font-semibold text-slate-400', s.small)}>跳到（°C）</span>
-          {QUICK.map((q) => (
-            <button
-              key={q.t}
-              type="button"
-              onClick={() => jumpTo(q.t)}
-              aria-pressed={Math.abs(t - q.t) < 0.005}
-              className={cn(
-                'rounded-full font-semibold tabular-nums transition',
-                mobile ? 'px-2.5 py-1 text-[13px]' : 'px-3.5 py-1 text-[17px]',
-                Math.abs(t - q.t) < 0.005 ? 'border border-sky-500 bg-sky-950 text-sky-200' : 'border border-line bg-card text-slate-200 hover:border-sky-500/50',
-                focusRing,
-              )}
-            >
-              {q.label}
-            </button>
-          ))}
-        </GlassButtonGroup>
-
-        <dl className={cn('rounded-2xl border border-line bg-card', mobile ? 'p-3 text-[13px]' : 'px-5 py-3 text-[17px]')}>
-          {infoRows.map(([k, v, color]) => (
-            <div key={k} className="flex items-center justify-between gap-3 py-0.5">
-              <dt className="text-slate-300">{k}</dt>
-              <dd className="flex items-center gap-2 font-semibold tabular-nums text-white">
-                {v}
-                {color && <span className="size-4 rounded-full" style={{ background: color }} aria-hidden />}
-              </dd>
-            </div>
-          ))}
-        </dl>
-
-        <div className={cn('flex flex-wrap items-center gap-3', !mobile && 'mt-auto')}>
-          <button
-            type="button"
-            onClick={() => {
-              setId('R22')
-              setUnit('psig')
-              setAbs(false)
-              setTempNow(temperatureAt('R22', 210 / PSI_PER_BAR + ATM))
-            }}
-            className={cn('flex items-center gap-1.5 rounded-full border border-sky-500/40 bg-sky-950 font-semibold text-sky-200 transition hover:border-sky-500', s.chip, focusRing)}
-          >
-            <RotateCcw className="size-4" aria-hidden />
-            預設
-          </button>
-          <p className={cn('min-w-0 flex-1 text-slate-500', mobile ? 'text-[13px]' : 'text-[16px]')}>
-            CoolProp 計算（與 NIST 交叉比對）；混合冷媒預設露點，跟 Ref Tools 相同。R438A、R408A 請用 App。
-          </p>
-        </div>
+        {vacuum}
+        {quick}
+        {infoTable}
+        {footer}
       </div>
     </div>
   )

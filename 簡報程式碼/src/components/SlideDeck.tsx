@@ -16,6 +16,7 @@ import { ProgressPanel } from './ProgressPanel'
 import { markSeen } from '../lib/learn'
 import { SlideCard } from './SlideCard'
 import { SlideNav } from './SlideNav'
+import { lensDragBusy } from '../hooks/useLiquidLens'
 import { BlueprintBackground } from './ui/BlueprintBackground'
 
 /** 排版檢查模式（網址加 ?audit）：不播換頁動畫，視窗在背景時量測也準 */
@@ -166,6 +167,8 @@ export function SlideDeck() {
   const onTouchEnd = (e: TouchEvent) => {
     const start = touchStart.current
     touchStart.current = null
+    // 剛剛在拖液態玻璃鏡片（一排按鈕）：不是要換頁
+    if (lensDragBusy()) return
     if (!start || start.multi || (window.visualViewport?.scale ?? 1) > 1.05) return
     const t = e.changedTouches[0]
     const dx = t.clientX - start.x

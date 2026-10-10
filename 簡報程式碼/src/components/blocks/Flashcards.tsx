@@ -261,7 +261,8 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
               {cards.filter((c) => c.group === g && status[c.term] === 'known').length}/{cards.filter((c) => c.group === g).length}
             </span>
           </p>
-          <GlassButtonGroup className="flex flex-wrap gap-1.5" label={g}>
+          {/* 名詞清單不包 GlassButtonGroup：70 顆幾乎整個螢幕，手機左右滑要能換頁（10/10 code review） */}
+          <div className="flex flex-wrap gap-1.5">
             {cards.map((c, i) =>
               c.group !== g ? null : (
                 <button
@@ -281,7 +282,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
                 </button>
               ),
             )}
-          </GlassButtonGroup>
+          </div>
         </div>
       ))}
       <p className={cn('text-slate-500', size.small, !mobile && 'mt-auto')}>綠色＝會了・橘色＝還不熟；記在這台電腦，下次打開還在。</p>

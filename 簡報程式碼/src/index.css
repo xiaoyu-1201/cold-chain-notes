@@ -188,6 +188,11 @@
   }
 
   body {
+    /*
+     * 其他地方（div 裡的說明、表格、按鈕字）也避免孤字（10/10 QA：「冷⏎媒。」「減⏎少。」）。
+     * 只設 text-wrap-style（會繼承），不動 text-wrap-mode：不會讓原本 nowrap 的地方變成會斷行。
+     */
+    text-wrap-style: pretty;
     margin: 0;
     overflow: hidden;
     background-color: var(--color-desk);
@@ -359,13 +364,18 @@
 :root {
   --gbtn-sheen: linear-gradient(165deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.12) 45%, rgba(255, 255, 255, 0) 62%);
   --gbtn-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* 按鈕原本的 ring-*（選中、新頁的綠框）要留著：玻璃的陰影後面接上 Tailwind 的 ring */
+  --gbtn-ring: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000);
 }
-:is(.glass-btn, .glass-btn-primary, .glass-btn-green, .glass-btn-tint),
-button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass]),
-button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600'], [class~='bg-emerald-400']):not([class~='w-full'], [data-no-glass]),
-button:is([class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl'], [class~='rounded-[14px]']):not([class~='w-full'], [data-no-glass]) {
-  /* 上下滑照常捲頁面；左右拖交給果凍效果 */
-  touch-action: pan-y;
+/*
+ * 選中狀態靠「邊框顏色」或 ring 表示的按鈕（照片熱點紅圈、地圖、步驟圓點）不能被蓋掉（10/10 code review）：
+ *   - 只有原本是 border-line 的才把邊框換成白色半透明；其他顏色、粗細的邊框都照原本。
+ *   - 陰影都接上 var(--gbtn-ring)。
+ *   - 不想要玻璃的加 data-no-glass。
+ */
+:is(.glass-btn, .glass-btn-primary, .glass-btn-green, .glass-btn-tint, button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass]), button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600']):not([class~='w-full'], [data-no-glass]), button[class~='bg-emerald-400']:not([class~='w-full'], [data-no-glass]), button:is([class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl'], [class~='rounded-[14px]']):not([class~='w-full'], [data-no-glass]), button:is([class~='bg-emerald-500/15'], [class~='bg-amber-500/15'], [class~='bg-red-500/15']):not([class~='w-full'], [data-no-glass])) {
+  /* 上下滑照常捲頁面、兩指照常放大；左右拖交給果凍效果 */
+  touch-action: pan-y pinch-zoom;
   transition:
     scale 0.42s var(--gbtn-ease),
     box-shadow 0.2s ease,
@@ -377,12 +387,15 @@ button:is([class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'
 :is(.glass-btn, button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass])) {
   background-color: rgba(233, 239, 246, 0.6);
   background-image: var(--gbtn-sheen);
-  border: 1px solid rgba(255, 255, 255, 0.8);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.9),
     inset 0 -1px 0 rgba(15, 36, 64, 0.05),
     0 0 0 1px rgba(15, 36, 64, 0.13),
-    0 2px 6px -2px rgba(15, 36, 64, 0.16);
+    0 2px 6px -2px rgba(15, 36, 64, 0.16),
+    var(--gbtn-ring);
+}
+:is(.glass-btn, button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass]))[class~='border-line'] {
+  border-color: rgba(255, 255, 255, 0.8);
 }
 @media (hover: hover) {
   :is(.glass-btn, button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass])):not(:disabled):hover {
@@ -390,91 +403,124 @@ button:is([class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'
       inset 0 1px 0 rgba(255, 255, 255, 0.95),
       inset 0 -1px 0 rgba(15, 36, 64, 0.05),
       0 0 0 1px rgba(46, 123, 200, 0.55),
-      0 3px 8px -3px rgba(15, 36, 64, 0.2);
+      0 3px 8px -3px rgba(15, 36, 64, 0.2),
+      var(--gbtn-ring);
   }
 }
-/* 主要（藍） */
+/* 主要（藍）：頂端反光只到 22%、而且很淡；字所在的範圍（按鈕高度 10% 以下）對比 ≥4.9 */
 :is(.glass-btn-primary, button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600']):not([class~='w-full'], [data-no-glass])) {
   background-color: #2068ae;
   background-image:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 42%),
-    linear-gradient(180deg, rgba(34, 104, 174, 0.95), rgba(25, 86, 148, 0.96));
-  border: 1px solid rgba(255, 255, 255, 0.35);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 22%),
+    linear-gradient(180deg, rgba(30, 96, 164, 0.96), rgba(25, 86, 148, 0.97));
+  border-color: rgba(255, 255, 255, 0.35);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.6),
     inset 0 0 0 1px rgba(255, 255, 255, 0.1),
     0 0 0 1px rgba(16, 58, 104, 0.3),
-    0 4px 12px -4px rgba(31, 100, 168, 0.5);
+    0 4px 12px -4px rgba(31, 100, 168, 0.5),
+    var(--gbtn-ring);
   color: #f6f9fc;
 }
 /* 主要（綠：學習地圖的連結鈕） */
 :is(.glass-btn-green, button[class~='bg-emerald-400']:not([class~='w-full'], [data-no-glass])) {
-  background-color: #0e7a55;
+  background-color: #0b6e4c;
   background-image:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 42%),
-    linear-gradient(180deg, rgba(14, 122, 85, 0.95), rgba(8, 96, 66, 0.97));
-  border: 1px solid rgba(255, 255, 255, 0.35);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 22%),
+    linear-gradient(180deg, rgba(12, 108, 75, 0.96), rgba(8, 96, 66, 0.97));
+  border-color: rgba(255, 255, 255, 0.35);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.55),
     0 0 0 1px rgba(5, 61, 43, 0.3),
-    0 4px 12px -4px rgba(14, 122, 85, 0.45);
+    0 4px 12px -4px rgba(14, 122, 85, 0.45),
+    var(--gbtn-ring);
   color: #f6f9fc;
 }
-/* 狀態晶片：保留原本的淡色底和管路色細框，只加玻璃反光 */
+/* 狀態晶片：保留原本的淡色底和管路色邊框，只加玻璃反光 */
 :is(.glass-btn-tint, button:is([class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl'], [class~='rounded-[14px]']):not([class~='w-full'], [data-no-glass])) {
   background-image: var(--gbtn-sheen);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.85),
     inset 0 -1px 0 rgba(15, 36, 64, 0.05),
-    0 2px 6px -2px rgba(15, 36, 64, 0.14);
+    0 2px 6px -2px rgba(15, 36, 64, 0.14),
+    var(--gbtn-ring);
 }
-/* 翻卡「會了／還不熟」這類淡管路色晶片：淡色直接寫 rgba（Tailwind 的 /15 在舊 Chrome 會退回實心亮色），加玻璃反光 */
-button:is([class~='bg-emerald-500/15'], [class~='bg-amber-500/15'], [class~='bg-red-500/15']) {
+/* 翻卡「會了／還不熟」這類淡管路色晶片：淡色直接寫 rgba（Tailwind 的 /15 在舊 Chrome 會退回實心亮色），加玻璃反光；邊框照原本 */
+button:is([class~='bg-emerald-500/15'], [class~='bg-amber-500/15'], [class~='bg-red-500/15']):not([class~='w-full'], [data-no-glass]) {
   background-image: var(--gbtn-sheen);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  --gbtn-edge: rgba(15, 36, 64, 0.1);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    0 0 0 1px rgba(15, 36, 64, 0.1),
-    0 2px 6px -2px rgba(15, 36, 64, 0.14);
-  touch-action: pan-y;
-  transition: scale 0.42s var(--gbtn-ease), box-shadow 0.2s ease, background-color 0.2s ease;
+    0 0 0 1px var(--gbtn-edge),
+    0 2px 6px -2px rgba(15, 36, 64, 0.14),
+    var(--gbtn-ring);
 }
-button[class~='bg-emerald-500/15'] {
+button[class~='bg-emerald-500/15']:not([class~='w-full'], [data-no-glass]) {
   background-color: rgba(21, 160, 110, 0.15);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    0 0 0 1px rgba(21, 160, 110, 0.35),
-    0 2px 6px -2px rgba(15, 36, 64, 0.14);
+  --gbtn-edge: rgba(21, 160, 110, 0.35);
 }
-button[class~='bg-amber-500/15'] {
+button[class~='bg-amber-500/15']:not([class~='w-full'], [data-no-glass]) {
   background-color: rgba(224, 160, 27, 0.15);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    0 0 0 1px rgba(224, 160, 27, 0.4),
-    0 2px 6px -2px rgba(15, 36, 64, 0.14);
+  --gbtn-edge: rgba(224, 160, 27, 0.4);
 }
-button[class~='bg-red-500/15'] {
+button[class~='bg-red-500/15']:not([class~='w-full'], [data-no-glass]) {
   background-color: rgba(210, 63, 46, 0.14);
+  --gbtn-edge: rgba(210, 63, 46, 0.35);
+}
+/* 選中的深色晶片（bg-slate-100＝墨色底、淺色字：圖例、名詞清單目前那張）：深色玻璃 */
+button[class~='bg-slate-100']:not([class~='w-full'], [data-no-glass]) {
+  background-color: #13294a;
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 28%),
+    linear-gradient(180deg, rgba(25, 50, 86, 0.96), rgba(15, 36, 64, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 0 0 1px rgba(15, 36, 64, 0.35),
+    0 3px 10px -4px rgba(15, 36, 64, 0.45),
+    var(--gbtn-ring);
+  color: #f6f9fc;
+  touch-action: pan-y pinch-zoom;
+  transition:
+    scale 0.42s var(--gbtn-ease),
+    box-shadow 0.2s ease;
+}
+button[class~='bg-slate-100']:not([class~='w-full'], [data-no-glass], :disabled):active {
+  scale: 1.035;
+  transition-duration: 0.12s;
+}
+.reader-mode button:is([class~='bg-slate-100'], [class~='bg-sky-500/15']):not([class~='w-full'], [data-no-glass], [class~='absolute'], [class~='fixed']) {
+  position: relative;
+}
+.reader-mode button:is([class~='bg-slate-100'], [class~='bg-sky-500/15']):not([class~='w-full'], [data-no-glass])::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(44px, 100% + 4px);
+  height: max(44px, 100%);
+  translate: -50% -50%;
+}
+/* 手機「3D 看構造」這類淡藍晶片（原本的藍框照留） */
+button[class~='bg-sky-500/15']:not([class~='w-full'], [data-no-glass]) {
+  background-color: rgba(46, 123, 200, 0.12);
+  background-image: var(--gbtn-sheen);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    0 0 0 1px rgba(210, 63, 46, 0.35),
-    0 2px 6px -2px rgba(15, 36, 64, 0.14);
+    0 2px 6px -2px rgba(15, 36, 64, 0.14),
+    var(--gbtn-ring);
+  touch-action: pan-y pinch-zoom;
+  transition:
+    scale 0.42s var(--gbtn-ease),
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
 }
-button:is([class~='bg-emerald-500/15'], [class~='bg-amber-500/15'], [class~='bg-red-500/15']):not(:disabled):active {
+button[class~='bg-sky-500/15']:not([class~='w-full'], [data-no-glass], :disabled):active {
   scale: 1.035;
   transition-duration: 0.12s;
 }
 
 /* 按下：放大一點＋高光變亮（彈簧回彈靠 transition 的曲線）。不用 CSS 巢狀（Chrome 109 不支援） */
-:is(
-    .glass-btn,
-    .glass-btn-primary,
-    .glass-btn-green,
-    .glass-btn-tint,
-    button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass]),
-    button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600'], [class~='bg-emerald-400']):not([class~='w-full'], [data-no-glass]),
-    button:is([class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl'], [class~='rounded-[14px]']):not([class~='w-full'], [data-no-glass])
-  ):not(:disabled):active {
+:is(.glass-btn, .glass-btn-primary, .glass-btn-green, .glass-btn-tint, button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass]), button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600']):not([class~='w-full'], [data-no-glass]), button[class~='bg-emerald-400']:not([class~='w-full'], [data-no-glass]), button:is([class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl'], [class~='rounded-[14px]']):not([class~='w-full'], [data-no-glass]), button:is([class~='bg-emerald-500/15'], [class~='bg-amber-500/15'], [class~='bg-red-500/15']):not([class~='w-full'], [data-no-glass])):not(:disabled):active {
   scale: 1.035;
   transition-duration: 0.12s;
   filter: brightness(1.04);
@@ -484,32 +530,46 @@ button:is([class~='bg-emerald-500/15'], [class~='bg-amber-500/15'], [class~='bg-
     scale: none !important;
   }
 }
-/* 退路：減少透明度、不支援玻璃 → 實心、邊框清楚 */
+/* 退路：減少透明度、不支援玻璃 → 實心、邊框清楚（ring 照留） */
 @media (prefers-reduced-transparency: reduce) {
   :is(.glass-btn, button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass])) {
     background-color: #ffffff;
     background-image: none;
-    border-color: #c9d6e5;
-    box-shadow: none;
+    box-shadow: 0 0 0 1px #c9d6e5, var(--gbtn-ring);
   }
-  :is(.glass-btn-primary, .glass-btn-green, .glass-btn-tint, button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600'], [class~='bg-emerald-400'], [class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500'])) {
+  :is(.glass-btn-primary, .glass-btn-green, .glass-btn-tint, button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600']):not([class~='w-full'], [data-no-glass]), button[class~='bg-emerald-400']:not([class~='w-full'], [data-no-glass]), button:is([class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl'], [class~='rounded-[14px]']):not([class~='w-full'], [data-no-glass]), button:is([class~='bg-emerald-500/15'], [class~='bg-amber-500/15'], [class~='bg-red-500/15']):not([class~='w-full'], [data-no-glass])) {
     background-image: none;
-    box-shadow: none;
+    box-shadow: var(--gbtn-ring);
   }
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   :is(.glass-btn, button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass])) {
     background-color: #ffffff;
     background-image: none;
-    border-color: #c9d6e5;
-    box-shadow: none;
+    box-shadow: 0 0 0 1px #c9d6e5, var(--gbtn-ring);
   }
-  :is(.glass-btn-primary, .glass-btn-green, .glass-btn-tint, button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600'], [class~='bg-emerald-400'], [class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500'])) {
+  :is(.glass-btn-primary, .glass-btn-green, .glass-btn-tint, button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600']):not([class~='w-full'], [data-no-glass]), button[class~='bg-emerald-400']:not([class~='w-full'], [data-no-glass]), button:is([class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl'], [class~='rounded-[14px]']):not([class~='w-full'], [data-no-glass]), button:is([class~='bg-emerald-500/15'], [class~='bg-amber-500/15'], [class~='bg-red-500/15']):not([class~='w-full'], [data-no-glass])) {
     background-image: none;
-    box-shadow: none;
+    box-shadow: var(--gbtn-ring);
   }
 }
 
+/*
+ * 手機版（閱讀模式）：玻璃按鈕看起來可以小一點，但手指點得到的範圍至少 44×44（看不見的外框，10/10 QA：P.8～P.50 很多 32～37px）。
+ * 本來就是 absolute／fixed 的按鈕不改定位。
+ */
+.reader-mode :is(.glass-btn, .glass-btn-primary, .glass-btn-green, .glass-btn-tint, button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass]), button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600']):not([class~='w-full'], [data-no-glass]), button[class~='bg-emerald-400']:not([class~='w-full'], [data-no-glass]), button:is([class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl'], [class~='rounded-[14px]']):not([class~='w-full'], [data-no-glass]), button:is([class~='bg-emerald-500/15'], [class~='bg-amber-500/15'], [class~='bg-red-500/15']):not([class~='w-full'], [data-no-glass]), button.glass):not([class~='absolute'], [class~='fixed'], [class~='sticky']) {
+  position: relative;
+}
+.reader-mode :is(.glass-btn, .glass-btn-primary, .glass-btn-green, .glass-btn-tint, button:is([class~='bg-card'], [class^='bg-white/['], [class*=' bg-white/[']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl']):not([class~='w-full'], .glass, [data-no-glass]), button:is([class~='bg-sky-300'], [class~='bg-sky-400'], [class~='bg-sky-600']):not([class~='w-full'], [data-no-glass]), button[class~='bg-emerald-400']:not([class~='w-full'], [data-no-glass]), button:is([class~='bg-sky-950'], [class~='bg-emerald-950'], [class~='bg-red-950'], [class~='bg-amber-950'], [class~='bg-amber-500']):is([class~='rounded-full'], [class~='rounded-md'], [class~='rounded-lg'], [class~='rounded-xl'], [class~='rounded-[14px]']):not([class~='w-full'], [data-no-glass]), button:is([class~='bg-emerald-500/15'], [class~='bg-amber-500/15'], [class~='bg-red-500/15']):not([class~='w-full'], [data-no-glass]), button.glass)::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(44px, 100% + 4px);
+  height: max(44px, 100%);
+  translate: -50% -50%;
+}
 /* 警示卡頂端的細色條（一條安靜的管路色線） */
 .hazard-red {
   height: 4px;

@@ -28,6 +28,8 @@ export function useGlassJelly() {
 
     const blockClick = (el: HTMLElement) => {
       const block = (ev: Event) => {
+        // 鍵盤產生的 click 不擋
+        if ((ev as MouseEvent).detail === 0) return
         ev.stopImmediatePropagation()
         ev.preventDefault()
       }
@@ -47,15 +49,17 @@ export function useGlassJelly() {
       if (cur.raf) cancelAnimationFrame(cur.raf)
       if (cur.mode === 'drag') {
         const el = cur.el
-        el.style.transition = `transform 0.5s ${EASE}`
+        // transform（果凍）和 scale（按下放大 1.035）都用彈簧曲線回彈，不要直接跳回
+        el.style.transition = `transform 0.5s ${EASE}, scale 0.42s ${EASE}`
         el.style.transform = ''
-        const done = () => {
+        const done = (ev?: TransitionEvent) => {
+          if (ev && (ev.target !== el || ev.propertyName !== 'transform')) return
           el.style.transition = ''
           el.removeEventListener('transitionend', done)
         }
         el.addEventListener('transitionend', done)
         // 背景分頁 transition 不會跑完：時間到一定清掉
-        window.setTimeout(done, 650)
+        window.setTimeout(() => done(), 650)
       }
       if (cancelClick) blockClick(cur.el)
     }
@@ -64,8 +68,8 @@ export function useGlassJelly() {
       if (s || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0) || reduced.matches) return
       const el = (e.target as Element | null)?.closest?.('button') as HTMLButtonElement | null
       if (!el || el.disabled || el.closest('[data-lens-group], [data-no-jelly]')) return
-      // 卡片型的大按鈕（整列、翻卡）不做
-      if (el.classList.contains('w-full') || el.offsetWidth > 420 || el.offsetHeight > 120) return
+      // 卡片型的大按鈕（整列、翻卡、「學完馬上練」方塊）不做
+      if (el.classList.contains('w-full') || el.offsetWidth > 420 || el.offsetHeight > 100) return
       const r = el.getBoundingClientRect()
       s = { el, id: e.pointerId, x0: e.clientX, y0: e.clientY, k: r.width ? el.offsetWidth / r.width : 1, mode: 'wait', dx: 0, raf: 0 }
     }

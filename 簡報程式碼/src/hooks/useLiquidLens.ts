@@ -84,7 +84,7 @@ export function useLiquidLens({ liftScale = 1.08 }: { liftScale?: number } = {})
 
   useEffect(() => () => window.clearTimeout(settle.current), [])
 
-  return { x, w, a, left, top, h, scaleX, scaleY, reduced, moveTo, setLift }
+  return { x, w, m, a, left, top, h, scaleX, scaleY, reduced, moveTo, setLift }
 }
 
 export type LiquidLens = ReturnType<typeof useLiquidLens>
@@ -95,9 +95,10 @@ export function useLensMagnify(lens: LiquidLens, geom: RefObject<LensGeom[]>, in
   return useTransform([lens.x, lens.a], ([xv, av]: number[]) => lensProximity(geom.current?.[index], xv, av, reduced) * amount + 1)
 }
 
-/** 鏡片離這一項多近（0～1），乘上「按住的程度」 */
-export function lensProximity(g: LensGeom | undefined, x: number, a: number, reduced: boolean) {
+/** 鏡片離這一項多近（0～1），乘上「按住的程度」；有給 y 時，不同排（按鈕換行）＝0 */
+export function lensProximity(g: LensGeom | undefined, x: number, a: number, reduced: boolean, y?: number) {
   if (reduced || !g || !g.w) return 0
+  if (y !== undefined && g.m !== undefined && g.h !== undefined && Math.abs(y - g.m) > g.h / 2) return 0
   const p = Math.max(0, 1 - Math.abs(x - g.c) / (g.w / 2 + 12))
   return Math.max(0, Math.min(1, a)) * p
 }
@@ -119,7 +120,17 @@ type TrackOptions = {
   cancelOutside?: boolean
 }
 
-type Drag = { id: number; type: string; x0: number; moved: boolean; idx: number; outside: boolean }
+type Drag = { id: number; type: string; x0: number; moved: boolean; idx: number; start: number; outside: boolean }
+
+/**
+ * 鏡片正在被水平拖（或剛放開）：手機版「左右滑換頁」要讓出來（10/10 code review：整排標 data-no-swipe 範圍太大，
+ * 名詞清單 70 顆幾乎整個螢幕都不能滑換頁）。只有真的開始水平拖才擋。
+ */
+let dragging = false
+let releasedAt = 0
+export function lensDragBusy() {
+  return dragging || performance.now() - releasedAt < 400
+}
 
 export function useLensTrack({ lens, container, items, rest, onCommit, canStart, pressMoves = false, cancelOutside = false }: TrackOptions) {
   const geom = useRef<LensGeom[]>([])
@@ -212,6 +223,8 @@ export function useLensTrack({ lens, container, items, rest, onCommit, canStart,
   const blockClick = (el: HTMLElement | null) => {
     if (!el) return
     const block = (ev: Event) => {
+      // 鍵盤（Enter／空白鍵）產生的 click 不擋
+      if ((ev as MouseEvent).detail === 0) return
       ev.stopImmediatePropagation()
       ev.preventDefault()
     }
@@ -236,8 +249,11 @@ export function useLensTrack({ lens, container, items, rest, onCommit, canStart,
       // 模擬事件沒有真的 pointer
     }
     if (d.moved) {
+      dragging = false
+      releasedAt = performance.now()
       // 先觸發、再擋掉瀏覽器自己的那一下 click（一排按鈕的觸發就是 click()，不能被自己擋掉）
-      if (commit && !d.outside && d.idx >= 0 && !isDisabled(d.idx)) latest.current.onCommit(d.idx)
+      // 拖出去又拖回按下的那一項放開＝不算（跟篇章列一致，10/10 code review）
+      if (commit && !d.outside && d.idx >= 0 && d.idx !== d.start && !isDisabled(d.idx)) latest.current.onCommit(d.idx)
       blockClick(el)
     }
     // 點一下：交給按鈕自己的 click；之後鏡片回到（可能已經換掉的）目前那一項
@@ -256,7 +272,7 @@ export function useLensTrack({ lens, container, items, rest, onCommit, canStart,
     const idx = nearest(p.x, p.y)
     if (idx < 0 || !(latest.current.canStart?.(idx) ?? true)) return false
     if (isDisabled(idx)) return false
-    drag.current = { id: e.pointerId, type: e.pointerType, x0: e.clientX, moved: false, idx, outside: false }
+    drag.current = { id: e.pointerId, type: e.pointerType, x0: e.clientX, moved: false, idx, start: idx, outside: false }
     setLift(true)
     if (pressMoves) moveTo(geom.current[idx])
     return true
@@ -270,6 +286,7 @@ export function useLensTrack({ lens, container, items, rest, onCommit, canStart,
     if (!d.moved) {
       if (Math.abs(e.clientX - d.x0) < slopFor(d.type)) return true
       d.moved = true
+      dragging = true
       try {
         container.current?.setPointerCapture(e.pointerId)
       } catch {

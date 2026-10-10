@@ -63,6 +63,8 @@ export function useDeckKeyboard({
       }
       // 焦點在播放器上時，方向鍵 / Space 交給播放器（快轉、暫停）
       if (target?.closest('audio, video') && (e.key.startsWith('Arrow') || e.key === ' ')) return
+      // 焦點在分段切換（radiogroup）裡時，左右方向鍵交給它切換選項，不翻頁
+      if (target?.closest('[role="radiogroup"]') && e.key.startsWith('Arrow')) return
       // 焦點在按鈕 / 勾選框上時，Space 交給元素本身處理
       const onControl = Boolean(target?.closest('button, a, [role="checkbox"], [role="button"]'))
 

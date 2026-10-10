@@ -110,7 +110,7 @@ function CompareCard({ side }: { side: CompareSide }) {
       <dl className="mb-2.5 mt-3 space-y-1.5">
         {side.rows.map((row) => (
           <div key={row.k} className="flex gap-2.5 text-[19px] leading-snug">
-            <dt className="w-[84px] shrink-0 text-slate-400">{row.k}</dt>
+            <dt className="w-[96px] shrink-0 text-slate-400">{row.k}</dt>
             <dd className="text-slate-100">{row.v}</dd>
           </div>
         ))}

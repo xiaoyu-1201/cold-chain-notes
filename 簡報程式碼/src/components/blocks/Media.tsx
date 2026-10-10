@@ -79,6 +79,9 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
                 aria-label={`${item.code} ${item.name}`}
                 aria-pressed={active}
                 onClick={() => setSelectedId(item.id)}
+                // 照片上的熱點：選中＝紅圈（邊框＋ring），不套玻璃按鈕、不做果凍
+                data-no-glass
+                data-no-jelly
                 className={cn(
                   'absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-200',
                   focusRing,

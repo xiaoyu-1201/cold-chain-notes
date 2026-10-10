@@ -346,7 +346,7 @@ export function VernierCaliper({ mobile = false }: { mobile?: boolean }) {
           </g>
         </svg>
         <p className={cn('pointer-events-none absolute left-4 top-3 rounded-full border border-line bg-card/95 px-3 py-1 text-slate-200', t.small)}>拖游尺（滾輪那塊）左右移；下面有微調鍵</p>
-        <button type="button" onClick={() => setPhoto(true)} className={cn('absolute right-4 top-3 flex items-center gap-1.5 rounded-full border border-line bg-card px-3 py-1 font-semibold text-slate-100 hover:border-sky-500/50', t.small)}>
+        <button type="button" onClick={() => setPhoto(true)} className={cn('glass absolute right-4 top-3 flex items-center gap-1.5 rounded-full px-3 py-1 font-semibold text-slate-100 hover:border-sky-500/50', t.small)}>
           <Camera className="size-4" aria-hidden />
           看真的卡尺照片
         </button>

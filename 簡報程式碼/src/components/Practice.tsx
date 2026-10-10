@@ -121,6 +121,8 @@ export function PracticeButton({ id }: { id: string }) {
         type="button"
         onClick={() => setOpen(true)}
         onMouseDown={(e) => e.preventDefault()}
+        // 大方塊不做果凍變形（10/10 code review）
+        data-no-jelly
         className={cn(
           'flex shrink-0 items-center gap-3 rounded-[14px] px-7 text-[22px] font-bold transition',
           passed ? 'border border-emerald-500/45 bg-emerald-950 text-emerald-200 hover:border-emerald-500' : 'border border-sky-500/50 bg-sky-950 text-sky-200 hover:border-sky-500',

@@ -51,7 +51,8 @@ export function CycleExplorer({ selected, onSelect, expandable = true, large = f
           onClick={() => setExpanded(true)}
           title="放大檢視"
           className={cn(
-            'absolute right-2 top-2 flex items-center gap-1.5 rounded-lg border border-line bg-card px-2.5 py-1.5 text-[16px] font-semibold text-slate-100 transition hover:border-sky-500/50 hover:text-sky-300',
+            // 浮在圖上的按鈕：用有模糊的浮動玻璃（.glass），後面是什麼字都好讀
+            'glass absolute right-2 top-2 flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[16px] font-semibold text-slate-100 transition hover:border-sky-500/50 hover:text-sky-300',
             focusRing,
           )}
         >

@@ -99,7 +99,7 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
 
         {tab === '3d' ? (
           <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-            <div className="theme-dark viewport-blueprint relative min-h-[280px] flex-1">
+            <div className="viewport-blueprint relative min-h-[280px] flex-1">
               <Suspense fallback={<p className="absolute inset-0 flex items-center justify-center text-[16px] text-slate-400">3D 模型載入中…</p>}>
                 <Part3D id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} />
               </Suspense>
@@ -113,7 +113,7 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
                   自動旋轉
                 </button>
               </div>
-              <p className="pointer-events-none absolute right-3 top-3 rounded-lg bg-navy-950/70 px-2.5 py-1 text-[13px] text-slate-300">拖曳旋轉・滾輪往游標放大・雙擊還原</p>
+              <p className="pointer-events-none absolute right-3 top-3 rounded-lg bg-card/90 px-2.5 py-1 text-[13px] text-slate-300 ring-1 ring-line">拖曳旋轉・滾輪往游標放大・雙擊還原</p>
             </div>
             <aside className="max-h-[42%] overflow-y-auto border-t border-line bg-card p-4 lg:max-h-none lg:w-[380px] lg:border-l lg:border-t-0">
               {control && (

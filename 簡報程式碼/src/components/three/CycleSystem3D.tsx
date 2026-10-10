@@ -158,10 +158,12 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
         'pointer-events:auto',
         `cursor:${id ? 'pointer' : 'default'}`,
         `font:${major ? 700 : 600} ${size}px system-ui, sans-serif`,
-        `color:${tone ?? (major ? '#f8fafc' : '#bae6fd')}`,
+        // 10/10 起檢視窗是淡色：標籤改白底深字＋細框（不再是深色膠囊）
+        `color:${tone ?? (major ? '#0f2440' : '#164d84')}`,
         'padding:2px 8px',
         'border-radius:999px',
-        `background:${major ? 'rgba(13,17,23,0.78)' : 'rgba(13,17,23,0.6)'}`,
+        `background:${major ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.88)'}`,
+        'box-shadow:0 0 0 1px #c9d6e5',
         'white-space:nowrap',
         'user-select:none',
       ].join(';')
@@ -242,11 +244,12 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       front.visible = false
       scene.add(front)
       pipes.push({ id: pipe.id, curve, fill: fillGeo, dots, front })
-      placeLabel(makeLabel(pipe.label, pipe.id, false, `#${new THREE.Color(pipe.color).getHexString()}`), pipe.labelPos, new THREE.Vector3(), pipe.side, 0)
+      // 管路色調深一點當字色：白底上才看得清楚（原色太亮，對比不到 4.5）
+      placeLabel(makeLabel(pipe.label, pipe.id, false, `#${new THREE.Color(pipe.color).multiplyScalar(0.58).getHexString()}`), pipe.labelPos, new THREE.Vector3(), pipe.side, 0)
     }
-    const heatOut = makeLabel('放熱 → 室外', null, false, '#fca5a5')
+    const heatOut = makeLabel('放熱 → 室外', null, false, '#b0301f')
     heatOut.position.set(0, 3.4, 0)
-    const heatIn = makeLabel('吸熱 ← 庫內', null, false, '#7dd3fc')
+    const heatIn = makeLabel('吸熱 ← 庫內', null, false, '#164d84')
     heatIn.position.set(0.4, -3.3, 0)
     scene.add(heatOut, heatIn)
 
@@ -259,8 +262,9 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
         scene.add(mesh)
         return { mesh, x: a + Math.random() * (b - a), z: -0.15 + Math.random() * 0.5, phase: Math.random(), y0, y1 }
       })
-    const hot = puffs(18, 0xfca5a5, [[-1.0, 1.0]], 2.55, 3.2)
-    const cold = puffs(16, 0x93c5fd, [[-0.6, 0.2], [0.6, 1.4]], -2.3, -3.0)
+    // 熱氣、冷氣的小球：淡色底上要用比較深的紅、藍才看得到
+    const hot = puffs(18, 0xe0604f, [[-1.0, 1.0]], 2.55, 3.2)
+    const cold = puffs(16, 0x3d8fdc, [[-0.6, 0.2], [0.6, 1.4]], -2.3, -3.0)
 
     // ── 故障模擬用的物件 ──
     const tag = (bg: string) => {
@@ -624,13 +628,13 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
   const zoomBtn = cn('grid place-items-center text-slate-200 transition hover:bg-white/[0.08] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300', compact ? 'size-9' : 'size-11')
 
   return (
-    <div className="theme-dark viewport-blueprint flex h-full w-full flex-col">
+    <div className="viewport-blueprint flex h-full w-full flex-col">
       <div className="relative min-h-0 flex-1">
         <div ref={hostRef} className="absolute inset-0 touch-none" />
         {/* 鏡頭控制：放大、縮小、回到全覽（放大後才出現） */}
         <div className={cn('absolute flex flex-col items-end', compact ? 'right-2 top-2 gap-1.5' : 'right-4 top-4 gap-2')}>
-          <div className="flex flex-col overflow-hidden rounded-full bg-[rgba(13,17,23,0.72)] ring-1 ring-white/10">
-            <button type="button" aria-label="放大" onClick={() => api.current?.zoom(0.7)} className={cn(zoomBtn, 'border-b border-white/10')}>
+          <div className="flex flex-col overflow-hidden rounded-full bg-card/95 ring-1 ring-line">
+            <button type="button" aria-label="放大" onClick={() => api.current?.zoom(0.7)} className={cn(zoomBtn, 'border-b border-line')}>
               <Plus className={icon} aria-hidden />
             </button>
             <button type="button" aria-label="縮小" onClick={() => api.current?.zoom(1.4)} className={zoomBtn}>
@@ -641,7 +645,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
             <button
               type="button"
               onClick={() => api.current?.home()}
-              className={cn(btn, 'bg-[rgba(13,17,23,0.72)] text-sky-300 ring-1 ring-white/10 hover:bg-[rgba(30,41,59,0.85)]', compact ? 'px-3 py-1.5' : 'px-4 py-2')}
+              className={cn(btn, 'bg-card/95 text-sky-300 ring-1 ring-line hover:bg-card', compact ? 'px-3 py-1.5' : 'px-4 py-2')}
             >
               <Scan className={icon} aria-hidden />
               全覽
@@ -672,7 +676,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
             <button
               type="button"
               onClick={() => api.current?.start()}
-              className={cn(btn, 'bg-sky-500 text-white shadow-[0_8px_24px_-8px_rgba(14,165,233,0.8)] hover:bg-sky-400', compact ? 'px-4 py-2 text-[15px]' : 'px-7 py-3 text-[21px]')}
+              className={cn(btn, 'bg-sky-600 text-paper hover:bg-sky-400', compact ? 'px-4 py-2 text-[15px]' : 'px-7 py-3 text-[21px]')}
             >
               <Play className={cn(icon, 'fill-current')} aria-hidden />
               啟動冷凍系統

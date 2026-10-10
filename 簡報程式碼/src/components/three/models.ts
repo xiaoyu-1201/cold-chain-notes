@@ -715,7 +715,8 @@ const builders: Record<Part3DId, () => PartModel> = {
     const layer = (t: number) => [hollowX(b, 0.13 + t, 0.13, -1.3, 1.3, foam, 56), b.box(2.6, 0.012, 0.024, seam, [0, 0.13 + t + 0.004, 0])]
     const thin = layer(0.24)
     const thick = layer(0.36)
-    const drop = mat.fluid(0x7dd3fc, 0.85)
+    // 水滴用管路藍：淡色檢視窗上，原本的淺藍幾乎看不見（10/10）
+    const drop = mat.fluid(0x2e7bc8, 0.9)
     const rnd = seeded(7)
     const drops: THREE.Object3D[] = []
     for (let i = 0; i < 90; i++) {

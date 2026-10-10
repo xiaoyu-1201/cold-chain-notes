@@ -99,22 +99,23 @@ export function Tiles({ block }: { block: TilesBlock }) {
 function CompareCard({ side }: { side: CompareSide }) {
   const t = toneStyles[side.tone]
   return (
-    <div className={cn('flex min-w-0 flex-col rounded-2xl border bg-card p-5', t.border)}>
+    <div className={cn('flex min-w-0 flex-col rounded-2xl border bg-card p-4', t.border)}>
       <div className="flex items-center justify-between gap-3">
         <Badge tone={side.tone} size="lg">
           {side.badge}
         </Badge>
         <span className={cn('font-mono text-[34px] font-extrabold', t.strong)}>{side.value}</span>
       </div>
-      <dl className="mt-4 space-y-2">
+      {/* 10/10：內容多的比較卡（P.22、P.29）在 1920×1080 畫布裡放不下、底部結論被切 → 內距、行距收緊一點 */}
+      <dl className="mb-2.5 mt-3 space-y-1.5">
         {side.rows.map((row) => (
-          <div key={row.k} className="flex gap-3 text-[20px]">
-            <dt className="w-[92px] shrink-0 text-slate-400">{row.k}</dt>
+          <div key={row.k} className="flex gap-2.5 text-[19px] leading-snug">
+            <dt className="w-[84px] shrink-0 text-slate-400">{row.k}</dt>
             <dd className="text-slate-100">{row.v}</dd>
           </div>
         ))}
       </dl>
-      <div className={cn('mt-auto flex items-center gap-2 rounded-xl px-4 py-2.5 text-[20px] font-semibold', t.soft, t.strong)}>
+      <div className={cn('mt-auto flex items-center gap-2 rounded-xl px-3.5 py-2 text-[19px] font-semibold leading-snug', t.soft, t.strong)}>
         <Target className="size-5 shrink-0" aria-hidden />
         {side.use}
       </div>

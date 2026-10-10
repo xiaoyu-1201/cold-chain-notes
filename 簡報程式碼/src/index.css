@@ -11,7 +11,7 @@
  *   - navy 950～700＝紙色→淡灰藍（原本的深底）
  *   - 各色 50～300（原本在深底當字色）＝深色字；400＝強調字／圓點；500＝亮色（管路色，給淡底色、細框用）；950＝淺底
  * 新寫的元件請直接用語意色：bg-paper、bg-card、border-line、text-ink、text-ink-2、text-ink-3、pipe-red／pipe-yellow／pipe-blue。
- * 3D 檢視窗、照片放大這種要保留深色的地方，外層加 class「theme-dark」就會換回深色版色票。
+ * 照片放大這種要保留深色的地方，外層加 class「theme-dark」就會換回深色版色票（3D 檢視窗 10/10 起改淡色，不加）。
  * 舊版瀏覽器（如 Chrome 109 / Win7）不支援 oklch()：用到的顏色一律在這裡給 hex。
  */
 @theme {
@@ -217,14 +217,18 @@
     16px 16px;
 }
 
-/* 3D 檢視窗＝「藍曬圖」：深藍底＋淡淡的白色方格（跟淡色紙同一套格線，只是反過來）；外層同時加 theme-dark */
+/*
+ * 3D 檢視窗：跟頁面同一張淡色方格紙，只深一階（桌面色）＋細框
+ * （10/10 使用者看手機版：深藍底夾在淡色頁面中間「這種色差很怪」→ 不再用深色藍曬圖，也不加 theme-dark）
+ */
 .viewport-blueprint {
-  background-color: #10243d;
+  background-color: var(--color-desk);
+  box-shadow: inset 0 0 0 1px var(--color-line);
   background-image:
-    linear-gradient(to right, rgb(255 255 255 / 0.075) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(255 255 255 / 0.075) 1px, transparent 1px),
-    linear-gradient(to right, rgb(255 255 255 / 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+    linear-gradient(to right, rgb(15 36 64 / 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(15 36 64 / 0.07) 1px, transparent 1px),
+    linear-gradient(to right, rgb(15 36 64 / 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(15 36 64 / 0.035) 1px, transparent 1px);
   background-size:
     80px 80px,
     80px 80px,

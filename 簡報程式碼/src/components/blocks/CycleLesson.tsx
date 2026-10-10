@@ -123,17 +123,17 @@ function Inspector({ selected, onSelect, faults }: { selected: CycleNodeId | nul
 
   if (!selected) {
     return (
-      <div className="flex h-full flex-col gap-6 rounded-[18px] border border-line bg-card px-8 py-7">
+      <div data-no-swipe className="flex h-full min-h-0 flex-col gap-3 overflow-y-auto overscroll-contain rounded-[18px] border border-line bg-card px-8 py-4">
         <div>
           <p className="text-[28px] font-bold text-white">冷媒一圈的四個狀態</p>
-          <p className="mt-1 text-[19px] text-slate-400">顏色跟圖上的管路一樣；點一下看說明、聽錄音。</p>
-          <ol className="mt-4 grid grid-cols-2 gap-3">
+          <p className="mt-0.5 text-[17px] text-slate-400">顏色跟圖上的管路一樣；點一下看說明、聽錄音。</p>
+          <ol className="mt-2.5 grid grid-cols-2 gap-2.5">
             {STATES.map((s, i) => (
               <li key={s.id}>
                 <button
                   type="button"
                   onClick={() => onSelect(s.id)}
-                  className={cn('flex h-full w-full items-start gap-3 rounded-2xl border border-line bg-paper px-4 py-3 text-left transition hover:border-sky-500/50', focusRing)}
+                  className={cn('flex h-full w-full items-start gap-3 rounded-2xl border border-line bg-paper px-4 py-2.5 text-left transition hover:border-sky-500/50', focusRing)}
                 >
                   <span className="mt-1.5 h-9 w-2 shrink-0 rounded-full" style={{ background: s.color }} aria-hidden />
                   <span className="min-w-0">
@@ -149,14 +149,14 @@ function Inspector({ selected, onSelect, faults }: { selected: CycleNodeId | nul
         </div>
         {GROUPS.map((g) => (
           <div key={g.label}>
-            <p className="mb-2.5 text-[17px] font-semibold text-slate-500">{g.label}</p>
+            <p className="mb-2 text-[17px] font-semibold text-slate-500">{g.label}</p>
             <div className="flex flex-wrap gap-2">
               {g.ids.map((id) => (
                 <button
                   key={id}
                   type="button"
                   onClick={() => onSelect(id)}
-                  className={cn('rounded-full border border-line bg-paper px-4 py-2 text-[19px] font-semibold text-sky-300 transition hover:border-sky-500/50 hover:bg-sky-950', focusRing)}
+                  className={cn('rounded-full border border-line bg-paper px-3.5 py-1.5 text-[18px] font-semibold text-sky-300 transition hover:border-sky-500/50 hover:bg-sky-950', focusRing)}
                 >
                   {cycleNotes[id].title}
                 </button>
@@ -165,7 +165,7 @@ function Inspector({ selected, onSelect, faults }: { selected: CycleNodeId | nul
           </div>
         ))}
         <div>
-          <p className="mb-2.5 flex items-center gap-1.5 text-[17px] font-semibold text-red-300">
+          <p className="mb-2 flex items-center gap-1.5 text-[17px] font-semibold text-red-300">
             <TriangleAlert className="size-4" aria-hidden />
             故障模擬：拿掉一個會怎樣？（3D 演給你看）
           </p>
@@ -175,7 +175,7 @@ function Inspector({ selected, onSelect, faults }: { selected: CycleNodeId | nul
                 key={fa.id}
                 type="button"
                 onClick={() => faults.start(fa.id)}
-                className={cn('rounded-full border border-red-500/35 bg-red-950 px-4 py-2 text-[18px] font-semibold text-red-200 transition hover:border-red-500', focusRing)}
+                className={cn('rounded-full border border-red-500/35 bg-red-950 px-3.5 py-1.5 text-[17px] font-semibold text-red-200 transition hover:border-red-500', focusRing)}
               >
                 {fa.label}
               </button>

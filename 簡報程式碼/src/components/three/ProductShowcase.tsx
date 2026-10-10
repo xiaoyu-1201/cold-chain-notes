@@ -87,7 +87,7 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
       {tab === '3d' && id ? (
         <>
           <div
-            className={cn('theme-dark viewport-blueprint relative min-h-0 overflow-hidden rounded-2xl', mobile ? 'h-[300px]' : 'flex-1')}
+            className={cn('viewport-blueprint relative min-h-0 overflow-hidden rounded-2xl', mobile ? 'h-[300px]' : 'flex-1')}
             onTouchStart={(e) => e.stopPropagation()}
             onTouchEnd={(e) => e.stopPropagation()}
           >
@@ -108,7 +108,7 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
                 自動旋轉
               </button>
             </div>
-            <p className={cn('pointer-events-none absolute right-3 top-3 rounded-full bg-black/40 px-3 py-1 text-slate-300', t.small)}>拖曳旋轉・滾輪往游標放大・雙擊還原</p>
+            <p className={cn('pointer-events-none absolute right-3 top-3 rounded-full bg-card/90 px-3 py-1 text-slate-300 ring-1 ring-line', t.small)}>拖曳旋轉・滾輪往游標放大・雙擊還原</p>
           </div>
 
           {control && (

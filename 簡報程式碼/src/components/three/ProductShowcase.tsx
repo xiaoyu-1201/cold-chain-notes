@@ -46,7 +46,8 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
   const t = mobile
     ? { title: 'text-[17px]', small: 'text-[13px]', body: 'text-[14px]', pill: 'px-3 py-1.5 text-[13px]' }
     : { title: 'text-[24px]', small: 'text-[16px]', body: 'text-[17px]', pill: 'px-4 py-2 text-[16px]' }
-  const pill = (on: boolean) => cn('flex items-center gap-1.5 rounded-full font-semibold transition', t.pill, on ? 'bg-sky-400 text-navy-950' : 'bg-white/[0.1] text-slate-100 hover:bg-white/[0.16]', focusRing)
+  // 觸控範圍：手機 ≥44px；電腦畫布會縮放，給 52 畫布 px（10/10 QA：原本 34／29px）
+  const pill = (on: boolean) => cn('flex items-center gap-1.5 rounded-full font-semibold transition', t.pill, mobile ? 'min-h-11' : 'min-h-[52px]', on ? 'bg-sky-400 text-navy-950' : 'bg-white/[0.1] text-slate-100 hover:bg-white/[0.16]', focusRing)
   const loading = <p className={cn('absolute inset-0 flex items-center justify-center text-slate-400', t.body)}>3D 模型載入中…</p>
 
   return (
@@ -108,7 +109,7 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
                 自動旋轉
               </button>
             </div>
-            <p className={cn('pointer-events-none absolute right-3 top-3 rounded-full bg-card/90 px-3 py-1 text-slate-300 ring-1 ring-line', t.small)}>拖曳旋轉・滾輪往游標放大・雙擊還原</p>
+            <p className={cn('pointer-events-none absolute right-3 top-3 rounded-full bg-card/90 px-3 py-1 text-slate-300 ring-1 ring-line', t.small)}>{mobile ? '拖曳旋轉・兩指放大・點兩下還原' : '拖曳旋轉・滾輪往游標放大・雙擊還原'}</p>
           </div>
 
           {control && (
@@ -133,11 +134,12 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
           )}
 
           {legend.length > 0 && (
-            <ul className={cn('grid grid-cols-2 gap-x-4 gap-y-1', t.small)}>
+            // 手機一欄、整句換行（10/10 QA：兩欄時被切成「回氣管（銅管）・冷排…」）；電腦畫布空間有限，維持兩欄＋滑過看全文
+            <ul className={cn('grid gap-x-4 gap-y-1', mobile ? 'grid-cols-1' : 'grid-cols-2', t.small)}>
               {legend.map((item) => (
-                <li key={item.name} className="flex min-w-0 items-center gap-2" title={item.desc}>
-                  <span className="size-3 shrink-0 rounded-full" style={{ background: item.color }} aria-hidden />
-                  <span className="truncate text-slate-200">
+                <li key={item.name} className={cn('flex min-w-0 gap-2', mobile ? 'items-start' : 'items-center')} title={item.desc}>
+                  <span className={cn('size-3 shrink-0 rounded-full', mobile && 'mt-1')} style={{ background: item.color }} aria-hidden />
+                  <span className={cn('text-slate-200', !mobile && 'truncate')}>
                     <b className="font-semibold text-white">{item.name}</b>
                     <span className="text-slate-400">・{item.desc}</span>
                   </span>

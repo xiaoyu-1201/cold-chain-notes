@@ -37,7 +37,11 @@ const PLACEMENTS: { id: Extract<Part3DId, CycleNodeId>; pos: V3; scale: number; 
   { id: 'acc', pos: [3.2, -1.3, 0], scale: 0.24, label: '液氣分離器', side: 'l' },
 ]
 
-/** 四段管路（依冷媒流向）＋顏色＋狀態標籤（標在管路外側） */
+/**
+ * 四段管路（依冷媒流向）＋顏色＋狀態標籤（標在管路外側）。
+ * 標籤字色另外寫死深一階的管路色（白底上對比 ≥5:1）：用 multiplyScalar 調深在線性色彩空間，換回來只深一點，液管只有 3.3:1（10/10 code review）
+ */
+const PIPE_INK: Record<PipeId, string> = { discharge: '#9a2b1d', liquid: '#8f6207', mixture: '#127a70', suction: '#1f64a8' }
 const PIPES: { id: PipeId; color: number; points: V3[]; label: string; labelPos: V3; side: Side }[] = [
   // 從冷凝器上方進去
   { id: 'discharge', color: 0xe04a38, points: [[3.2, 0.75, 0], [3.2, 2.3, 0], [1.08, 2.3, 0]], label: '高溫高壓氣態', labelPos: [3.42, 1.75, 0], side: 'r' },
@@ -240,12 +244,12 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
         scene.add(d)
         return d
       })
-      const front = new THREE.Mesh(new THREE.SphereGeometry(0.13, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffffff }))
+      // 冷媒最前面那顆：淡色檢視窗上白球看不見 → 用深一階的管路色
+      const front = new THREE.Mesh(new THREE.SphereGeometry(0.13, 16, 16), new THREE.MeshBasicMaterial({ color: new THREE.Color(PIPE_INK[pipe.id]) }))
       front.visible = false
       scene.add(front)
       pipes.push({ id: pipe.id, curve, fill: fillGeo, dots, front })
-      // 管路色調深一點當字色：白底上才看得清楚（原色太亮，對比不到 4.5）
-      placeLabel(makeLabel(pipe.label, pipe.id, false, `#${new THREE.Color(pipe.color).multiplyScalar(0.58).getHexString()}`), pipe.labelPos, new THREE.Vector3(), pipe.side, 0)
+      placeLabel(makeLabel(pipe.label, pipe.id, false, PIPE_INK[pipe.id]), pipe.labelPos, new THREE.Vector3(), pipe.side, 0)
     }
     const heatOut = makeLabel('放熱 → 室外', null, false, '#b0301f')
     heatOut.position.set(0, 3.4, 0)
@@ -280,7 +284,8 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     alarmTag.center.set(0.5, 1.6)
     // 膨脹閥入口結冰：一團白色冰晶
     const ice = new THREE.Group()
-    const iceMat = new THREE.MeshStandardMaterial({ color: 0xe0f2fe, emissive: 0xbae6fd, emissiveIntensity: 0.35, roughness: 0.2, transparent: true, opacity: 0.92 })
+    // 淡色檢視窗上，白色冰晶會看不見：改成帶藍的冰色、自發光調低
+    const iceMat = new THREE.MeshStandardMaterial({ color: 0xa5d0f0, emissive: 0x3d8fdc, emissiveIntensity: 0.18, roughness: 0.2, transparent: true, opacity: 0.95 })
     for (let i = 0; i < 9; i++) {
       const c = new THREE.Mesh(new THREE.IcosahedronGeometry(0.07 + Math.random() * 0.07, 0), iceMat)
       c.position.set((Math.random() - 0.5) * 0.3, (Math.random() - 0.5) * 0.3, (Math.random() - 0.5) * 0.3)
@@ -305,7 +310,8 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     })
     // 管內流動的特殊樣子：液體（琥珀）、氣泡（白、大顆）
     const liquidDot = new THREE.MeshStandardMaterial({ color: 0xe8a92a, emissive: 0xf59e0b, emissiveIntensity: 1 })
-    const bubbleDot = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.6, transparent: true, opacity: 0.85 })
+    // 氣泡：純白在淡色底、黃色液管上都太淡 → 帶一點藍
+    const bubbleDot = new THREE.MeshStandardMaterial({ color: 0xe8f4ff, emissive: 0x2e7bc8, emissiveIntensity: 0.35, transparent: true, opacity: 0.95 })
     const baseDot = new Map(pipes.map((p) => [p.id, p.dots[0].material as THREE.MeshStandardMaterial]))
     let fx: FaultFx | null = null
     const dischargeBase = new THREE.Color(0xe04a38)
@@ -496,8 +502,9 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       alarmTag.visible = !!fx?.alarm
       if (fx?.alarm) {
         alarmTag.element.textContent = `⚠ ${fx.alarm.text}`
-        alarmTag.element.style.background = fx.alarm.tone === 'red' ? 'rgba(220,38,38,0.92)' : 'rgba(217,119,6,0.92)'
-        alarmTag.element.style.opacity = String(0.75 + 0.25 * Math.sin(t * 6))
+        // 琥珀色用深一階（白字對比約 5:1）；閃爍最淡只到 0.85，白字才不會淡到看不清
+        alarmTag.element.style.background = fx.alarm.tone === 'red' ? 'rgba(220,38,38,0.92)' : 'rgba(180,83,9,0.95)'
+        alarmTag.element.style.opacity = String(0.925 + 0.075 * Math.sin(t * 6))
         alarmTag.position.copy(centers.get(fx.alarm.at)!)
       }
       ice.visible = !!fx?.ice
@@ -676,7 +683,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
             <button
               type="button"
               onClick={() => api.current?.start()}
-              className={cn(btn, 'bg-sky-600 text-paper hover:bg-sky-400', compact ? 'px-4 py-2 text-[15px]' : 'px-7 py-3 text-[21px]')}
+              className={cn(btn, 'bg-sky-600 text-paper hover:bg-sky-300', compact ? 'px-4 py-2 text-[15px]' : 'px-7 py-3 text-[21px]')}
             >
               <Play className={cn(icon, 'fill-current')} aria-hidden />
               啟動冷凍系統

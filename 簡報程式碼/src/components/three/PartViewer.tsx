@@ -56,7 +56,7 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
 
   const toggle = (on: boolean) =>
     cn(
-      'flex items-center gap-1.5 rounded-full px-4 py-2 text-[15px] font-semibold transition',
+      'flex min-h-11 items-center gap-1.5 rounded-full px-4 py-2 text-[15px] font-semibold transition',
       on ? 'bg-sky-400 text-navy-950' : 'bg-white/[0.1] text-slate-100 hover:bg-white/[0.16]',
       focusRing,
     )

@@ -1,8 +1,9 @@
-import { BookOpen, BookOpenCheck, ChevronLeft, ChevronRight, CornerUpLeft, Maximize, Menu, Minimize, Pointer, Search } from 'lucide-react'
+import { BookOpen, BookOpenCheck, ChevronLeft, ChevronRight, CornerUpLeft, LayoutGrid, Maximize, Menu, Minimize, Pointer, Search, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState, type MouseEvent, type PointerEvent as ReactPointerEvent, type ReactNode, type WheelEvent as ReactWheelEvent } from 'react'
 import { parts } from '../data/parts'
 import { slides } from '../data/slides'
-import { isNew } from '../data/whatsNew'
+import { NEW_LABEL, isNew, newTag } from '../data/whatsNew'
+import { useModal } from '../hooks/useModal'
 import type { PartId } from '../data/types'
 import { cn, pad } from '../lib/cn'
 import { toneStyles } from '../lib/tone'
@@ -84,7 +85,10 @@ export function SlideNav({
   hints,
 }: SlideNavProps) {
   const labelCls = back ? 'hidden' : 'hidden text-sm font-bold xl:inline'
+  const [grid, setGrid] = useState(false)
   return (
+    <>
+    {grid && <PageGrid index={index} onGoTo={onGoTo} onClose={() => setGrid(false)} />}
     <nav
       aria-label="簡報控制"
       className="glass glass-bar glass-flat relative z-10 flex h-16 shrink-0 items-center gap-4 border-t border-line px-3 sm:px-5"
@@ -149,9 +153,19 @@ export function SlideNav({
           <ChevronLeft className="size-5" aria-hidden />
         </NavButton>
         <PageStrip index={index} onGoTo={onGoTo} />
-        <span className="min-w-[60px] shrink-0 text-center font-mono text-sm font-bold tracking-wider text-slate-300" aria-live="polite">
-          <span className="text-sky-300">{pad(index + 1)}</span> / {pad(total)}
-        </span>
+        {/* 頁數：按下去跳出全部頁（10/12 使用者：左右翻頁不方便） */}
+        <button
+          type="button"
+          onClick={() => setGrid(true)}
+          title="看全部頁、直接跳過去"
+          aria-label={`第 ${index + 1} 頁，共 ${total} 頁：按這裡看全部頁`}
+          className={cn('flex min-h-[40px] min-w-[72px] shrink-0 items-center justify-center gap-1 rounded-xl border border-line px-2 font-mono text-sm font-bold tracking-wider text-slate-300 transition hover:border-sky-500/60 hover:text-ink', focusRing)}
+        >
+          <span aria-live="polite">
+            <span className="text-sky-300">{pad(index + 1)}</span> / {pad(total)}
+          </span>
+          <LayoutGrid className="size-4 text-slate-400" aria-hidden />
+        </button>
         <NavButton label="下一頁 (→ / Space)" onClick={onNext} disabled={index === total - 1}>
           <ChevronRight className="size-5" aria-hidden />
         </NavButton>
@@ -178,6 +192,73 @@ export function SlideNav({
         </NavButton>
       </div>
     </nav>
+    </>
+  )
+}
+
+/** 全部頁一覽：照篇章排、每頁寫標題，改過的頁紅色標「新・日期」；點一下跳過去 */
+function PageGrid({ index, onGoTo, onClose }: { index: number; onGoTo: (index: number) => void; onClose: () => void }) {
+  const closeRef = useRef<HTMLButtonElement>(null)
+  const currentRef = useRef<HTMLButtonElement>(null)
+  useModal(true, onClose, closeRef)
+  // 打開時捲到目前這一頁
+  useEffect(() => currentRef.current?.scrollIntoView({ block: 'center' }), [])
+  const newCount = slides.filter((s) => isNew(s.added)).length
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[rgba(15,36,64,0.35)] p-4" onClick={onClose}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="全部頁"
+        className="flex max-h-[86vh] w-full max-w-[1180px] flex-col overflow-hidden rounded-[18px] border border-line bg-card shadow-[0_24px_60px_-20px_rgba(15,36,64,0.45)]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center gap-3 border-b border-line px-5 py-3">
+          <LayoutGrid className="size-5 text-sky-400" aria-hidden />
+          <p className="text-[18px] font-black text-ink">全部 {slides.length} 頁</p>
+          {newCount > 0 && <span className="rounded-lg bg-red-400 px-2.5 py-0.5 text-[15px] font-black text-paper">紅色＝{NEW_LABEL}，共 {newCount} 頁</span>}
+          <button ref={closeRef} type="button" onClick={onClose} className={cn('ml-auto flex min-h-[40px] items-center gap-1.5 rounded-xl border border-line px-3 text-[15px] font-semibold text-slate-200 hover:border-sky-500/60', focusRing)}>
+            <X className="size-4" aria-hidden />
+            關閉（Esc）
+          </button>
+        </div>
+        <div className="overflow-y-auto px-5 py-4">
+          {dotGroups.map((g) => (
+            <section key={g.part} className="mb-4 last:mb-0">
+              <h3 className={cn('mb-2 text-[16px] font-black', toneStyles[parts[g.part].tone].text)}>{parts[g.part].label ?? groupLabel(g.part)}</h3>
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-2">
+                {g.items.map((i) => {
+                  const s = slides[i]
+                  const on = i === index
+                  const fresh = isNew(s.added)
+                  return (
+                    <button
+                      key={s.id}
+                      ref={on ? currentRef : undefined}
+                      type="button"
+                      aria-current={on ? 'page' : undefined}
+                      onClick={() => {
+                        onGoTo(i)
+                        onClose()
+                      }}
+                      className={cn(
+                        'flex min-h-[48px] items-start gap-2 rounded-xl border px-3 py-2 text-left text-[15px] leading-snug transition',
+                        on ? 'border-sky-500 bg-sky-950 font-bold text-ink' : fresh ? 'border-red-400 bg-red-950 text-slate-100 hover:border-red-500' : 'border-line text-slate-200 hover:border-sky-500/60',
+                        focusRing,
+                      )}
+                    >
+                      <span className="shrink-0 font-mono text-[13px] font-bold text-sky-400">P.{pad(i + 1)}</span>
+                      <span className="min-w-0 flex-1">{s.title}</span>
+                      {fresh && <span className="shrink-0 rounded bg-red-400 px-1.5 text-[12px] font-black leading-5 text-paper">{newTag(s.added)}</span>}
+                    </button>
+                  )
+                })}
+              </div>
+            </section>
+          ))}
+        </div>
+      </div>
+    </div>
   )
 }
 

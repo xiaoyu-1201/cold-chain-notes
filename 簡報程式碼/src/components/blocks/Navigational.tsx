@@ -114,7 +114,7 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
                           {hasGlyph && <span className="flex w-6 shrink-0 justify-center text-ink-2">{g && <PartGlyph id={g} size={26} />}</span>}
                           <span className={cn('min-w-0 flex-1 text-balance font-semibold leading-snug text-slate-100', dense ? 'text-[17px]' : 'text-[18px]')}>
                             {ch.title}
-                            {rowIsNew(ch.slide) && <span className="ml-1.5 inline-block rounded bg-emerald-400 px-1.5 align-[1px] text-[16px] font-black leading-6 text-paper">新</span>}
+                            {rowIsNew(ch.slide) && <span className="ml-1.5 inline-block rounded bg-red-400 px-1.5 align-[1px] text-[16px] font-black leading-6 text-paper">新</span>}
                             {isRef && <span className="ml-1.5 inline-block text-[16px] font-semibold text-slate-500">查閱</span>}
                             {preview && (
                               <span className={cn('mt-1 text-[16px] font-normal leading-snug text-slate-400', previewLines === 4 ? 'line-clamp-4' : 'line-clamp-1')}>{preview}</span>
@@ -166,7 +166,7 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
             type="button"
             onClick={() => goToId(newSlides[0].id)}
             title={newSlides.map((s) => `P.${pad(numberOf(s.id))} ${s.title}`).join('\n')}
-            className={cn('group flex min-h-[44px] items-center gap-2 rounded-xl bg-emerald-400 px-4 py-2 text-[19px] font-bold text-paper transition hover:bg-emerald-300', focusRing)}
+            className={cn('group flex min-h-[44px] items-center gap-2 rounded-xl bg-red-400 px-4 py-2 text-[19px] font-bold text-paper transition hover:bg-red-500', focusRing)}
           >
             {NEW_LABEL} {newSlides.length} 頁
             <ArrowUpRight className="size-4" aria-hidden />
@@ -183,7 +183,7 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
             )}
           >
             {link.title}
-            {newIds.has(link.slide) && <span className="inline-block rounded bg-emerald-400 px-1.5 text-[16px] font-black leading-6 text-paper">新</span>}
+            {newIds.has(link.slide) && <span className="inline-block rounded bg-red-400 px-1.5 text-[16px] font-black leading-6 text-paper">新</span>}
             <span className="font-mono text-[16px] text-slate-500">P.{pad(numberOf(link.slide))}</span>
           </button>
         ))}

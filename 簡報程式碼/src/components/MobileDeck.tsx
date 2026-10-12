@@ -163,7 +163,7 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
               </p>
               <button type="button" onClick={() => setSearchOpen(true)} aria-label="搜尋關鍵字" className={cn(barIcon, 'relative')}>
                 <Search className="size-[22px]" aria-hidden />
-                {isNew('2026-10-08') && <span aria-hidden className="absolute right-1.5 top-1.5 size-2.5 rounded-full bg-emerald-400" />}
+                {isNew('2026-10-08') && <span aria-hidden className="absolute right-1.5 top-1.5 size-2.5 rounded-full bg-red-400" />}
               </button>
               <button
                 type="button"
@@ -173,7 +173,7 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
               >
                 <BookOpenCheck className="size-5" aria-hidden />
                 今天
-                {isNew('2026-10-09') && <span aria-hidden className="absolute right-0.5 top-0.5 size-2.5 rounded-full bg-emerald-400" />}
+                {isNew('2026-10-09') && <span aria-hidden className="absolute right-0.5 top-0.5 size-2.5 rounded-full bg-red-400" />}
               </button>
               {showBack ? (
                 <button
@@ -268,7 +268,7 @@ function MobileSlide({ slide, index }: { slide: SlideData; index: number }) {
             {slide.source && <span className="rounded-md border border-line px-2 py-0.5 font-semibold text-slate-400">{SOURCE_LABEL[slide.source]}</span>}
             {slide.advanced && slide.part !== 'advanced' && <span className="rounded-md border border-amber-500/50 bg-amber-950 px-2 py-0.5 font-semibold text-amber-200">進階</span>}
             {slide.tier === 'ref' && <span className="rounded-md border border-line px-2 py-0.5 font-semibold text-slate-400">查閱</span>}
-            {isNew(slide.added) && <span className="rounded-md bg-emerald-400 px-2 py-0.5 font-black text-paper">新</span>}
+            {isNew(slide.added) && <span className="rounded-md bg-red-400 px-2 py-0.5 font-black text-paper">新</span>}
           </div>
           <h2 className="mt-2 text-[26px] font-black leading-[1.3] text-white">{slide.title}</h2>
           {hints.length > 0 && (

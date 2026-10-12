@@ -119,7 +119,7 @@ export function ChapterDrawer({ open, index, onClose, onSelect, mobile = false }
                             </span>
                             <span className="min-w-0 flex-1">
                               <span className={cn('block truncate text-[16px] font-semibold', active ? 'text-sky-100' : 'text-slate-100')}>
-                                {isNew(slide.added) && <span className="mr-1.5 rounded bg-emerald-400 px-1.5 text-[13px] font-black text-paper">新</span>}
+                                {isNew(slide.added) && <span className="mr-1.5 rounded bg-red-400 px-1.5 text-[13px] font-black text-paper">新</span>}
                                 {slide.title}
                               </span>
                               {slide.chapter && (

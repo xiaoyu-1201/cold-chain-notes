@@ -100,12 +100,12 @@ export function SlideNav({
           <Search className="size-5" aria-hidden />
           <span className={labelCls}>搜尋</span>
           {/* 10/8 新功能：綠點（NEW_SINCE 往後移就自動退掉） */}
-          {isNew('2026-10-08') && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-emerald-400" />}
+          {isNew('2026-10-08') && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-red-400" />}
         </NavButton>
         <NavButton label="今天讀什麼：讀到哪、今天這 3 頁、錯題複習" onClick={onProgress} className="relative">
           <BookOpenCheck className="size-5" aria-hidden />
           <span className={labelCls}>今天</span>
-          {isNew('2026-10-09') && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-emerald-400" />}
+          {isNew('2026-10-09') && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-red-400" />}
         </NavButton>
         {back ? (
           // 只寫「返回 P.52」：完整標題放在說明（滑鼠停留、讀屏都聽得到），按鈕可以縮小，不會擠到中間的篇章列
@@ -347,7 +347,7 @@ function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) 
                 {groupLabel(group.part)}
               </LensMagnify>
               {/* 這一篇裡有新頁：右上角綠點 */}
-              {group.items.some((i) => isNew(slides[i].added)) && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-emerald-400" />}
+              {group.items.some((i) => isNew(slides[i].added)) && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-red-400" />}
             </button>
           )
         })}
@@ -418,14 +418,14 @@ function PageStrip({ index, onGoTo }: { index: number; onGoTo: (index: number) =
                   // 查閱頁：字淡一點（必讀的才是實心）
                   !on && slides[i].tier === 'ref' && 'text-slate-500',
                   // 這一批新增的頁：綠色外框＋右上角小點（目前頁用綠框就夠）
-                  isNew(slides[i].added) && (on ? 'ring-2 ring-emerald-400' : 'ring-1 ring-emerald-500/80 text-emerald-200'),
+                  isNew(slides[i].added) && (on ? 'ring-2 ring-red-400' : 'ring-1 ring-red-400 text-red-400'),
                   focusRing,
                 )}
               >
                 <LensMagnify lens={lens} geom={track.geom} index={k}>
                   {k + 1}
                 </LensMagnify>
-                {isNew(slides[i].added) && !on && <span aria-hidden className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-emerald-400" />}
+                {isNew(slides[i].added) && !on && <span aria-hidden className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-red-400" />}
               </button>
             )
           })}
@@ -465,7 +465,7 @@ function Tip({ i, x }: { i: number; x: number }) {
     <span style={{ left: x }} className="pointer-events-none absolute bottom-full z-50 mb-3 -translate-x-1/2 whitespace-nowrap rounded-lg border border-line bg-card px-3 py-1.5 text-[13px] font-semibold text-slate-100 shadow-[0_6px_18px_-8px_rgba(15,36,64,0.3)]">
       <span className="font-mono text-sky-400">P.{pad(i + 1)}</span>
       <span className={cn('mx-1.5', toneStyles[parts[s.part].tone].text)}>{parts[s.part].short}</span>
-      {isNew(s.added) && <span className="mr-1.5 rounded bg-emerald-400 px-1.5 text-[13px] font-black text-paper">新</span>}
+      {isNew(s.added) && <span className="mr-1.5 rounded bg-red-400 px-1.5 text-[13px] font-black text-paper">新</span>}
       {s.tier === 'ref' && <span className="mr-1.5 text-slate-400">查閱 ·</span>}
       {s.title}
     </span>

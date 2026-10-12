@@ -3,7 +3,7 @@ import { Target } from 'lucide-react'
 import { PART_NO, parts } from '../data/parts'
 import { slides } from '../data/slides'
 import type { SlideData } from '../data/types'
-import { NEW_LABEL, isNew } from '../data/whatsNew'
+import { NEW_LABEL, isNew, newTag } from '../data/whatsNew'
 import { cn } from '../lib/cn'
 import { toneStyles } from '../lib/tone'
 import { BlockRenderer } from './blocks/BlockRenderer'
@@ -65,8 +65,8 @@ export function SlideCard({ slide }: { slide: SlideData }) {
               </span>
             )}
             {isNew(slide.added) && (
-              <span className="ml-1 rounded-md bg-emerald-400 px-2 py-0.5 text-[16px] font-black leading-none text-navy-950" title={NEW_LABEL}>
-                新
+              <span className="ml-2 rounded-lg bg-red-400 px-3 py-1 text-[20px] font-black leading-none text-paper shadow-sm" title={NEW_LABEL}>
+                {newTag(slide.added)}
               </span>
             )}
           </p>

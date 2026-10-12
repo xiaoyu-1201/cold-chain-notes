@@ -197,7 +197,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
       {glyph && (mode === 'term' || flipped) && <PartGlyph id={glyph} size={mobile ? 56 : flipped ? 80 : 104} className="mb-2 text-ink-2" />}
       <p className={cn('mb-3 flex items-center gap-2 font-semibold text-slate-500', size.small)}>
         {card.group}
-        {isNew(card.added) && <span className={cn('rounded bg-emerald-400 px-2 font-black text-paper', mobile ? 'text-[14px] leading-6' : 'text-[18px] leading-7')}>新</span>}
+        {isNew(card.added) && <span className={cn('rounded bg-red-400 px-2 font-black text-paper', mobile ? 'text-[14px] leading-6' : 'text-[18px] leading-7')}>新</span>}
       </p>
       {mode === 'term' || flipped ? (
         <span className={cn('font-black text-white', flipped ? (mobile ? 'text-[28px]' : 'text-[52px]') : size.term)}>{card.term}</span>

@@ -120,6 +120,9 @@ function SmallParts() {
       {/* 油分離器：排氣管上 */}
       <g data-hit="oub">
         <rect x={670} y={168} width={20} height={34} rx={8} fill="#ffffff" stroke={COLORS.discharge} strokeWidth={2.5} />
+        {/* 罐身接縫＋底部積的油 */}
+        <path d="M 672 176 H 688 M 672 194 H 688" stroke={COLORS.discharge} strokeOpacity={0.5} strokeWidth={1.5} />
+        <rect x={673} y={195} width={14} height={5} rx={2} fill={COLORS.discharge} fillOpacity={0.3} />
         <SmallLabel x={698} y={190} text="油分離器" />
       </g>
       {/* 壓力開關：接壓縮機 */}
@@ -134,6 +137,8 @@ function SmallParts() {
       {/* 儲液器、手閥：液管水平段 */}
       <g data-hit="receiver">
         <rect x={204} y={83} width={34} height={18} rx={8} fill="#ffffff" stroke={COLORS.liquid} strokeWidth={2.5} />
+        {/* 罐裡存著半罐液體 */}
+        <rect x={207} y={92} width={28} height={6} rx={3} fill={COLORS.liquid} fillOpacity={0.4} />
         <SmallLabel x={221} y={74} text="儲液器" anchor="middle" />
       </g>
       <g data-hit="gbc">
@@ -145,6 +150,8 @@ function SmallParts() {
       {/* 乾燥過濾器、視液鏡、電磁閥：液管垂直段 */}
       <g data-hit="dml">
         <rect x={132} y={110} width={16} height={30} rx={6} fill="#ffffff" stroke={COLORS.liquid} strokeWidth={2.5} />
+        {/* 裡面的濾網（斜紋） */}
+        <path d="M 135 120 L 145 114 M 135 127 L 145 121 M 135 134 L 145 128" stroke={COLORS.liquid} strokeOpacity={0.6} strokeWidth={1.5} strokeLinecap="round" />
         <SmallLabel x={156} y={130} text="乾燥過濾器" />
       </g>
       <g data-hit="sgi">
@@ -155,6 +162,8 @@ function SmallParts() {
       <g data-hit="evr">
         <rect x={134} y={186} width={12} height={8} rx={2} fill={INK2} />
         <rect x={131} y={194} width={18} height={18} rx={3} fill="#ffffff" stroke={COLORS.liquid} strokeWidth={2.5} />
+        {/* 閥門符號：兩個三角形對頂 */}
+        <path d="M 135 198 L 145 208 L 145 198 L 135 208 Z" fill={COLORS.liquid} fillOpacity={0.45} />
         <SmallLabel x={156} y={208} text="電磁閥" />
       </g>
       {/* 溫控器：控制電磁閥與壓縮機 */}
@@ -168,6 +177,9 @@ function SmallParts() {
       {/* 液氣分離器：吸氣管上 */}
       <g data-hit="acc">
         <rect x={667} y={402} width={26} height={38} rx={9} fill="#ffffff" stroke={COLORS.suction} strokeWidth={2.5} />
+        {/* 底部擋下的液體＋裡面的 U 形吸氣管 */}
+        <rect x={670} y={428} width={20} height={8} rx={3} fill={COLORS.suction} fillOpacity={0.3} />
+        <path d="M 676 405 V 428 a 4 4 0 0 0 8 0 V 405" fill="none" stroke={COLORS.suction} strokeOpacity={0.7} strokeWidth={1.5} />
         <SmallLabel x={700} y={426} text="液氣分離器" />
       </g>
     </g>

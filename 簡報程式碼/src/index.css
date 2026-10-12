@@ -615,10 +615,23 @@ button[class~='bg-sky-500/15']:not([class~='w-full'], [data-no-glass], :disabled
 .cycle-hit > circle {
   transition: fill 0.15s, stroke 0.15s, stroke-opacity 0.15s;
 }
-/* 沒點的熱區不畫虛線框（使用者：一個一個方塊好醜）；滑鼠移過去、鍵盤選到才出現 */
+/* 沒點的熱區平常不畫虛線框（使用者：一個一個方塊好醜）；滑鼠移過去、鍵盤選到才出現。
+   剛打開時閃 3 下虛線框（約 4 秒）提示「可以點」，手機沒有滑鼠移過去也看得到 */
 .cycle-idle > rect,
 .cycle-idle > circle {
   stroke: transparent;
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+  animation: cycle-hint 1.3s ease-in-out 0.6s 3 both;
+}
+@keyframes cycle-hint {
+  0%,
+  100% {
+    stroke: rgb(31 100 168 / 0);
+  }
+  50% {
+    stroke: rgb(31 100 168 / 0.85);
+  }
 }
 .cycle-hit:hover > rect,
 .cycle-hit:hover > circle,

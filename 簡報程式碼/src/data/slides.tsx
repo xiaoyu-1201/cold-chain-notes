@@ -77,7 +77,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 01 封面 ───────────────────────── */
   {
     id: 'cover',
-    added: '2026-10-10',
+    added: '2026-10-12',
     part: 'intro',
     layout: 'cover',
     title: '氣冷式冷凍冷藏系統',
@@ -101,7 +101,7 @@ const slideList: SlideData[] = [
       label: '引言',
       text: (
         <>
-          老闆：「你要懂這些東西，<Hl>你才有辦法賣</Hl>。」
+          老闆：「你沒有兩態變化，你就吸不到熱；<Hl>吸不到熱，就不會冷</Hl>。」〔錄音02 14:52〕
         </>
       ),
     },
@@ -110,10 +110,10 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 02 老闆開場 ───────────────────────── */
   {
     id: 'owner',
-    added: '2026-10-09',
+    added: '2026-10-12',
     part: 'intro',
     mark: 'WELCOME',
-    title: '老闆開場：懂原理，才有辦法賣',
+    title: '老闆開場：匹配一定要對',
     en: "Owner's Briefing",
     blocks: [
       {
@@ -124,10 +124,10 @@ const slideList: SlideData[] = [
             type: 'quote',
             text: (
               <>
-                我們就是賣這些零件，講白就是這樣子……但是<Hl>你要懂這些東西，你才有辦法賣</Hl>。
+                你拿到壓縮機去是<Hl>拿去賺錢的</Hl>，而不是再多一顆再去賠。
               </>
             ),
-            author: '老闆〔錄音01 05:16、錄音02 20:48〕',
+            author: '老闆〔錄音10 04:36；「匹配一定要對」錄音10 06:08〕',
           },
           {
             type: 'grid',
@@ -155,7 +155,7 @@ const slideList: SlideData[] = [
                 tone: 'emerald',
                 title: '比人家多關心他',
                 en: 'Care More',
-                body: '「為什麼客戶會跟你買……就是我們比人家多關心他。」話都講在前面；客人拿壓縮機去是要賺錢，不是再多賠一顆。〔錄音10 03:04、04:36、06:08〕',
+                body: '「為什麼客戶會跟你買……就是我們比人家多關心他。」「我們就是話都講在前面。」〔錄音10 03:04、06:08〕',
               },
             ],
           },
@@ -166,10 +166,10 @@ const slideList: SlideData[] = [
             title: '老闆說的學習順序',
             en: 'Learning Order',
             items: [
-              { gen: '①', example: '原理', note: '冷媒一圈、四大金剛', tone: 'teal' },
-              { gen: '②', example: '單位', note: '管徑幾分、溫度和壓力', tone: 'amber' },
-              { gen: '③', example: '裝置', note: '客人的裝置用在哪', tone: 'violet' },
-              { gen: '④', example: '壓縮機 → 零配件', note: '光壓縮機就二三十種', tone: 'ice' },
+              { gen: '原理', example: '冷媒一圈、四大金剛', note: '', tone: 'teal' },
+              { gen: '單位', example: '管徑幾分、溫度和壓力', note: '', tone: 'amber' },
+              { gen: '裝置', example: '客人的裝置用在哪', note: '', tone: 'violet' },
+              { gen: '壓縮機 → 零配件', example: '光壓縮機就二三十種', note: '', tone: 'ice' },
             ],
           },
         ],
@@ -2220,7 +2220,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 核心圖解：冷凍循環（可持續擴充） ───────────────────────── */
   {
     id: 'cycle-lesson',
-    added: '2026-10-09',
+    added: '2026-10-12',
     part: 'basics',
     chapter: '核心圖解',
     mark: 'CYCLE',

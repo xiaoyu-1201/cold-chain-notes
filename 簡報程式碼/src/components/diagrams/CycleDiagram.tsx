@@ -187,6 +187,29 @@ function HeatArrow({ x, y, color }: { x: number; y: number; color: string }) {
   )
 }
 
+/** 散熱排（冷凝器、蒸發器）：外框＋直立鰭片＋來回彎三趟的銅管；y＝外框頂端，寬 320、高 84 */
+function Coil({ y, color, gradient }: { y: number; color: string; gradient: string }) {
+  const fins = Array.from({ length: 33 }, (_, i) => 262 + i * 9)
+  return (
+    <g>
+      <rect x="250" y={y} width="320" height="84" rx="12" fill="#ffffff" stroke={color} strokeOpacity="0.55" strokeWidth={2} />
+      <g stroke={INK2} strokeOpacity="0.16" strokeWidth={1.5}>
+        {fins.map((x) => (
+          <line key={x} x1={x} x2={x} y1={y + 9} y2={y + 75} />
+        ))}
+      </g>
+      <path
+        d={`M 568 ${y + 20} H 276 a 11 11 0 0 0 0 22 H 544 a 11 11 0 0 1 0 22 H 252`}
+        fill="none"
+        stroke={`url(#${gradient})`}
+        strokeWidth={5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </g>
+  )
+}
+
 function Label({ x, y, title, sub, hit }: { x: number; y: number; title: string; sub: string; hit?: string }) {
   return (
     <g data-hit={hit}>
@@ -334,12 +357,12 @@ export function CycleDiagram({ className, interactive = false, selected = null, 
       <StateText x={122} y={378} lines={['液氣', '混合']} anchor="end" color={TEXT.mixture} hit="mixture-label" />
       <StateText x={700} y={358} lines={['低溫低壓', '氣態']} anchor="start" color={TEXT.suction} hit="suction-label" />
 
-      {/* 冷凝器 */}
-      <rect x="250" y="50" width="320" height="84" rx="12" fill="#ffffff" stroke={COLORS.discharge} strokeOpacity="0.55" strokeWidth={2} />
+      {/* 冷凝器：畫成散熱排（鰭片＋來回彎的銅管，顏色由熱氣漸變成液體），不再是空白方塊 */}
+      <Coil y={50} color={COLORS.discharge} gradient="cycle-cond" />
       <Label x={410} y={166} title="② 冷凝器" sub="Condenser" hit="cond-label" />
 
       {/* 蒸發器 */}
-      <rect x="250" y="426" width="320" height="84" rx="12" fill="#ffffff" stroke={COLORS.suction} strokeOpacity="0.55" strokeWidth={2} />
+      <Coil y={426} color={COLORS.suction} gradient="cycle-evap" />
       <Label x={410} y={384} title="④ 蒸發器" sub="Evaporator" hit="evap-label" />
 
       {/* 壓縮機 */}

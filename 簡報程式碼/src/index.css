@@ -615,12 +615,10 @@ button[class~='bg-sky-500/15']:not([class~='w-full'], [data-no-glass], :disabled
 .cycle-hit > circle {
   transition: fill 0.15s, stroke 0.15s, stroke-opacity 0.15s;
 }
+/* 沒點的熱區不畫虛線框（使用者：一個一個方塊好醜）；滑鼠移過去、鍵盤選到才出現 */
 .cycle-idle > rect,
 .cycle-idle > circle {
-  stroke: var(--color-pipe-blue);
-  stroke-width: 2;
-  stroke-dasharray: 5 4;
-  animation: cycle-pulse 2.8s ease-in-out infinite;
+  stroke: transparent;
 }
 .cycle-hit:hover > rect,
 .cycle-hit:hover > circle,

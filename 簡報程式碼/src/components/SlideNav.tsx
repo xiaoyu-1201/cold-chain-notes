@@ -2,7 +2,7 @@ import { BookOpen, BookOpenCheck, ChevronLeft, ChevronRight, CornerUpLeft, Layou
 import { useCallback, useEffect, useRef, useState, type MouseEvent, type PointerEvent as ReactPointerEvent, type ReactNode, type WheelEvent as ReactWheelEvent } from 'react'
 import { parts } from '../data/parts'
 import { slides } from '../data/slides'
-import { NEW_LABEL, isNew, newTag } from '../data/whatsNew'
+import { NEW_LABEL, isNew, newTag, shortDate } from '../data/whatsNew'
 import { useModal } from '../hooks/useModal'
 import type { PartId } from '../data/types'
 import { cn, pad } from '../lib/cn'
@@ -57,7 +57,7 @@ function NavButton({
       onMouseDown={keepFocus}
       disabled={disabled}
       className={cn(
-        'flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-line bg-card px-3.5 text-slate-200 transition hover:border-sky-500/50 hover:text-sky-300 active:bg-sky-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 disabled:pointer-events-none disabled:opacity-35',
+        'flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-line bg-card px-2.5 text-slate-200 sm:px-3.5 transition hover:border-sky-500/50 hover:text-sky-300 active:bg-sky-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 disabled:pointer-events-none disabled:opacity-35',
         className,
       )}
     >
@@ -91,11 +91,11 @@ export function SlideNav({
     {grid && <PageGrid index={index} onGoTo={onGoTo} onClose={() => setGrid(false)} />}
     <nav
       aria-label="簡報控制"
-      className="glass glass-bar glass-flat relative z-10 flex h-16 shrink-0 items-center gap-4 border-t border-line px-3 sm:px-5"
+      className="glass glass-bar glass-flat relative z-10 flex h-16 shrink-0 items-center gap-2 border-t border-line px-2 sm:gap-4 sm:px-5"
     >
       {/* 有「返回」鈕時，左邊三顆只留圖示（文字在說明裡），返回鈕才不會壓到篇章列（10/10 QA：1920 寬重疊 14px） */}
       {/* 篇章列是固定寬，大螢幕時左邊先保留一塊給提示／標題，不然會被篇章列吃光；平板（<1280）按鈕只留圖示 */}
-      <div className="flex flex-1 items-center gap-3 min-[1600px]:min-w-[260px]">
+      <div className="flex flex-1 items-center gap-2 sm:gap-3 min-[1600px]:min-w-[260px]">
         <NavButton label="章節目錄 (M)" onClick={onOpenMenu}>
           <Menu className="size-5" aria-hidden />
           <span className={labelCls}>目錄</span>
@@ -123,7 +123,7 @@ export function SlideNav({
           </NavButton>
         ) : null}
         {/* 提示放在絕對定位層：只用剩下的空間，不會把左半邊撐大、擠到中間的篇章列 */}
-        <div className="relative h-10 min-w-0 flex-1">
+        <div className="relative hidden h-10 min-w-0 flex-1 sm:block">
           {hints.length > 0 ? (
             <p
               title={hints.join('；')}
@@ -159,12 +159,12 @@ export function SlideNav({
           onClick={() => setGrid(true)}
           title="看全部頁、直接跳過去"
           aria-label={`第 ${index + 1} 頁，共 ${total} 頁：按這裡看全部頁`}
-          className={cn('flex min-h-[40px] min-w-[72px] shrink-0 items-center justify-center gap-1 rounded-xl border border-line px-2 font-mono text-sm font-bold tracking-wider text-slate-300 transition hover:border-sky-500/60 hover:text-ink', focusRing)}
+          className={cn('flex min-h-[40px] shrink-0 items-center justify-center gap-1 rounded-xl border border-line px-2 font-mono text-sm font-bold sm:min-w-[72px] sm:tracking-wider text-slate-300 transition hover:border-sky-500/60 hover:text-ink', focusRing)}
         >
           <span aria-live="polite">
-            <span className="text-sky-300">{pad(index + 1)}</span> / {pad(total)}
+            <span className="text-sky-300">{pad(index + 1)}</span>/{pad(total)}
           </span>
-          <LayoutGrid className="size-4 text-slate-400" aria-hidden />
+          <LayoutGrid className="hidden size-4 text-slate-400 sm:block" aria-hidden />
         </button>
         <NavButton label="下一頁 (→ / Space)" onClick={onNext} disabled={index === total - 1}>
           <ChevronRight className="size-5" aria-hidden />
@@ -187,7 +187,7 @@ export function SlideNav({
           <BookOpen className="size-5" aria-hidden />
           <span className="hidden text-sm font-bold xl:inline">手機版</span>
         </NavButton>
-        <NavButton label={isFullscreen ? '離開全螢幕 (F)' : '全螢幕 (F)'} onClick={onToggleFullscreen}>
+        <NavButton label={isFullscreen ? '離開全螢幕 (F)' : '全螢幕 (F)'} onClick={onToggleFullscreen} className="hidden sm:flex">
           {isFullscreen ? <Minimize className="size-5" aria-hidden /> : <Maximize className="size-5" aria-hidden />}
         </NavButton>
       </div>
@@ -202,8 +202,10 @@ function PageGrid({ index, onGoTo, onClose }: { index: number; onGoTo: (index: n
   const currentRef = useRef<HTMLButtonElement>(null)
   useModal(true, onClose, closeRef)
   // 打開時捲到目前這一頁
-  useEffect(() => currentRef.current?.scrollIntoView({ block: 'center' }), [])
-  const newCount = slides.filter((s) => isNew(s.added)).length
+  // 用大括號：有的瀏覽器 scrollIntoView 會回傳 Promise，React 會把回傳值當清除函式呼叫而整頁當掉（10/12 QA）
+  useEffect(() => {
+    currentRef.current?.scrollIntoView({ block: 'center' })
+  }, [])
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[rgba(15,36,64,0.35)] p-4" onClick={onClose}>
       <div
@@ -213,13 +215,14 @@ function PageGrid({ index, onGoTo, onClose }: { index: number; onGoTo: (index: n
         className="flex max-h-[86vh] w-full max-w-[1180px] flex-col overflow-hidden rounded-[18px] border border-line bg-card shadow-[0_24px_60px_-20px_rgba(15,36,64,0.45)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center gap-3 border-b border-line px-5 py-3">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-line px-5 py-3">
           <LayoutGrid className="size-5 text-sky-400" aria-hidden />
-          <p className="text-[18px] font-black text-ink">全部 {slides.length} 頁</p>
-          {newCount > 0 && <span className="rounded-lg bg-red-400 px-2.5 py-0.5 text-[15px] font-black text-paper">紅色＝{NEW_LABEL}，共 {newCount} 頁</span>}
+          <p className="shrink-0 whitespace-nowrap text-[18px] font-black text-ink">全部 {slides.length} 頁</p>
+          {NEW_COUNT > 0 && <span className="rounded-lg bg-red-400 px-2.5 py-0.5 text-[15px] font-black text-paper">紅色＝{NEW_LABEL}，共 {NEW_COUNT} 頁</span>}
+          {SHOW_LATEST && <span className="rounded-lg border-2 border-red-400 px-2.5 py-0.5 text-[15px] font-black text-red-400">粗框＝這次 {shortDate(LATEST)} 改的，{LATEST_COUNT} 頁</span>}
           <button ref={closeRef} type="button" onClick={onClose} className={cn('ml-auto flex min-h-[40px] items-center gap-1.5 rounded-xl border border-line px-3 text-[15px] font-semibold text-slate-200 hover:border-sky-500/60', focusRing)}>
             <X className="size-4" aria-hidden />
-            關閉（Esc）
+            關閉<span className="hidden sm:inline">（Esc）</span>
           </button>
         </div>
         <div className="overflow-y-auto px-5 py-4">
@@ -242,7 +245,8 @@ function PageGrid({ index, onGoTo, onClose }: { index: number; onGoTo: (index: n
                         onClose()
                       }}
                       className={cn(
-                        'flex min-h-[48px] items-start gap-2 rounded-xl border px-3 py-2 text-left text-[15px] leading-snug transition',
+                        'flex min-h-[48px] items-start gap-2 rounded-xl px-3 py-2 text-left text-[15px] leading-snug transition',
+                        !on && SHOW_LATEST && s.added === LATEST ? 'border-2' : 'border',
                         on ? 'border-sky-500 bg-sky-950 font-bold text-ink' : fresh ? 'border-red-400 bg-red-950 text-slate-100 hover:border-red-500' : 'border-line text-slate-200 hover:border-sky-500/60',
                         focusRing,
                       )}
@@ -261,6 +265,12 @@ function PageGrid({ index, onGoTo, onClose }: { index: number; onGoTo: (index: n
     </div>
   )
 }
+
+/** 全部頁一覽用：新頁數、最近一次改的那天和頁數（10/12 QA：紅色的頁很多，老闆要分得出哪幾頁是這次改的） */
+const NEW_COUNT = slides.filter((s) => isNew(s.added)).length
+const LATEST = slides.reduce((m, s) => (s.added && s.added > m ? s.added : m), '')
+const LATEST_COUNT = slides.filter((s) => s.added === LATEST).length
+const SHOW_LATEST = !!LATEST && isNew(LATEST)
 
 /** 依篇章分組（保持投影片順序），給頁碼點分區用 */
 const dotGroups = slides.reduce<{ part: PartId; items: number[] }[]>((acc, s, i) => {

@@ -1,5 +1,5 @@
 /**
- * 15 段完整上課錄音（離線檔、本機開發用）。
+ * 16 段完整上課錄音（離線檔、本機開發用）。
  * 公開網站（npm run build:pages）不放：vite.config 會把這個檔換成 classAudio.public.ts。
  * 原因（10/09 使用者決定）：錄音裡有客人名字、價格、品牌評價、講電話的內容，逐字稿匿名化了，錄音沒辦法。
  */
@@ -18,5 +18,6 @@ import part12Url from '../assets/class-1005-part1.m4a'
 import part13Url from '../assets/class-1006-part1.m4a'
 import part14Url from '../assets/class-1006-part2.m4a'
 import part15Url from '../assets/class-1007-part1.m4a'
+import part16Url from '../assets/class-1012-part1.m4a'
 
-export const CLASS_AUDIO_URLS: string[] = [part1Url, part2Url, part3Url, part4Url, part5Url, part6Url, part7Url, part8Url, part9Url, part10Url, part11Url, part12Url, part13Url, part14Url, part15Url]
+export const CLASS_AUDIO_URLS: string[] = [part1Url, part2Url, part3Url, part4Url, part5Url, part6Url, part7Url, part8Url, part9Url, part10Url, part11Url, part12Url, part13Url, part14Url, part15Url, part16Url]

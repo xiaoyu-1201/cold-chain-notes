@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 // 公開網站版會被 vite.config 換成 classAudio.public.ts（沒有錄音）
 import { CLASS_AUDIO_URLS } from './classAudio'
 
-const [part1Url, part2Url, part3Url, part4Url, part5Url, part6Url, part7Url, part8Url, part9Url, part10Url, part11Url, part12Url, part13Url, part14Url, part15Url] = CLASS_AUDIO_URLS
+const [part1Url, part2Url, part3Url, part4Url, part5Url, part6Url, part7Url, part8Url, part9Url, part10Url, part11Url, part12Url, part13Url, part14Url, part15Url, part16Url] = CLASS_AUDIO_URLS
 
 /** 這個版本有沒有完整上課錄音（公開網站沒有，離線檔有） */
 export const HAS_CLASS_AUDIO = CLASS_AUDIO_URLS.some(Boolean)
@@ -32,9 +32,11 @@ export const CLASS_AUDIO_13 = part13Url
 export const CLASS_AUDIO_14 = part14Url
 /** 錄音15（10-7：送貨對貨 SOP、老闆看簡報補充壓縮機牌子） */
 export const CLASS_AUDIO_15 = part15Url
+/** 錄音16（10-12：元件新頁複習——吐出溫度、配件、散熱器、除霜、冷凍庫三種） */
+export const CLASS_AUDIO_16 = part16Url
 
 /** 依錄音編號排好（RECORDINGS[0]＝錄音01）；名詞翻卡的台語片段用 */
-export const RECORDINGS = [part1Url, part2Url, part3Url, part4Url, part5Url, part6Url, part7Url, part8Url, part9Url, part10Url, part11Url, part12Url, part13Url, part14Url, part15Url]
+export const RECORDINGS = [part1Url, part2Url, part3Url, part4Url, part5Url, part6Url, part7Url, part8Url, part9Url, part10Url, part11Url, part12Url, part13Url, part14Url, part15Url, part16Url]
 
 const ready = new Map<string, string>()
 const pending = new Map<string, Promise<string>>()

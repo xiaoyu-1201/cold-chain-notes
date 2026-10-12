@@ -8,5 +8,7 @@ export const NEW_SINCE = '2026-10-09'
 export const NEW_LABEL = '10/9 之後新增、修正'
 
 export const isNew = (added?: string) => !!added && added >= NEW_SINCE
+/** 日期縮寫：2026-10-12 → 「10/12」 */
+export const shortDate = (added: string) => `${Number(added.slice(5, 7))}/${Number(added.slice(8, 10))}`
 /** 標籤上的字：「新・10/12」 */
-export const newTag = (added?: string) => (added ? `新・${Number(added.slice(5, 7))}/${Number(added.slice(8, 10))}` : '新')
+export const newTag = (added?: string) => (added ? `新・${shortDate(added)}` : '新')

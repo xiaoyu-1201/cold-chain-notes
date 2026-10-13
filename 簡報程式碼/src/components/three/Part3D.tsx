@@ -113,8 +113,16 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
       scene.add(tag)
       return tag
     })
-    /** 標註排版（10/13 使用者：標籤被擋住、擠在一起）：標籤排在 3D 框的左右兩欄，照零件在畫面上的高低排好、不重疊、避開下面那排按鈕；引線從零件拉到標籤 */
+    /** 標註排版（10/13 使用者：標籤被擋住、轉動時一直閃、左右換邊）：
+     *  每個標籤固定在左欄或右欄（看零件在模型的左半還是右半），上下順序也固定（看零件高低）；
+     *  每一格畫面都重算位置，跟著零件平順移動、不重疊、不出框、避開下面那排按鈕；引線從零件拉到標籤 */
     const tmp = new THREE.Vector3()
+    const offsets = tagEls.map(() => ({ x: 0, y: 0 }))
+    const sideOf = tags.map((t, i) => {
+      const a = t.position
+      return Math.abs(a.x) < radius * 0.08 ? i % 2 === 0 : a.x < 0
+    })
+    const orderAll = tags.map((_, i) => i).sort((a, b) => tags[b].position.y - tags[a].position.y)
     const unstack = () => {
       const hr = host.getBoundingClientRect()
       if (!hr.width) return
@@ -122,38 +130,36 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
       const gap = 6
       const minY = hr.top + pad + 34
       const maxY = hr.bottom - (liftRef.current ? 70 : pad)
-      const shown = tags.map((t, i) => ({ t, el: tagEls[i] })).filter((x) => x.t.visible)
-      shown.forEach((x) => (x.el.style.transform = ''))
-      const items = shown.map((x) => {
-        const r = x.el.getBoundingClientRect()
-        tmp.copy(x.t.position).project(camera)
-        const ax = hr.left + ((tmp.x + 1) / 2) * hr.width
-        const ay = hr.top + ((1 - tmp.y) / 2) * hr.height
-        return { ...x, r, ax, ay, z: tmp.z, ty: 0, left: ax < hr.left + hr.width / 2 }
-      })
       for (const side of [true, false]) {
-        const col = items.filter((it) => it.left === side).sort((a, b) => a.ay - b.ay)
+        const col = orderAll.filter((i) => tags[i].visible && sideOf[i] === side)
+        const items = col.map((i) => {
+          const el = tagEls[i]
+          const cur = el.getBoundingClientRect()
+          // 拿掉上一次的位移，就是標籤原本（在零件上）的位置
+          const r = new DOMRect(cur.left - offsets[i].x, cur.top - offsets[i].y, cur.width, cur.height)
+          tmp.copy(tags[i].position).project(camera)
+          return { i, el, r, ay: hr.top + ((1 - tmp.y) / 2) * hr.height, z: tmp.z, ty: 0 }
+        })
         let y = minY
-        for (const it of col) {
+        for (const it of items) {
           it.ty = Math.max(y, it.ay - it.r.height / 2)
           y = it.ty + it.r.height + gap
         }
         const over = y - gap - maxY
-        if (over > 0) col.forEach((it) => (it.ty = Math.max(minY, it.ty - over)))
-      }
-      for (const it of items) {
-        const tx = it.left ? hr.left + pad : hr.right - pad - it.r.width
-        it.el.style.transform = `translate(${tx - it.r.left}px, ${it.ty - it.r.top}px)`
-        // 引線：零件 → 標籤靠近零件的那一邊
-        const ex = it.left ? tx + it.r.width : tx
-        const ey = it.ty + it.r.height / 2
-        tmp.set(((ex - hr.left) / hr.width) * 2 - 1, -((ey - hr.top) / hr.height) * 2 + 1, it.z).unproject(camera)
-        const pos = (it.t.userData.lead as THREE.Line).geometry.getAttribute('position') as THREE.BufferAttribute
-        pos.setXYZ(1, tmp.x, tmp.y, tmp.z)
-        pos.needsUpdate = true
+        if (over > 0) items.forEach((it) => (it.ty = Math.max(minY, it.ty - over)))
+        for (const it of items) {
+          const tx = side ? hr.left + pad : hr.right - pad - it.r.width
+          offsets[it.i] = { x: tx - it.r.left, y: it.ty - it.r.top }
+          it.el.style.transform = `translate(${offsets[it.i].x}px, ${offsets[it.i].y}px)`
+          const ex = side ? tx + it.r.width : tx
+          const ey = it.ty + it.r.height / 2
+          tmp.set(((ex - hr.left) / hr.width) * 2 - 1, -((ey - hr.top) / hr.height) * 2 + 1, it.z).unproject(camera)
+          const pos = (tags[it.i].userData.lead as THREE.Line).geometry.getAttribute('position') as THREE.BufferAttribute
+          pos.setXYZ(1, tmp.x, tmp.y, tmp.z)
+          pos.needsUpdate = true
+        }
       }
     }
-    let frame = 0
     let labelsOn = false
     // 亮起來／變淡：記住每個材質原本的樣子，取消時還原
     const allMats = new Set<THREE.MeshStandardMaterial>()
@@ -314,7 +320,7 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
       controls.update()
       renderer.render(scene, camera)
       labelLayer.render(scene, camera)
-      if (++frame % 3 === 0) unstack()
+      if (labelsOn || hlIndex >= 0) unstack()
       raf = requestAnimationFrame(tick)
     }
     tick()

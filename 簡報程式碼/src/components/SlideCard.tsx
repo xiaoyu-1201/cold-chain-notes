@@ -76,12 +76,13 @@ function StandardSlide({ slide }: { slide: SlideData }) {
                 · 查閱
               </span>
             )}
+            {/* 開關放前面、日期放後面：關掉時日期隱形，空的是右邊（10/13 使用者） */}
+            {isNew(slide.added) && <NewToggle />}
             {isNew(slide.added) && (
-              <span className="new-keep ml-2 rounded-lg bg-red-400 px-3 py-1 text-[20px] font-black leading-none text-paper shadow-sm" title={NEW_LABEL}>
+              <span className="new-keep rounded-lg bg-red-400 px-3 py-1 text-[20px] font-black leading-none text-paper shadow-sm" title={NEW_LABEL}>
                 {newTag(slide.added)}
               </span>
             )}
-            {isNew(slide.added) && <NewToggle />}
           </p>
           <h2 className="mt-2 text-[60px] font-bold leading-[1.1] tracking-tight text-white">{slide.title}</h2>
           <ChangesNote slide={slide} />

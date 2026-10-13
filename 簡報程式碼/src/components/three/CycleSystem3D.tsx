@@ -197,6 +197,10 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     // 零件
     for (const p of PLACEMENTS) {
       const model = buildPart(p.id)
+      // 單獨看零件時才有的東西（例：冷排的天花板、吊桿）：循環圖裡拿掉
+      const extras: THREE.Object3D[] = []
+      model.group.traverse((o) => o.userData.mountOnly && extras.push(o))
+      extras.forEach((o) => o.removeFromParent())
       const box = new THREE.Box3().setFromObject(model.group)
       model.group.position.sub(box.getCenter(new THREE.Vector3()))
       const holder = new THREE.Group()

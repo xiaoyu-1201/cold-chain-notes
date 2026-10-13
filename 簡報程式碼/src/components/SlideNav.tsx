@@ -8,8 +8,6 @@ import type { PartId } from '../data/types'
 import { cn, pad } from '../lib/cn'
 import { toneStyles } from '../lib/tone'
 import { Kbd } from './ui/Kbd'
-import { LensMagnify, LensView } from './ui/LiquidLens'
-import { useLensTrack, useLiquidLens } from '../hooks/useLiquidLens'
 
 interface SlideNavProps {
   index: number
@@ -72,8 +70,6 @@ export function SlideNav({
   partLabel,
   title,
   isFullscreen,
-  onPrev,
-  onNext,
   onGoTo,
   onOpenMenu,
   onSearch,
@@ -146,14 +142,10 @@ export function SlideNav({
         </div>
       </div>
 
-      {/* 中間：左邊「篇章列」選篇，右邊「上一頁・這篇的頁碼・頁數・下一頁」翻頁；兩個都固定寬，換篇時什麼都不會動 */}
+      {/* 中間：篇章和頁碼合成一條（10/13 使用者：不喜歡分成左右）——現在這篇的頁碼直接展開在篇名後面；
+          不放上一頁／下一頁箭頭（翻頁用鍵盤 ← →、滑動，或點頁碼）；最後是頁數，按下去看全部頁 */}
       <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-        <ChapterBar index={index} onGoTo={onGoTo} />
-        <NavButton label="上一頁 (←)" onClick={onPrev} disabled={index === 0}>
-          <ChevronLeft className="size-5" aria-hidden />
-        </NavButton>
-        <PageStrip index={index} onGoTo={onGoTo} />
-        {/* 頁數：按下去跳出全部頁（10/12 使用者：左右翻頁不方便） */}
+        <MergedBar index={index} onGoTo={onGoTo} />
         <button
           type="button"
           onClick={() => setGrid(true)}
@@ -166,11 +158,7 @@ export function SlideNav({
           </span>
           <LayoutGrid className="hidden size-4 text-slate-400 sm:block" aria-hidden />
         </button>
-        <NavButton label="下一頁 (→ / Space)" onClick={onNext} disabled={index === total - 1}>
-          <ChevronRight className="size-5" aria-hidden />
-        </NavButton>
       </div>
-
       <div className="flex flex-1 items-center justify-end gap-3">
         <div className="hidden items-center gap-1.5 whitespace-nowrap text-[13px] text-slate-400 min-[1900px]:flex">
           <Kbd>←</Kbd>
@@ -378,90 +366,14 @@ function Arrows({ fade, slide, label }: { fade: { l: boolean; r: boolean }; slid
 }
 
 /**
- * 篇章列：一排九個篇名，位置固定；目前這篇變亮（用該篇的顏色），點篇名跳到該篇第一頁。
- * 頁碼不放在這裡（在旁邊的 PageStrip），所以換篇時外框和篇名都不會動。
- * 螢幕不夠寬（iPad）時可以左右滑、兩端有箭頭、滑鼠可以按住拖。
+ * 篇章＋頁碼合成一條：九個篇名排成一排，現在這篇的名字後面直接接它的每一頁（1、2、3…）；
+ * 點篇名跳到那篇第一頁、點頁碼跳到那頁。放不下時可以左右滑（兩端淡出＋箭頭、滑鼠可以按住拖），目前頁自動捲到中間。
  */
-function ChapterBar({ index, onGoTo }: { index: number; onGoTo: (index: number) => void }) {
+function MergedBar({ index, onGoTo }: { index: number; onGoTo: (index: number) => void }) {
   const { wrap, tip, show, clear } = useHoverTip()
   const { scroller, fade, mask, slide, handlers, measure, scrollable } = useStripScroll()
   const cur = groupOf(index)
-  const curIdx = dotGroups.indexOf(cur)
   const active = useRef<HTMLButtonElement>(null)
-  useEffect(() => {
-    const el = scroller.current
-    const btn = active.current
-    if (el && btn && el.scrollWidth > el.clientWidth) el.scrollLeft = btn.offsetLeft - el.clientWidth / 2 + btn.offsetWidth / 2
-    measure()
-  }, [cur, measure, scroller])
-  // 液態玻璃鏡片：目前這篇；按住鏡片（目前那篇）拖＝移動鏡片、放開跳到那一篇；在別的地方拖＝照舊捲動篇章列
-  const lens = useLiquidLens({ liftScale: 1 })
-  const items = useRef<(HTMLButtonElement | null)[]>([])
-  const track = useLensTrack({ lens, container: scroller, items, rest: curIdx, canStart: (i) => i === curIdx, onCommit: (i) => i !== curIdx && onGoTo(dotGroups[i].items[0]) })
-  return (
-    <div ref={wrap} className="relative hidden min-w-0 lg:block" onMouseLeave={clear}>
-      <Arrows fade={fade} slide={slide} label="篇章列" />
-      <div
-        ref={scroller}
-        {...handlers}
-        {...lensHandlers(track, handlers)}
-        onScroll={() => (measure(), clear())}
-        style={{ maskImage: mask, WebkitMaskImage: mask }}
-        data-lens-group
-        className={cn(stripCls, scrollable && 'cursor-grab active:cursor-grabbing')}
-      >
-        <LensView lens={lens} className="inset-y-1" restClassName={toneStyles[parts[cur.part].tone].soft} />
-        {dotGroups.map((group, gi) => {
-          const part = parts[group.part]
-          const current = group === cur
-          return (
-            <button
-              key={group.part}
-              ref={(el) => {
-                items.current[gi] = el
-                if (current) active.current = el
-              }}
-              type="button"
-              onClick={() => onGoTo(group.items[0])}
-              onMouseDown={keepFocus}
-              onMouseEnter={show(group.items[0])}
-              onFocus={show(group.items[0])}
-              aria-label={`${part.short}：${group.items.length} 頁，跳到第一頁`}
-              aria-current={current ? 'true' : undefined}
-              className={cn(
-                'relative shrink-0 whitespace-nowrap rounded-full px-[5px] py-1.5 text-[13px] font-semibold leading-tight transition xl:px-2.5 2xl:px-3 2xl:text-[14px]',
-                current ? cn('touch-pan-y font-bold', toneStyles[part.tone].text) : 'text-slate-400 hover:bg-white/[0.05] hover:text-ink',
-                focusRing,
-              )}
-            >
-              <LensMagnify lens={lens} geom={track.geom} index={gi}>
-                {groupLabel(group.part)}
-              </LensMagnify>
-              {/* 這一篇裡有新頁：右上角綠點 */}
-              {group.items.some((i) => isNew(slides[i].added)) && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-red-400" />}
-            </button>
-          )
-        })}
-      </div>
-      {tip && <Tip i={tip.i} x={tip.x} />}
-    </div>
-  )
-}
-
-/**
- * 頁碼條：目前這篇的每一頁一顆，放在上一頁／下一頁中間。寬度固定（放得下 7 顆），
- * 頁數多的篇（元件 20 頁）可以左右滑，目前頁自動捲到中間；換篇時篇章列和這條的位置都不變。
- */
-function PageStrip({ index, onGoTo }: { index: number; onGoTo: (index: number) => void }) {
-  const { wrap, tip, show, clear } = useHoverTip()
-  const { scroller, mask, handlers, measure, scrollable } = useStripScroll()
-  const cur = groupOf(index)
-  const curIdx = cur.items.indexOf(index)
-  const active = useRef<HTMLButtonElement>(null)
-  // 液態玻璃鏡片：目前這頁；按住鏡片拖＝移動鏡片、放開跳到那一頁；在別的地方拖＝照舊捲動
-  const lens = useLiquidLens({ liftScale: 1 })
-  const items = useRef<(HTMLButtonElement | null)[]>([])
-  const track = useLensTrack({ lens, container: scroller, items, rest: curIdx, canStart: (k) => k === curIdx, onCommit: (k) => k !== curIdx && onGoTo(cur.items[k]) })
   useEffect(() => {
     const el = scroller.current
     const btn = active.current
@@ -472,82 +384,76 @@ function PageStrip({ index, onGoTo }: { index: number; onGoTo: (index: number) =
     measure()
   }, [index, measure, scroller])
   return (
-    <div ref={wrap} className="relative hidden lg:block" onMouseLeave={clear}>
+    <div ref={wrap} className="relative hidden min-w-0 lg:block" onMouseLeave={clear}>
+      <Arrows fade={fade} slide={slide} label="篇章和頁碼" />
       <div
         ref={scroller}
         {...handlers}
-        {...lensHandlers(track, handlers)}
         onScroll={() => (measure(), clear())}
         style={{ maskImage: mask, WebkitMaskImage: mask }}
-        aria-label={`${parts[cur.part].short}的頁碼`}
-        data-lens-group
-        className={cn(stripCls, 'w-[204px] xl:w-[232px]', scrollable && 'cursor-grab active:cursor-grabbing')}
+        aria-label="篇章和頁碼"
+        className={cn(stripCls, 'max-w-[min(1120px,62vw)] gap-0.5', scrollable && 'cursor-grab active:cursor-grabbing')}
       >
-        <LensView lens={lens} className="inset-y-1" restClassName="bg-sky-950" />
-        {/* mx-auto：不滿 7 顆時置中；超過時 auto margin 變 0，左邊不會被切掉 */}
-        <div className="mx-auto flex shrink-0 items-center gap-1">
-          {cur.items.map((i, k) => {
-            const on = i === index
-            return (
+        {dotGroups.map((group) => {
+          const part = parts[group.part]
+          const current = group === cur
+          const hasNew = group.items.some((i) => isNew(slides[i].added))
+          return (
+            <div key={group.part} className={cn('flex shrink-0 items-center gap-1 rounded-full', current && cn('pr-1', toneStyles[part.tone].soft))}>
               <button
-                key={slides[i].id}
-                ref={(el) => {
-                  items.current[k] = el
-                  if (on) active.current = el
-                }}
                 type="button"
-                aria-label={`第 ${i + 1} 頁：${slides[i].title}`}
-                aria-current={on ? 'page' : undefined}
-                onClick={() => onGoTo(i)}
+                onClick={() => onGoTo(group.items[0])}
                 onMouseDown={keepFocus}
-                onMouseEnter={show(i)}
-                onFocus={show(i)}
+                onMouseEnter={show(group.items[0])}
+                onFocus={show(group.items[0])}
+                aria-label={`：${group.items.length} 頁，跳到第一頁`}
+                aria-current={current ? 'true' : undefined}
                 className={cn(
-                  // after:：看不見的外圈，平板手指點得到（觸控範圍 36px）
-                  'relative flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-bold transition after:absolute after:-inset-1.5 after:content-[""]',
-                  on ? 'touch-pan-y font-black text-sky-200' : 'text-slate-300 hover:bg-white/[0.07] hover:text-ink',
-                  // 查閱頁：字淡一點（必讀的才是實心）
-                  !on && slides[i].tier === 'ref' && 'text-slate-500',
-                  // 這一批新增的頁：綠色外框＋右上角小點（目前頁用綠框就夠）
-                  isNew(slides[i].added) && (on ? 'ring-2 ring-red-400' : 'ring-1 ring-red-400 text-red-400'),
+                  'relative shrink-0 whitespace-nowrap rounded-full px-2.5 py-1.5 text-[13px] font-semibold leading-tight transition 2xl:px-3 2xl:text-[14px]',
+                  current ? cn('font-bold', toneStyles[part.tone].text) : 'text-slate-400 hover:bg-white/[0.05] hover:text-ink',
                   focusRing,
                 )}
               >
-                <LensMagnify lens={lens} geom={track.geom} index={k}>
-                  {k + 1}
-                </LensMagnify>
+                {groupLabel(group.part)}
+                {/* 別篇裡有新頁：右上角紅點（這篇的新頁直接看頁碼的紅框） */}
+                {!current && hasNew && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-red-400" />}
               </button>
-            )
-          })}
-        </div>
+              {current &&
+                group.items.map((i, k) => {
+                  const on = i === index
+                  const fresh = isNew(slides[i].added)
+                  return (
+                    <button
+                      key={slides[i].id}
+                      ref={on ? active : undefined}
+                      type="button"
+                      aria-label={`第 ${i + 1} 頁：${slides[i].title}`}
+                      aria-current={on ? 'page' : undefined}
+                      onClick={() => onGoTo(i)}
+                      onMouseDown={keepFocus}
+                      onMouseEnter={show(i)}
+                      onFocus={show(i)}
+                      className={cn(
+                        // after:：看不見的外圈，平板手指點得到（觸控範圍 36px）
+                        'relative flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-bold transition after:absolute after:-inset-1.5 after:content-[""]',
+                        on ? 'bg-card font-black text-sky-300 shadow-sm ring-2 ring-sky-500' : 'text-slate-300 hover:bg-white/[0.07] hover:text-ink',
+                        !on && slides[i].tier === 'ref' && 'text-slate-500',
+                        fresh && (on ? 'ring-red-400' : 'ring-1 ring-red-400 text-red-400'),
+                        focusRing,
+                      )}
+                    >
+                      {k + 1}
+                    </button>
+                  )
+                })}
+            </div>
+          )
+        })}
       </div>
       {tip && <Tip i={tip.i} x={tip.x} />}
     </div>
   )
 }
-/** 篇章列／頁碼條：按在鏡片（目前那一項）上＝移動鏡片，其他地方照舊（滑鼠按住拖＝捲動） */
-function lensHandlers(track: ReturnType<typeof useLensTrack>, strip: ReturnType<typeof useStripScroll>['handlers']) {
-  return {
-    onPointerDown: (e: ReactPointerEvent<HTMLDivElement>) => {
-      if (!track.onPointerDown(e)) strip.onPointerDown(e)
-    },
-    onPointerMove: (e: ReactPointerEvent<HTMLDivElement>) => {
-      if (!track.onPointerMove(e)) strip.onPointerMove(e)
-    },
-    onPointerUp: (e: ReactPointerEvent<HTMLDivElement>) => {
-      track.onPointerUp(e)
-      strip.onPointerUp()
-    },
-    onPointerCancel: track.onPointerCancel,
-    // 滑鼠按下還沒拖就滑出去＝取消鏡片，也要照舊結束捲動拖曳
-    onPointerLeave: (e: ReactPointerEvent<HTMLDivElement>) => {
-      track.onPointerLeave(e)
-      strip.onPointerLeave()
-    },
-    onLostPointerCapture: track.onLostPointerCapture,
-  }
-}
-
 /** 篇章列的浮出說明 */
 function Tip({ i, x }: { i: number; x: number }) {
   const s = slides[i]

@@ -5,7 +5,7 @@ import * as THREE from 'three'
  * 外殼材質放進 shells：開啟「剖開」時會被切掉前半，露出內部零件。
  */
 
-export type Part3DId = 'comp' | 'cond' | 'txv' | 'evap' | 'oub' | 'kp15' | 'receiver' | 'gbc' | 'dml' | 'sgi' | 'evr' | 'tc' | 'acc' | 'flare' | 'fittings' | 'insul'
+export type Part3DId = 'comp' | 'scroll' | 'cond' | 'txv' | 'evap' | 'oub' | 'kp15' | 'receiver' | 'gbc' | 'dml' | 'sgi' | 'evr' | 'tc' | 'acc' | 'flare' | 'fittings' | 'insul'
 
 export interface LegendItem {
   color: string
@@ -420,10 +420,11 @@ const builders: Record<Part3DId, () => PartModel> = {
     return b.done()
   },
 
+  /** 往復式壓縮機：矮、胖；裡面是活塞來回壓 */
   comp() {
     const b = new Builder()
     const dome = b.shell(mat.paint(0x1e3a8a))
-    b.mesh(new THREE.CapsuleGeometry(0.75, 0.9, 16, 48), dome)
+    b.mesh(new THREE.CapsuleGeometry(0.85, 0.5, 16, 48), dome)
     const stator = mat.copper()
     b.mesh(new THREE.TorusGeometry(0.45, 0.14, 20, 48), stator, [0, 0.35, 0], [R, 0, 0])
     const rotor = mat.steel()
@@ -438,13 +439,70 @@ const builders: Record<Part3DId, () => PartModel> = {
     b.tube([[-0.6, 0.4, 0.5], [-0.9, 0.5, 0.6], [-1.3, 0.5, 0.6]], 0.08, suction)
     const discharge = mat.copper()
     b.tube([[0.5, 0.75, 0.3], [0.7, 1.0, 0.3], [1.2, 1.0, 0.3]], 0.06, discharge)
-    b.box(1.6, 0.08, 0.9, mat.dark(), [0, -1.25, 0])
-    b.note(stator, '馬達線圈', '通電轉動，帶動壓縮')
+    b.box(1.8, 0.08, 1.0, mat.dark(), [0, -1.15, 0])
+    b.note(stator, '馬達線圈', '單相要配繼電器＋啟動電容＋運轉電容')
     b.note(rotor, '轉子', '跟曲軸一起轉')
     b.note(piston, '活塞', '把低壓氣體壓成高溫高壓（不能壓液體）')
     b.note(suction, '吸氣管（低壓）', '冷排回來的低溫低壓氣體')
     b.note(discharge, '排氣管（高壓）', '往油分離器、冷凝器；最燙的一段')
-    b.control = { kind: 'run', label: '壓縮機', off: '停機', on: '運轉', initial: 0, needsCut: true, describe: (v) => (v > 0.5 ? '運轉中：馬達帶動活塞來回，把吸進來的低壓氣體壓成高壓。' : '停機：按「運轉」看活塞怎麼動。') }
+    b.control = { kind: 'run', label: '往復式壓縮機', off: '停機', on: '運轉', initial: 0, needsCut: true, describe: (v) => (v > 0.5 ? '運轉中：馬達帶動活塞來回，把吸進來的低壓氣體壓成高壓。' : '停機：按「運轉」看活塞怎麼動。外型比渦捲式矮、胖。') }
+    return b.done()
+  },
+
+  /** 渦捲式壓縮機：高、瘦；上面兩片渦捲（一片固定、一片繞著轉），側邊有油視窗（10/13 使用者：壓縮機有講到往復式、渦捲式） */
+  scroll() {
+    const b = new Builder()
+    const dome = b.shell(mat.paint(0x1e40af))
+    b.mesh(new THREE.CapsuleGeometry(0.55, 1.6, 16, 48), dome)
+    // 渦捲：螺旋形的牆。放在一個轉了 90° 的群組裡，群組的 z 軸＝直立方向，轉群組就是繞著直軸轉
+    const spiral = (m: THREE.Material, phase: number, y: number, moving: boolean) => {
+      const pts: V3[] = []
+      for (let i = 0; i <= 120; i++) {
+        const a = (i / 120) * Math.PI * 5 + phase
+        const r = 0.05 + (i / 120) * 0.36
+        pts.push([Math.cos(a) * r, Math.sin(a) * r, 0])
+      }
+      const curve = new THREE.CatmullRomCurve3(pts.map((p) => new THREE.Vector3(...p)))
+      const wall = new THREE.Mesh(new THREE.TubeGeometry(curve, 160, 0.025, 8, false), m)
+      wall.scale.set(1, 1, 4)
+      const g = new THREE.Group()
+      g.rotation.x = -R
+      g.position.set(0, y, 0)
+      if (moving) wall.position.set(0.03, 0.02, 0)
+      g.add(wall)
+      if (moving) g.userData.anim = { kind: 'spin', speed: 6 }
+      b.group.add(g)
+      return wall
+    }
+    const fixed = mat.steel()
+    spiral(fixed, 0, 0.72, false)
+    const orbit = mat.paint(0xf59e0b)
+    spiral(orbit, Math.PI, 0.72, true)
+    b.cylY(0.42, 0.04, fixed, [0, 0.86, 0])
+    const stator = mat.copper()
+    b.mesh(new THREE.TorusGeometry(0.36, 0.12, 20, 48), stator, [0, -0.35, 0], [R, 0, 0])
+    const rotor = mat.steel()
+    b.cylY(0.2, 0.5, rotor, [0, -0.35, 0])
+    b.cylY(0.05, 1.3, rotor, [0, 0.1, 0], 16)
+    // 底下的冷凍油＋側邊的油視窗
+    const oil = mat.fluid(0xd97706, 0.7)
+    b.cylY(0.5, 0.22, oil, [0, -1.05, 0])
+    const sight = mat.glass()
+    b.cylZ(0.13, 0.08, sight, [0, -1.0, 0.55], 32)
+    const sightRing = mat.brass()
+    b.mesh(new THREE.TorusGeometry(0.13, 0.025, 12, 32), sightRing, [0, -1.0, 0.59])
+    const suction = mat.copper()
+    b.tube([[-0.5, 0.1, 0.2], [-0.8, 0.1, 0.3], [-1.2, 0.1, 0.3]], 0.08, suction)
+    const discharge = mat.copper()
+    b.tube([[0, 1.3, 0], [0, 1.55, 0], [0.45, 1.7, 0], [0.9, 1.7, 0]], 0.06, discharge)
+    b.box(1.3, 0.08, 0.9, mat.dark(), [0, -1.42, 0])
+    b.note(orbit, '渦捲（會動）', '繞著固定的那片轉，把氣體往中間擠、越擠壓力越高')
+    b.note(fixed, '渦捲（固定）', '中間的出口把高壓氣體送上去')
+    b.note(stator, '馬達線圈', '單相只要一顆運轉電容、沒有繼電器')
+    b.note(sightRing, '油視窗', '看得到冷凍油還夠不夠〔錄音16 11:11〕')
+    b.note(suction, '吸氣管（低壓）', '冷排回來的低溫低壓氣體')
+    b.note(discharge, '排氣管（高壓）', '從頂上出去，最燙的一段')
+    b.control = { kind: 'run', label: '渦捲式壓縮機', off: '停機', on: '運轉', initial: 0, needsCut: true, describe: (v) => (v > 0.5 ? '運轉中：上面那片渦捲繞著轉，把氣體一路擠到中間變成高壓。' : '停機：按「運轉」看上面的渦捲怎麼動。外型比往復式高、瘦。') }
     return b.done()
   },
 
@@ -494,11 +552,23 @@ const builders: Record<Part3DId, () => PartModel> = {
     }
     const pan = mat.steel()
     b.box(2.2, 0.06, 0.9, pan, [0, -0.5, 0])
+    // 10/13 老闆：冷排「是吊上去的，有吊桿」，掛在庫內最上面〔錄音16 27:10〕→ 上面加庫板（天花板）和四支吊桿；排水管從接水盤接出去
+    const ceiling = mat.paint(0xf1f5f9)
+    const rod = mat.steel()
+    const mount: THREE.Object3D[] = [b.box(3.0, 0.12, 1.4, ceiling, [0, 1.2, 0])]
+    for (const x of [-0.95, 0.95]) for (const z of [-0.3, 0.3]) {
+      mount.push(b.cylY(0.025, 0.75, rod, [x, 0.8, z], 12))
+      mount.push(b.cylY(0.05, 0.05, rod, [x, 0.47, z], 6))
+    }
+    const drain = mat.paint(0xe5e7eb)
+    mount.push(b.tube([[0.9, -0.55, 0.2], [0.9, -0.75, 0.2], [1.3, -0.85, 0.2], [1.6, -0.85, 0.2]], 0.05, drain))
+    mount.forEach((o) => (o.userData.mountOnly = true))
     b.note(tubeM, '銅管', '液氣混合的冷媒在裡面蒸發吸熱')
     b.note(fin, '鰭片', '低溫庫間距大，預留結霜的風道空間')
     b.note(heater, '除霜電熱管', '冷凍庫會結霜，要定時除霜')
     b.note(fanRing, '風扇', '把庫內空氣吹過冷排降溫')
-    b.note(pan, '接水盤', '除霜融化的水從這裡排掉')
+    b.note(pan, '接水盤', '除霜融化的水從這裡排掉，排水管要有落差')
+    b.note(rod, '吊桿', '冷排吊在庫內最上面：冷空氣往下走〔錄音16 27:10〕')
     b.control = { kind: 'run', label: '風扇', off: '停', on: '運轉', initial: 0, describe: (v) => (v > 0.5 ? '風扇運轉：把庫內的空氣吹過冷排，冷風再吹回庫內。' : '風扇停：庫內空氣不流動，冷不容易散開。') }
     return b.done()
   },

@@ -384,7 +384,8 @@ function MergedBar({ index, onGoTo }: { index: number; onGoTo: (index: number) =
     measure()
   }, [index, measure, scroller])
   return (
-    <div ref={wrap} className="relative hidden min-w-0 lg:block" onMouseLeave={clear}>
+    // 固定寬度：換篇時整條不會變寬變窄，右邊的頁數也不會跳（10/13 QA）
+    <div ref={wrap} className="relative hidden w-[min(940px,50vw)] min-w-0 shrink lg:block" onMouseLeave={clear}>
       <Arrows fade={fade} slide={slide} label="篇章和頁碼" />
       <div
         ref={scroller}
@@ -392,7 +393,7 @@ function MergedBar({ index, onGoTo }: { index: number; onGoTo: (index: number) =
         onScroll={() => (measure(), clear())}
         style={{ maskImage: mask, WebkitMaskImage: mask }}
         aria-label="篇章和頁碼"
-        className={cn(stripCls, 'max-w-[min(1120px,62vw)] gap-0.5', scrollable && 'cursor-grab active:cursor-grabbing')}
+        className={cn(stripCls, 'w-full gap-0.5', scrollable && 'cursor-grab active:cursor-grabbing')}
       >
         {dotGroups.map((group) => {
           const part = parts[group.part]
@@ -410,7 +411,8 @@ function MergedBar({ index, onGoTo }: { index: number; onGoTo: (index: number) =
                 aria-current={current ? 'true' : undefined}
                 className={cn(
                   'relative shrink-0 whitespace-nowrap rounded-full px-2.5 py-1.5 text-[13px] font-semibold leading-tight transition 2xl:px-3 2xl:text-[14px]',
-                  current ? cn('font-bold', toneStyles[part.tone].text) : 'text-slate-400 hover:bg-white/[0.05] hover:text-ink',
+                  // 這篇的篇名黏在左邊：頁碼捲到後面時篇名還看得到
+                  current ? cn('sticky left-0 z-10 bg-card font-bold shadow-[4px_0_8px_-6px_rgba(15,36,64,0.35)]', toneStyles[part.tone].text) : 'text-slate-400 hover:bg-white/[0.05] hover:text-ink',
                   focusRing,
                 )}
               >
@@ -419,7 +421,7 @@ function MergedBar({ index, onGoTo }: { index: number; onGoTo: (index: number) =
                 {!current && hasNew && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-red-400" />}
               </button>
               {current &&
-                group.items.map((i, k) => {
+                group.items.map((i) => {
                   const on = i === index
                   const fresh = isNew(slides[i].added)
                   return (
@@ -435,14 +437,15 @@ function MergedBar({ index, onGoTo }: { index: number; onGoTo: (index: number) =
                       onFocus={show(i)}
                       className={cn(
                         // after:：看不見的外圈，平板手指點得到（觸控範圍 36px）
-                        'relative flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-bold transition after:absolute after:-inset-1.5 after:content-[""]',
+                        'relative flex h-7 min-w-7 shrink-0 items-center justify-center rounded-full px-1 font-mono text-[13px] font-bold transition after:absolute after:-inset-1.5 after:content-[""]',
                         on ? 'bg-card font-black text-sky-300 shadow-sm ring-2 ring-sky-500' : 'text-slate-300 hover:bg-white/[0.07] hover:text-ink',
                         !on && slides[i].tier === 'ref' && 'text-slate-500',
                         fresh && (on ? 'ring-red-400' : 'ring-1 ring-red-400 text-red-400'),
                         focusRing,
                       )}
                     >
-                      {k + 1}
+                      {/* 寫總頁碼（跟右邊的「21/62」一樣），新人才看得懂 */}
+                      {i + 1}
                     </button>
                   )
                 })}

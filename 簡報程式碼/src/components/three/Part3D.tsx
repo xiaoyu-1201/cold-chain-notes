@@ -25,14 +25,18 @@ interface Part3DProps {
   labels?: boolean
   /** 滑鼠移到 3D 的某個零件上：回報它的名稱（沒有＝null） */
   onHoverPart?: (name: string | null) => void
+  /** 畫面往上挪幾 px（下面壓著一排按鈕時，模型才不會被蓋住） */
+  liftPx?: number
 }
 
 /** 零件 3D 檢視：拖曳旋轉、滾輪／雙指縮放 */
-export default function Part3D({ id, cut, spin, run = false, onLegend, onControl, opValue, highlight = null, labels = false, onHoverPart }: Part3DProps) {
+export default function Part3D({ id, cut, spin, run = false, onLegend, onControl, opValue, highlight = null, labels = false, onHoverPart, liftPx = 0 }: Part3DProps) {
   const hostRef = useRef<HTMLDivElement>(null)
   const api = useRef<{ setCut: (c: boolean) => void; setSpin: (s: boolean) => void; setRun: (r: boolean) => void; setOp: (v: number) => void; setHighlight: (n: string | null) => void; setLabels: (on: boolean) => void } | null>(null)
   const hoverRef = useRef(onHoverPart)
   hoverRef.current = onHoverPart
+  const liftRef = useRef(liftPx)
+  liftRef.current = liftPx
   const legendRef = useRef(onLegend)
   legendRef.current = onLegend
   const controlRef = useRef(onControl)
@@ -79,19 +83,56 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
       })
       return out
     }
+    // 標籤拉到模型外面（從模型中心往那個零件的方向推出去）＋一條引線指回零件；畫面上疊到時再自動往下錯開（10/13 QA：標籤全擠在中間）
+    const lineMat = new THREE.LineBasicMaterial({ color: 0x334155, transparent: true, opacity: 0.7 })
+    const tagEls: HTMLDivElement[] = []
     const tags = model.legend.map((item, i) => {
       const bb = new THREE.Box3()
       meshesOf(model.legendMats[i]).forEach((mesh) => bb.expandByObject(mesh))
+      const wrap = document.createElement('div')
       const el = document.createElement('div')
       el.textContent = item.name
-      el.style.cssText = 'font:700 14px system-ui,sans-serif;color:#0f2440;background:rgba(255,255,255,0.95);padding:3px 10px;border-radius:999px;box-shadow:0 0 0 1.5px ' + item.color + ',0 4px 12px -4px rgba(15,36,64,.35);white-space:nowrap'
-      const tag = new CSS2DObject(el)
-      // 外殼的標籤放在頂上（放中間會跟裡面的零件疊在一起）
-      if (!bb.isEmpty()) tag.position.copy(bb.getCenter(new THREE.Vector3())).setY(model.shells.includes(model.legendMats[i]) ? bb.max.y : bb.getCenter(new THREE.Vector3()).y)
+      el.style.cssText = 'font:700 14px system-ui,sans-serif;color:#0f2440;background:rgba(255,255,255,0.96);padding:3px 10px;border-radius:999px;box-shadow:0 0 0 1.5px ' + item.color + ',0 4px 12px -4px rgba(15,36,64,.35);white-space:nowrap;pointer-events:auto;cursor:pointer'
+      // 滑鼠移到標籤上，也讓那個零件亮起來
+      el.addEventListener('mouseenter', () => hoverRef.current?.(item.name))
+      el.addEventListener('mouseleave', () => hoverRef.current?.(null))
+      wrap.appendChild(el)
+      tagEls.push(el)
+      const tag = new CSS2DObject(wrap)
+      const anchor = bb.isEmpty() ? new THREE.Vector3() : bb.getCenter(new THREE.Vector3())
+      const dir = anchor.clone()
+      if (dir.lengthSq() < 1e-4) dir.set(0, 1, 0)
+      dir.normalize()
+      const out = anchor.clone().add(dir.multiplyScalar(Math.max(0.15, radius * 1.05 - anchor.length())))
+      tag.position.copy(out)
+      const lead = new THREE.Line(new THREE.BufferGeometry().setFromPoints([anchor, out]), lineMat)
+      lead.visible = false
+      scene.add(lead)
+      tag.userData.lead = lead
       tag.visible = false
       scene.add(tag)
       return tag
     })
+    /** 畫面上疊到的標籤往下錯開（每幾格算一次） */
+    const unstack = () => {
+      const shown = tags.map((t, i) => ({ t, el: tagEls[i] })).filter((x) => x.t.visible)
+      shown.forEach((x) => (x.el.style.transform = ''))
+      const rects = shown.map((x) => x.el.getBoundingClientRect())
+      const order = rects.map((_, i) => i).sort((a, b) => rects[a].top - rects[b].top)
+      const placed: DOMRect[] = []
+      for (const i of order) {
+        const r = rects[i]
+        let dy = 0
+        for (let guard = 0; guard < 12; guard++) {
+          const hit = placed.find((p) => r.left < p.right + 4 && r.right > p.left - 4 && r.top + dy < p.bottom + 3 && r.bottom + dy > p.top - 3)
+          if (!hit) break
+          dy = hit.bottom + 3 - r.top
+        }
+        if (dy) shown[i].el.style.transform = `translateY(${dy}px)`
+        placed.push(new DOMRect(r.left, r.top + dy, r.width, r.height))
+      }
+    }
+    let frame = 0
     let labelsOn = false
     // 亮起來／變淡：記住每個材質原本的樣子，取消時還原
     const allMats = new Set<THREE.MeshStandardMaterial>()
@@ -124,11 +165,17 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
         }
         m.needsUpdate = true
       }
-      tags.forEach((t, i) => (t.visible = labelsOn || i === hlIndex))
+      tags.forEach((t, i) => {
+        t.visible = labelsOn || i === hlIndex
+        ;(t.userData.lead as THREE.Line).visible = t.visible
+      })
     }
     const setLabels = (on: boolean) => {
       labelsOn = on
-      tags.forEach((t, i) => (t.visible = on || i === hlIndex))
+      tags.forEach((t, i) => {
+        t.visible = on || i === hlIndex
+        ;(t.userData.lead as THREE.Line).visible = t.visible
+      })
     }
     const moving: { o: THREE.Object3D; kind: 'spin' | 'slide'; speed: number; amp: number; base: number }[] = []
     model.group.traverse((o) => {
@@ -209,6 +256,9 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
       renderer.domElement.style.width = '100%'
       renderer.domElement.style.height = '100%'
       camera.aspect = w / h
+      // 下面壓著按鈕：整個畫面往上挪
+      if (liftRef.current) camera.setViewOffset(w, h, 0, liftRef.current, w, h)
+      else camera.clearViewOffset()
       camera.updateProjectionMatrix()
       labelLayer.setSize(w, h)
     }
@@ -243,6 +293,7 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
       controls.update()
       renderer.render(scene, camera)
       labelLayer.render(scene, camera)
+      if (++frame % 6 === 0) unstack()
       raf = requestAnimationFrame(tick)
     }
     tick()

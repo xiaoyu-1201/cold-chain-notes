@@ -118,7 +118,7 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
           <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
             <div className="viewport-blueprint relative min-h-[280px] flex-1">
               <Suspense fallback={<p className="absolute inset-0 flex items-center justify-center text-[16px] text-slate-400">3D 模型載入中…</p>}>
-                <Part3D id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} highlight={hover} labels={labels} onHoverPart={setHover} />
+                <Part3D id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} highlight={hover} labels={labels} onHoverPart={setHover} liftPx={28} />
               </Suspense>
               <GlassButtonGroup className="absolute bottom-3 left-3 flex flex-wrap gap-2" label="3D 檢視">
                 <button type="button" aria-pressed={cut} onClick={() => setCut((c) => !c)} className={floatToggle(cut)}>

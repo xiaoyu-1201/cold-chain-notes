@@ -61,8 +61,25 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
   const floatPill = (on: boolean) => cn('flex items-center gap-1.5 rounded-full font-semibold transition', t.pill, mobile ? 'min-h-11' : 'min-h-[52px]', on ? 'border border-transparent bg-sky-400 text-navy-950' : 'glass text-slate-100', focusRing)
   const loading = <p className={cn('absolute inset-0 flex items-center justify-center text-slate-400', t.body)}>3D 模型載入中…</p>
 
-  return (
-    <section className={cn('flex min-h-0 flex-col rounded-[18px] border border-line bg-card', mobile ? 'gap-2.5 p-3' : 'h-full gap-3 p-6')}>
+  // 3D 底下那排按鈕：電腦疊在 3D 左下（3D 畫面往上挪讓出位置）；手機放在 3D 下面
+  const viewButtons = (
+    <GlassButtonGroup className={mobile ? 'flex flex-wrap gap-2' : 'absolute bottom-3 left-3 flex flex-wrap gap-2'} label="3D 檢視">
+      <button type="button" aria-pressed={cut} onClick={() => setCut((c) => !c)} className={floatPill(cut)}>
+        <Layers className="size-4" aria-hidden />
+        {cut ? '合起來' : '剖開看內部'}
+      </button>
+      <button type="button" aria-pressed={spin} onClick={() => setSpin((s) => !s)} className={floatPill(spin)}>
+        <RotateCw className="size-4" aria-hidden />
+        自動旋轉
+      </button>
+      <button type="button" aria-pressed={labels} onClick={() => setLabels((v) => !v)} className={floatPill(labels)}>
+        <Tags className="size-4" aria-hidden />
+        標出構造
+      </button>
+    </GlassButtonGroup>
+  )
+
+  return (    <section className={cn('flex min-h-0 flex-col rounded-[18px] border border-line bg-card', mobile ? 'gap-2.5 p-3' : 'h-full gap-3 p-6')}>
       <header className="flex flex-wrap items-center justify-between gap-2">
         <p className={cn('font-semibold text-white', t.title)}>產品展示：{part.label}</p>
         <Segmented
@@ -108,31 +125,21 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
               <Deferred fallback={loading}>
                 <Suspense fallback={loading}>
                   {/* 放大看的時候先停掉這個（同時兩個 3D 在手機上容易卡、掉畫面） */}
-                  {!big && <Part3D key={id} id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} highlight={hover ?? legendOpen} labels={labels} onHoverPart={setHover} />}
+                  {!big && <Part3D key={id} id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} highlight={hover ?? legendOpen} labels={labels} onHoverPart={setHover} liftPx={mobile ? 0 : 28} />}
                 </Suspense>
               </Deferred>
             </InView>
-            <GlassButtonGroup className="absolute bottom-3 left-3 flex flex-wrap gap-2" label="3D 檢視">
-              <button type="button" aria-pressed={cut} onClick={() => setCut((c) => !c)} className={floatPill(cut)}>
-                <Layers className="size-4" aria-hidden />
-                {cut ? '合起來' : '剖開看內部'}
-              </button>
-              <button type="button" aria-pressed={spin} onClick={() => setSpin((s) => !s)} className={floatPill(spin)}>
-                <RotateCw className="size-4" aria-hidden />
-                自動旋轉
-              </button>
-              <button type="button" aria-pressed={labels} onClick={() => setLabels((v) => !v)} className={floatPill(labels)}>
-                <Tags className="size-4" aria-hidden />
-                標出構造
-              </button>
-            </GlassButtonGroup>
+            {!mobile && viewButtons}
+
             {/* 放大看放左上角：下面一排按鈕才不會擠成兩排、蓋住 3D */}
             <button type="button" onClick={() => setBig(true)} className={cn(floatPill(false), 'absolute left-3 top-3')}>
               <Maximize2 className="size-4" aria-hidden />
               放大看
             </button>
-            <p className={cn('glass pointer-events-none absolute right-3 top-3 rounded-full px-3 py-1 text-slate-200', t.small)}>{mobile ? '拖曳旋轉・兩指放大・點兩下還原' : '拖曳旋轉・滾輪往游標放大・雙擊還原'}</p>
+            <p className={cn('glass pointer-events-none absolute right-3 top-3 rounded-full px-3 py-1 text-slate-200', t.small)}>{mobile ? '拖曳旋轉・兩指放大' : '拖曳旋轉・滾輪縮放'}</p>
           </div>
+          {/* 手機：按鈕放在 3D 下面（疊在上面會擠成兩排、蓋住模型；10/13 QA） */}
+          {mobile && viewButtons}
 
           {control && (
             <div className={cn('rounded-2xl border border-sky-500/35 bg-sky-950', mobile ? 'p-3' : 'px-5 py-3')}>

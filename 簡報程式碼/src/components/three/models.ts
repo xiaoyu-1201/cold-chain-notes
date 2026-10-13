@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js'
 
 /**
  * 零件 3D 示意模型（以基本幾何組合，重點在看懂內部構造，不是精確外型）
@@ -168,8 +169,32 @@ function seeded(seed: number) {
   let s = seed
   return () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646
 }
-/** 底座＋四個角座（橡皮墊、螺絲） */
-function feet(b: Builder, w: number, d: number, y: number, fx: number, fz: number) {
+/** 圓角方塊（塑膠殼、鑄件看起來比較真） */
+function rbox(b: Builder, w: number, h: number, d: number, r: number, m: THREE.Material, pos: V3 = [0, 0, 0]) {
+  return b.mesh(new RoundedBoxGeometry(w, h, d, 4, r), m, pos)
+}
+/** 直立的鐵筒：上下圓頂（儲液器、液氣分離器、油分離器） */
+function vessel(b: Builder, r: number, halfH: number, m: THREE.Material) {
+  const k = r * 0.32
+  return lathe(b, [[0, -halfH - k], [r * 0.6, -halfH - k * 0.85], [r * 0.9, -halfH - k * 0.4], [r, -halfH], [r, halfH], [r * 0.9, halfH + k * 0.4], [r * 0.6, halfH + k * 0.85], [0, halfH + k]], m, 'y', [0, 0, 0], 56)
+}
+/** 筒身上的標籤（白底、一條藍邊、幾行字的樣子），面向正前方 */
+function stickerY(b: Builder, r: number, y: number, h: number) {
+  const paper = mat.paint(0xf8fafc)
+  const band = new THREE.Mesh(new THREE.CylinderGeometry(r + 0.004, r + 0.004, h, 48, 1, true, -0.9, 1.8), paper)
+  band.position.y = y
+  b.group.add(band)
+  const ink = mat.paint(0x334155)
+  for (let i = 0; i < 3; i++) {
+    const line = new THREE.Mesh(new THREE.CylinderGeometry(r + 0.007, r + 0.007, 0.025, 48, 1, true, -0.55, 1.1 - i * 0.2), ink)
+    line.position.y = y + h * 0.25 - i * h * 0.22
+    b.group.add(line)
+  }
+  const edge = new THREE.Mesh(new THREE.CylinderGeometry(r + 0.006, r + 0.006, 0.04, 48, 1, true, -0.9, 1.8), mat.paint(0x2563eb))
+  edge.position.y = y + h / 2 - 0.02
+  b.group.add(edge)
+}
+/** 底座＋四個角座（橡皮墊、螺絲） */function feet(b: Builder, w: number, d: number, y: number, fx: number, fz: number) {
   b.box(w, 0.06, d, mat.paint(0x2b2f36), [0, y, 0])
   const rubber = mat.paint(0x111111)
   const bolt = mat.steel()
@@ -240,20 +265,27 @@ function fanGuard(b: Builder, r: number, center: V3, guard: THREE.Material, blad
   g.add(rotor)
   return g
 }
-const builders: Record<Part3DId, () => PartModel> = {  sgi() {
+const builders: Record<Part3DId, () => PartModel> = {  /** 視液鏡（10/13 做細）：黃銅本體、兩頭六角、上面鍍鉻鏡框＋玻璃＋含水指示環 */
+  sgi() {
     const b = new Builder()
     const body = b.shell(mat.brass())
-    b.cylX(0.34, 1.0, body)
-    b.hexX(0.3, 0.22, body, [-0.62, 0, 0])
-    b.hexX(0.3, 0.22, body, [0.62, 0, 0])
-    b.cylY(0.33, 0.34, body, [0, 0.32, 0])
-    const cu = stubsX(b, 0.73)
+    lathe(b, [[0.22, -0.62], [0.29, -0.5], [0.34, -0.3], [0.34, 0.3], [0.29, 0.5], [0.22, 0.62]], body, 'x')
+    b.hexX(0.3, 0.22, body, [-0.72, 0, 0])
+    b.hexX(0.3, 0.22, body, [0.72, 0, 0])
+    b.cylY(0.31, 0.34, body, [0, 0.3, 0], 48)
+    const cu = stubsX(b, 0.83)
     const liquid = mat.fluid(0x38bdf8)
     b.cylX(0.2, 1.4, liquid)
+    const chrome = new THREE.MeshStandardMaterial({ color: 0xe5e7eb, metalness: 1, roughness: 0.15 })
+    b.mesh(new THREE.TorusGeometry(0.28, 0.045, 14, 56), chrome, [0, 0.48, 0], [R, 0, 0])
+    for (let i = 0; i < 24; i++) {
+      const a = (i / 24) * Math.PI * 2
+      b.box(0.03, 0.06, 0.02, chrome, [Math.cos(a) * 0.33, 0.44, Math.sin(a) * 0.33]).rotation.y = -a
+    }
     const ring = mat.glow(0x22c55e)
-    b.mesh(new THREE.TorusGeometry(0.17, 0.035, 16, 48), ring, [0, 0.47, 0], [R, 0, 0])
+    b.mesh(new THREE.TorusGeometry(0.15, 0.035, 16, 48), ring, [0, 0.47, 0], [R, 0, 0])
     const glass = mat.glass()
-    b.cylY(0.26, 0.05, glass, [0, 0.5, 0])
+    b.cylY(0.25, 0.04, glass, [0, 0.5, 0], 48)
     b.note(glass, '玻璃視窗', '從上面看冷媒流過：冷媒夠時，液態像透明的水')
     b.note(ring, '含水指示環', '綠色＝乾燥；變淡＝水分快超標；黃色＝含水過多')
     const dry = new THREE.Color(0x22c55e)
@@ -271,27 +303,34 @@ const builders: Record<Part3DId, () => PartModel> = {  sgi() {
       describe: (v) => (v > 0.5 ? '指示環變黃：系統含水過多，乾燥過濾器吸飽了，要盡快更換。' : '指示環綠色：系統乾燥正常。'),
     }
     b.note(liquid, '冷媒通道', '液管裡的液態冷媒從這裡流過')
+    b.note(chrome, '鏡框', '壓住玻璃；外圈有防滑紋')
     b.note(body, '黃銅本體', '裝在液管上，乾燥過濾器後面')
     b.note(cu, '銅管接頭', '接液管（焊接或喇叭口）')
     return b.done()
   },
 
+  /** 乾燥過濾器（10/13 做細）：圓滑的銅殼、兩端收口、接縫，外面貼標籤（型號＋箭頭） */
   dml() {
     const b = new Builder()
-    const shellM = b.shell(mat.copper())
-    b.cylX(0.46, 1.7, shellM)
-    b.cylX(0.46, 0.32, shellM, [-1.01, 0, 0], 40, 0.16)
-    b.cylX(0.16, 0.32, shellM, [1.01, 0, 0], 40, 0.46)
+    const shellM = b.shell(new THREE.MeshStandardMaterial({ color: 0xb87333, metalness: 0.75, roughness: 0.33 }))
+    lathe(b, [[0.15, -1.18], [0.2, -1.12], [0.36, -1.0], [0.46, -0.84], [0.46, 0.84], [0.36, 1.0], [0.2, 1.12], [0.15, 1.18]], shellM, 'x', [0, 0, 0], 56)
+    for (const x of [-0.84, 0.84]) b.mesh(new THREE.TorusGeometry(0.463, 0.012, 8, 56), b.shell(mat.copper()), [x, 0, 0], [0, R, 0])
+    // 標籤：白底紅條，箭頭＝冷媒流向
+    const label = b.shell(mat.paint(0xf8fafc))
+    const band = new THREE.Mesh(new THREE.CylinderGeometry(0.466, 0.466, 1.05, 56, 1, true), label)
+    band.rotation.z = R
+    b.group.add(band)
+    const stripe = b.shell(mat.paint(0xdc2626))
+    for (const x of [-0.46, 0.46]) b.mesh(new THREE.CylinderGeometry(0.468, 0.468, 0.08, 56, 1, true), stripe, [x, 0, 0], [0, 0, R])
     const core = mat.paint(0xe8d9b0)
     b.cylX(0.38, 1.3, core)
     const screen = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.6, roughness: 0.4, wireframe: true })
     b.cylX(0.42, 0.04, screen, [-0.72, 0, 0], 24)
     b.cylX(0.42, 0.04, screen, [0.72, 0, 0], 24)
-    // 本體上的箭頭（冷媒流向）
     const arrowM = mat.paint(0x111827)
-    b.box(0.62, 0.02, 0.07, arrowM, [-0.1, 0.462, 0])
-    b.mesh(new THREE.ConeGeometry(0.1, 0.22, 24), arrowM, [0.32, 0.462, 0], [0, 0, -R]).scale.set(0.25, 1, 1)
-    // 牙（沒 S）：六角＋外牙＋斜面；焊接（有 S）：銅管口＋插進去的銅管
+    b.box(0.5, 0.02, 0.07, arrowM, [-0.08, 0.47, 0])
+    b.mesh(new THREE.ConeGeometry(0.1, 0.2, 24), arrowM, [0.27, 0.47, 0], [0, 0, -R]).scale.set(0.25, 1, 1)
+    for (let i = 0; i < 3; i++) b.box(0.32 - i * 0.06, 0.012, 0.025, arrowM, [-0.05, 0.471, 0.16 + i * 0.06])
     const nut = mat.brass()
     const socket = mat.copper()
     const pipe = mat.paint(0xe0a27a)
@@ -328,14 +367,25 @@ const builders: Record<Part3DId, () => PartModel> = {  sgi() {
     b.note(socket, '焊接（有 S）', '銅管插進管口再燒焊')
     return b.done()
   },
+
+  /** 電磁閥（10/13 做細）：黃銅閥體（倒角）、不鏽鋼套管、黑色線圈＋側邊插頭盒和電線、頂上螺帽、本體箭頭 */
   evr() {
     const b = new Builder()
     const body = b.shell(mat.brass())
-    b.box(1.0, 0.5, 0.6, body)
+    rbox(b, 1.0, 0.5, 0.62, 0.08, body)
     stubsX(b, 0.5)
+    const arrowM = mat.paint(0x111827)
+    b.box(0.4, 0.03, 0.02, arrowM, [-0.05, -0.08, 0.315])
+    b.mesh(new THREE.ConeGeometry(0.06, 0.14, 16), arrowM, [0.2, -0.08, 0.315], [0, 0, -R])
     b.cylY(0.14, 0.7, b.shell(mat.steel()), [0, 0.6, 0], 32)
     const coil = b.shell(mat.dark())
-    b.box(0.62, 0.56, 0.62, coil, [0, 0.66, 0])
+    rbox(b, 0.66, 0.58, 0.66, 0.07, coil, [0, 0.66, 0])
+    b.box(0.4, 0.22, 0.01, mat.paint(0xf1f5f9), [0, 0.7, 0.335])
+    const plug = b.shell(mat.paint(0x6b7280))
+    rbox(b, 0.26, 0.36, 0.3, 0.04, plug, [0.46, 0.66, 0])
+    b.cylY(0.07, 0.12, mat.dark(), [0.46, 0.42, 0], 20)
+    b.tube([[0.46, 0.36, 0], [0.46, 0.1, 0.05], [0.7, -0.2, 0.2], [1.1, -0.3, 0.3]], 0.035, mat.dark())
+    b.cylY(0.11, 0.08, mat.steel(), [0, 1.0, 0], 6)
     const plunger = mat.steel()
     const plungerMesh = b.cylY(0.09, 0.36, plunger, [0, 0.42, 0], 24)
     const springM = mat.glow(0xf59e0b)
@@ -361,27 +411,40 @@ const builders: Record<Part3DId, () => PartModel> = {  sgi() {
       describe: (v) => (v > 0.5 ? '通電：線圈的磁力把柱塞吸上去，閥座打開，冷媒流過。' : '斷電：彈簧把柱塞壓在閥座上，冷媒被關在液管（常閉）。'),
     }
     b.note(coil, '線圈', '通電產生磁力，把柱塞吸上去 → 閥打開')
+    b.note(plug, '插頭盒', '電線從這裡接進線圈（接溫控器）')
     b.note(plunger, '柱塞', '被吸起時讓出閥座孔，冷媒才能通過')
     b.note(springM, '彈簧', '斷電時把柱塞壓回去 → 常閉（通電才開）')
     b.note(seat, '閥座孔', '柱塞壓住就關，冷媒被關在液管')
-    b.note(body, '閥體', '裝在液管上、膨脹閥前面')
+    b.note(body, '閥體', '裝在液管上、膨脹閥前面；箭頭＝冷媒方向')
     return b.done()
   },
 
+  /** 膨脹閥（10/13 做細）：黃銅閥體、頂上不鏽鋼感溫頭（圓頂）、盤一圈的毛細管、感溫包＋固定夾、外均壓管、調整螺絲蓋 */
   txv() {
     const b = new Builder()
     const body = b.shell(mat.brass())
-    b.box(0.7, 0.6, 0.6, body)
+    rbox(b, 0.7, 0.62, 0.6, 0.07, body)
     stubsX(b, 0.35, 0.1, 0.45)
     b.cylY(0.1, 0.45, mat.copper(), [0, -0.52, 0], 24)
-    const head = b.shell(mat.steel())
-    b.cylY(0.44, 0.22, head, [0, 0.42, 0])
+    const head = b.shell(new THREE.MeshStandardMaterial({ color: 0xd1d5db, metalness: 0.95, roughness: 0.2 }))
+    b.cylY(0.16, 0.16, head, [0, 0.36, 0], 32)
+    lathe(b, [[0.46, 0.4], [0.47, 0.46], [0.42, 0.52], [0.28, 0.58], [0.1, 0.61], [0, 0.61]], head, 'y', [0, 0, 0], 56)
     const diaphragm = mat.paint(0x60a5fa)
-    const diaphragmMesh = b.cylY(0.4, 0.03, diaphragm, [0, 0.42, 0])
+    const diaphragmMesh = b.cylY(0.4, 0.03, diaphragm, [0, 0.45, 0])
     const capillary = mat.copper()
-    b.tube([[0, 0.53, 0], [0, 0.9, 0], [0.6, 1.05, 0.2], [1.3, 0.8, 0.3], [1.6, 0.3, 0.3]], 0.025, capillary)
+    const coil: V3[] = [[0, 0.6, 0], [0, 0.85, 0]]
+    for (let i = 0; i <= 24; i++) {
+      const a = (i / 24) * Math.PI * 2
+      coil.push([0.35 + Math.cos(a) * 0.3, 1.0 + i * 0.006, Math.sin(a) * 0.3])
+    }
+    coil.push([1.1, 0.9, 0.3], [1.5, 0.5, 0.3], [1.6, 0.3, 0.3])
+    b.tube(coil, 0.022, capillary)
     const bulb = mat.copper()
     b.cylY(0.1, 0.7, bulb, [1.6, -0.05, 0.3], 24)
+    const clamp = mat.steel()
+    for (const y of [0.15, -0.25]) b.mesh(new THREE.TorusGeometry(0.11, 0.018, 8, 32), clamp, [1.6, y, 0.3], [R, 0, 0])
+    b.tube([[0.3, -0.1, -0.3], [0.6, -0.2, -0.5], [1.1, -0.4, -0.6], [1.5, -0.7, -0.5]], 0.02, mat.copper())
+    b.cylZ(0.13, 0.18, mat.brass(), [0, -0.12, 0.38], 6)
     const pin = mat.steel()
     const pinMesh = b.cylY(0.035, 0.45, pin, [0, 0.12, 0], 16)
     const needle = mat.paint(0xef4444)
@@ -396,7 +459,7 @@ const builders: Record<Part3DId, () => PartModel> = {  sgi() {
       initial: 0.5,
       needsCut: true,
       apply: (v) => {
-        diaphragmMesh.position.y = 0.42 - 0.03 * v
+        diaphragmMesh.position.y = 0.45 - 0.03 * v
         pinMesh.position.y = 0.12 - 0.1 * v
         needleMesh.position.y = -0.15 - 0.1 * v
         springPivot.scale.y = 1 - 0.35 * v
@@ -410,18 +473,27 @@ const builders: Record<Part3DId, () => PartModel> = {  sgi() {
             ? '過熱度剛好：膜片上下的力平衡，閥針停在中間，供液剛好。'
             : '過熱度大：感溫包熱、壓力高，把膜片往下推，閥針打開，供液變多。',
     }
-    b.note(bulb, '感溫包', '綁在蒸發器出口的吸氣管上，感應溫度')
-    b.note(capillary, '毛細管', '把感溫包的壓力傳到膜片')
+    b.note(bulb, '感溫包', '用固定夾綁在蒸發器出口的吸氣管上，感應溫度')
+    b.note(capillary, '毛細管', '把感溫包的壓力傳到膜片；多的盤成一圈')
+    b.note(head, '感溫頭', '裡面是膜片；圓頂上會刻型號')
     b.note(diaphragm, '膜片', '上面推、下面頂，決定閥針開多大')
     b.note(needle, '閥針與閥座', '開度＝流量；這裡就是「降壓節流」的地方')
-    b.note(springM, '過熱度彈簧', '底下有調整螺絲（進階再學）')
+    b.note(springM, '過熱度彈簧', '前面的六角蓋裡是調整螺絲（進階再學）')
     return b.done()
   },
 
+  /** 儲液器（10/13 做細）：直立的鐵筒（上下圓頂、銲道）、固定束環＋底座、頂上出口閥（六角＋蓋）、進口管、標籤 */
   receiver() {
     const b = new Builder()
-    const tank = b.shell(mat.paint(0x64748b))
-    b.mesh(new THREE.CapsuleGeometry(0.5, 1.5, 12, 40), tank)
+    const tank = b.shell(new THREE.MeshStandardMaterial({ color: 0x3f4752, metalness: 0.4, roughness: 0.42 }))
+    vessel(b, 0.5, 1.0, tank)
+    const seam = b.shell(mat.dark())
+    for (const y of [0.78, -0.78]) b.mesh(new THREE.TorusGeometry(0.505, 0.015, 8, 56), seam, [0, y, 0], [R, 0, 0])
+    const band = mat.steel()
+    for (const y of [0.45, -0.45]) b.mesh(new THREE.TorusGeometry(0.52, 0.03, 8, 56), band, [0, y, 0], [R, 0, 0])
+    b.box(1.2, 0.05, 0.5, band, [0, -1.08, 0])
+    b.box(0.08, 1.02, 0.08, band, [0, -0.6, -0.52])
+    stickerY(b, 0.505, 0.0, 0.5)
     const liquid = mat.fluid(0x38bdf8)
     b.cylY(0.46, 0.85, liquid, [0, -0.5, 0])
     const dip = mat.copper()
@@ -429,36 +501,34 @@ const builders: Record<Part3DId, () => PartModel> = {  sgi() {
     const inlet = mat.copper()
     b.tube([[-0.9, 1.25, 0], [-0.2, 1.25, 0], [-0.2, 0.95, 0]], 0.06, inlet)
     const valve = mat.brass()
-    b.box(0.3, 0.22, 0.22, valve, [0.2, 1.38, 0])
-    b.cylX(0.06, 0.6, mat.copper(), [0.62, 1.38, 0], 16)
+    rbox(b, 0.32, 0.24, 0.26, 0.04, valve, [0.2, 1.36, 0])
+    b.cylY(0.15, 0.12, valve, [0.2, 1.2, 0], 6)
+    b.cylY(0.07, 0.16, valve, [0.2, 1.56, 0], 6)
+    b.cylX(0.06, 0.6, mat.copper(), [0.64, 1.36, 0], 16)
     b.note(liquid, '液態冷媒', '比較重，沉在下面')
     b.note(dip, '取液管', '一直伸到底部，只取液態送往膨脹閥')
     b.note(inlet, '進口', '冷凝器來的冷媒（可能還有一點氣）')
-    b.note(valve, '出口閥', '往乾燥過濾器、膨脹閥')
+    b.note(valve, '出口閥', '往乾燥過濾器、膨脹閥；上面的六角蓋拆開才轉得動')
     b.note(tank, '筒身', '膨脹閥系統一定要裝；講義右下角那顆小圓')
     return b.done()
   },
 
+  /** 液氣分離器（10/13 做細）：直立鐵筒、頂上兩支管（進、出）、束環＋腳架、標籤 */
   acc() {
     const b = new Builder()
-    const tank = b.shell(mat.paint(0x475569))
-    b.mesh(new THREE.CapsuleGeometry(0.5, 1.3, 12, 40), tank)
+    const tank = b.shell(new THREE.MeshStandardMaterial({ color: 0x2f3a47, metalness: 0.4, roughness: 0.42 }))
+    vessel(b, 0.5, 0.95, tank)
+    const seam = b.shell(mat.dark())
+    for (const y of [0.72, -0.72]) b.mesh(new THREE.TorusGeometry(0.505, 0.015, 8, 56), seam, [0, y, 0], [R, 0, 0])
+    const band = mat.steel()
+    b.mesh(new THREE.TorusGeometry(0.52, 0.03, 8, 56), band, [0, -0.2, 0], [R, 0, 0])
+    b.box(0.08, 0.9, 0.08, band, [0, -0.6, -0.52])
+    b.box(0.9, 0.05, 0.4, band, [0, -1.03, -0.3])
+    stickerY(b, 0.505, 0.2, 0.42)
     const liquid = mat.fluid(0x38bdf8)
-    b.cylY(0.46, 0.45, liquid, [0, -0.72, 0])
+    b.cylY(0.46, 0.45, liquid, [0, -0.7, 0])
     const utube = mat.copper()
-    b.tube(
-      [
-        [0.25, 1.35, 0],
-        [0.25, 0.4, 0],
-        [0.22, -0.55, 0],
-        [0, -0.72, 0],
-        [-0.22, -0.55, 0],
-        [-0.25, 0.4, 0],
-        [-0.25, 0.75, 0],
-      ],
-      0.055,
-      utube,
-    )
+    b.tube([[0.25, 1.35, 0], [0.25, 0.4, 0], [0.22, -0.55, 0], [0, -0.72, 0], [-0.22, -0.55, 0], [-0.25, 0.4, 0], [-0.25, 0.75, 0]], 0.055, utube)
     const hole = mat.glow(0xef4444)
     b.mesh(new THREE.SphereGeometry(0.035, 16, 16), hole, [0, -0.78, 0.04])
     const inlet = mat.copper()
@@ -471,10 +541,17 @@ const builders: Record<Part3DId, () => PartModel> = {  sgi() {
     return b.done()
   },
 
+  /** 油分離器（10/13 做細）：直立鐵筒（圓頂、銲道）、進出口管、底部回油管、束環 */
   oub() {
     const b = new Builder()
-    const tank = b.shell(mat.paint(0x1d4ed8))
-    b.mesh(new THREE.CapsuleGeometry(0.42, 1.3, 12, 40), tank)
+    const tank = b.shell(new THREE.MeshStandardMaterial({ color: 0x1e3a8a, metalness: 0.4, roughness: 0.4 }))
+    vessel(b, 0.42, 1.0, tank)
+    const seam = b.shell(mat.dark())
+    for (const y of [0.8, -0.8]) b.mesh(new THREE.TorusGeometry(0.425, 0.014, 8, 56), seam, [0, y, 0], [R, 0, 0])
+    const band = mat.steel()
+    b.mesh(new THREE.TorusGeometry(0.44, 0.03, 8, 56), band, [0, 0.1, 0], [R, 0, 0])
+    b.box(0.08, 0.3, 0.3, band, [0, 0.1, -0.55])
+    stickerY(b, 0.425, -0.3, 0.4)
     const inlet = mat.copper()
     b.tube([[-0.9, 0.85, 0], [-0.2, 0.85, 0], [-0.2, 0.2, 0]], 0.06, inlet)
     const outlet = mat.copper()
@@ -681,21 +758,26 @@ const builders: Record<Part3DId, () => PartModel> = {  sgi() {
     return b.done()
   },
 
+  /** 手閥（球閥；10/13 做細）：鍛造黃銅閥體（中間鼓起）、兩頭六角＋延長銅管、閥桿＋壓蓋螺帽、包紅色膠套的把手 */
   gbc() {
     const b = new Builder()
     const body = b.shell(mat.brass())
-    b.cylX(0.36, 1.0, body)
-    b.hexX(0.3, 0.2, body, [-0.6, 0, 0])
-    b.hexX(0.3, 0.2, body, [0.6, 0, 0])
-    stubsX(b, 0.7, 0.1, 0.4)
+    lathe(b, [[0.24, -0.52], [0.32, -0.36], [0.4, -0.12], [0.41, 0], [0.4, 0.12], [0.32, 0.36], [0.24, 0.52]], body, 'x', [0, 0, 0], 48)
+    b.hexX(0.3, 0.2, body, [-0.62, 0, 0])
+    b.hexX(0.3, 0.2, body, [0.62, 0, 0])
+    stubsX(b, 0.72, 0.1, 0.5)
+    b.cylY(0.16, 0.24, body, [0, 0.42, 0], 32)
+    const nutM = mat.steel()
+    b.cylY(0.12, 0.08, nutM, [0, 0.58, 0], 6)
     const ball = mat.steel()
     b.mesh(new THREE.SphereGeometry(0.3, 32, 32), ball)
     const bore = mat.dark()
     const borePivot = b.pivot([b.cylX(0.13, 0.62, bore, [0, 0, 0], 24)], [0, 0, 0])
     const stem = mat.steel()
     b.cylY(0.07, 0.5, stem, [0, 0.45, 0], 16)
-    const handle = mat.paint(0xef4444)
-    const handlePivot = b.pivot([b.box(0.9, 0.08, 0.16, handle, [0.3, 0.72, 0])], [0, 0.72, 0])
+    const handle = mat.paint(0xdc2626)
+    const lever = [rbox(b, 0.75, 0.07, 0.17, 0.03, handle, [0.42, 0.7, 0]), b.box(0.22, 0.05, 0.14, nutM, [0.05, 0.7, 0]), b.cylY(0.06, 0.06, nutM, [0, 0.76, 0], 6)]
+    const handlePivot = b.pivot(lever, [0, 0.72, 0])
     const flow = mat.fluid(0x38bdf8, 0.45)
     b.cylX(0.09, 1.7, flow)
     b.control = {
@@ -720,10 +802,22 @@ const builders: Record<Part3DId, () => PartModel> = {  sgi() {
     return b.done()
   },
 
+  /** 壓力開關（KP 15；10/13 做細）：藍色機殼、灰色前蓋＋螺絲、上面兩個設定軸和刻度窗、手動復歸鈕、側邊電線固定頭、底下兩個喇叭螺帽接壓力管 */
   kp15() {
     const b = new Builder()
-    const housing = b.shell(mat.paint(0x1e40af))
-    b.box(1.2, 1.1, 0.6, housing)
+    const housing = b.shell(new THREE.MeshStandardMaterial({ color: 0x1e40af, metalness: 0.2, roughness: 0.45 }))
+    rbox(b, 1.2, 1.2, 0.62, 0.07, housing)
+    const cover = b.shell(mat.paint(0x9ca3af))
+    rbox(b, 1.1, 0.8, 0.05, 0.03, cover, [0, -0.15, 0.32])
+    const screwM = mat.steel()
+    for (const x of [-0.46, 0.46]) for (const y of [0.18, -0.48]) b.cylZ(0.035, 0.02, screwM, [x, y, 0.35], 16)
+    // 刻度窗（白底黑線）
+    const scale = mat.paint(0xf8fafc)
+    const ink = mat.paint(0x111827)
+    for (const x of [-0.3, 0.3]) {
+      b.box(0.36, 0.16, 0.01, scale, [x, 0.42, 0.315])
+      for (let i = 0; i < 7; i++) b.box(0.008, i % 3 === 0 ? 0.08 : 0.05, 0.005, ink, [x - 0.15 + i * 0.05, 0.4, 0.322])
+    }
     const bellows = mat.steel()
     for (let i = 0; i < 6; i++) b.mesh(new THREE.TorusGeometry(0.16, 0.04, 12, 32), bellows, [-0.3, -0.35 + i * 0.07, 0], [R, 0, 0])
     const high = Array.from({ length: 6 }, (_, i) => b.mesh(new THREE.TorusGeometry(0.16, 0.04, 12, 32), bellows, [0.3, -0.35 + i * 0.07, 0], [R, 0, 0]))
@@ -747,36 +841,70 @@ const builders: Record<Part3DId, () => PartModel> = {  sgi() {
       describe: (v) => (v > 0.75 ? '高壓超過設定：右邊的伸縮囊撐開、把接點頂開，切斷電源，壓縮機停機保護。' : v > 0.5 ? '高壓偏高：伸縮囊被推高，但還沒到跳脫的設定值。' : '高壓正常：接點接通，壓縮機運轉。'),
     }
     const knob = mat.paint(0xe2e8f0)
-    b.cylY(0.1, 0.18, knob, [-0.3, 0.64, 0], 24)
-    b.cylY(0.1, 0.18, knob, [0.3, 0.64, 0], 24)
+    for (const x of [-0.3, 0.3]) {
+      b.cylY(0.09, 0.16, knob, [x, 0.68, 0], 24)
+      b.box(0.12, 0.02, 0.02, ink, [x, 0.765, 0])
+    }
+    const reset = mat.paint(0x2563eb)
+    b.cylY(0.06, 0.1, reset, [0.3, 0.66, 0.2], 20)
+    b.cylX(0.09, 0.16, mat.dark(), [0.66, -0.2, 0], 20)
+    b.tube([[0.74, -0.2, 0], [1.0, -0.3, 0.1], [1.3, -0.6, 0.2]], 0.04, mat.dark())
     const cap = mat.copper()
-    b.tube([[-0.3, -0.55, 0], [-0.3, -0.9, 0], [-0.8, -1.1, 0]], 0.025, cap)
-    b.tube([[0.3, -0.55, 0], [0.3, -0.9, 0], [0.8, -1.1, 0]], 0.025, cap)
+    const nutB = mat.brass()
+    for (const x of [-0.3, 0.3]) {
+      b.cylY(0.09, 0.12, nutB, [x, -0.68, 0], 6)
+      b.tube([[x, -0.72, 0], [x, -0.95, 0], [x * 2.6, -1.15, 0]], 0.025, cap)
+    }
     b.note(bellows, '感壓伸縮囊', '左邊接低壓、右邊接高壓，壓力變化會推動')
     b.note(contacts, '電氣接點', '壓力超出設定就斷電，讓壓縮機停機')
-    b.note(knob, '設定旋鈕', '設定跳脫壓力')
-    b.note(cap, '壓力接管', '接到系統的低壓側和高壓側')
+    b.note(knob, '設定軸＋刻度', '上面轉軸設定跳脫壓力，前面的刻度窗看設定值')
+    b.note(reset, '復歸鈕', '高壓跳了要按一下才會再接通（手動復歸型）')
+    b.note(cap, '壓力接管', '底下喇叭螺帽接到系統的低壓側和高壓側')
     return b.done()
   },
 
+  /** 溫控器（10/13 做細）：黑色面框、紅色數字顯示 -18、四顆按鍵、後面灰色本體＋端子台、感溫棒 */
   tc() {
     const b = new Builder()
-    const box = b.shell(mat.paint(0xe5e7eb))
-    b.box(1.2, 0.6, 0.6, box)
-    const screen = mat.glow(0x22d3ee)
-    b.box(0.6, 0.22, 0.02, screen, [-0.15, 0.08, 0.31])
-    const btn = mat.dark()
-    for (let i = 0; i < 3; i++) b.cylZ(0.05, 0.04, btn, [0.32 + i * 0.12 - 0.12, -0.12, 0.31], 16)
+    const box = b.shell(mat.paint(0x9ca3af))
+    rbox(b, 1.05, 0.5, 0.6, 0.04, box, [0, 0, -0.08])
+    const bezel = mat.paint(0x111827)
+    rbox(b, 1.25, 0.66, 0.1, 0.05, bezel, [0, 0, 0.27])
+    const panel = mat.paint(0x1f2937)
+    b.box(0.62, 0.3, 0.01, panel, [-0.2, 0.08, 0.325])
+    const screen = mat.glow(0xef4444)
+    // 7 段數字「-18」
+    const seg = (cx: number, on: string) => {
+      const W = 0.1
+      const Hh = 0.09
+      const parts: Record<string, [number, number, number, number]> = {
+        a: [0, Hh, W, 0.018], d: [0, -Hh, W, 0.018], g: [0, 0, W, 0.018],
+        b: [W / 2, Hh / 2, 0.018, Hh], c: [W / 2, -Hh / 2, 0.018, Hh], e: [-W / 2, -Hh / 2, 0.018, Hh], f: [-W / 2, Hh / 2, 0.018, Hh],
+      }
+      for (const k of on) {
+        const [x, y, w, h] = parts[k]
+        b.box(w, h, 0.006, screen, [cx + x, 0.08 + y, 0.332])
+      }
+    }
+    seg(-0.38, 'g')
+    seg(-0.22, 'bc')
+    seg(-0.06, 'abcdefg')
+    const btn = mat.paint(0x4b5563)
+    for (let i = 0; i < 4; i++) rbox(b, 0.11, 0.08, 0.04, 0.015, btn, [0.24 + (i % 2) * 0.15, 0.1 - Math.floor(i / 2) * 0.13, 0.33])
     const board = mat.paint(0x15803d)
-    b.box(1.0, 0.4, 0.04, board, [0, 0, -0.1])
+    b.box(0.95, 0.4, 0.03, board, [0, 0, -0.1])
+    const term = mat.paint(0x16a34a)
+    b.box(0.9, 0.16, 0.12, term, [0, -0.12, -0.42])
+    for (let i = 0; i < 8; i++) b.cylZ(0.025, 0.02, mat.steel(), [-0.38 + i * 0.11, -0.12, -0.49], 12)
     const cable = mat.dark()
-    b.tube([[0.6, -0.1, 0], [1.0, -0.4, 0], [1.4, -0.4, 0.3]], 0.03, cable)
+    b.tube([[0.4, -0.15, -0.45], [0.8, -0.4, -0.3], [1.2, -0.45, 0.1], [1.4, -0.4, 0.3]], 0.03, cable)
     const probe = mat.steel()
     b.cylX(0.05, 0.45, probe, [1.6, -0.4, 0.3], 16)
     b.note(screen, '顯示幕', '顯示庫內溫度、設定值')
     b.note(probe, '感溫棒', '放在庫內，感應溫度')
     b.note(board, '控制電路', '到設定溫度就讓壓縮機停；溫差一般抓 4°C')
     b.note(btn, '按鍵', '設定溫度、溫差、除霜時間')
+    b.note(term, '端子台', '後面接電源、壓縮機、除霜、風扇的線')
     return b.done()
   },
   flare() {

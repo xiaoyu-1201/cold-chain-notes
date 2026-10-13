@@ -2,6 +2,7 @@ import { Layers, X } from 'lucide-react'
 import { lazy, Suspense, useEffect, useRef, useState, type ComponentProps, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { cn } from '../../lib/cn'
+import { isTopDialog } from './topDialog'
 
 const CycleSystem3D = lazy(() => import('./CycleSystem3D'))
 
@@ -22,14 +23,26 @@ interface Props extends Omit<Cycle3DProps, 'compact'> {
  */
 export function CycleBigViewer({ onCut, onClose, side, ...cycle }: Props) {
   const closeRef = useRef<HTMLButtonElement>(null)
-  const [narrow] = useState(() => window.innerWidth < 1280)
+  const dialogRef = useRef<HTMLDivElement>(null)
+  // 呼叫端每次重畫都給新的 onClose：存在 ref 裡，下面的 effect 只跑一次（不然焦點會一直被搶回 ×，10/13 code review）
+  const onCloseRef = useRef(onClose)
+  onCloseRef.current = onClose
+  // 跟版面換成左右排的寬度（lg＝1024）一致：小於這個是上下排、用小一號的字（10/13 QA：iPad 橫放寫「看下面說明」但說明在右邊）
+  const [narrow, setNarrow] = useState(() => window.innerWidth < 1024)
+  useEffect(() => {
+    const onResize = () => setNarrow(window.innerWidth < 1024)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
   useEffect(() => {
     const prev = document.activeElement as HTMLElement | null
-    closeRef.current?.focus()
+    closeRef.current?.focus({ preventScroll: true })
     const onKey = (e: KeyboardEvent) => {
+      // 上面又開了別的視窗（例：側欄的「3D 看構造」）：鍵盤交給最上面那個，按一次 Esc 只關一層
+      if (!isTopDialog(dialogRef.current)) return
       if (e.key === 'Escape') {
         e.stopPropagation()
-        onClose()
+        onCloseRef.current()
       } else if (['ArrowLeft', 'ArrowRight', 'PageUp', 'PageDown', 'Home', 'End', 'Backspace', ' '].includes(e.key)) {
         e.stopPropagation()
       }
@@ -37,12 +50,13 @@ export function CycleBigViewer({ onCut, onClose, side, ...cycle }: Props) {
     window.addEventListener('keydown', onKey, true)
     return () => {
       window.removeEventListener('keydown', onKey, true)
-      prev?.focus?.()
+      prev?.focus?.({ preventScroll: true })
     }
-  }, [onClose])
+  }, [])
 
   return createPortal(
     <div
+      ref={dialogRef}
       className="fixed inset-0 z-[70] flex items-center justify-center bg-ink/40 p-3 sm:p-6"
       role="dialog"
       aria-modal="true"
@@ -77,7 +91,12 @@ export function CycleBigViewer({ onCut, onClose, side, ...cycle }: Props) {
               <CycleSystem3D {...cycle} compact={narrow} />
             </Suspense>
           </div>
-          {side && <aside className="max-h-[45%] overflow-y-auto border-t border-line bg-card p-4 lg:max-h-none lg:w-[440px] lg:border-l lg:border-t-0 lg:p-5">{side}</aside>}
+          {side && (
+            <aside className="max-h-[50%] overflow-y-auto border-t border-line bg-card p-4 lg:max-h-none lg:w-[440px] lg:border-l lg:border-t-0 lg:p-5">
+              {/* 側欄的說明是照投影片畫布的字級寫的；放大視窗沒有縮放，寬螢幕縮成 0.8 倍才不會太大 */}
+              <div style={narrow ? undefined : { zoom: 0.8 }}>{side}</div>
+            </aside>
+          )}
         </div>
       </div>
     </div>,

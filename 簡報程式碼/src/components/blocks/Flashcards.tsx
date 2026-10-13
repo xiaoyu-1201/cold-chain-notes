@@ -1,5 +1,5 @@
 import { Box, Check, ChevronLeft, ChevronRight, Repeat, RotateCcw, Shuffle, Volume2 } from 'lucide-react'
-import { useMemo, useState, type KeyboardEvent, type MouseEvent } from 'react'
+import { useEffect, useMemo, useState, type KeyboardEvent, type MouseEvent } from 'react'
 import { CARD_AUDIO } from '../../data/cardAudio'
 import { CLASS_AUDIO, loadPlayable, RECORDINGS } from '../../data/media'
 import type { FlashCard, FlashcardsBlock } from '../../data/types'
@@ -97,6 +97,13 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
   const [mode, setMode] = useStickyState<'term' | 'en'>('cards:mode', 'term')
   const [flipped, setFlipped] = useState(false)
   const [viewer, setViewer] = useState(false)
+  // 「全部重來」按第一下＝問確定；記住是在哪個狀態問的，狀態變了（會了的張數、換卡）或 4 秒沒按就自動取消（10/13 QA：Safari 不會觸發 blur，確認狀態一直留著）
+  const [confirmAt, setConfirmAt] = useState<{ known: number; cur: number | undefined } | null>(null)
+  useEffect(() => {
+    if (!confirmAt) return
+    const id = setTimeout(() => setConfirmAt(null), 4000)
+    return () => clearTimeout(id)
+  }, [confirmAt])
   const menuFade = useScrollFade<HTMLDivElement>()
 
   // 卡片數量變了（新增名詞）就重新排
@@ -105,6 +112,12 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
   const current = visible.includes(cur) ? cur : visible[0]
   const card = current !== undefined ? cards[current] : null
   const known = cards.filter((c) => status[c.term] === 'known').length
+  const confirmReset = !!confirmAt && confirmAt.known === known && confirmAt.cur === current
+  const askReset = () => {
+    if (!confirmReset) return setConfirmAt({ known, cur: current })
+    setConfirmAt(null)
+    resetAll()
+  }
   const model = card?.part ? part3DFor(card.part) : null
   const glyph = card ? glyphFor(card.term) : null
 
@@ -339,7 +352,9 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
             {status[card.term] === 'known' ? (
               <button type="button" aria-pressed onClick={unmark} className={cn(actionBtn, 'bg-emerald-400 text-paper hover:bg-emerald-300')} title="這張標成會了；再按一次取消">
                 <Check className="size-5" aria-hidden />
-                會了・再按取消
+                會了
+                {/* 報讀靠 aria-pressed 說「已按下」，這段提示只給眼睛看 */}
+                <span aria-hidden>・再按取消</span>
               </button>
             ) : (
               <button type="button" aria-pressed={false} onClick={() => mark('known')} className={cn(actionBtn, 'bg-emerald-500/15 text-emerald-100 hover:bg-emerald-500/25')}>
@@ -349,25 +364,24 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
             )}
           </>
         ) : (
-          <button type="button" onClick={resetAll} className={cn(actionBtn, 'border border-line bg-card text-slate-100 hover:border-sky-500/50')}>
+          <button type="button" onClick={askReset} className={cn(actionBtn, confirmReset ? 'bg-red-400 text-paper' : 'border border-line bg-card text-slate-100 hover:border-sky-500/50')}>
             <RotateCcw className="size-5" aria-hidden />
-            全部重來
+            {confirmReset ? `確定取消 ${known} 張「會了」？` : '全部重來'}
           </button>
         )}
         <button type="button" onClick={reshuffle} className={cn(actionBtn, 'border border-line bg-card text-slate-200 hover:border-sky-500/50')}>
           <Shuffle className="size-5" aria-hidden />
           洗牌
         </button>
+        {/* 全部重來：按第一下變成「確定？」再按一次才清掉（不用 window.confirm：有些 App 內建瀏覽器會直接擋掉） */}
         {card && known > 0 && (
           <button
             type="button"
-            onClick={() => {
-              if (window.confirm(`把 ${known} 張「會了」全部取消、從頭練？`)) resetAll()
-            }}
-            className={cn(actionBtn, 'border border-line bg-card text-slate-200 hover:border-sky-500/50')}
+            onClick={askReset}
+            className={cn(actionBtn, confirmReset ? 'bg-red-400 text-paper' : 'border border-line bg-card text-slate-200 hover:border-sky-500/50')}
           >
             <RotateCcw className="size-5" aria-hidden />
-            全部重來
+            {confirmReset ? `確定取消 ${known} 張「會了」？` : '全部重來'}
           </button>
         )}
       </GlassButtonGroup>

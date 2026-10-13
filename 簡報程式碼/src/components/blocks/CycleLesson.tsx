@@ -1,5 +1,5 @@
 import { ArrowUpRight, Box, ChevronLeft, ChevronRight, Layers, Maximize2, TriangleAlert } from 'lucide-react'
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { FAULTS, type Fault } from '../../data/faults'
 import { useStickyState } from '../../hooks/useStickyState'
 import { useDeck } from '../../context/deck'
@@ -49,6 +49,22 @@ interface FaultControl {
 function FaultPanel({ f, onSelect }: { f: FaultControl; onSelect: (id: CycleNodeId | null) => void }) {
   const fault = f.fault!
   const last = fault.steps.length - 1
+  // 換步驟（含自動播放）時，把目前這一步捲進看得到的地方（放大視窗側欄比較窄，步驟可能超出）
+  const stepRef = useRef<HTMLLIElement>(null)
+  const lessonRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    // 只捲步驟清單自己（scrollIntoView 會連整張投影片一起捲）
+    const li = stepRef.current
+    const ol = li?.parentElement
+    if (!li || !ol) return
+    // 放大視窗裡是整個側欄在捲：直接捲到這一步（最後一步連綠色結論一起，10/13 QA）
+    if (li.closest('[role="dialog"]')) {
+      ;(f.step === last ? (lessonRef.current ?? li) : li).scrollIntoView({ block: 'nearest' })
+      return
+    }
+    if (li.offsetTop < ol.scrollTop) ol.scrollTop = li.offsetTop
+    else if (li.offsetTop + li.offsetHeight > ol.scrollTop + ol.clientHeight) ol.scrollTop = li.offsetTop + li.offsetHeight - ol.clientHeight
+  }, [f.step])
   const navBtn = cn('flex items-center gap-1 rounded-full border border-line bg-card px-4 py-2 text-[20px] font-semibold text-slate-100 transition hover:border-sky-500/50 disabled:opacity-35', focusRing)
   return (
     <div className="flex h-full flex-col rounded-[18px] border border-line bg-card px-8 py-7">
@@ -62,9 +78,9 @@ function FaultPanel({ f, onSelect }: { f: FaultControl; onSelect: (id: CycleNode
       </p>
       <p className="text-[30px] font-bold leading-tight text-white">{fault.label}，會怎樣？</p>
       {/* 步驟太長時在這一格裡捲，不要跑到下面的綠色結論後面（10/13 使用者：綠色那條擋住文字） */}
-      <ol className="-mx-1 mt-3 min-h-0 flex-1 space-y-1.5 overflow-y-auto px-1">
+      <ol className="relative -mx-1 mt-3 min-h-0 flex-1 space-y-1.5 overflow-y-auto px-1">
         {fault.steps.map((s, i) => (
-          <li key={s.title}>
+          <li key={s.title} ref={i === f.step ? stepRef : undefined}>
             <button
               type="button"
               onClick={() => f.setStep(i)}
@@ -81,7 +97,7 @@ function FaultPanel({ f, onSelect }: { f: FaultControl; onSelect: (id: CycleNode
         ))}
       </ol>
       {f.step === last && (
-        <div className="mt-2.5 shrink-0 rounded-2xl bg-emerald-950 px-5 py-2.5">
+        <div ref={lessonRef} className="mt-2.5 shrink-0 rounded-2xl bg-emerald-950 px-5 py-2.5">
           <p className="text-[21px] leading-snug text-emerald-50">
             <b className="mr-2 text-emerald-300">所以</b>
             {fault.lesson}
@@ -118,7 +134,7 @@ function FaultPanel({ f, onSelect }: { f: FaultControl; onSelect: (id: CycleNode
 }
 
 /** 右側檢視面板：沒選→分組清單；選了→說明（取代蓋在圖上的小視窗）；故障模擬→一步一步的說明 */
-function Inspector({ selected, onSelect, faults }: { selected: CycleNodeId | null; onSelect: (id: CycleNodeId | null) => void; faults: FaultControl }) {
+function Inspector({ selected, onSelect, faults, onLeave }: { selected: CycleNodeId | null; onSelect: (id: CycleNodeId | null) => void; faults: FaultControl; onLeave?: () => void }) {
   const { goToId, numberOf } = useDeck()
   const [viewer, setViewer] = useState(false)
 
@@ -232,7 +248,11 @@ function Inspector({ selected, onSelect, faults }: { selected: CycleNodeId | nul
         {note.slide && (
           <button
             type="button"
-            onClick={() => goToId(note.slide!)}
+            onClick={() => {
+              // 在放大視窗裡點「跳頁」：先關掉視窗再換頁
+              onLeave?.()
+              goToId(note.slide!)
+            }}
             className={cn('flex items-center gap-1 rounded-full border border-line bg-card px-4 py-2 text-[19px] font-semibold text-sky-300 hover:border-sky-500/50', focusRing)}
           >
             {note.chapter} <span className="font-mono text-slate-400">P.{pad(numberOf(note.slide))}</span>
@@ -349,7 +369,7 @@ export function CycleLesson() {
               faultLabel={fault?.label}
               onExitFault={() => setFaultId(null)}
               onClose={() => setBig(false)}
-              side={<Inspector selected={selected} onSelect={setSelected} faults={faults} />}
+              side={<Inspector selected={selected} onSelect={setSelected} faults={faults} onLeave={() => setBig(false)} />}
             />
           )}
         </div>

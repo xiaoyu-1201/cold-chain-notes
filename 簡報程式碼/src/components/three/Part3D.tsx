@@ -83,31 +83,24 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
       })
       return out
     }
-    // 標籤拉到模型外面（從模型中心往那個零件的方向推出去）＋一條引線指回零件；畫面上疊到時再自動往下錯開（10/13 QA：標籤全擠在中間）
-    const lineMat = new THREE.LineBasicMaterial({ color: 0x334155, transparent: true, opacity: 0.7 })
+    // 構造標籤：拉到 3D 畫面左右兩欄＋一條引線指回零件（10/13 使用者：標籤被擋住、轉動時一直閃、左右換邊、標線沒標好）
+    // 引線不被零件擋住（不然看起來像指到空的地方，10/13 QA）；線頭一顆小圓點標出指的是哪裡
+    const lineMat = new THREE.LineBasicMaterial({ color: 0x334155, transparent: true, opacity: 0.8, depthTest: false })
+    const dotMat = new THREE.MeshBasicMaterial({ color: 0x0f2440, depthTest: false })
+    const dotGeo = new THREE.SphereGeometry(radius * 0.014, 12, 12)
     const tagEls: HTMLDivElement[] = []
-    const tagMeshes: THREE.Mesh[][] = []
     const labelPx = host.closest('.deck-canvas') ? 20 : 15
-    // 一開始的視角（跟下面相機的起始位置一樣）：用來判斷零件哪裡看得到
-    const eye = new THREE.Vector3(radius * 1.6, radius * 1.1, radius * 2.6)
+    // 相機的起始位置：判斷「零件哪裡看得到」也用這個視角（兩邊共用，改一邊不會忘了另一邊）
+    const homePos = new THREE.Vector3(radius * 1.6, radius * 1.1, radius * 2.6)
     const rc = new THREE.Raycaster()
-    const shownAtStart = (o: THREE.Object3D | null): boolean => (!o ? true : o.visible && shownAtStart(o.parent))
-    const blockersAll: THREE.Mesh[] = []
+    // 零件現在有沒有顯示（例：保溫管「沒包」時是藏起來的；乾燥過濾器切「焊接」才出現焊接頭）
+    const shownNow = (o: THREE.Object3D | null): boolean => (!o ? true : o.visible && shownNow(o.parent))
+    const allMeshes: THREE.Mesh[] = []
     model.group.traverse((o) => {
-      const mesh = o as THREE.Mesh
-      if (mesh.isMesh && !o.userData.mountOnly && shownAtStart(o)) {
-        const m = mesh.material as THREE.Material
-        // 半透明的（冷媒流動、玻璃）擋不住視線
-        if (!(m.transparent && m.opacity < 0.6)) blockersAll.push(mesh)
-      }
+      if ((o as THREE.Mesh).isMesh && !o.userData.mountOnly) allMeshes.push(o as THREE.Mesh)
     })
-    const blockersNoShell = blockersAll.filter((m) => !model.shells.includes(m.material as THREE.Material))
     const partMeshes = model.legendMats.map((m) => meshesOf(m))
-    const partBoxes = partMeshes.map((ms) => ms.reduce((b, mesh) => b.expandByObject(mesh), new THREE.Box3()))
-    const tags = model.legend.map((item, i) => {
-      const ms = partMeshes[i]
-      const bb = partBoxes[i]
-      tagMeshes.push(ms)
+    const tags = model.legend.map((item) => {
       const wrap = document.createElement('div')
       const el = document.createElement('div')
       el.textContent = item.name
@@ -119,114 +112,166 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
       wrap.appendChild(el)
       tagEls.push(el)
       const tag = new CSS2DObject(wrap)
-      const center = bb.isEmpty() ? new THREE.Vector3() : bb.getCenter(new THREE.Vector3())
-      // 引線要點在零件「身上、看得到的地方」（10/13 使用者：標線都沒標好）：
-      //   外框中心可能是空的（毛細管盤成一圈）、可能被別的零件擋住（柱塞在線圈裡）→
-      //   從零件的頂點裡，挑一開始的視角「看得到」又離中心最近的點；記住是哪個零件的哪個點，零件會動時引線跟著走。
-      //   一個點都看不到＝在外殼裡面：沒剖開時不標，剖開才標（挑點時不算外殼）
-      const cands: { mesh: THREE.Mesh; local: THREE.Vector3; world: THREE.Vector3; d: number }[] = []
-      for (const mesh of ms) {
-        const posAttr = mesh.geometry.getAttribute('position') as THREE.BufferAttribute | undefined
-        if (!posAttr) continue
-        const step = Math.max(1, Math.floor(posAttr.count / 1500))
-        for (let j = 0; j < posAttr.count; j += step) {
-          const local = new THREE.Vector3().fromBufferAttribute(posAttr, j)
-          const world = mesh.localToWorld(local.clone())
-          cands.push({ mesh, local, world, d: world.distanceToSquared(center) })
-        }
-      }
-      cands.sort((a, b) => a.d - b.d)
-      const own = new Set<THREE.Object3D>(ms)
-      const pickVisible = (blockers: THREE.Mesh[]) => {
-        const tries = Math.min(cands.length, 48)
-        for (let t = 0; t < tries; t++) {
-          const c = cands[Math.floor((t * cands.length) / tries)]
-          // 稍微往眼睛那邊挪一點點，避免打到自己表面同一點的誤差
-          const dir = c.world.clone().sub(eye)
-          const dist = dir.length()
-          rc.set(eye, dir.normalize())
-          rc.far = dist * 0.995
-          const hit = rc.intersectObjects(blockers, false).find((h) => !own.has(h.object))
-          if (!hit) return c
-        }
-        return null
-      }
-      const seen = pickVisible(blockersAll)
-      const best = seen ?? pickVisible(blockersNoShell) ?? cands[0]
-      tag.userData.inside = !seen && !model.shells.includes(model.legendMats[i])
-      tag.userData.pin = best ? { mesh: best.mesh, local: best.local } : null
-      const anchor = best ? best.world.clone() : center
-      tag.position.copy(anchor)
-      const lead = new THREE.Line(new THREE.BufferGeometry().setFromPoints([anchor, anchor.clone()]), lineMat)
+      const lead = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), lineMat)
       lead.visible = false
-      scene.add(lead)
+      lead.renderOrder = 10
+      const dot = new THREE.Mesh(dotGeo, dotMat)
+      dot.renderOrder = 11
+      dot.visible = false
+      scene.add(lead, dot)
       tag.userData.lead = lead
+      tag.userData.dot = dot
+      tag.userData.pin = null
+      tag.userData.inside = false
       tag.visible = false
       scene.add(tag)
       return tag
     })
-    /** 標註排版（10/13 使用者：標籤被擋住、轉動時一直閃、左右換邊）：
-     *  每個標籤固定在左欄或右欄（看零件在模型的左半還是右半），上下順序也固定（看零件高低）；
-     *  每一格畫面都重算位置，跟著零件平順移動、不重疊、不出框、避開下面那排按鈕；引線從零件拉到標籤 */
-    const tmp = new THREE.Vector3()
-    const offsets = tagEls.map(() => ({ x: 0, y: 0 }))
-    const sideOf = tags.map((t, i) => {
-      const a = t.position
-      return Math.abs(a.x) < radius * 0.08 ? i % 2 === 0 : a.x < 0
-    })
-    const orderAll = tags.map((_, i) => i).sort((a, b) => tags[b].position.y - tags[a].position.y)
-    // 零件現在有沒有顯示（例：保溫管「沒包」時保溫管是藏起來的）：藏起來的零件不標（10/13 使用者：標籤指到空的地方）
-    const shownNow = (o: THREE.Object3D | null): boolean => (!o ? true : o.visible && shownNow(o.parent))
+
+    /**
+     * 引線釘在零件「身上、看得到的地方」：外框中心可能是空的（毛細管盤成一圈）、可能被別的零件擋住（柱塞在線圈裡）→
+     * 從零件「現在顯示的」頂點裡，挑起始視角看得到、又離中心最近的點；記住是哪個零件的哪個點，零件會動時引線跟著走。
+     * 被外殼擋住、不算外殼就看得到＝在外殼裡：沒剖開時不標。
+     * 很花時間（射線），所以第一次打開標籤時才算；零件顯示／藏起來有變（切開關、拉滑桿）就重算。
+     */
+    let pinSig = ''
+    const sideOf: boolean[] = tags.map(() => false)
+    let orderAll: number[] = tags.map((_, i) => i)
+    // 剖開／合起來也要重挑（剖開後外殼前半沒了，看得到的地方不一樣）
+    const visSig = () => (cutOn ? 'c' : 'o') + allMeshes.map((m) => (shownNow(m) ? '1' : '0')).join('')
+    const ensurePins = () => {
+      const sig = visSig()
+      if (sig === pinSig) return
+      pinSig = sig
+      model.group.updateMatrixWorld(true)
+      const blockersAll = allMeshes.filter((m) => {
+        if (!shownNow(m)) return false
+        const mm = m.material as THREE.Material
+        // 半透明的（冷媒流動、玻璃）擋不住視線
+        return !(mm.transparent && mm.opacity < 0.6)
+      })
+      const blockersNoShell = blockersAll.filter((m) => !model.shells.includes(m.material as THREE.Material))
+      tags.forEach((tag, i) => {
+        const ms = partMeshes[i].filter((m) => shownNow(m))
+        const bb = ms.reduce((b, mesh) => b.expandByObject(mesh), new THREE.Box3())
+        const center = bb.isEmpty() ? new THREE.Vector3() : bb.getCenter(new THREE.Vector3())
+        const cands: { mesh: THREE.Mesh; local: THREE.Vector3; world: THREE.Vector3; d: number }[] = []
+        for (const mesh of ms) {
+          const posAttr = mesh.geometry.getAttribute('position') as THREE.BufferAttribute | undefined
+          if (!posAttr) continue
+          // 每個零件最多抽 ~300 個點就夠挑
+          const step = Math.max(1, Math.floor((posAttr.count * ms.length) / 300))
+          for (let j = 0; j < posAttr.count; j += step) {
+            const local = new THREE.Vector3().fromBufferAttribute(posAttr, j)
+            const world = mesh.localToWorld(local.clone())
+            cands.push({ mesh, local, world, d: world.distanceToSquared(center) })
+          }
+        }
+        cands.sort((a, b) => a.d - b.d)
+        const own = new Set<THREE.Object3D>(ms)
+        const pickVisible = (blockers: THREE.Mesh[]) => {
+          const tries = Math.min(cands.length, 40)
+          for (let t = 0; t < tries; t++) {
+            const c = cands[Math.floor((t * cands.length) / tries)]
+            const dir = c.world.clone().sub(homePos)
+            const dist = dir.length()
+            rc.set(homePos, dir.normalize())
+            // 停在那個點前面一點點，不要打到自己表面同一點
+            rc.far = dist * 0.995
+            // 剖開時，外殼被切掉的前半（z > 0）不算擋住
+            const blocked = rc.intersectObjects(blockers, false).some((h) => !own.has(h.object) && !(cutOn && h.point.z > 0 && model.shells.includes((h.object as THREE.Mesh).material as THREE.Material)))
+            if (!blocked) return c
+          }
+          return null
+        }
+        const seen = pickVisible(blockersAll)
+        const noShell = seen ? null : pickVisible(blockersNoShell)
+        const best = seen ?? noShell ?? cands[0]
+        // 只有「被外殼擋住」才算在裡面；被別的零件擋住（沒有外殼可剖）照樣標
+        tag.userData.inside = !seen && !!noShell && !model.shells.includes(model.legendMats[i])
+        tag.userData.pin = best ? { mesh: best.mesh, local: best.local } : null
+        tag.position.copy(best ? best.world : center)
+        ;(tag.userData.dot as THREE.Mesh).position.copy(tag.position)
+        ;((tag.userData.lead as THREE.Line).geometry.getAttribute('position') as THREE.BufferAttribute).setXYZ(0, tag.position.x, tag.position.y, tag.position.z)
+      })
+      // 左欄／右欄：照零件左右位置排，一半放左、一半放右（全部擠在同一邊會左重右輕，10/13 QA）；上下順序看高低。只在重算時更新，平常轉動不會換邊
+      const byX = tags.map((_, i) => i).sort((a, b) => tags[a].position.x - tags[b].position.x)
+      byX.forEach((i, r) => (sideOf[i] = tags.length === 1 ? tags[i].position.x < 0 : r < Math.floor(tags.length / 2)))
+      orderAll = tags.map((_, i) => i).sort((a, b) => tags[b].position.y - tags[a].position.y)
+      sizes.fill(null)
+    }
     // 外殼裡面的零件：沒剖開時看不到，不標（指著它亮起來時才標）
     let cutOn = false
     const showTags = () =>
       tags.forEach((t, i) => {
-        t.visible = ((labelsOn && (cutOn || !t.userData.inside)) || i === hlIndex) && tagMeshes[i].some((m) => shownNow(m))
+        t.visible = ((labelsOn && (cutOn || !t.userData.inside)) || i === hlIndex) && partMeshes[i].some((m) => shownNow(m))
         ;(t.userData.lead as THREE.Line).visible = t.visible
+        ;(t.userData.dot as THREE.Mesh).visible = t.visible
       })
-    /** 標籤跟著零件身上那個點走（零件會動），每一格畫之前更新 */
+    /** 標籤跟著零件身上那個點走（零件會動） */
     const followPins = () =>
       tags.forEach((t) => {
         const pin = t.userData.pin as { mesh: THREE.Mesh; local: THREE.Vector3 } | null
         if (!pin || !t.visible) return
         pin.mesh.localToWorld(t.position.copy(pin.local))
+        ;(t.userData.dot as THREE.Mesh).position.copy(t.position)
         const pos = (t.userData.lead as THREE.Line).geometry.getAttribute('position') as THREE.BufferAttribute
         pos.setXYZ(0, t.position.x, t.position.y, t.position.z)
         pos.needsUpdate = true
       })
+
+    /** 排版：兩欄、不重疊、不出框、避開下面那排按鈕；引線拉到標籤邊緣。標籤大小量一次就記住，不必每格都讀畫面 */
+    const tmp = new THREE.Vector3()
+    const sizes: ({ w: number; h: number } | null)[] = tags.map(() => null)
+    let lastKey = ''
     const unstack = () => {
-      showTags()
       const hr = host.getBoundingClientRect()
       if (!hr.width) return
-      // 電腦版整張投影片是縮放的：量到的是螢幕像素，translate 要用縮放前的像素（10/13 使用者：按下去標籤先閃在產品上、引線對不準）
+      // 電腦版整張投影片是縮放的：量到的是螢幕像素，translate 要用縮放前的像素（k＝縮放比例）
       const k = hr.width / Math.max(host.offsetWidth, 1)
+      // 相機、零件、框都沒動：不用重排
+      // 3D 上面浮著的按鈕、提示（data-3d-avoid）：標籤要避開，按鈕換行變高也跟著讓（10/13 QA）
+      const avoid = [...((host.closest('.viewport-blueprint') ?? host.parentElement)?.querySelectorAll<HTMLElement>('[data-3d-avoid]') ?? [])].map((e) => e.getBoundingClientRect()).filter((r) => r.width > 0)
+      const key = [hr.left, hr.top, hr.width, hr.height, ...avoid.flatMap((r) => [r.left, r.top, r.right, r.bottom]), ...camera.matrixWorld.elements, ...camera.projectionMatrix.elements, ...tags.flatMap((t) => (t.visible ? [t.position.x, t.position.y, t.position.z] : [9e9]))].map((n) => n.toFixed(3)).join(',')
+      if (key === lastKey) return
+      lastKey = key
       const pad = 10 * k
       const gap = 6 * k
-      const minY = hr.top + pad + 34 * k
-      const maxY = hr.bottom - (liftRef.current ? 70 * k : pad)
       for (const side of [true, false]) {
+        // 這一欄（左半或右半）的上下安全範圍：上半部浮著的東西底下開始、下半部浮著的東西上面為止
+        const half = (r: DOMRect) => (side ? r.left < hr.left + hr.width / 2 : r.right > hr.left + hr.width / 2)
+        let minY = hr.top + pad
+        let maxY = hr.bottom - pad
+        for (const r of avoid) {
+          if (!half(r)) continue
+          if (r.top + r.height / 2 < hr.top + hr.height / 2) minY = Math.max(minY, r.bottom + gap)
+          else maxY = Math.min(maxY, r.top - gap)
+        }
         const col = orderAll.filter((i) => tags[i].visible && sideOf[i] === side)
         const items = col.map((i) => {
           const el = tagEls[i]
-          const cur = el.getBoundingClientRect()
-          // 拿掉上一次的位移，就是標籤原本（在零件上）的位置
-          const r = new DOMRect(cur.left - offsets[i].x * k, cur.top - offsets[i].y * k, cur.width, cur.height)
+          if (!sizes[i] && el.offsetWidth) sizes[i] = { w: el.offsetWidth, h: el.offsetHeight }
+          const s = sizes[i] ?? { w: el.offsetWidth, h: el.offsetHeight }
+          const w = s.w * k
+          const h = s.h * k
+          // 標籤原本（還沒位移）就置中在零件那一點的投影上
           tmp.copy(tags[i].position).project(camera)
-          return { i, el, r, ay: hr.top + ((1 - tmp.y) / 2) * hr.height, z: tmp.z, ty: 0 }
+          const ax = hr.left + ((tmp.x + 1) / 2) * hr.width
+          const ay = hr.top + ((1 - tmp.y) / 2) * hr.height
+          return { i, el, left: ax - w / 2, top: ay - h / 2, w, h, ay, z: tmp.z, ty: 0 }
         })
         let y = minY
         for (const it of items) {
-          it.ty = Math.max(y, it.ay - it.r.height / 2)
-          y = it.ty + it.r.height + gap
+          it.ty = Math.max(y, it.ay - it.h / 2)
+          y = it.ty + it.h + gap
         }
         const over = y - gap - maxY
         if (over > 0) items.forEach((it) => (it.ty = Math.max(minY, it.ty - over)))
         for (const it of items) {
-          const tx = side ? hr.left + pad : hr.right - pad - it.r.width
-          offsets[it.i] = { x: (tx - it.r.left) / k, y: (it.ty - it.r.top) / k }
-          it.el.style.transform = `translate(${offsets[it.i].x}px, ${offsets[it.i].y}px)`
-          const ex = side ? tx + it.r.width : tx
-          const ey = it.ty + it.r.height / 2
+          const tx = side ? hr.left + pad : hr.right - pad - it.w
+          it.el.style.transform = `translate(${(tx - it.left) / k}px, ${(it.ty - it.top) / k}px)`
+          const ex = side ? tx + it.w : tx
+          const ey = it.ty + it.h / 2
           tmp.set(((ex - hr.left) / hr.width) * 2 - 1, -((ey - hr.top) / hr.height) * 2 + 1, it.z).unproject(camera)
           const pos = (tags[it.i].userData.lead as THREE.Line).geometry.getAttribute('position') as THREE.BufferAttribute
           pos.setXYZ(1, tmp.x, tmp.y, tmp.z)
@@ -280,7 +325,7 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
     let running = false
 
     const camera = new THREE.PerspectiveCamera(35, 1, 0.01, 100)
-    camera.position.set(radius * 1.6, radius * 1.1, radius * 2.6)
+    camera.position.copy(homePos)
     const controls = new OrbitControls(camera, renderer.domElement)
     controls.enableDamping = true
     controls.minDistance = radius * 0.6
@@ -389,13 +434,17 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
         if (k >= 1) fly = null
       }
       controls.update()
-      if (labelsOn || hlIndex >= 0) {
+      // 順序：先決定哪些標籤要顯示、釘點跟著零件走 → 畫標籤 → 排版（同一格的相機）→ 最後畫 3D，引線和標籤才不會差一格
+      const labeling = labelsOn || hlIndex >= 0
+      if (labeling) {
+        ensurePins()
+        showTags()
         model.group.updateMatrixWorld()
         followPins()
       }
-      renderer.render(scene, camera)
       labelLayer.render(scene, camera)
-      if (labelsOn || hlIndex >= 0) unstack()
+      if (labeling) unstack()
+      renderer.render(scene, camera)
       raf = requestAnimationFrame(tick)
     }
     tick()
@@ -412,12 +461,15 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
       controls.dispose()
       scene.traverse((o) => {
         const mesh = o as THREE.Mesh
+        if ((o as THREE.Line).isLine) (o as THREE.Line).geometry.dispose()
         if (mesh.isMesh) {
           mesh.geometry.dispose()
           const m = mesh.material
           ;(Array.isArray(m) ? m : [m]).forEach((x) => x.dispose())
         }
       })
+      lineMat.dispose()
+      dotMat.dispose()
       releaseRenderer(pooled)
       api.current = null
     }

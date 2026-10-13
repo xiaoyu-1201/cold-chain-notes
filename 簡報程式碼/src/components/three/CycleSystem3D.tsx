@@ -154,6 +154,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     const moving: { o: THREE.Object3D; kind: 'spin' | 'slide'; speed: number; amp: number; base: number; part: Part3DId }[] = []
     const holders = new Map<Part3DId, THREE.Object3D>()
     const partLabels = new Map<CycleNodeId, { o: CSS2DObject; text: string; css: string; side: Side }>()
+    const minorLabels: { o: CSS2DObject; id: CycleNodeId | null }[] = []
 
     const makeLabel = (text: string, id: CycleNodeId | null, major: boolean, tone?: string) => {
       const el = document.createElement('div')
@@ -173,12 +174,15 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
         'white-space:nowrap',
         'user-select:none',
       ].join(';')
+      const obj = new CSS2DObject(el)
+      // 手機（compact）畫面窄：次要標籤（小零件、管路狀態、放熱吸熱）平常收起來，點到那個零件才出現；名稱在下面的按鈕都有（10/13 QA：iPhone 標籤疊在一起、被切掉）
+      if (!major) minorLabels.push({ o: obj, id })
       if (id)
         el.addEventListener('click', (e) => {
           e.stopPropagation()
           selectRef.current(id)
         })
-      return new CSS2DObject(el)
+      return obj
     }
     /** 依側邊放標籤：左右側的標籤貼齊零件邊緣，不會蓋到管線上的其他零件 */
     const placeLabel = (label: CSS2DObject, pos: V3, half: THREE.Vector3, side: Side, gap: number) => {
@@ -445,8 +449,11 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       labels.setSize(w, h)
       camera.aspect = w / h
       // 高度要放得下上下的標籤（約 7.4 單位，上下再各留一點邊），寬度要放得下左右的標籤（約 11.4 單位）
+      // 標籤是固定像素：畫面窄時同樣的字佔比較多單位 → 先扣掉左右標籤要用的像素，剩下的才給模型（手機才不會切到標籤）
       const span = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))
-      homePos.setLength(Math.max(7.9 / span, 11.4 / (span * camera.aspect)))
+      const sidePx = compact ? 70 : 0
+      const widthUnits = sidePx ? (9.8 * w) / Math.max(w - 2 * sidePx, w * 0.4) : 11.4
+      homePos.setLength(Math.max(7.9 / span, widthUnits / (span * camera.aspect)))
       if (atHome && !fly) camera.position.copy(homeTarget).add(homePos)
       camera.updateProjectionMatrix()
     }
@@ -503,13 +510,15 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       // 故障模擬：拿掉的零件、警示、結冰、冷凍油
       holders.forEach((h, id) => (h.visible = id !== fx?.removed))
       // 拿掉／警示直接寫在那個零件自己的名稱標籤上，不另外疊一個標籤（10/13 使用者截圖：「✕ 拿掉了」「⚠ 低壓跳脫」蓋住零件名稱）
+      if (compact) minorLabels.forEach((m) => (m.o.visible = m.id !== null && (m.id === selectedId || m.id === fx?.removed || m.id === fx?.alarm?.at)))
       partLabels.forEach((pl, id) => {
         const el = pl.o.element
         const removed = fx?.removed === id
         const alarm = fx?.alarm?.at === id ? fx.alarm : null
         // 拿掉的只加「✕」、名稱畫刪除線（字多了會撞到旁邊的標籤）
         // 標籤在零件左邊（壓縮機）：警示分兩行，寫成一行會往左撞到小零件；其他一行（分兩行會上下撞到疊在一起的標籤）
-        const two = pl.side === 'l'
+        // 最右邊的壓力開關也分兩行（一行會超出 3D 框，10/13 QA）
+        const two = pl.side === 'l' || id === 'kp15'
         const want = removed ? `✕ ${pl.text}` : alarm ? `⚠ ${pl.text}${two ? '\n' : '：'}${alarm.text}` : pl.text
         if (el.textContent !== want) {
           el.textContent = want

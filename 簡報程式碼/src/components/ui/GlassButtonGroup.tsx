@@ -10,7 +10,8 @@ import { LensView } from './LiquidLens'
  * 不標 data-no-swipe（整排都不能滑換頁範圍太大）：真的開始水平拖鏡片時，手機版換頁手勢才讓出來（lensDragBusy）。
  * 用法：把原本的 <div className="flex ..."> 換成 <GlassButtonGroup className="flex ...">，按鈕要是它的子元素（或孫元素）。
  */
-export function GlassButtonGroup({ className, children, label, role = 'group' }: { className?: string; children: ReactNode; label?: string; role?: string }) {
+/** avoid：浮在 3D 上的按鈕列，3D 的構造標籤要避開它（data-3d-avoid） */
+export function GlassButtonGroup({ className, children, label, role = 'group', avoid = false }: { className?: string; children: ReactNode; label?: string; role?: string; avoid?: boolean }) {
   const lens = useLiquidLens({ liftScale: 1.14 })
   const box = useRef<HTMLDivElement>(null)
   const items = useRef<(HTMLElement | null)[]>([])
@@ -45,7 +46,7 @@ export function GlassButtonGroup({ className, children, label, role = 'group' }:
   }, [x, m, a, reduced, geom])
 
   return (
-    <div ref={box} role={role} aria-label={label} data-lens-group {...lensBindings(track)} className={cn(!/\b(absolute|fixed)\b/.test(className ?? '') && 'relative', 'touch-pan-y', className)}>
+    <div ref={box} role={role} aria-label={label} data-3d-avoid={avoid ? '' : undefined} data-lens-group {...lensBindings(track)} className={cn(!/\b(absolute|fixed)\b/.test(className ?? '') && 'relative', 'touch-pan-y', className)}>
       <LensView lens={lens} ghost vertical />
       {children}
     </div>

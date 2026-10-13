@@ -593,20 +593,22 @@ const builders: Record<Part3DId, () => PartModel> = {  /** 視液鏡（10/13 做
     const stub = (angle: number, y: number, r: number, out: number) => {
       const c = Math.cos(angle)
       const s = Math.sin(angle)
-      const r0 = RR - 0.02
+      // 從殼裡面一點點開始，管子跟殼之間才不會有縫（殼上半部往內收）
+      const r0 = RR - 0.07
       return b.tube([[r0 * SX * c, y, r0 * SZ * s], [(r0 * SX + out - 0.8) * c, y, (r0 * SZ + out - 0.8) * s]], r, cu)
     }
     stub(0.45, 0.35, 0.085, 1.4) // 吸氣：最粗
     stub(-0.15, 0.48, 0.055, 1.35) // 排氣
     stub(1.0, 0.1, 0.04, 1.2) // 充灌：最細
-    b.box(0.1, 0.03, 0.08, cu, [((RR - 0.02) * SX + 0.42) * Math.cos(1.0), 0.1, ((RR - 0.02) * SZ + 0.42) * Math.sin(1.0)]).rotation.y = -1.0
+    b.box(0.1, 0.03, 0.08, cu, [((RR - 0.07) * SX + 0.42) * Math.cos(1.0), 0.1, ((RR - 0.07) * SZ + 0.42) * Math.sin(1.0)]).rotation.y = -1.0
     // 內部（剖開才看得到）
     const stator = mat.copper()
     b.mesh(new THREE.TorusGeometry(0.48, 0.15, 20, 48), stator, [0, 0.32, 0], [R, 0, 0])
     const rotor = mat.steel()
     b.cylY(0.27, 0.55, rotor, [0, 0.32, 0])
     b.cylY(0.06, 1.15, rotor, [0, -0.08, 0], 16)
-    const block = mat.paint(0x6b7280)
+    // 曲軸箱也算外殼：剖開時一起切開，才看得到裡面的活塞（10/13 QA）
+    const block = b.shell(mat.paint(0x6b7280))
     b.box(0.85, 0.3, 0.5, block, [0.12, -0.5, 0])
     const piston = mat.paint(0xf59e0b)
     b.cylX(0.15, 0.28, piston, [0.4, -0.5, 0.0], 24).userData.anim = { kind: 'slide', amp: 0.07, speed: 14 }
@@ -812,7 +814,8 @@ const builders: Record<Part3DId, () => PartModel> = {  /** 視液鏡（10/13 做
     rbox(b, 1.2, 1.2, 0.62, 0.07, housing)
     const cover = b.shell(mat.paint(0x9ca3af))
     rbox(b, 1.1, 0.8, 0.05, 0.03, cover, [0, -0.15, 0.32])
-    const screwM = mat.steel()
+    // 前蓋螺絲跟前蓋一起剖開（不然剖開後螺絲浮在半空中，10/13 QA）
+    const screwM = b.shell(mat.steel())
     for (const x of [-0.46, 0.46]) for (const y of [0.18, -0.48]) b.cylZ(0.035, 0.02, screwM, [x, y, 0.35], 16)
     // 刻度窗（白底黑線）
     const scale = mat.paint(0xf8fafc)

@@ -119,11 +119,12 @@ export function SlideNav({
           </NavButton>
         ) : null}
         {/* 提示放在絕對定位層：只用剩下的空間，不會把左半邊撐大、擠到中間的篇章列 */}
-        <div className="relative hidden h-10 min-w-0 flex-1 sm:block">
+        {/* 剩下的空間不到 240px 就不顯示提示（10/13 QA：被擠到只剩手指圖示） */}
+        <div className="@container relative hidden h-10 min-w-0 flex-1 sm:block">
           {hints.length > 0 ? (
             <p
               title={hints.join('；')}
-              className="absolute left-0 top-1/2 hidden max-w-full -translate-y-1/2 items-center gap-2 overflow-hidden rounded-full bg-sky-950 px-3.5 py-1.5 text-sm font-semibold text-sky-100 min-[1600px]:flex"
+              className="absolute left-0 top-1/2 hidden max-w-full -translate-y-1/2 items-center gap-2 overflow-hidden rounded-full bg-sky-950 px-3.5 py-1.5 text-sm font-semibold text-sky-100 @min-[240px]:flex"
             >
               <Pointer className="size-4 shrink-0 text-sky-400" aria-hidden />
               <span className="shrink-0 text-sky-300">本頁可以點</span>
@@ -131,7 +132,7 @@ export function SlideNav({
             </p>
           ) : (
             !back && (
-              <div className="absolute inset-0 hidden flex-col justify-center min-[1700px]:flex">
+              <div className="absolute inset-0 hidden flex-col justify-center @min-[200px]:flex">
                 <p className="truncate text-sm font-bold text-slate-100">冷凍材料行培訓筆記</p>
                 <p className="truncate text-[13px] text-slate-400">
                   {partLabel}・{title}
@@ -470,7 +471,7 @@ function Tip({ i, x, group }: { i: number; x: number; group?: boolean }) {
   const s = slides[i]
   const g = groupOf(i)
   return (
-    <span style={{ left: x }} className="pointer-events-none absolute bottom-full z-50 mb-3 w-max max-w-[260px] -translate-x-1/2 rounded-lg border border-line bg-card px-3 py-1.5 text-[13px] font-semibold leading-snug text-slate-100 shadow-[0_6px_18px_-8px_rgba(15,36,64,0.3)]">
+    <span style={{ left: x }} className="pointer-events-none absolute bottom-full z-50 mb-3 w-max max-w-[260px] -translate-x-1/2 rounded-lg [text-wrap:balance] border border-line bg-card px-3 py-1.5 text-[13px] font-semibold leading-snug text-slate-100 shadow-[0_6px_18px_-8px_rgba(15,36,64,0.3)]">
       {group ? (
         <>
           <span className={toneStyles[parts[s.part].tone].text}>{parts[s.part].title}</span>

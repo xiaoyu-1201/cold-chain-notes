@@ -6,6 +6,7 @@ import { cn } from '../../lib/cn'
 import { GlassButtonGroup } from '../ui/GlassButtonGroup'
 import { Segmented } from '../ui/Segmented'
 import type { LegendItem, Part3DId, PartControl } from './models'
+import { isTopDialog } from './topDialog'
 
 const Part3D = lazy(() => import('./Part3D'))
 
@@ -21,7 +22,8 @@ interface PartViewerProps {
   alias?: string
   onClose: () => void
   /** 同一頁有好幾個產品時：放大的視窗裡直接換，不用關掉（10/13 使用者） */
-  choices?: { label: string; glyph?: ReactNode }[]
+  /** disabled：這個產品沒有 3D（放大視窗裡不能切過去） */
+  choices?: { label: string; glyph?: ReactNode; disabled?: boolean }[]
   current?: number
   onPick?: (i: number) => void
 }
@@ -58,6 +60,7 @@ export function PartViewer({ id, title, alias, onClose, choices, current = 0, on
 
   // 打開時焦點移到關閉鈕、關掉後回到原本的按鈕（10/13 code review）
   const closeRef = useRef<HTMLButtonElement>(null)
+  const dialogRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const prev = document.activeElement as HTMLElement | null
     closeRef.current?.focus()
@@ -68,6 +71,7 @@ export function PartViewer({ id, title, alias, onClose, choices, current = 0, on
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (!isTopDialog(dialogRef.current)) return
       if (e.key === 'Escape') {
         e.stopPropagation()
         onClose()
@@ -91,6 +95,7 @@ export function PartViewer({ id, title, alias, onClose, choices, current = 0, on
 
   return createPortal(
     <div
+      ref={dialogRef}
       className="fixed inset-0 z-[70] flex items-center justify-center bg-ink/40 p-3 sm:p-6"
       role="dialog"
       aria-modal="true"
@@ -130,9 +135,10 @@ export function PartViewer({ id, title, alias, onClose, choices, current = 0, on
                   key={c.label}
                   type="button"
                   aria-pressed={i === current}
+                  disabled={c.disabled}
                   onClick={() => pick(i)}
                   className={cn(
-                    'flex min-h-11 items-center gap-1.5 rounded-full px-4 py-1.5 text-[16px] font-semibold transition',
+                    'flex min-h-11 items-center gap-1.5 rounded-full px-4 py-1.5 text-[16px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-40',
                     i === current ? 'bg-slate-100 text-paper' : 'border border-line bg-card text-slate-200 hover:border-sky-500/50',
                     focusRing,
                   )}
@@ -151,7 +157,7 @@ export function PartViewer({ id, title, alias, onClose, choices, current = 0, on
               <Suspense fallback={<p className="absolute inset-0 flex items-center justify-center text-[16px] text-slate-400">3D 模型載入中…</p>}>
                 <Part3D key={id} id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} highlight={hover} labels={labels} onHoverPart={setHover} liftPx={28} />
               </Suspense>
-              <GlassButtonGroup className="absolute bottom-3 left-3 flex flex-wrap gap-2" label="3D 檢視">
+              <GlassButtonGroup className="absolute bottom-3 left-3 flex flex-wrap gap-2" label="3D 檢視" avoid>
                 <button type="button" aria-pressed={cut} onClick={() => setCut((c) => !c)} className={floatToggle(cut)}>
                   <Layers className="size-4" aria-hidden />
                   {cut ? '合起來' : '剖開看內部'}
@@ -165,7 +171,7 @@ export function PartViewer({ id, title, alias, onClose, choices, current = 0, on
                   標出構造
                 </button>
               </GlassButtonGroup>
-              <p className="glass pointer-events-none absolute right-3 top-3 rounded-full px-3 py-1 text-[13px] text-slate-200">{touch ? '拖曳旋轉・兩指放大・點兩下還原' : '拖曳旋轉・滾輪往游標放大・雙擊還原'}</p>
+              <p data-3d-avoid className="glass pointer-events-none absolute right-3 top-3 rounded-full px-3 py-1 text-[13px] text-slate-200">{touch ? '拖曳旋轉・兩指放大・點兩下還原' : '拖曳旋轉・滾輪往游標放大・雙擊還原'}</p>
             </div>
             <aside className="max-h-[42%] overflow-y-auto border-t border-line bg-card p-4 lg:max-h-none lg:w-[380px] lg:border-l lg:border-t-0">
               {control && (
@@ -187,7 +193,7 @@ export function PartViewer({ id, title, alias, onClose, choices, current = 0, on
                   <p className="mt-2 text-[15px] leading-snug text-slate-100">{control.describe(op)}</p>
                 </section>
               )}
-              <p className="mb-2 text-[15px] font-bold text-slate-400">構造說明：滑鼠移過去（或點一下），3D 上那個零件會亮起來{cut ? '' : '；按「剖開看內部」看裡面'}</p>
+              <p className="mb-2 text-[15px] font-bold text-slate-400">構造說明：{touch ? '點一下' : '滑鼠移過去（或點一下）'}，3D 上那個零件會亮起來{cut ? '' : '；按「剖開看內部」看裡面'}</p>
               <ul className="space-y-2.5">
                 {legend.map((item) => (
                   <li

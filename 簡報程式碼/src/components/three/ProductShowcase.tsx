@@ -71,7 +71,7 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
 
   // 3D 底下那排按鈕：電腦疊在 3D 左下（3D 畫面往上挪讓出位置）；手機放在 3D 下面
   const viewButtons = (
-    <GlassButtonGroup className={mobile ? 'flex flex-wrap gap-2' : 'absolute bottom-3 left-3 flex flex-wrap gap-2'} label="3D 檢視">
+    <GlassButtonGroup className={mobile ? 'flex flex-wrap gap-2' : 'absolute bottom-3 left-3 flex flex-wrap gap-2'} label="3D 檢視" avoid={!mobile}>
       <button type="button" aria-pressed={cut} onClick={() => setCut((c) => !c)} className={floatPill(cut)}>
         <Layers className="size-4" aria-hidden />
         {cut ? '合起來' : '剖開看內部'}
@@ -134,11 +134,11 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
             {!mobile && viewButtons}
 
             {/* 放大看放左上角：下面一排按鈕才不會擠成兩排、蓋住 3D */}
-            <button type="button" onClick={() => setBig(true)} className={cn(floatPill(false), 'absolute left-3 top-3')}>
+            <button type="button" onClick={() => setBig(true)} data-3d-avoid className={cn(floatPill(false), 'absolute left-3 top-3')}>
               <Maximize2 className="size-4" aria-hidden />
               放大看
             </button>
-            <p className={cn('glass pointer-events-none absolute right-3 top-3 rounded-full px-3 py-1 text-slate-200', t.small)}>{mobile ? '拖曳旋轉・兩指放大' : '拖曳旋轉・滾輪縮放'}</p>
+            <p data-3d-avoid className={cn('glass pointer-events-none absolute right-3 top-3 rounded-full px-3 py-1 text-slate-200', t.small)}>{mobile ? '拖曳旋轉・兩指放大' : '拖曳旋轉・滾輪縮放'}</p>
           </div>
           {/* 手機：按鈕放在 3D 下面（疊在上面會擠成兩排、蓋住模型；10/13 QA） */}
           {mobile && viewButtons}
@@ -152,7 +152,8 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
                 )}
                 {/* 電腦版：滑桿跟標題同一行，3D 視窗才不會被擠小（10/13 使用者：3D 視窗被壓太窄） */}
                 {control.kind === 'slider' && !mobile && (
-                  <div className="flex min-w-[240px] flex-1 items-center gap-2 text-[20px] text-slate-400">
+                  // 至少 480px：放不下就整排換到標題下面，滑桿才不會被兩邊的字擠到拉不動（10/13 QA：只剩 18px）
+                  <div className="flex min-w-[480px] flex-1 items-center gap-2 text-[20px] text-slate-400">
                     <span className="shrink-0">{control.off}</span>
                     <input type="range" min={0} max={1} step={0.01} value={op} onChange={(e) => operate(Number(e.target.value))} aria-label={control.label} className="min-w-0 flex-1 accent-sky-500" />
                     <span className="shrink-0">{control.on}</span>
@@ -262,7 +263,7 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
           id={id}
           title={part.label}
           onClose={() => setBig(false)}
-          choices={parts.map((p) => ({ label: p.label, glyph: glyphFor(p.label) && <PartGlyph id={glyphFor(p.label)!} size={20} strokeWidth={2.4} /> }))}
+          choices={parts.map((p) => ({ label: p.label, glyph: glyphFor(p.label) && <PartGlyph id={glyphFor(p.label)!} size={20} strokeWidth={2.4} />, disabled: !part3DFor(p.id) }))}
           current={index}
           onPick={pick}
         />

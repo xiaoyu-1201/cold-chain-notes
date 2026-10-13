@@ -51,7 +51,7 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
     ? { title: 'text-[17px]', small: 'text-[13px]', body: 'text-[14px]', pill: 'px-3 py-1.5 text-[13px]' }
     : { title: 'text-[24px]', small: 'text-[16px]', body: 'text-[17px]', pill: 'px-4 py-2 text-[16px]' }
   // 觸控範圍：手機 ≥44px；電腦畫布會縮放，給 52 畫布 px（10/10 QA：原本 34／29px）
-  const pill = (on: boolean) => cn('flex items-center gap-1.5 rounded-full font-semibold transition', t.pill, mobile ? 'min-h-11' : 'min-h-[52px]', on ? 'bg-sky-400 text-navy-950' : 'bg-white/[0.1] text-slate-100 hover:bg-white/[0.16]', focusRing)
+  const pill = (on: boolean) => cn('flex items-center gap-1.5 rounded-full font-semibold transition', t.pill, mobile ? 'min-h-11' : 'min-h-[48px]', on ? 'bg-sky-400 text-navy-950' : 'bg-white/[0.1] text-slate-100 hover:bg-white/[0.16]', focusRing)
   /** 浮在 3D 上的按鈕：沒按＝玻璃、按下＝實心藍 */
   const floatPill = (on: boolean) => cn('flex items-center gap-1.5 rounded-full font-semibold transition', t.pill, mobile ? 'min-h-11' : 'min-h-[52px]', on ? 'border border-transparent bg-sky-400 text-navy-950' : 'glass text-slate-100', focusRing)
   const loading = <p className={cn('absolute inset-0 flex items-center justify-center text-slate-400', t.body)}>3D 模型載入中…</p>
@@ -82,7 +82,7 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
                 setCut(false)
                 setSpin(true)
               }}
-              className={cn('flex items-center gap-1.5 rounded-full font-semibold transition', t.pill, i === index ? 'bg-slate-100 text-paper' : 'border border-line bg-card text-slate-200 hover:border-sky-500/50', focusRing)}
+              className={cn('flex min-h-11 items-center gap-1.5 rounded-full font-semibold transition', mobile ? t.pill : 'px-3 py-1', i === index ? 'bg-slate-100 text-paper' : 'border border-line bg-card text-slate-200 hover:border-sky-500/50', focusRing)}
             >
               {glyphFor(p.label) && <PartGlyph id={glyphFor(p.label)!} size={mobile ? 18 : 22} strokeWidth={2.4} />}
               {p.label}
@@ -94,7 +94,7 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
       {tab === '3d' && id ? (
         <>
           <div
-            className={cn('viewport-blueprint relative min-h-0 overflow-hidden rounded-2xl', mobile ? 'h-[300px]' : 'flex-1')}
+            className={cn('viewport-blueprint relative min-h-0 overflow-hidden rounded-2xl', mobile ? 'h-[300px]' : 'min-h-[240px] flex-1')}
             onTouchStart={(e) => e.stopPropagation()}
             onTouchEnd={(e) => e.stopPropagation()}
           >
@@ -130,8 +130,16 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
                 {control.kind !== 'slider' && (
                   <Segmented size={mobile ? 'sm' : 'md'} value={op > 0.5 ? 'on' : 'off'} onChange={(v) => operate(v === 'on' ? 1 : 0)} options={[{ value: 'off', label: control.off }, { value: 'on', label: control.on }]} />
                 )}
+                {/* 電腦版：滑桿跟標題同一行，3D 視窗才不會被擠小（10/13 使用者：3D 視窗被壓太窄） */}
+                {control.kind === 'slider' && !mobile && (
+                  <div className="flex min-w-[240px] flex-1 items-center gap-2 text-slate-400">
+                    <span className="shrink-0">{control.off}</span>
+                    <input type="range" min={0} max={1} step={0.01} value={op} onChange={(e) => operate(Number(e.target.value))} aria-label={control.label} className="min-w-0 flex-1 accent-sky-500" />
+                    <span className="shrink-0">{control.on}</span>
+                  </div>
+                )}
               </div>
-              {control.kind === 'slider' && (
+              {control.kind === 'slider' && mobile && (
                 <div className="mt-1.5">
                   <input type="range" min={0} max={1} step={0.01} value={op} onChange={(e) => operate(Number(e.target.value))} aria-label={control.label} className="w-full accent-sky-500" />
                   <div className={cn('flex justify-between text-slate-400', t.small)}>
@@ -144,20 +152,30 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
             </div>
           )}
 
-          {legend.length > 0 && (
-            // 手機一欄、整句換行（10/10 QA：兩欄時被切成「回氣管（銅管）・冷排…」）；電腦畫布空間有限，維持兩欄＋滑過看全文
-            <ul className={cn('grid gap-x-4 gap-y-1', mobile ? 'grid-cols-1' : 'grid-cols-2', t.small)}>
-              {legend.map((item) => (
-                <li key={item.name} className="flex min-w-0 items-start gap-2" title={item.desc}>
-                  <span className="mt-1.5 size-3 shrink-0 rounded-full" style={{ background: item.color }} aria-hidden />
-                  <span className="leading-snug text-slate-200">
+          {legend.length > 0 &&
+            (mobile ? (
+              <ul className={cn('grid grid-cols-1 gap-x-4 gap-y-1', t.small)}>
+                {legend.map((item) => (
+                  <li key={item.name} className="flex min-w-0 items-start gap-2" title={item.desc}>
+                    <span className="mt-1.5 size-3 shrink-0 rounded-full" style={{ background: item.color }} aria-hidden />
+                    <span className="leading-snug text-slate-200">
+                      <b className="font-semibold text-white">{item.name}</b>
+                      <span className="text-slate-400">・{item.desc}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              // 電腦版只列名稱、排成一兩行（10/13 使用者：3D 視窗被壓太窄）；完整說明滑過看得到，「放大看」裡也有
+              <ul className="flex flex-wrap gap-x-4 gap-y-1 text-[20px]">
+                {legend.map((item) => (
+                  <li key={item.name} className="flex items-center gap-1.5" title={item.desc}>
+                    <span className="size-3 shrink-0 rounded-full" style={{ background: item.color }} aria-hidden />
                     <b className="font-semibold text-white">{item.name}</b>
-                    <span className="text-slate-400">・{item.desc}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
+                  </li>
+                ))}
+              </ul>
+            ))}
         </>
       ) : (
         <div className={cn('flex min-h-0 flex-col items-center justify-center gap-2', mobile ? 'min-h-[240px]' : 'flex-1')}>

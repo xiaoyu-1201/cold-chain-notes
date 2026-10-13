@@ -287,7 +287,7 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
           </Title>
           <div className="mt-3 grid grid-cols-2 gap-2.5">
             {block.items.map((m, i) => (
-              <div key={i} className={cn('rounded-xl px-3 py-2.5', newFrame(m.added) || 'bg-white/[0.04]')}>
+              <div key={i} className={cn('rounded-xl bg-white/[0.04] px-3 py-2.5', newFrame(m.added))}>
                 <p className="text-[14px] text-slate-400">
                   {m.label}
                   {m.added && <NewChip added={m.added} mobile className="ml-1.5 align-middle" />}
@@ -358,7 +358,7 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
 
     case 'info':
       return (
-        <Card nested={nested} tone={isNew(block.added) ? undefined : block.tone} className={isNew(block.added) ? cn('border-2 border-red-400 bg-red-950', nested && 'rounded-xl px-3 py-2') : undefined}>
+        <Card nested={nested} tone={block.tone} className={isNew(block.added) ? cn('new-frame', nested && 'rounded-xl px-3 py-2') : undefined}>
           <div className="flex flex-wrap items-center gap-2">
             <Title icon={block.icon} tone={block.tone} small={nested}>
               {block.title}

@@ -999,7 +999,7 @@ const slideList: SlideData[] = [
               <>溫度對嗎：冷藏拿高溫機，冷凍拿低溫機</>,
               <>不要只看架上的位置：有時候會放錯，拿出來還要再看一次型號〔錄音13 22:33〕</>,
               <>客人要的是哪一顆，不是「長得一樣」的那一顆（2446 和 2464 長得一模一樣，能力不同）</>,
-              <><span className="rounded-md bg-red-950 px-1 ring-2 ring-red-400"><NewChip added="2026-10-12" className="mr-2 align-middle" />管口的橡皮塞拔起來要「啪」一聲＝裡面有氣、是新的；焊上去就算用過，拿錯也不能退〔錄音16 16:20〕</span></>,
+              <><span className="new-frame rounded-md px-1"><NewChip added="2026-10-12" className="mr-2 align-middle" />管口的橡皮塞拔起來要「啪」一聲＝裡面有氣、是新的；焊上去就算用過，拿錯也不能退〔錄音16 16:20〕</span></>,
             ],
           },
           {

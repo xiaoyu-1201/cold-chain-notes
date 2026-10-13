@@ -6,6 +6,8 @@ import { slides } from '../../data/slides'
 import { NEW_LABEL, isNew } from '../../data/whatsNew'
 import { useDeck } from '../../context/deck'
 import { useStickyState } from '../../hooks/useStickyState'
+import { useScrollFade } from '../../hooks/useScrollFade'
+import type { ReactNode } from 'react'
 import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
 import { Badge } from '../ui/Badge'
@@ -38,8 +40,8 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
   const { goToId, numberOf } = useDeck()
   const [coreOnly, setCoreOnly] = useStickyState('overview-core-only', false)
   return (
-    // keep-size：學習地圖一欄塞很多列，不套「最小 20px」（index.css 的 .deck-canvas 規則）
-    <div className="keep-size grid h-full grid-rows-[minmax(0,1fr)_auto] gap-5">
+    // 10/13 重排：字跟全站一樣最小 20px；一欄放不下的（全部模式的元件篇）在欄裡上下捲，下緣淡出提示還有
+    <div className="grid h-full grid-rows-[minmax(0,1fr)_auto] gap-5">
       <motion.div
         variants={staggerParent}
         className="grid min-h-0 gap-6"
@@ -51,8 +53,6 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
           const chapters = item.chapters.filter((ch) => !coreOnly || !refIds.has(ch.slide))
           const hasGlyph = chapters.some((c) => glyphFor(c.title))
           const tight = chapters.length > 5
-          // 很多列的篇（全部模式的配件篇）：字小一級，1440 寬（畫布 1920）才放得下、不疊字（10/10 QA）
-          const dense = chapters.length > 7
           // 一列可能代表好幾頁（例：「壓縮機：牌子、電壓、拿貨」＝P.21～24）：其中一頁是新的，這列就標「新」；
           // 新的不是這列連過去的那頁時，寫出是哪一頁（10/13 QA：標新卻連到舊頁，找不到）
           const starts = item.chapters.map((c) => slides.findIndex((s) => s.id === c.slide))
@@ -77,14 +77,14 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
             return `新 P.${runs.join('、')}`
           }
           // 章節少的篇（兩、三頁）：每列多放一句「這頁的小結論」當預覽，卡片不會下半部空一大塊
-          const previewLines = chapters.length <= 2 ? 4 : chapters.length <= 4 ? 1 : 0
+          const previewLines = chapters.length <= 2 ? 2 : 0
           return (
             <motion.div key={item.part} variants={fadeUp} className="relative min-h-0">
               {/* 步驟之間的箭頭：提示學習先後順序 */}
               {index < block.items.length - 1 && (
                 <ChevronRight aria-hidden className="absolute -right-[23px] top-[86px] z-10 size-6 text-slate-500" />
               )}
-              <section className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-[18px] border border-line bg-card p-5">
+              <section className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-[18px] border border-line bg-card p-4">
                 <span aria-hidden className={cn('absolute inset-x-0 top-0 h-1', t.bar)} />
                 <div className="flex items-center justify-between gap-2">
                   <span className="drawing-no rounded-[4px] border border-ink/45 px-2 py-0.5 text-[16px] font-bold leading-6 text-ink">圖 {PART_NO[item.part]}</span>
@@ -100,13 +100,13 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
                   </div>
                 </div>
                 {part.goal && (
-                  <p className={cn('mt-2.5 text-[17px] leading-snug text-slate-300', tight && 'line-clamp-1')} title={part.goal}>
+                  <p className="mt-2 line-clamp-1 text-[20px] leading-snug text-slate-300" title={part.goal}>
                     <span className={cn('mr-1.5 font-bold', t.text)}>學完你會</span>
                     {/* goal 本身多半是「會…」開頭：去掉一個，不會變成「學完你會會…」（10/10 QA） */}
                     {part.goal.replace(/^會/, '')}
                   </p>
                 )}
-                <ul className={cn('flex min-h-0 flex-col', tight ? 'mt-2 gap-1' : 'mt-3 gap-2')}>
+                <ChapterList gap={tight ? 'gap-1.5' : 'gap-2'}>
                   {chapters.map((ch) => {
                     const g = glyphFor(ch.title)
                     const isRef = refIds.has(ch.slide)
@@ -118,14 +118,13 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
                           onClick={() => goToId(ch.slide)}
                           className={cn(
                             'flex w-full gap-2.5 rounded-xl border px-3 text-left transition hover:border-sky-500/60 hover:bg-sky-950',
-                            preview ? 'items-start py-2.5' : tight ? 'min-h-[40px] items-center py-1' : 'min-h-[52px] items-center py-2',
+                            preview ? 'items-start py-2.5' : 'min-h-[48px] items-center py-1.5',
                             isRef ? 'border-dashed border-line bg-card' : 'border-line bg-paper',
                             focusRing,
                           )}
                         >
-                          <span className={cn('w-12 shrink-0 font-mono text-[16px] font-bold', t.text)}>{ch.code}</span>
                           {hasGlyph && <span className="flex w-6 shrink-0 justify-center text-ink-2">{g && <PartGlyph id={g} size={26} />}</span>}
-                          <span className={cn('min-w-0 flex-1 text-balance font-semibold leading-snug text-slate-100', dense ? 'text-[17px]' : 'text-[18px]')}>
+                          <span className="min-w-0 flex-1 text-[20px] font-semibold leading-snug text-slate-100 [text-wrap:pretty]" title={ch.code}>
                             {ch.title}
                             {rowNew(ch.slide) && (
                               // 欄位很窄：只寫「新」，是哪幾頁放在滑過的說明（10/13 QA：寫頁碼會把這一欄撐爆）
@@ -133,7 +132,7 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
                             )}
                             {isRef && <span className="ml-1.5 inline-block text-[16px] font-semibold text-slate-500">查閱</span>}
                             {preview && (
-                              <span className={cn('mt-1 text-[16px] font-normal leading-snug text-slate-400', previewLines === 4 ? 'line-clamp-4' : 'line-clamp-1')}>{preview}</span>
+                              <span className={'mt-1 line-clamp-2 text-[20px] font-normal leading-snug text-slate-400'}>{preview}</span>
                             )}
                           </span>
                           <span className="shrink-0 font-mono text-[16px] text-slate-500">P.{pad(numberOf(ch.slide))}</span>
@@ -141,7 +140,7 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
                       </li>
                     )
                   })}
-                </ul>
+                </ChapterList>
                 {/* 每篇的出口：小結＋自我檢測（固定在卡片底部，各篇對齊） */}
                 <div className="mt-auto flex gap-2 border-t border-line pt-2">
                   {tailLinks(item.part).map((l) => (
@@ -206,6 +205,16 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
         {block.finale.note && <p className="ml-auto hidden max-w-[300px] text-right text-[16px] leading-snug text-slate-400 2xl:block">{block.finale.note}</p>}
       </motion.div>
     </div>
+  )
+}
+
+/** 學習地圖一欄的章節清單：放不下就在欄裡捲，下緣淡出（看得出還有） */
+function ChapterList({ gap, children }: { gap: string; children: ReactNode }) {
+  const fade = useScrollFade<HTMLUListElement>()
+  return (
+    <ul ref={fade.ref} onScroll={fade.measure} style={fade.style} data-no-swipe className={cn('mt-3 flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain pr-1 [scrollbar-width:thin]', gap)}>
+      {children}
+    </ul>
   )
 }
 

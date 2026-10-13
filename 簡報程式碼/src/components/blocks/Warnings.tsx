@@ -32,7 +32,7 @@ export function AlertPanel({ block }: { block: AlertBlock }) {
         {block.items.map((item) => {
           const Icon = item.icon
           return (
-            <div key={item.title} className={cn('flex max-h-[240px] flex-1 flex-col justify-center rounded-2xl px-5 py-4', isNew(item.added) ? 'border-[3px] border-red-400 bg-red-950' : 'border border-red-500/30 bg-red-950/45')}>
+            <div key={item.title} className={cn('flex max-h-[240px] flex-1 flex-col justify-center rounded-2xl px-5 py-4', 'border border-red-500/30 bg-red-950/45', isNew(item.added) && 'new-frame')}>
               <div className="flex items-center gap-3">
                 <Icon className="size-7 shrink-0 text-red-300" aria-hidden />
                 <h4 className="text-[25px] font-bold text-red-50">{item.title}</h4>

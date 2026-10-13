@@ -19,6 +19,8 @@ import { markSeen, useLearn } from '../lib/learn'
 import { SOURCE_LABEL } from './SlideCard'
 import { BlueprintBackground } from './ui/BlueprintBackground'
 import { ChangesNote } from './ui/ChangesNote'
+import { NewToggle } from './ui/NewToggle'
+import { useKeepParens } from '../hooks/useKeepParens'
 import { LensMagnify, LensView } from './ui/LiquidLens'
 import { lensBindings, lensDragBusy, useLensTrack, useLiquidLens } from '../hooks/useLiquidLens'
 
@@ -233,9 +235,11 @@ function MobileSlide({ slide, index }: { slide: SlideData; index: number }) {
   const cover = slide.layout === 'cover' ? slide.cover : undefined
   const hints = interactionHints(slide, true)
   const siblings = slides.filter((s) => s.part === slide.part)
+  const ref = useRef<HTMLElement>(null)
+  useKeepParens(ref)
 
   return (
-    <section>
+    <section ref={ref}>
       {cover ? (
         <header>
           <h1 className="text-[34px] font-black leading-[1.2] text-white">
@@ -271,6 +275,7 @@ function MobileSlide({ slide, index }: { slide: SlideData; index: number }) {
             {slide.advanced && slide.part !== 'advanced' && <span className="rounded-md border border-amber-500/50 bg-amber-950 px-2 py-0.5 font-semibold text-amber-200">進階</span>}
             {slide.tier === 'ref' && <span className="rounded-md border border-line px-2 py-0.5 font-semibold text-slate-400">查閱</span>}
             {isNew(slide.added) && <span className="rounded-md bg-red-400 px-2 py-0.5 font-black text-paper">{newTag(slide.added)}</span>}
+            {isNew(slide.added) && <NewToggle mobile />}
           </div>
           <h2 className="mt-2 text-[26px] font-black leading-[1.3] text-white">{slide.title}</h2>
           <ChangesNote slide={slide} mobile />

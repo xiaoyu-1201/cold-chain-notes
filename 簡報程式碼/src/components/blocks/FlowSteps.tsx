@@ -3,7 +3,6 @@ import { Fragment } from 'react'
 import type { FlowBlock } from '../../data/types'
 import { cn, pad } from '../../lib/cn'
 import { newFrame } from '../../lib/newFrame'
-import { isNew } from '../../data/whatsNew'
 import { toneStyles } from '../../lib/tone'
 import { Badge } from '../ui/Badge'
 import { NewChip } from '../ui/NewChip'
@@ -49,7 +48,7 @@ function RowFlow({ block }: { block: FlowBlock }) {
                 <ChevronRight className="size-7 text-slate-500" />
               </div>
             )}
-            <div className={cn('relative flex min-w-0 flex-1 flex-col rounded-2xl px-5 py-4', isNew(step.added) ? 'border-2 border-red-400 bg-red-950' : cn('border bg-card', t.border))}>
+            <div className={cn('relative flex min-w-0 flex-1 flex-col rounded-2xl px-5 py-4', 'border bg-card', t.border, newFrame(step.added))}>
               <div className="flex items-center justify-between gap-2">
                 <span className={cn('text-[19px] font-bold', t.text)}>
                   步驟 <span className="font-mono">{pad(i + 1)}</span>

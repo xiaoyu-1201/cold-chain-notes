@@ -3,7 +3,6 @@ import type { ReactNode } from 'react'
 import type { CompareBlock, CompareSide, InfoBlock, ListBlock, TilesBlock, TimelineBlock, Tone } from '../../data/types'
 import { cn } from '../../lib/cn'
 import { newFrame } from '../../lib/newFrame'
-import { isNew } from '../../data/whatsNew'
 import { toneStyles } from '../../lib/tone'
 import { Badge } from '../ui/Badge'
 import { glyphFor } from '../../lib/partGlyph'
@@ -15,7 +14,7 @@ import { Panel } from '../ui/Panel'
 export function InfoCard({ block }: { block: InfoBlock }) {
   return (
     // 內容比卡片短時整組垂直置中（上下留白一樣），不會上面擠、下面空一大塊
-    <div className={cn('flex h-full flex-col justify-center rounded-[18px] p-5', isNew(block.added) ? 'border-2 border-red-400 bg-red-950' : 'border border-line bg-card')}>
+    <div className={cn('flex h-full flex-col justify-center rounded-[18px] border border-line bg-card p-5', newFrame(block.added))}>
       <div className="flex items-start gap-3.5">
         <ItemIcon icon={block.icon} title={block.title} tone={block.tone} size="md" />
         <div className="min-w-0 flex-1">

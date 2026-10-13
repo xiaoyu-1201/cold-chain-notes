@@ -1,4 +1,6 @@
 import { motion } from 'framer-motion'
+import { useRef } from 'react'
+import { useKeepParens } from '../hooks/useKeepParens'
 import { Target } from 'lucide-react'
 import { PART_NO, parts } from '../data/parts'
 import { slides } from '../data/slides'
@@ -13,6 +15,7 @@ import { ConclusionCallout } from './ui/ConclusionCallout'
 import { fadeUp, staggerParent } from './ui/motion'
 import { StoreTipCard } from './ui/StoreTipCard'
 import { ChangesNote } from './ui/ChangesNote'
+import { NewToggle } from './ui/NewToggle'
 
 /** 內容來源標示（沒標＝課堂錄音／講義，最優先學） */
 export const SOURCE_LABEL = { handbook: '手冊延伸', extra: '延伸補充' } as const
@@ -21,9 +24,18 @@ export const SOURCE_TIP = {
   extra: '依業界常識補充，課堂沒講到；先以課堂錄音為主',
 } as const
 
+/** 整頁新的頁（changes 寫「整頁是新的」）：內容區整塊圈起來 */
+export const wholeNew = (slide: SlideData) => isNew(slide.added) && typeof slide.changes === 'string' && slide.changes.startsWith('整頁')
+
 /** 單張投影片：標題列 + 內容區塊 + 📌 本章小結論 */
 export function SlideCard({ slide }: { slide: SlideData }) {
   if (slide.layout === 'cover' && slide.cover) return <CoverLayout slide={slide} cover={slide.cover} />
+  return <StandardSlide slide={slide} />
+}
+
+function StandardSlide({ slide }: { slide: SlideData }) {
+  const ref = useRef<HTMLElement>(null)
+  useKeepParens(ref)
 
   const part = parts[slide.part]
   const index = slides.indexOf(slide)
@@ -36,6 +48,7 @@ export function SlideCard({ slide }: { slide: SlideData }) {
 
   return (
     <motion.article
+      ref={ref}
       initial="hidden"
       animate="show"
       variants={staggerParent}
@@ -70,6 +83,7 @@ export function SlideCard({ slide }: { slide: SlideData }) {
                 {newTag(slide.added)}
               </span>
             )}
+            {isNew(slide.added) && <NewToggle />}
           </p>
           <h2 className="mt-2 text-[60px] font-bold leading-[1.1] tracking-tight text-white">{slide.title}</h2>
           <ChangesNote slide={slide} />
@@ -84,7 +98,8 @@ export function SlideCard({ slide }: { slide: SlideData }) {
         {slide.store && <StoreTipCard store={slide.store} />}
       </motion.header>
 
-      <div className="relative mt-7 grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)]">
+      {/* 整頁都是新的：內容區整塊圈起來（「圈出新的」開著時） */}
+      <div className={cn('relative mt-7 grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)]', wholeNew(slide) && 'new-frame-page')}>
         {slide.blocks.map((block, i) => (
           <BlockRenderer key={i} block={block} />
         ))}

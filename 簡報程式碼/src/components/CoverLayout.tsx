@@ -1,4 +1,6 @@
 import { motion } from 'framer-motion'
+import { useRef } from 'react'
+import { useKeepParens } from '../hooks/useKeepParens'
 import type { CoverData, SlideData } from '../data/types'
 import { slides } from '../data/slides'
 import { PART_NO } from '../data/parts'
@@ -19,9 +21,12 @@ export function CoverLayout({ slide, cover }: { slide: SlideData; cover: CoverDa
     { value: String(coreCount), label: '頁必讀' },
   ]
   const siblings = slides.filter((s) => s.part === slide.part)
+  const ref = useRef<HTMLElement>(null)
+  useKeepParens(ref)
 
   return (
     <motion.article
+      ref={ref}
       initial="hidden"
       animate="show"
       variants={staggerParent}

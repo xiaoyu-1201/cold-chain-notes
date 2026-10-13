@@ -5,7 +5,7 @@ import { DeckContext, type DeckApi } from '../context/deck'
 import { PART_NO, parts } from '../data/parts'
 import { slides } from '../data/slides'
 import type { SlideData } from '../data/types'
-import { isNew } from '../data/whatsNew'
+import { isNew, newTag } from '../data/whatsNew'
 import { cn, pad } from '../lib/cn'
 import { interactionHints } from '../lib/interactions'
 import { toneStyles } from '../lib/tone'
@@ -18,6 +18,7 @@ import { PRACTICE } from '../data/practice'
 import { markSeen, useLearn } from '../lib/learn'
 import { SOURCE_LABEL } from './SlideCard'
 import { BlueprintBackground } from './ui/BlueprintBackground'
+import { ChangesNote } from './ui/ChangesNote'
 import { LensMagnify, LensView } from './ui/LiquidLens'
 import { lensBindings, lensDragBusy, useLensTrack, useLiquidLens } from '../hooks/useLiquidLens'
 
@@ -245,6 +246,7 @@ function MobileSlide({ slide, index }: { slide: SlideData; index: number }) {
           <p className="mt-3 text-[19px] font-bold text-slate-100">{cover.subtitle}</p>
           <p className="mt-2 text-emerald-300">{cover.audience}</p>
           <p className="mt-1 text-[14px] text-slate-400">{cover.source}</p>
+          <ChangesNote slide={slide} mobile />
           <p className="mt-4 rounded-xl border border-line bg-card px-4 py-3 text-[15px] text-slate-300">
             左右滑換頁，點下方中間的頁碼可以打開目錄、直接跳到想看的那一頁。看到
             <span className="mx-1 inline-flex items-center gap-1 rounded-md border border-dashed border-sky-500/60 bg-sky-950 px-1.5 text-sky-200">
@@ -268,9 +270,10 @@ function MobileSlide({ slide, index }: { slide: SlideData; index: number }) {
             {slide.source && <span className="rounded-md border border-line px-2 py-0.5 font-semibold text-slate-400">{SOURCE_LABEL[slide.source]}</span>}
             {slide.advanced && slide.part !== 'advanced' && <span className="rounded-md border border-amber-500/50 bg-amber-950 px-2 py-0.5 font-semibold text-amber-200">進階</span>}
             {slide.tier === 'ref' && <span className="rounded-md border border-line px-2 py-0.5 font-semibold text-slate-400">查閱</span>}
-            {isNew(slide.added) && <span className="rounded-md bg-red-400 px-2 py-0.5 font-black text-paper">新</span>}
+            {isNew(slide.added) && <span className="rounded-md bg-red-400 px-2 py-0.5 font-black text-paper">{newTag(slide.added)}</span>}
           </div>
           <h2 className="mt-2 text-[26px] font-black leading-[1.3] text-white">{slide.title}</h2>
+          <ChangesNote slide={slide} mobile />
           {hints.length > 0 && (
             <p className="mt-2 flex gap-1.5 rounded-lg border border-dashed border-sky-500/60 bg-sky-950 px-3 py-1.5 text-[15px] text-sky-200">
               <Pointer className="mt-1 size-4 shrink-0 text-sky-400" aria-hidden />

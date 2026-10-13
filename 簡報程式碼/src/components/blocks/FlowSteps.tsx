@@ -2,8 +2,11 @@ import { ArrowRight, ChevronRight, Target } from 'lucide-react'
 import { Fragment } from 'react'
 import type { FlowBlock } from '../../data/types'
 import { cn, pad } from '../../lib/cn'
+import { newFrame } from '../../lib/newFrame'
+import { isNew } from '../../data/whatsNew'
 import { toneStyles } from '../../lib/tone'
 import { Badge } from '../ui/Badge'
+import { NewChip } from '../ui/NewChip'
 import { Panel } from '../ui/Panel'
 import { ItemIcon } from './Cards'
 
@@ -46,7 +49,7 @@ function RowFlow({ block }: { block: FlowBlock }) {
                 <ChevronRight className="size-7 text-slate-500" />
               </div>
             )}
-            <div className={cn('relative flex min-w-0 flex-1 flex-col rounded-2xl border bg-card px-5 py-4', t.border)}>
+            <div className={cn('relative flex min-w-0 flex-1 flex-col rounded-2xl border bg-card px-5 py-4', isNew(step.added) ? 'border-2 border-red-400 bg-red-950' : t.border)}>
               <div className="flex items-center justify-between gap-2">
                 <span className={cn('text-[17px] font-bold', t.text)}>
                   步驟 <span className="font-mono">{pad(i + 1)}</span>
@@ -62,6 +65,7 @@ function RowFlow({ block }: { block: FlowBlock }) {
               <h4 className="mt-2 flex items-center gap-2 text-[23px] font-bold leading-snug text-slate-50">
                 {step.tag && Icon && <Icon className={cn('size-6 shrink-0', t.text)} aria-hidden />}
                 {step.title}
+                <NewChip added={step.added} />
               </h4>
               {step.desc && <p className="mt-1.5 text-[19px] leading-normal text-slate-300">{step.desc}</p>}
             </div>
@@ -82,7 +86,7 @@ function ColFlow({ block }: { block: FlowBlock }) {
         const t = toneStyles[tone]
         const isLast = i === block.steps.length - 1
         return (
-          <li key={i} className="relative flex items-stretch gap-4">
+          <li key={i} className={cn('relative flex items-stretch gap-4', newFrame(step.added) && cn(newFrame(step.added), '-mx-2 px-2'))}>
             <div className="flex flex-col items-center">
               <span
                 className={cn(
@@ -108,6 +112,7 @@ function ColFlow({ block }: { block: FlowBlock }) {
                     {step.tag}
                   </Badge>
                 )}
+                <NewChip added={step.added} />
               </div>
               {step.desc && <p className="mt-0.5 text-[19px] leading-normal text-slate-300">{step.desc}</p>}
             </div>

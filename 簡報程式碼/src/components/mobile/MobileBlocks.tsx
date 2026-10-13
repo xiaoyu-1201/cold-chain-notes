@@ -8,12 +8,14 @@ import { slides } from '../../data/slides'
 import { isNew } from '../../data/whatsNew'
 import { recordingOf } from '../../data/recordings'
 
-/** 這一批新增的頁：學習地圖的連結後面加綠色「新」；查閱頁加（查閱） */
+/** 這一批新增的頁：學習地圖的連結後面加紅色「新」；查閱頁加（查閱） */
 const newIds = new Set(slides.filter((s) => isNew(s.added)).map((s) => s.id))
 const refIds = new Set(slides.filter((s) => s.tier === 'ref').map((s) => s.id))
 import { cn, pad } from '../../lib/cn'
 import { glyphFor } from '../../lib/partGlyph'
 import { PartGlyph } from '../ui/PartGlyph'
+import { NewChip } from '../ui/NewChip'
+import { newFrame } from '../../lib/newFrame'
 import { toneStyles } from '../../lib/tone'
 import { Segmented } from '../ui/Segmented'
 import { DataTable } from '../blocks/DataTable'
@@ -196,7 +198,7 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
             {block.steps.map((step, i) => {
               const t = toneStyles[step.tone ?? block.tone]
               return (
-                <li key={i} className="flex gap-3">
+                <li key={i} className={cn('flex gap-3', newFrame(step.added) && cn(newFrame(step.added), '-mx-2 px-2 py-1.5'))}>
                   <span className={cn('flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-[14px] font-bold', t.chip)}>
                     {i + 1}
                   </span>
@@ -204,6 +206,7 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
                     <p className="font-bold text-white">
                       {step.title}
                       {step.tag && <span className="ml-2 align-middle"><Chip tone={step.tone ?? block.tone}>{step.tag}</Chip></span>}
+                      {step.added && <NewChip added={step.added} mobile className="ml-2 align-middle" />}
                     </p>
                     {step.desc && <p className="text-[15px] text-slate-300">{step.desc}</p>}
                   </div>
@@ -228,10 +231,11 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
           </Title>
           <ul className="mt-2 space-y-2.5">
             {block.items.map((item) => (
-              <li key={item.title}>
+              <li key={item.title} className={cn(newFrame(item.added) && cn(newFrame(item.added), '-mx-2 px-2 py-1.5'))}>
                 <p className="font-bold text-red-200">
                   {item.title}
                   {item.value && <span className="ml-2 font-mono text-red-300">{item.value}</span>}
+                  {item.added && <NewChip added={item.added} mobile className="ml-2 align-middle" />}
                 </p>
                 <p className="text-[15px] text-slate-300">{item.desc}</p>
               </li>
@@ -283,8 +287,11 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
           </Title>
           <div className="mt-3 grid grid-cols-2 gap-2.5">
             {block.items.map((m, i) => (
-              <div key={i} className="rounded-xl bg-white/[0.04] px-3 py-2.5">
-                <p className="text-[14px] text-slate-400">{m.label}</p>
+              <div key={i} className={cn('rounded-xl px-3 py-2.5', newFrame(m.added) || 'bg-white/[0.04]')}>
+                <p className="text-[14px] text-slate-400">
+                  {m.label}
+                  {m.added && <NewChip added={m.added} mobile className="ml-1.5 align-middle" />}
+                </p>
                 <p className={cn('text-[22px] font-black leading-tight', toneStyles[m.tone].strong)}>
                   {m.value}
                   {m.unit && <span className="ml-1 text-[14px] font-semibold text-slate-400">{m.unit}</span>}
@@ -351,12 +358,13 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
 
     case 'info':
       return (
-        <Card nested={nested} tone={block.tone}>
+        <Card nested={nested} tone={isNew(block.added) ? undefined : block.tone} className={isNew(block.added) ? 'border-2 border-red-400 bg-red-950' : undefined}>
           <div className="flex flex-wrap items-center gap-2">
             <Title icon={block.icon} tone={block.tone} small={nested}>
               {block.title}
             </Title>
             {block.tag && <Chip tone={block.tone}>{block.tag}</Chip>}
+            <NewChip added={block.added} mobile />
           </div>
           <div className="mt-1.5">{block.body}</div>
           {block.warn && (
@@ -394,11 +402,12 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
           </Title>
           <ul className="mt-2 space-y-2.5">
             {block.items.map((item) => (
-              <li key={item.title}>
+              <li key={item.title} className={cn(newFrame(item.added) && cn(newFrame(item.added), '-mx-2 px-2 py-1.5'))}>
                 <p className="flex flex-wrap items-center gap-2 font-bold text-white">
                   <item.icon className={cn('size-4', toneStyles[block.tone].text)} aria-hidden />
                   {item.title}
                   {item.badge && <Chip tone={item.badge.tone}>{item.badge.label}</Chip>}
+                  <NewChip added={item.added} mobile />
                 </p>
                 <p className="text-[15px] text-slate-300">{item.desc}</p>
               </li>
@@ -447,7 +456,7 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
                   <PageLink key={c.slide + c.code} slide={c.slide}>
                     {c.code} {c.title}
                     {refIds.has(c.slide) ? '（查閱）' : ''}
-                    {newIds.has(c.slide) && <span className="ml-1 rounded bg-emerald-400 px-1.5 text-[13px] font-black leading-5 text-paper">新</span>}
+                    {newIds.has(c.slide) && <span className="ml-1 rounded bg-red-400 px-1.5 text-[13px] font-black leading-5 text-paper">新</span>}
                   </PageLink>
                 ))}
               </div>

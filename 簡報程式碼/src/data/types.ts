@@ -66,6 +66,8 @@ export interface FlowStep {
   icon?: LucideIcon
   tone?: Tone
   tag?: string
+  /** 這一點哪天新增或改過（≥ NEW_SINCE 旁邊標「新」） */
+  added?: string
 }
 
 export interface FlowBlock {
@@ -87,7 +89,7 @@ export interface AlertBlock {
   type: 'alert'
   title: string
   en?: string
-  items: { icon: LucideIcon; title: string; value?: string; desc: ReactNode }[]
+  items: { icon: LucideIcon; title: string; value?: string; desc: ReactNode; added?: string }[]
 }
 
 export interface TrapBlock {
@@ -126,6 +128,7 @@ export interface MetricItem {
   note?: ReactNode
   tone: Tone
   tag?: string
+  added?: string
 }
 
 export interface MetricsBlock extends Heading {
@@ -167,6 +170,7 @@ export interface InfoBlock {
   body: ReactNode
   warn?: ReactNode
   meta?: string
+  added?: string
 }
 
 export interface StatBlock extends Heading {
@@ -178,7 +182,7 @@ export interface StatBlock extends Heading {
 
 export interface ListBlock extends Heading {
   type: 'list'
-  items: { icon: LucideIcon; title: string; desc: ReactNode; badge?: { label: string; tone: Tone } }[]
+  items: { icon: LucideIcon; title: string; desc: ReactNode; badge?: { label: string; tone: Tone }; added?: string }[]
 }
 
 export type MatrixGroup = 'physical' | 'thermal'
@@ -574,6 +578,8 @@ export interface SlideData {
   source?: 'handbook' | 'extra'
   /** 哪一天新增或大改（YYYY-MM-DD）；≥ whatsNew.NEW_SINCE 的頁會標「新」 */
   added?: string
+  /** 這頁 added 那天改了什麼（標題下面紅色一行；10/13 使用者：頁面上要講哪裡是新的） */
+  changes?: ReactNode
   /** 沒標＝第一週必讀；ref＝查閱手冊（規格、對照、型號讀法，需要時再翻） */
   tier?: 'ref'
   /** 每頁底部「📌 本章小結論」 */

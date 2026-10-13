@@ -12,6 +12,7 @@ import { PracticeButton } from './Practice'
 import { ConclusionCallout } from './ui/ConclusionCallout'
 import { fadeUp, staggerParent } from './ui/motion'
 import { StoreTipCard } from './ui/StoreTipCard'
+import { ChangesNote } from './ui/ChangesNote'
 
 /** 內容來源標示（沒標＝課堂錄音／講義，最優先學） */
 export const SOURCE_LABEL = { handbook: '手冊延伸', extra: '延伸補充' } as const
@@ -71,6 +72,7 @@ export function SlideCard({ slide }: { slide: SlideData }) {
             )}
           </p>
           <h2 className="mt-2 text-[60px] font-bold leading-[1.1] tracking-tight text-white">{slide.title}</h2>
+          <ChangesNote slide={slide} />
           {firstOfPart && part.goal && (
             // 每一篇第一頁：先講清楚這一篇學完要會什麼
             <p className="mt-2 flex min-w-0 items-center gap-2 text-[21px] text-slate-400">

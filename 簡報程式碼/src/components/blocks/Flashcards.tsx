@@ -279,6 +279,8 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
                 >
                   {status[c.term] === 'known' && i !== current && <Check className="-mt-0.5 mr-0.5 inline size-3.5" aria-hidden />}
                   {c.term}
+                  {/* 這一批新增的卡：清單上也標（10/13 QA：要整疊翻完才知道是哪幾張） */}
+                  {isNew(c.added) && <span className="ml-1 rounded bg-red-400 px-1 text-[0.8em] font-black text-paper">新</span>}
                 </button>
               ),
             )}

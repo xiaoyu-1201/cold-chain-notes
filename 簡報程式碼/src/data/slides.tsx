@@ -71,6 +71,7 @@ import { Danger, Em, Exp, Frac, Hl, Sub, Warn } from '../components/ui/rich'
 import { ABBR_PARTS, ABBR_SPECS, ABBR_THERMO } from './abbr'
 import { CLASS_AUDIO, CLASS_AUDIO_10, CLASS_AUDIO_11, CLASS_AUDIO_12, CLASS_AUDIO_13, CLASS_AUDIO_14, CLASS_AUDIO_15, CLASS_AUDIO_16, CLASS_AUDIO_2, CLASS_AUDIO_3, CLASS_AUDIO_4, CLASS_AUDIO_5, CLASS_AUDIO_6, CLASS_AUDIO_7, CLASS_AUDIO_8, CLASS_AUDIO_9, HAS_CLASS_AUDIO } from './media'
 import type { SlideData } from './types'
+import { NewChip } from '../components/ui/NewChip'
 
 /** 各頁定義（定義順序不等於顯示順序，顯示順序見檔案最後的 ORDER） */
 const slideList: SlideData[] = [
@@ -78,6 +79,7 @@ const slideList: SlideData[] = [
   {
     id: 'cover',
     added: '2026-10-12',
+    changes: '引言換成老闆「兩態變化」這句；電腦版的循環圖，零件改畫成實物的樣子',
     part: 'intro',
     layout: 'cover',
     title: '氣冷式冷凍冷藏系統',
@@ -111,6 +113,7 @@ const slideList: SlideData[] = [
   {
     id: 'owner',
     added: '2026-10-12',
+    changes: '標題改成「匹配一定要對」，大字換成老闆「拿去賺錢，不是再去賠」這句',
     part: 'intro',
     mark: 'WELCOME',
     title: '老闆開場：匹配一定要對',
@@ -518,6 +521,7 @@ const slideList: SlideData[] = [
     id: 'ch2',
     source: 'handbook',
     added: '2026-10-12',
+    changes: '吐出溫度改用老闆的 70～100°C（錄音16）；怎麼量看下一頁',
     part: 'components',
     chapter: '第 2 章',
     title: '壓縮機：系統的龍頭',
@@ -589,8 +593,8 @@ const slideList: SlideData[] = [
                 en: 'Oil Return Velocity',
                 cols: 2,
                 items: [
-                  { label: '水平管', value: '> 4', unit: 'm/s', tone: 'teal', note: '流速夠，油才帶得回來' },
-                  { label: '垂直上升立管', value: '> 8', unit: 'm/s', tone: 'ice', note: '克服重力把油往上推' },
+                  { label: '水平管（帶油回來）', value: '> 4', unit: 'm/s', tone: 'teal' },
+                  { label: '上升立管（克服重力）', value: '> 8', unit: 'm/s', tone: 'ice' },
                 ],
               },
                 ],
@@ -602,11 +606,12 @@ const slideList: SlideData[] = [
             items: [
               {
                 icon: ThermometerSun,
-                title: '吐出溫度（排氣溫度）',
+                title: '吐出溫度',
+                added: '2026-10-12',
                 value: '≤100°C',
                 desc: (
                   <>
-                    老闆抓 <Em>70～100°C</Em>、85°C 最安全〔錄音16 01:43〕；手冊上限 107°C，冷凍油 148°C 碳化。
+                    吐出＝排氣。老闆抓 <Em>70～100°C</Em>、85°C 最安全〔錄音16 01:43〕；手冊上限 107°C，冷凍油 148°C 碳化。
                   </>
                 ),
               },
@@ -640,6 +645,7 @@ const slideList: SlideData[] = [
   {
     id: 'comp-protect',
     added: '2026-10-12',
+    changes: '整頁是新的：錄音16 老闆講的吐出溫度、過熱保護器（歐巴）、冷凍油沒回來',
     part: 'components',
     chapter: '壓縮機保護',
     mark: 'PROTECT',
@@ -691,6 +697,7 @@ const slideList: SlideData[] = [
                 direction: 'col',
                 icon: ShieldAlert,
                 tone: 'amber',
+                compact: true,
                 title: '過熱保護器跳掉之後',
                 en: 'Overload Protector',
                 steps: [
@@ -796,6 +803,7 @@ const slideList: SlideData[] = [
   {
     id: 'comp-power',
     added: '2026-10-12',
+    changes: '標「新」的兩點：單相要三樣配件裝小黑盒、第三支管是充灌（錄音16）',
     part: 'components',
     chapter: '壓縮機貨架',
     mark: 'POWER',
@@ -821,7 +829,7 @@ const slideList: SlideData[] = [
                   { label: '110V', value: '2 條線', unit: '單相', tone: 'amber', note: '只有一馬以下的小顆才有；110 和 120 不能混用' },
                   { label: '220V', value: '2 條線', unit: '單相', tone: 'ice', note: '最常見；三相（3 條線）只有大顆的才有，220 或 380' },
                 ],
-                footnote: <>客人要 220、你拿 110，通電就燒掉；<Hl>壓縮機焊過就不能退</Hl>，老闆：「拿錯了我公司沒辦法幫你負擔」。〔錄音13 00:54、07:45〕</>,
+                footnote: <>客人要 220、你拿 110，通電就燒掉；<Hl>焊過就不能退</Hl>（拿貨 SOP 有老闆原話）。〔錄音13 00:54、07:45〕</>,
               },
               {
                 type: 'compare',
@@ -867,9 +875,9 @@ const slideList: SlideData[] = [
                 en: 'What Goes With It',
                 items: [
                   { icon: CircleCheck, title: '三相：只要角座', desc: '四個角座固定壓縮機，中間插柱子，螺絲從底板鎖上去；220 或 380 三相都一樣', badge: { label: '簡單', tone: 'emerald' } },
-                  { icon: Boxes, title: '單相：角座＋三樣配件', desc: '往復式單相一定是三樣：繼電器（Relay）、黑色的啟動電容、銀色的運轉電容；接好線裝進小黑盒（店裡也有賣）。渦捲式只有一顆電容、沒有繼電器〔錄音16 12:57〕', badge: { label: '三樣', tone: 'amber' } },
+                  { icon: Boxes, title: '單相：角座＋三樣配件', added: '2026-10-12', desc: '往復式單相一定是三樣：繼電器（Relay）、黑色的啟動電容、銀色的運轉電容；接好線裝進小黑盒（店裡也有賣）。渦捲式只有一顆電容、沒有繼電器〔錄音16 12:57〕', badge: { label: '三樣', tone: 'amber' } },
                   { icon: Ban, title: '配件不能拿錯盒', desc: '不同型號的配件盒內容不一樣；先對壓縮機，再對配件', badge: { label: '注意', tone: 'red' } },
-                  { icon: Route, title: '兩支管、三支管', desc: '兩支＝高壓吐出、低壓吸入；第三支是充灌，跟低壓端相通，灌冷媒、測壓力用〔錄音16 13:48〕', badge: { label: '看管子', tone: 'teal' } },
+                  { icon: Route, title: '兩支管、三支管', added: '2026-10-12', desc: '兩支＝高壓吐出、低壓吸入；第三支是充灌，跟低壓端相通，灌冷媒、測壓力用〔錄音16 13:48〕', badge: { label: '看管子', tone: 'teal' } },
                 ],
               },
               {
@@ -898,6 +906,7 @@ const slideList: SlideData[] = [
     id: 'comp-temp',
     tier: 'ref',
     added: '2026-10-12',
+    changes: '標「新」的一點：代替要看冷凍能力（BTU）和排氣量，不是只看電壓（錄音16）',
     part: 'components',
     chapter: '壓縮機貨架',
     mark: 'TEMP',
@@ -945,7 +954,7 @@ const slideList: SlideData[] = [
                 title: '代替的三個條件',
                 en: 'Substitution Rules',
                 items: [
-                  { icon: Scale, title: '能力要對', desc: '看冷凍能力（BTU）和排氣量，不是只看電壓；拿中溫代低溫，要選大一點的（09K → 20K）〔錄音16 12:02、15:28〕' },
+                  { icon: Scale, title: '能力要對', added: '2026-10-12', desc: '看冷凍能力（BTU）和排氣量，不是只看電壓；拿中溫代低溫，要選大一點的（09K → 20K）〔錄音16 12:02、15:28〕' },
                   { icon: Zap, title: '電壓、相位要一樣', desc: '單相換單相、三相換三相' },
                   { icon: ThermometerSnowflake, title: '中溫兩邊都能打', desc: '冷藏可以用、冷凍也可以用；高溫是打冷藏、低溫是打冷凍' },
                 ],
@@ -967,6 +976,7 @@ const slideList: SlideData[] = [
   {
     id: 'comp-pick',
     added: '2026-10-12',
+    changes: '標「新」的一點：橡皮塞拔起來要「啪」一聲才是新的（錄音16）',
     part: 'components',
     chapter: '壓縮機貨架',
     mark: 'PICK',
@@ -989,7 +999,7 @@ const slideList: SlideData[] = [
               <>溫度對嗎：冷藏拿高溫機，冷凍拿低溫機</>,
               <>不要只看架上的位置：有時候會放錯，拿出來還要再看一次型號〔錄音13 22:33〕</>,
               <>客人要的是哪一顆，不是「長得一樣」的那一顆（2446 和 2464 長得一模一樣，能力不同）</>,
-              <>管口的橡皮塞拔起來要「啪」一聲＝裡面有氣、是新的；焊上去就算用過，拿錯也不能退〔錄音16 16:20〕</>,
+              <><span className="rounded-md bg-red-950 px-1 ring-2 ring-red-400"><NewChip added="2026-10-12" className="mr-2 align-middle" />管口的橡皮塞拔起來要「啪」一聲＝裡面有氣、是新的；焊上去就算用過，拿錯也不能退〔錄音16 16:20〕</span></>,
             ],
           },
           {
@@ -1144,6 +1154,7 @@ const slideList: SlideData[] = [
     id: 'ch4',
     source: 'handbook',
     added: '2026-10-12',
+    changes: '標「新」的步驟：風扇延遲＝留滴水時間（錄音16）；老闆怎麼講除霜看下一頁',
     part: 'components',
     chapter: '第 4 章',
     title: '蒸發器（冷排）：把熱吸走＋除霜',
@@ -1164,7 +1175,7 @@ const slideList: SlideData[] = [
           { type: 'showcase', parts: [{ id: 'evap', label: '蒸發器（冷風機）' }] },
       {
         type: 'grid',
-        className: 'grid-rows-[minmax(0,1.6fr)_minmax(0,1fr)]',
+        className: 'grid-rows-[minmax(0,1.5fr)_minmax(0,1fr)]',
         children: [
           {
             type: 'grid',
@@ -1232,8 +1243,7 @@ const slideList: SlideData[] = [
                 title: '定時啟動',
                 desc: (
                   <>
-                    定時器啟動除霜（如每 6 小時一次）
-                    <Exp />
+                    例如每 6 小時除霜一次
                   </>
                 ),
               },
@@ -1242,14 +1252,14 @@ const slideList: SlideData[] = [
                 title: '溫度強制終止',
                 desc: (
                   <>
-                    回溫到 8～10°C 就停止加熱；感溫器裝在結霜最厚處
-                    <Exp />
+                    回到 8～10°C 就停；感溫器裝在結霜最厚處
                   </>
                 ),
               },
               {
                 icon: Fan,
                 title: '風扇延遲 Fan Delay',
+                added: '2026-10-12',
                 desc: (
                   <>
                     除霜完先滴水，風扇晚點轉〔錄音16 30:54〕
@@ -1275,6 +1285,7 @@ const slideList: SlideData[] = [
   {
     id: 'defrost',
     added: '2026-10-12',
+    changes: '整頁是新的：錄音16 老闆講的除霜、滴水時間、冷排結冰四個原因、內膨外膨',
     part: 'components',
     chapter: '第 4 章',
     mark: 'DEFROST',
@@ -1294,6 +1305,7 @@ const slideList: SlideData[] = [
             direction: 'col',
             icon: Snowflake,
             tone: 'ice',
+            compact: true,
             title: '為什麼要除霜、怎麼除',
             en: 'Why & How',
             steps: [
@@ -1302,7 +1314,7 @@ const slideList: SlideData[] = [
               { title: '電熱管加熱、化成水', desc: '電熱管把霜化成水，從排水管排出去〔錄音16 29:11〕', icon: Flame },
               { title: '風扇延遲＝滴水時間', desc: '除霜完風扇先不轉，免得把剛化的冰水噴出來〔錄音16 30:54〕', icon: Fan },
             ],
-            result: { label: '除霜怎麼停', text: '定時：例如運轉 4 小時、除霜 15 分鐘，再加滴水時間；溫控：冷排回到 8～10°C 就是化完了。〔錄音16 31:46～32:39〕' },
+            result: { label: '除霜怎麼停', text: '定時（例：跑 4 小時、除霜 15 分）＋溫控（冷排回到 8～10°C 就停）〔錄音16 31:46〕' },
           },
           {
             type: 'info',
@@ -1928,6 +1940,7 @@ const slideList: SlideData[] = [
     id: 'recording-12',
     tier: 'ref',
     added: '2026-10-12',
+    changes: '整頁是新的：10/12 上課錄音，點段落就跳到那裡',
     part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO 12',
@@ -2447,6 +2460,7 @@ const slideList: SlideData[] = [
   {
     id: 'cycle-lesson',
     added: '2026-10-12',
+    changes: '循環圖的散熱器、冷排改畫成實物的樣子，小零件加細節；剛打開會閃三下提示可以點',
     part: 'basics',
     chapter: '核心圖解',
     mark: 'CYCLE',
@@ -3015,6 +3029,7 @@ const slideList: SlideData[] = [
   {
     id: 'room-types',
     added: '2026-10-12',
+    changes: '整頁是新的：錄音16 老闆講的冷凍庫三種、參考坪數、中心溫度、冰庫不是冰箱、變頻',
     part: 'industry',
     chapter: '冷凍庫',
     mark: 'ROOMS',
@@ -3098,6 +3113,7 @@ const slideList: SlideData[] = [
     id: 'outdoor-units',
     tier: 'ref',
     added: '2026-10-12',
+    changes: '標「新」的四點：機上型的叫法、對能力表、重量差三倍、室外機橫式和 V 型上吹（錄音16）',
     part: 'components',
     chapter: '散熱器種類',
     mark: 'UNITS',
@@ -3118,7 +3134,7 @@ const slideList: SlideData[] = [
               { icon: Fan, title: '馬達外露', desc: '人家說「無穿衫」；便宜，店裡最常賣', badge: { label: '最常見', tone: 'amber' } },
               { icon: Refrigerator, title: '兩種用法都行', desc: '放冰箱頂上（機上型），或拉到外面（散熱外移）' },
               { icon: ShieldAlert, title: '放室外可以加遮雨板', desc: '要不要加看位置，有屋簷擋的就不用；聲音比屋外型大' },
-              { icon: MessagesSquare, title: '客人說的「機上型」不一定是', desc: '散熱器放室內、用箱子裝起來，客人也叫機上型；我們看得懂就好，單子上寫對的名字（一般散熱器寫「封底」）〔錄音16 22:18〕' },
+              { icon: MessagesSquare, title: '客人說的「機上型」不一定是', added: '2026-10-12', desc: '散熱器放室內、用箱子裝起來，客人也叫機上型；我們看得懂就好，單子上寫對的名字（一般散熱器寫「封底」）〔錄音16 22:18〕' },
             ],
           },
           {
@@ -3130,8 +3146,8 @@ const slideList: SlideData[] = [
             items: [
               { icon: ShieldCheck, title: '有外殼、馬達在裡面', desc: '好看、安靜、不怕風吹雨淋' },
               { icon: Building2, title: '常吊在牆上', desc: '用 N 字形的壁掛架；太重的話搬不上去' },
-              { icon: Scale, title: '選購看三件事', desc: '安靜（吵到鄰居會被檢舉）、重量、實際能力（同樣標 10 馬，實際可能差一級，要對廠商的冷凍能力表）' },
-              { icon: HardHat, title: '重量差到三倍', desc: '同樣 10 馬，重的一百多公斤、輕的 35 公斤；要吊到外牆，有時候是 5 樓，很危險。冷凍庫大多在一樓，因為貨車要進出〔錄音16 23:08～24:00〕' },
+              { icon: Scale, title: '選購看三件事', added: '2026-10-12', desc: '安靜（吵到鄰居會被檢舉）、重量、實際能力（同樣標 10 馬，實際可能差一級，要對廠商的冷凍能力表）' },
+              { icon: HardHat, title: '重量差到三倍', added: '2026-10-12', desc: '同樣 10 馬，重的一百多公斤、輕的 35 公斤；要吊到外牆，有時候是 5 樓，很危險。冷凍庫大多在一樓，因為貨車要進出〔錄音16 23:08～24:00〕' },
             ],
           },
           {
@@ -3143,7 +3159,7 @@ const slideList: SlideData[] = [
             items: [
               { icon: Package, title: '像冷氣的室外機', desc: '壓縮機、散熱器、乾燥器都裝在裡面' },
               { icon: Waypoints, title: '只拉兩支管', desc: '液管和低壓管接到冷排；冷氣做外膨，冷凍做內膨（膨脹閥在冷排旁）' },
-              { icon: Wind, title: '橫式、V 型上吹', desc: '小台是橫式（風往側面吹）；大台是 V 型上吹，60 馬的都有，店裡出過 80 馬；分含機座、不含機座〔錄音16 24:52〕' },
+              { icon: Wind, title: '橫式、V 型上吹', added: '2026-10-12', desc: '小台是橫式（風往側面吹）；大台是 V 型上吹，60 馬的都有，店裡出過 80 馬；分含機座、不含機座〔錄音16 24:52〕' },
             ],
           },
         ],
@@ -4353,6 +4369,7 @@ const slideList: SlideData[] = [
   {
     id: 'recordings',
     added: '2026-10-12',
+    changes: '多了錄音16（10/12 上課：元件新頁複習，39 分鐘）',
     part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO',
@@ -4399,7 +4416,8 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 名詞翻卡（間隔重複） ───────────────────────── */
   {
     id: 'glossary',
-    added: '2026-10-09',
+    added: '2026-10-12',
+    changes: '名詞卡多了 7 張（卡上標「新」）：吐出溫度、過熱保護器、電容、除霜電熱管、滴水時間、參考坪數、冷凍庫種類',
     part: 'review',
     chapter: '名詞翻卡',
     mark: 'WORDS',

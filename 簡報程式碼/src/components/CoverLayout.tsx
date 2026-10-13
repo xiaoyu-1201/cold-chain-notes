@@ -5,6 +5,7 @@ import { PART_NO } from '../data/parts'
 import { ConclusionCallout } from './ui/ConclusionCallout'
 import { fadeUp, staggerParent } from './ui/motion'
 import { CycleExplorer } from './diagrams/CycleExplorer'
+import { ChangesNote } from './ui/ChangesNote'
 
 /** 封面上的數字都從資料算（加頁、加篇章會自動跟著變） */
 const partCount = new Set(slides.map((s) => s.part)).size
@@ -101,7 +102,8 @@ export function CoverLayout({ slide, cover }: { slide: SlideData; cover: CoverDa
         </motion.div>
       </div>
 
-      <motion.div variants={fadeUp} className="mt-8">
+      <motion.div variants={fadeUp} className="mt-5">
+        <ChangesNote slide={slide} className="mb-2" />
         <ConclusionCallout label={slide.conclusion.label} text={slide.conclusion.text} />
       </motion.div>
     </motion.article>

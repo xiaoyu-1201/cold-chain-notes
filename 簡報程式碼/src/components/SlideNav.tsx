@@ -270,7 +270,7 @@ function PageGrid({ index, onGoTo, onClose }: { index: number; onGoTo: (index: n
 const NEW_COUNT = slides.filter((s) => isNew(s.added)).length
 const LATEST = slides.reduce((m, s) => (s.added && s.added > m ? s.added : m), '')
 const LATEST_COUNT = slides.filter((s) => s.added === LATEST).length
-const SHOW_LATEST = !!LATEST && isNew(LATEST)
+const SHOW_LATEST = !!LATEST && isNew(LATEST) && LATEST_COUNT < NEW_COUNT
 
 /** 依篇章分組（保持投影片順序），給頁碼點分區用 */
 const dotGroups = slides.reduce<{ part: PartId; items: number[] }[]>((acc, s, i) => {
@@ -516,7 +516,6 @@ function PageStrip({ index, onGoTo }: { index: number; onGoTo: (index: number) =
                 <LensMagnify lens={lens} geom={track.geom} index={k}>
                   {k + 1}
                 </LensMagnify>
-                {isNew(slides[i].added) && !on && <span aria-hidden className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-red-400" />}
               </button>
             )
           })}

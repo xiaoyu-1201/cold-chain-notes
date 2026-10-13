@@ -3,6 +3,8 @@ import { cn } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
 import { Badge } from '../ui/Badge'
 import { Formula } from '../ui/Formula'
+import { NewChip } from '../ui/NewChip'
+import { isNew } from '../../data/whatsNew'
 import { Panel } from '../ui/Panel'
 import { ArrowRight } from 'lucide-react'
 
@@ -24,7 +26,7 @@ export function Metrics({ block }: { block: MetricsBlock }) {
                 className={cn(
                   'relative flex flex-col justify-center overflow-hidden rounded-2xl border bg-card',
                   lg ? 'px-6 py-4' : 'px-5 py-1.5',
-                  t.border,
+                  isNew(item.added) ? 'border-2 border-red-400 bg-red-950' : t.border,
                 )}
               >
                 <span aria-hidden className={cn('absolute inset-y-0 left-0 w-1', t.dot)} />
@@ -35,6 +37,7 @@ export function Metrics({ block }: { block: MetricsBlock }) {
                       {item.tag}
                     </Badge>
                   )}
+                  <NewChip added={item.added} />
                 </div>
                 <div className="mt-1 flex items-baseline gap-2">
                   <span className={cn('font-mono font-extrabold tracking-tight', lg ? 'text-[64px] leading-[1.05]' : 'text-[40px] leading-none', t.strong)}>

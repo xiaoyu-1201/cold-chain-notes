@@ -2,21 +2,27 @@ import { ArrowRight, MapPin, Target, TriangleAlert, type LucideIcon } from 'luci
 import type { ReactNode } from 'react'
 import type { CompareBlock, CompareSide, InfoBlock, ListBlock, TilesBlock, TimelineBlock, Tone } from '../../data/types'
 import { cn } from '../../lib/cn'
+import { newFrame } from '../../lib/newFrame'
+import { isNew } from '../../data/whatsNew'
 import { toneStyles } from '../../lib/tone'
 import { Badge } from '../ui/Badge'
 import { glyphFor } from '../../lib/partGlyph'
 import { GlyphCell } from '../ui/PartGlyph'
+import { NewChip } from '../ui/NewChip'
 import { Panel } from '../ui/Panel'
 
 /** 資訊卡：元件、角色、規格說明 */
 export function InfoCard({ block }: { block: InfoBlock }) {
   return (
     // 內容比卡片短時整組垂直置中（上下留白一樣），不會上面擠、下面空一大塊
-    <div className="flex h-full flex-col justify-center rounded-[18px] border border-line bg-card p-5">
+    <div className={cn('flex h-full flex-col justify-center rounded-[18px] border bg-card p-5', isNew(block.added) ? 'border-2 border-red-400 bg-red-950' : 'border-line')}>
       <div className="flex items-start gap-3.5">
         <ItemIcon icon={block.icon} title={block.title} tone={block.tone} size="md" />
         <div className="min-w-0 flex-1">
-          <h4 className="text-[23px] font-bold leading-tight text-slate-50">{block.title}</h4>
+          <h4 className="flex items-center gap-2 text-[23px] font-bold leading-tight text-slate-50">
+            {block.title}
+            <NewChip added={block.added} />
+          </h4>
           {block.en && <p className="mt-1 font-mono text-[16px] uppercase tracking-[0.14em] text-slate-400">{block.en}</p>}
         </div>
         {block.tag && (
@@ -53,12 +59,13 @@ export function ItemList({ block }: { block: ListBlock }) {
       {/* 像零件表（BOM）：一列一項、細線分隔，不再一列一個框 */}
       <ol className="flex h-full flex-col divide-y divide-line border-y border-line">
         {block.items.map((item, i) => (
-          <li key={item.title} className="flex flex-1 items-center gap-4 px-1 py-2">
+          <li key={item.title} className={cn('flex flex-1 items-center gap-4 px-1 py-2', newFrame(item.added) && cn(newFrame(item.added), 'px-2'))}>
             <span className="w-6 shrink-0 font-mono text-[17px] font-bold text-slate-500">{i + 1}</span>
             <ItemIcon icon={item.icon} title={item.title} tone={block.tone} size="sm" />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <h4 className="text-[22px] font-bold leading-snug text-slate-50">{item.title}</h4>
+                <NewChip added={item.added} />
                 {item.badge && (
                   <Badge tone={item.badge.tone} size="sm">
                     {item.badge.label}

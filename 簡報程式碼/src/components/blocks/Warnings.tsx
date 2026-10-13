@@ -3,6 +3,8 @@ import { Fragment } from 'react'
 import type { AlertBlock, SizingBlock, TrapBlock } from '../../data/types'
 import { cn } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
+import { NewChip } from '../ui/NewChip'
+import { isNew } from '../../data/whatsNew'
 
 /** 紅色警戒框：運轉紅線 */
 export function AlertPanel({ block }: { block: AlertBlock }) {
@@ -30,10 +32,11 @@ export function AlertPanel({ block }: { block: AlertBlock }) {
         {block.items.map((item) => {
           const Icon = item.icon
           return (
-            <div key={item.title} className="flex max-h-[240px] flex-1 flex-col justify-center rounded-2xl border border-red-500/30 bg-red-950/45 px-5 py-4">
+            <div key={item.title} className={cn('flex max-h-[240px] flex-1 flex-col justify-center rounded-2xl px-5 py-4', isNew(item.added) ? 'border-[3px] border-red-400 bg-red-950' : 'border border-red-500/30 bg-red-950/45')}>
               <div className="flex items-center gap-3">
                 <Icon className="size-7 shrink-0 text-red-300" aria-hidden />
                 <h4 className="text-[25px] font-bold text-red-50">{item.title}</h4>
+                <NewChip added={item.added} />
                 {item.value && (
                   <span className="ml-auto rounded-xl bg-card px-3 py-1 font-mono text-[30px] font-extrabold leading-none text-red-300 ring-1 ring-inset ring-red-500/50">
                     {item.value}

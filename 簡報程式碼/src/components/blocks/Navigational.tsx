@@ -52,16 +52,19 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
           const tight = chapters.length > 5
           // 很多列的篇（全部模式的配件篇）：字小一級，1440 寬（畫布 1920）才放得下、不疊字（10/10 QA）
           const dense = chapters.length > 7
-          // 一列可能代表好幾頁（例：「壓縮機：牌子、電壓、拿貨」＝P.21～24）：其中一頁是新的，這列就標「新」
+          // 一列可能代表好幾頁（例：「壓縮機：牌子、電壓、拿貨」＝P.21～24）：其中一頁是新的，這列就標「新」；
+          // 新的不是這列連過去的那頁時，寫出是哪一頁（10/13 QA：標新卻連到舊頁，找不到）
           const starts = item.chapters.map((c) => slides.findIndex((s) => s.id === c.slide))
-          const rowIsNew = (slideId: string) => {
+          const rowNew = (slideId: string): string | null => {
             const start = slides.findIndex((s) => s.id === slideId)
+            const pages: number[] = []
             for (let j = start; j >= 0 && j < slides.length; j++) {
               const s = slides[j]
               if (j > start && (starts.includes(j) || s.part !== item.part || s.id.startsWith('recap-') || s.id.startsWith('check-'))) break
-              if (newIds.has(s.id)) return true
+              if (newIds.has(s.id)) pages.push(j + 1)
             }
-            return false
+            if (!pages.length) return null
+            return pages[0] === start + 1 && pages.length === 1 ? '新' : `新 P.${pages.join('、')}`
           }
           // 章節少的篇（兩、三頁）：每列多放一句「這頁的小結論」當預覽，卡片不會下半部空一大塊
           const previewLines = chapters.length <= 2 ? 4 : chapters.length <= 4 ? 1 : 0
@@ -114,7 +117,7 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
                           {hasGlyph && <span className="flex w-6 shrink-0 justify-center text-ink-2">{g && <PartGlyph id={g} size={26} />}</span>}
                           <span className={cn('min-w-0 flex-1 text-balance font-semibold leading-snug text-slate-100', dense ? 'text-[17px]' : 'text-[18px]')}>
                             {ch.title}
-                            {rowIsNew(ch.slide) && <span className="ml-1.5 inline-block rounded bg-red-400 px-1.5 align-[1px] text-[16px] font-black leading-6 text-paper">新</span>}
+                            {rowNew(ch.slide) && <span className="ml-1.5 inline-block whitespace-nowrap rounded bg-red-400 px-1.5 align-[1px] text-[16px] font-black leading-6 text-paper">{rowNew(ch.slide)}</span>}
                             {isRef && <span className="ml-1.5 inline-block text-[16px] font-semibold text-slate-500">查閱</span>}
                             {preview && (
                               <span className={cn('mt-1 text-[16px] font-normal leading-snug text-slate-400', previewLines === 4 ? 'line-clamp-4' : 'line-clamp-1')}>{preview}</span>

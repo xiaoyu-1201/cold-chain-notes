@@ -370,6 +370,7 @@ export function CycleLesson() {
               onExitFault={() => setFaultId(null)}
               onClose={() => setBig(false)}
               side={<Inspector selected={selected} onSelect={setSelected} faults={faults} onLeave={() => setBig(false)} />}
+              sideZoom={0.8}
             />
           )}
         </div>

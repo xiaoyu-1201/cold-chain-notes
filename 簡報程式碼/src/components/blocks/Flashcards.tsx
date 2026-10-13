@@ -165,6 +165,8 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
     show(safeOrder[0])
   }
   const jump = (i: number) => {
+    // 再點一次同一張：收起暫時看的卡（全部會了時才回得去「全部會了！」，10/13 QA）
+    if (peek === i) return setPeek(null)
     show(i, true)
     setPeek(hideKnown && status[cards[i].term] === 'known' ? i : null)
   }
@@ -369,7 +371,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
         ) : (
           <button type="button" onClick={askReset} className={cn(actionBtn, confirmReset ? 'bg-red-400 text-paper' : 'border border-line bg-card text-slate-100 hover:border-sky-500/50')}>
             <RotateCcw className="size-5" aria-hidden />
-            {confirmReset ? `確定取消 ${known} 張「會了」？` : '全部重來'}
+            {confirmReset ? '再按一次確定' : '全部重來'}
           </button>
         )}
         <button type="button" onClick={reshuffle} className={cn(actionBtn, 'border border-line bg-card text-slate-200 hover:border-sky-500/50')}>
@@ -384,7 +386,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
             className={cn(actionBtn, confirmReset ? 'bg-red-400 text-paper' : 'border border-line bg-card text-slate-200 hover:border-sky-500/50')}
           >
             <RotateCcw className="size-5" aria-hidden />
-            {confirmReset ? `確定取消 ${known} 張「會了」？` : '全部重來'}
+            {confirmReset ? '再按一次確定' : '全部重來'}
           </button>
         )}
       </GlassButtonGroup>

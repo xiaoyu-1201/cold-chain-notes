@@ -111,8 +111,9 @@ export function PartViewer({ id, title, alias, onClose, choices, current = 0, on
     >
       <div className="flex h-full max-h-[900px] w-full max-w-[1400px] flex-col overflow-hidden rounded-[20px] border border-line bg-paper shadow-[0_24px_64px_-24px_rgba(15,36,64,0.5)]">
         <header className="flex flex-wrap items-center gap-3 border-b border-line bg-card px-4 py-3 sm:px-6">
-          <div className="min-w-0 flex-1">
-            <p className="text-[22px] font-black text-white sm:text-[26px]">{title}</p>
+          {/* 至少留 7 個字寬：手機上按鈕放不下就換到下一排，標題才不會被擠成「往復／式」（10/13 QA） */}
+          <div className="min-w-[7em] flex-1">
+            <p className="text-[22px] font-black text-white [text-wrap:balance] sm:text-[26px]">{title}</p>
             {alias && <p className="text-[15px] font-semibold text-sky-300">{alias}</p>}
           </div>
           <div className="flex gap-2" role="tablist">

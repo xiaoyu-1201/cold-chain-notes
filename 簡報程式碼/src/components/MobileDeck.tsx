@@ -1,7 +1,8 @@
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
-import { BookOpenCheck, ChevronLeft, ChevronRight, CornerUpLeft, List, PencilLine, Pin, Pointer, Presentation, Search, Store } from 'lucide-react'
+import { BookOpenCheck, Box, ChevronLeft, ChevronRight, CornerUpLeft, List, PencilLine, Pin, Pointer, Presentation, Search, Store } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
-import { DeckContext, type DeckApi } from '../context/deck'
+import { DeckContext, useDeck, type DeckApi } from '../context/deck'
+import { presetSticky } from '../hooks/useStickyState'
 import { PART_NO, parts } from '../data/parts'
 import { slides } from '../data/slides'
 import type { SlideData } from '../data/types'
@@ -237,6 +238,7 @@ function MobileSlide({ slide, index }: { slide: SlideData; index: number }) {
   const siblings = slides.filter((s) => s.part === slide.part)
   const ref = useRef<HTMLElement>(null)
   useKeepParens(ref)
+  const { goToId } = useDeck()
 
   return (
     <section ref={ref}>
@@ -251,6 +253,19 @@ function MobileSlide({ slide, index }: { slide: SlideData; index: number }) {
           <p className="mt-2 text-emerald-300">{cover.audience}</p>
           <p className="mt-1 text-[14px] text-slate-400">{cover.source}</p>
           <ChangesNote slide={slide} mobile />
+          {/* 手機版也有「看 3D 版」：直接打開核心圖解的 3D（10/13 QA：紅字說有按鈕，手機上卻找不到） */}
+          <button
+            type="button"
+            onClick={() => {
+              presetSticky('cycle:view', '3d')
+              goToId('cycle-lesson')
+            }}
+            className="new-frame mt-3 flex min-h-11 items-center gap-2 rounded-full border border-sky-500/50 bg-sky-950 px-4 py-2 text-[15px] font-semibold text-sky-200"
+          >
+            <Box className="size-4" aria-hidden />
+            看冷凍循環 3D 版
+            <span className="new-chip rounded bg-red-400 px-1.5 text-[13px] font-black text-paper">新</span>
+          </button>
           <p className="mt-4 rounded-xl border border-line bg-card px-4 py-3 text-[15px] text-slate-300">
             左右滑換頁，點下方中間的頁碼可以打開目錄、直接跳到想看的那一頁。看到
             <span className="mx-1 inline-flex items-center gap-1 rounded-md border border-dashed border-sky-500/60 bg-sky-950 px-1.5 text-sky-200">

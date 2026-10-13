@@ -34,6 +34,7 @@ import { BulbClock } from '../diagrams/BulbClock'
 import { CycleDiagram } from '../diagrams/CycleDiagram'
 import { part3DFor } from '../three/ids'
 import { PartViewer } from '../three/PartViewer'
+import { useStickyState } from '../../hooks/useStickyState'
 import { CycleBigViewer } from '../three/CycleBigViewer'
 
 /* 手機閱讀版：不縮放、實際字級（內文 17px），單欄、最多一層卡片 */
@@ -865,7 +866,8 @@ function CycleLessonMobile() {
   const note = selected ? cycleNotes[selected] : null
   const [viewId, setViewId] = useState<string | null>(null)
   const viewModel = viewId ? part3DFor(viewId) : null
-  const [view, setView] = useState<'2d' | '3d'>('2d')
+  // 跟電腦版共用：首頁按「看 3D 版」進來就直接是 3D
+  const [view, setView] = useStickyState<'2d' | '3d'>('cycle:view', '2d')
   const [cut, setCut] = useState(false)
   const [big, setBig] = useState(false)
   return (

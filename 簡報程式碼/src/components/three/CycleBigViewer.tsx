@@ -15,13 +15,15 @@ interface Props extends Omit<Cycle3DProps, 'compact'> {
   onClose: () => void
   /** 右邊（手機在下面）放零件說明 */
   side?: ReactNode
+  /** 側欄內容是照投影片畫布字級寫的（電腦版 Inspector）才縮小；手機閱讀版的內容本來就是小字，不縮（10/13 QA：iPad 只剩 12px） */
+  sideZoom?: number
 }
 
 /**
  * 核心圖解的 3D 放大看（10/13 使用者：「也要可以把小視窗放大」）：整個畫面的視窗，3D 跟零件說明並排；
  * Esc／右上 ×／點外面關閉，跟零件的「放大看」一樣。
  */
-export function CycleBigViewer({ onCut, onClose, side, ...cycle }: Props) {
+export function CycleBigViewer({ onCut, onClose, side, sideZoom, ...cycle }: Props) {
   const closeRef = useRef<HTMLButtonElement>(null)
   const dialogRef = useRef<HTMLDivElement>(null)
   // 呼叫端每次重畫都給新的 onClose：存在 ref 裡，下面的 effect 只跑一次（不然焦點會一直被搶回 ×，10/13 code review）
@@ -29,6 +31,8 @@ export function CycleBigViewer({ onCut, onClose, side, ...cycle }: Props) {
   onCloseRef.current = onClose
   // 跟版面換成左右排的寬度（lg＝1024）一致：小於這個是上下排、用小一號的字（10/13 QA：iPad 橫放寫「看下面說明」但說明在右邊）
   const [narrow, setNarrow] = useState(() => window.innerWidth < 1024)
+  // 3D 的大小字只看打開時：跟著視窗變會整個 3D 重建（縮放、導覽進度全部重來，10/13 code review）
+  const [compactAtOpen] = useState(() => window.innerWidth < 1024)
   useEffect(() => {
     const onResize = () => setNarrow(window.innerWidth < 1024)
     window.addEventListener('resize', onResize)
@@ -70,7 +74,7 @@ export function CycleBigViewer({ onCut, onClose, side, ...cycle }: Props) {
     >
       <div className="flex h-full max-h-[1000px] w-full max-w-[1600px] flex-col overflow-hidden rounded-[20px] border border-line bg-paper shadow-[0_24px_64px_-24px_rgba(15,36,64,0.5)]">
         <header className="flex items-center gap-3 border-b border-line bg-card px-4 py-3 sm:px-6">
-          <p className="min-w-0 flex-1 text-[22px] font-black text-white sm:text-[26px]">冷凍循環一圈（3D）</p>
+          <p className="min-w-0 flex-1 text-[22px] font-black text-white sm:text-[26px]">冷凍循環 3D</p>
           <button
             type="button"
             aria-pressed={cycle.cut}
@@ -88,13 +92,13 @@ export function CycleBigViewer({ onCut, onClose, side, ...cycle }: Props) {
           <div className="relative min-h-[320px] flex-1 bg-card">
             <Suspense fallback={<p className="absolute inset-0 flex items-center justify-center text-[16px] text-slate-400">3D 載入中…</p>}>
               {/* 放大視窗沒有縮放：視窗不夠寬（手機、平板直放）時用小一號的字和按鈕 */}
-              <CycleSystem3D {...cycle} compact={narrow} />
+              <CycleSystem3D {...cycle} compact={compactAtOpen} />
             </Suspense>
           </div>
           {side && (
             <aside className="max-h-[50%] overflow-y-auto border-t border-line bg-card p-4 lg:max-h-none lg:w-[440px] lg:border-l lg:border-t-0 lg:p-5">
               {/* 側欄的說明是照投影片畫布的字級寫的；放大視窗沒有縮放，寬螢幕縮成 0.8 倍才不會太大 */}
-              <div style={narrow ? undefined : { zoom: 0.8 }}>{side}</div>
+              <div style={narrow || !sideZoom ? undefined : { zoom: sideZoom }}>{side}</div>
             </aside>
           )}
         </div>

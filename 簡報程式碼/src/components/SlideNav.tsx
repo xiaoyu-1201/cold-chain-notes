@@ -91,7 +91,8 @@ export function SlideNav({
     >
       {/* 有「返回」鈕時，左邊三顆只留圖示（文字在說明裡），返回鈕才不會壓到篇章列（10/10 QA：1920 寬重疊 14px） */}
       {/* 篇章列是固定寬，大螢幕時左邊先保留一塊給提示／標題，不然會被篇章列吃光；平板（<1280）按鈕只留圖示 */}
-      <div className="flex flex-1 items-center gap-2 sm:gap-3 min-[1600px]:min-w-[260px]">
+      {/* 左右兩群一樣寬（basis-0），中間的篇章列才會置中（10/13 QA：1920 偏左 77px） */}
+      <div className="flex min-w-0 flex-1 basis-0 items-center gap-2 sm:gap-3">
         <NavButton label="章節目錄 (M)" onClick={onOpenMenu}>
           <Menu className="size-5" aria-hidden />
           <span className={labelCls}>目錄</span>
@@ -160,8 +161,8 @@ export function SlideNav({
           <LayoutGrid className="hidden size-4 text-slate-400 sm:block" aria-hidden />
         </button>
       </div>
-      <div className="flex flex-1 items-center justify-end gap-3">
-        <div className="hidden items-center gap-1.5 whitespace-nowrap text-[13px] text-slate-400 min-[1900px]:flex">
+      <div className="flex min-w-0 flex-1 basis-0 items-center justify-end gap-3">
+        <div className="hidden items-center gap-1.5 whitespace-nowrap text-[13px] text-slate-400 min-[2300px]:flex">
           <Kbd>←</Kbd>
           <Kbd>→</Kbd>
           <span className="mr-2">翻頁</span>

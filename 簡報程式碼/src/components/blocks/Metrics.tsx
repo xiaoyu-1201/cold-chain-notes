@@ -39,13 +39,13 @@ export function Metrics({ block }: { block: MetricsBlock }) {
                   )}
                   <NewChip added={item.added} />
                 </div>
-                <div className="mt-1 flex items-baseline gap-2">
-                  <span className={cn('font-mono font-extrabold tracking-tight', lg ? 'text-[64px] leading-[1.05]' : 'text-[40px] leading-none', t.strong)}>
+                <div className={cn('flex items-baseline gap-2', lg ? 'mt-1' : 'mt-0.5')}>
+                  <span className={cn('font-mono font-extrabold tracking-tight', lg ? 'text-[64px] leading-[1.05]' : 'text-[38px] leading-none', t.strong)}>
                     {item.value}
                   </span>
                   {item.unit && <span className={cn('font-mono text-slate-400', lg ? 'text-[26px]' : 'text-[22px]')}>{item.unit}</span>}
                 </div>
-                {item.note && <p className={cn('mt-1 text-slate-400', lg ? 'text-[20px]' : 'text-[19px]')}>{item.note}</p>}
+                {item.note && <p className={cn('text-slate-400', lg ? 'mt-1 text-[20px]' : 'mt-0.5 text-[19px] leading-snug')}>{item.note}</p>}
               </div>
             )
           })}

@@ -126,7 +126,8 @@ export function CoverLayout({ slide, cover }: { slide: SlideData; cover: CoverDa
         </motion.div>
       </div>
 
-      <motion.div variants={fadeUp} className="mt-5">
+      {/* shrink-0：紅字＋引言一定完整顯示，空間不夠時由上面那格讓；引言框原本是 h-full（撐滿父層），這裡改成照內容高（10/13 QA：引言超出畫布 8px） */}
+      <motion.div variants={fadeUp} className="mt-4 shrink-0 [&>aside]:h-auto">
         <ChangesNote slide={slide} className="mb-2" />
         <ConclusionCallout label={slide.conclusion.label} text={slide.conclusion.text} />
       </motion.div>

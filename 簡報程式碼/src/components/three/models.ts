@@ -818,8 +818,9 @@ const builders: Record<Part3DId, () => PartModel> = {  /** 視液鏡（10/13 做
     const screwM = b.shell(mat.steel())
     for (const x of [-0.46, 0.46]) for (const y of [0.18, -0.48]) b.cylZ(0.035, 0.02, screwM, [x, y, 0.35], 16)
     // 刻度窗（白底黑線）
-    const scale = mat.paint(0xf8fafc)
-    const ink = mat.paint(0x111827)
+    // 刻度窗貼在機殼前面：跟機殼一起剖開，不然會浮在半空中（10/13 code review）
+    const scale = b.shell(mat.paint(0xf8fafc))
+    const ink = b.shell(mat.paint(0x111827))
     for (const x of [-0.3, 0.3]) {
       b.box(0.36, 0.16, 0.01, scale, [x, 0.42, 0.315])
       for (let i = 0; i < 7; i++) b.box(0.008, i % 3 === 0 ? 0.08 : 0.05, 0.005, ink, [x - 0.15 + i * 0.05, 0.4, 0.322])

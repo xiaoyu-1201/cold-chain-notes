@@ -79,7 +79,7 @@ const slideList: SlideData[] = [
   {
     id: 'cover',
     added: '2026-10-13',
-    changes: '多了「看 3D 版」按鈕（循環圖右上角），直接打開核心圖解的 3D',
+    changes: '多了「看 3D 版」按鈕，按一下直接打開核心圖解的 3D',
     part: 'intro',
     layout: 'cover',
     title: '氣冷式冷凍冷藏系統',
@@ -1097,14 +1097,14 @@ const slideList: SlideData[] = [
                         W<Sub>e</Sub>
                       </>
                     ),
-                    label: '壓縮機輸入功率熱當量',
+                    label: '壓縮機做功的熱',
                     tone: 'violet',
                   },
                 ],
                 highlight: '≈ × 1.3',
                 note: (
                   <>
-                    手冊例題裡，冷凝器要排的熱約是冷凍能力的 <Hl>1.3 倍</Hl>（多了壓縮機做功的熱）；選冷凝器不能只看庫內吸熱量。
+                    冷凝器要排的熱約是冷凍能力的 <Hl>1.3 倍</Hl>，不能只看庫內吸熱量。
                   </>
                 ),
               },
@@ -1197,7 +1197,7 @@ const slideList: SlideData[] = [
                     { k: '盤管表面', v: '結霜少、除濕弱' },
                     { k: '庫內濕度', v: <Hl>約 90% RH</Hl> },
                   ],
-                  use: '適合蔬菜、鮮花（80% RH 時 TD 取 5～7°C）',
+                  use: '蔬菜、鮮花（80% RH 取 5～7°C）',
                 },
                 right: {
                   badge: '大 TD',
@@ -1207,7 +1207,7 @@ const slideList: SlideData[] = [
                     { k: '盤管表面', v: '熱交換快、除濕強' },
                     { k: '庫內濕度', v: <Hl>65 ~ 70% RH</Hl> },
                   ],
-                  use: '適合鮮奶、飲料、包裝好的冷凍食品',
+                  use: '鮮奶、飲料、冷凍品',
                 },
               },
               {
@@ -1442,8 +1442,8 @@ const slideList: SlideData[] = [
                     icon: Gauge,
                     tone: 'teal',
                     title: '曲軸箱壓力調節閥（CPR）',
-                    body: '剛開機降溫或除霜完時，吸氣壓力偏高；CPR 限制吸氣壓力，避免壓縮機馬達超載燒毀。',
-                    meta: '裝在吸氣管、壓縮機入口前',
+                    body: '剛開機、除霜完吸氣壓力高；CPR 限住它，保護壓縮機馬達。',
+                    meta: '裝在壓縮機吸氣口前',
                   },
           {
             type: 'flow',
@@ -1457,7 +1457,7 @@ const slideList: SlideData[] = [
               { title: '溫控到溫', desc: '→ 關供液電磁閥' },
               { title: '壓縮機抽空低壓', desc: '→ 低壓開關停機' },
             ],
-            result: { label: '目的', text: '停機前把低壓側冷媒抽走，不讓冷媒跑進壓縮機' },
+            result: { label: '目的', text: '停機前先把冷媒抽走，不讓它跑進壓縮機' },
           },
                 ],
               },
@@ -2060,8 +2060,8 @@ const slideList: SlideData[] = [
                 en: 'Install & Swap',
                 items: [
                   { icon: Route, title: '照 IN → OUT 裝', desc: '有方向；貼紙可能貼反，以本體上的箭頭為準' },
-                  { icon: Ruler, title: '數字越大，支越長越大', desc: '老闆的記法：164 大約 16 公分長、305 大約 30 公分；規格書上前兩碼是乾燥劑容量（立方吋）。系統越大，用大一點的' },
-                  { icon: ArrowLeftRight, title: '同規格各牌可以互換', desc: '例：Danfoss DML 083＝Emerson ADK 083＝Sanhua FD-083（3分、喇叭口）；各牌長度不同，維修換一樣長的比較好裝' },
+                  { icon: Ruler, title: '數字越大，支越長越大', desc: '老闆的記法：164 約 16 公分長、305 約 30 公分（規格書上前兩碼是乾燥劑容量）；系統越大用越大的' },
+                  { icon: ArrowLeftRight, title: '同規格各牌可以互換', desc: '例：Danfoss DML 083＝Emerson ADK 083＝Sanhua FD-083（3分、喇叭口）；長度不同，換一樣長的好裝' },
                 ],
               },
             ],

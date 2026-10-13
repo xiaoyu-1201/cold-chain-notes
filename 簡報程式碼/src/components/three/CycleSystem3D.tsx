@@ -155,6 +155,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     const holders = new Map<Part3DId, THREE.Object3D>()
     const partLabels = new Map<CycleNodeId, { o: CSS2DObject; text: string; css: string; side: Side }>()
     const minorLabels: { o: CSS2DObject; id: CycleNodeId | null }[] = []
+    const allLabels: { o: CSS2DObject; major: boolean }[] = []
 
     const makeLabel = (text: string, id: CycleNodeId | null, major: boolean, tone?: string) => {
       const el = document.createElement('div')
@@ -175,6 +176,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
         'user-select:none',
       ].join(';')
       const obj = new CSS2DObject(el)
+      allLabels.push({ o: obj, major })
       // 手機（compact）畫面窄：次要標籤（小零件、管路狀態、放熱吸熱）平常收起來，點到那個零件才出現；名稱在下面的按鈕都有（10/13 QA：iPhone 標籤疊在一起、被切掉）
       if (!major) minorLabels.push({ o: obj, id })
       if (id)
@@ -451,7 +453,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       // 高度要放得下上下的標籤（約 7.4 單位，上下再各留一點邊），寬度要放得下左右的標籤（約 11.4 單位）
       // 標籤是固定像素：畫面窄時同樣的字佔比較多單位 → 先扣掉左右標籤要用的像素，剩下的才給模型（手機才不會切到標籤）
       const span = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))
-      const sidePx = compact ? 70 : 0
+      const sidePx = compact ? 48 : 0
       const widthUnits = sidePx ? (9.8 * w) / Math.max(w - 2 * sidePx, w * 0.4) : 11.4
       homePos.setLength(Math.max(7.9 / span, widthUnits / (span * camera.aspect)))
       if (atHome && !fly) camera.position.copy(homeTarget).add(homePos)
@@ -464,6 +466,35 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     const clamp01 = (x: number) => Math.min(Math.max(x, 0), 1)
     let raf = 0
     let last = 0
+    /**
+     * 手機（compact）畫面窄：標籤互相蓋住時，後面的往下挪到不重疊（10/13 QA：「④ 蒸發器」蓋住「③ 膨脹閥」）。
+     * 只有鏡頭或顯示的標籤變了才重排；主要零件的名稱先放、其他的讓。
+     */
+    let clutterKey = ''
+    const declutter = () => {
+      const shown = allLabels.filter(({ o }) => o.visible && o.element.style.display !== 'none')
+      const key = [...camera.matrixWorld.elements, ...camera.projectionMatrix.elements].map((n) => n.toFixed(3)).join(',') + shown.map(({ o }) => o.id + o.element.textContent).join('|')
+      if (key === clutterKey) return
+      clutterKey = key
+      const hr = host.getBoundingClientRect()
+      const k = hr.width / Math.max(host.offsetWidth, 1) || 1
+      shown.forEach(({ o }) => (o.element.style.translate = ''))
+      const placed: DOMRect[] = []
+      const order = [...shown].sort((a, b) => Number(b.major) - Number(a.major))
+      for (const { o } of order) {
+        const r0 = o.element.getBoundingClientRect()
+        let top = r0.top
+        for (let guard = 0; guard < 12; guard++) {
+          const hit = placed.find((p) => r0.left < p.right && p.left < r0.right && top < p.bottom && p.top < top + r0.height)
+          if (!hit) break
+          top = hit.bottom + 2
+        }
+        // 往下挪會超出畫框：改往上挪
+        if (top + r0.height > hr.bottom) top = Math.max(hr.top, Math.min(...placed.filter((p) => r0.left < p.right && p.left < r0.right).map((p) => p.top), r0.top) - r0.height - 2)
+        placed.push(new DOMRect(r0.left, top, r0.width, r0.height))
+        if (top !== r0.top) o.element.style.translate = `0 ${(top - r0.top) / k}px`
+      }
+    }
     const tick = () => {
       const t = clock.getElapsedTime()
       const dt = Math.min(t - last, 0.05)
@@ -621,12 +652,14 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       controls.update()
       renderer.render(scene, camera)
       labels.render(scene, camera)
+      if (compact) declutter()
       raf = requestAnimationFrame(tick)
     }
     tick()
 
     return () => {
       cancelAnimationFrame(raf)
+      allLabels.forEach(({ o }) => (o.element.style.translate = ''))
       ro.disconnect()
       renderer.domElement.removeEventListener('pointerdown', onDown)
       renderer.domElement.removeEventListener('pointerup', onUp)

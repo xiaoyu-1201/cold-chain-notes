@@ -77,7 +77,7 @@ function StandardSlide({ slide }: { slide: SlideData }) {
               </span>
             )}
             {isNew(slide.added) && (
-              <span className="new-chip ml-2 rounded-lg bg-red-400 px-3 py-1 text-[20px] font-black leading-none text-paper shadow-sm" title={NEW_LABEL}>
+              <span className="new-keep ml-2 rounded-lg bg-red-400 px-3 py-1 text-[20px] font-black leading-none text-paper shadow-sm" title={NEW_LABEL}>
                 {newTag(slide.added)}
               </span>
             )}

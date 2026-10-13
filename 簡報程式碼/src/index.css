@@ -722,3 +722,5 @@ button[class~='bg-sky-500/15']:not([class~='w-full'], [data-no-glass], :disabled
   border-radius: 20px;
 }
 html:not(.show-new) .new-chip { display: none; }
+/* 標題區的「新・日期」和「改了什麼」：只隱形不收掉，關掉時開關按鈕和標題位置不變（10/13 使用者：按鈕不可以移動） */
+html:not(.show-new) .new-keep { visibility: hidden; }

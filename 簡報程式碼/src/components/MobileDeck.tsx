@@ -274,7 +274,7 @@ function MobileSlide({ slide, index }: { slide: SlideData; index: number }) {
             {slide.source && <span className="rounded-md border border-line px-2 py-0.5 font-semibold text-slate-400">{SOURCE_LABEL[slide.source]}</span>}
             {slide.advanced && slide.part !== 'advanced' && <span className="rounded-md border border-amber-500/50 bg-amber-950 px-2 py-0.5 font-semibold text-amber-200">進階</span>}
             {slide.tier === 'ref' && <span className="rounded-md border border-line px-2 py-0.5 font-semibold text-slate-400">查閱</span>}
-            {isNew(slide.added) && <span className="new-chip rounded-md bg-red-400 px-2 py-0.5 font-black text-paper">{newTag(slide.added)}</span>}
+            {isNew(slide.added) && <span className="new-keep rounded-md bg-red-400 px-2 py-0.5 font-black text-paper">{newTag(slide.added)}</span>}
             {isNew(slide.added) && <NewToggle mobile />}
           </div>
           <h2 className="mt-2 text-[26px] font-black leading-[1.3] text-white">{slide.title}</h2>

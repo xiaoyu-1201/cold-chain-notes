@@ -1,4 +1,4 @@
-import { Box, Camera, Layers, RotateCw, X } from 'lucide-react'
+import { Box, Camera, Layers, RotateCw, Tags, X } from 'lucide-react'
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { photoCredits } from '../../data/photoCredits'
@@ -30,6 +30,9 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
   const [cut, setCut] = useState(false)
   const [spin, setSpin] = useState(true)
   const [legend, setLegend] = useState<LegendItem[]>([])
+  // 構造說明：一鍵在 3D 上標名稱；滑鼠移到說明或零件上，那個零件亮起來（10/13 使用者）
+  const [labels, setLabels] = useState(false)
+  const [hover, setHover] = useState<string | null>(null)
   const [control, setControl] = useState<PartControl | undefined>()
   const [op, setOp] = useState(0)
   const onControl = useCallback((c: PartControl | undefined) => {
@@ -115,7 +118,7 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
           <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
             <div className="viewport-blueprint relative min-h-[280px] flex-1">
               <Suspense fallback={<p className="absolute inset-0 flex items-center justify-center text-[16px] text-slate-400">3D 模型載入中…</p>}>
-                <Part3D id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} />
+                <Part3D id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} highlight={hover} labels={labels} onHoverPart={setHover} />
               </Suspense>
               <GlassButtonGroup className="absolute bottom-3 left-3 flex flex-wrap gap-2" label="3D 檢視">
                 <button type="button" aria-pressed={cut} onClick={() => setCut((c) => !c)} className={floatToggle(cut)}>
@@ -125,6 +128,10 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
                 <button type="button" aria-pressed={spin} onClick={() => setSpin((s) => !s)} className={floatToggle(spin)}>
                   <RotateCw className="size-4" aria-hidden />
                   自動旋轉
+                </button>
+                <button type="button" aria-pressed={labels} onClick={() => setLabels((v) => !v)} className={floatToggle(labels)}>
+                  <Tags className="size-4" aria-hidden />
+                  標出構造
                 </button>
               </GlassButtonGroup>
               <p className="glass pointer-events-none absolute right-3 top-3 rounded-full px-3 py-1 text-[13px] text-slate-200">{touch ? '拖曳旋轉・兩指放大・點兩下還原' : '拖曳旋轉・滾輪往游標放大・雙擊還原'}</p>
@@ -149,10 +156,16 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
                   <p className="mt-2 text-[15px] leading-snug text-slate-100">{control.describe(op)}</p>
                 </section>
               )}
-              <p className="mb-2 text-[15px] font-bold text-slate-400">構造說明{cut ? '' : '（按「剖開看內部」看裡面）'}</p>
+              <p className="mb-2 text-[15px] font-bold text-slate-400">構造說明：滑鼠移過去（或點一下），3D 上那個零件會亮起來{cut ? '' : '；按「剖開看內部」看裡面'}</p>
               <ul className="space-y-2.5">
                 {legend.map((item) => (
-                  <li key={item.name} className="flex gap-2.5">
+                  <li
+                    key={item.name}
+                    onMouseEnter={() => setHover(item.name)}
+                    onMouseLeave={() => setHover(null)}
+                    onClick={() => setHover((h) => (h === item.name ? null : item.name))}
+                    className={cn('-mx-2 flex cursor-pointer gap-2.5 rounded-xl px-2 py-1 transition', hover === item.name && 'bg-amber-950 ring-1 ring-amber-500/60')}
+                  >
                     <span className="mt-1.5 size-3.5 shrink-0 rounded-full border border-ink/25" style={{ background: item.color }} aria-hidden />
                     <span>
                       <span className="block text-[17px] font-bold text-white">{item.name}</span>

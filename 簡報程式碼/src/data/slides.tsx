@@ -539,7 +539,7 @@ const slideList: SlideData[] = [
         type: 'grid',
         className: 'grid-cols-[minmax(0,0.74fr)_minmax(0,1.26fr)]',
         children: [
-          { type: 'showcase', parts: [{ id: 'comp', label: '往復式（矮胖）' }, { id: 'scroll', label: '渦捲式（高瘦）' }] },
+          { type: 'showcase', parts: [{ id: 'comp', label: '往復式' }, { id: 'scroll', label: '渦捲式' }] },
           {
             type: 'grid',
             className: 'grid-cols-[minmax(0,1.1fr)_minmax(0,0.8fr)]',

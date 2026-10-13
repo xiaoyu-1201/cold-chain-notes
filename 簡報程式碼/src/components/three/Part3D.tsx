@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js'
 import { buildPart, type LegendItem, type Part3DId, type PartControl } from './models'
 import { acquireRenderer, releaseRenderer } from './rendererPool'
 import { fixTouchPointers } from './touchFix'
@@ -18,12 +19,20 @@ interface Part3DProps {
   onControl?: (control: PartControl | undefined) => void
   /** 操作值 0～1（開關、滑桿） */
   opValue?: number
+  /** 構造說明的名稱：這個零件亮起來、其他變淡（滑鼠移到說明上；10/13 使用者） */
+  highlight?: string | null
+  /** 一鍵開關：零件旁邊直接標名稱 */
+  labels?: boolean
+  /** 滑鼠移到 3D 的某個零件上：回報它的名稱（沒有＝null） */
+  onHoverPart?: (name: string | null) => void
 }
 
 /** 零件 3D 檢視：拖曳旋轉、滾輪／雙指縮放 */
-export default function Part3D({ id, cut, spin, run = false, onLegend, onControl, opValue }: Part3DProps) {
+export default function Part3D({ id, cut, spin, run = false, onLegend, onControl, opValue, highlight = null, labels = false, onHoverPart }: Part3DProps) {
   const hostRef = useRef<HTMLDivElement>(null)
-  const api = useRef<{ setCut: (c: boolean) => void; setSpin: (s: boolean) => void; setRun: (r: boolean) => void; setOp: (v: number) => void } | null>(null)
+  const api = useRef<{ setCut: (c: boolean) => void; setSpin: (s: boolean) => void; setRun: (r: boolean) => void; setOp: (v: number) => void; setHighlight: (n: string | null) => void; setLabels: (on: boolean) => void } | null>(null)
+  const hoverRef = useRef(onHoverPart)
+  hoverRef.current = onHoverPart
   const legendRef = useRef(onLegend)
   legendRef.current = onLegend
   const controlRef = useRef(onControl)
@@ -54,6 +63,73 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
     const radius = box.getSize(new THREE.Vector3()).length() / 2
     model.group.position.sub(center)
     scene.add(model.group)
+    model.group.updateMatrixWorld(true)
+
+    // 構造標籤（一鍵開關）：每個說明項目放在用那個材質的零件中間
+    const labelLayer = new CSS2DRenderer()
+    labelLayer.domElement.style.position = 'absolute'
+    labelLayer.domElement.style.inset = '0'
+    labelLayer.domElement.style.pointerEvents = 'none'
+    host.appendChild(labelLayer.domElement)
+    const meshesOf = (m: THREE.Material) => {
+      const out: THREE.Mesh[] = []
+      model.group.traverse((o) => {
+        const mesh = o as THREE.Mesh
+        if (mesh.isMesh && mesh.material === m && !o.userData.mountOnly) out.push(mesh)
+      })
+      return out
+    }
+    const tags = model.legend.map((item, i) => {
+      const bb = new THREE.Box3()
+      meshesOf(model.legendMats[i]).forEach((mesh) => bb.expandByObject(mesh))
+      const el = document.createElement('div')
+      el.textContent = item.name
+      el.style.cssText = 'font:700 14px system-ui,sans-serif;color:#0f2440;background:rgba(255,255,255,0.95);padding:3px 10px;border-radius:999px;box-shadow:0 0 0 1.5px ' + item.color + ',0 4px 12px -4px rgba(15,36,64,.35);white-space:nowrap'
+      const tag = new CSS2DObject(el)
+      // 外殼的標籤放在頂上（放中間會跟裡面的零件疊在一起）
+      if (!bb.isEmpty()) tag.position.copy(bb.getCenter(new THREE.Vector3())).setY(model.shells.includes(model.legendMats[i]) ? bb.max.y : bb.getCenter(new THREE.Vector3()).y)
+      tag.visible = false
+      scene.add(tag)
+      return tag
+    })
+    let labelsOn = false
+    // 亮起來／變淡：記住每個材質原本的樣子，取消時還原
+    const allMats = new Set<THREE.MeshStandardMaterial>()
+    model.group.traverse((o) => {
+      const mesh = o as THREE.Mesh
+      if (mesh.isMesh) (Array.isArray(mesh.material) ? mesh.material : [mesh.material]).forEach((m) => allMats.add(m as THREE.MeshStandardMaterial))
+    })
+    const orig = new Map([...allMats].map((m) => [m, { transparent: m.transparent, opacity: m.opacity, emissive: m.emissive?.clone(), ei: m.emissiveIntensity }]))
+    let hlIndex = -1
+    const setHighlight = (name: string | null) => {
+      hlIndex = name ? model.legend.findIndex((l) => l.name === name) : -1
+      const target = hlIndex >= 0 ? model.legendMats[hlIndex] : null
+      for (const m of allMats) {
+        const o0 = orig.get(m)!
+        if (!target) {
+          m.transparent = o0.transparent
+          m.opacity = o0.opacity
+          if (o0.emissive) m.emissive.copy(o0.emissive)
+          m.emissiveIntensity = o0.ei
+        } else if (m === target) {
+          m.transparent = o0.transparent
+          m.opacity = o0.opacity
+          m.emissive?.setHex(0xf59e0b)
+          m.emissiveIntensity = 0.55
+        } else {
+          m.transparent = true
+          m.opacity = Math.min(o0.opacity, 0.18)
+          if (o0.emissive) m.emissive.copy(o0.emissive)
+          m.emissiveIntensity = o0.ei
+        }
+        m.needsUpdate = true
+      }
+      tags.forEach((t, i) => (t.visible = labelsOn || i === hlIndex))
+    }
+    const setLabels = (on: boolean) => {
+      labelsOn = on
+      tags.forEach((t, i) => (t.visible = on || i === hlIndex))
+    }
     const moving: { o: THREE.Object3D; kind: 'spin' | 'slide'; speed: number; amp: number; base: number }[] = []
     model.group.traverse((o) => {
       const a = o.userData.anim as { kind: 'spin' | 'slide'; speed: number; amp?: number } | undefined
@@ -96,7 +172,33 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
     const setOp = (v: number) => {
       opTarget = v
     }
-    api.current = { setCut, setSpin, setRun, setOp }
+    api.current = { setCut, setSpin, setRun, setOp, setHighlight, setLabels }
+
+    // 滑鼠移到 3D 的零件上：告訴外面是哪一個（外面再讓它亮起來）
+    const raycaster = new THREE.Raycaster()
+    const pointer = new THREE.Vector2()
+    let lastHover: string | null = null
+    const onMove = (e: PointerEvent) => {
+      if (e.buttons || e.pointerType !== 'mouse') return
+      const r = renderer.domElement.getBoundingClientRect()
+      pointer.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1)
+      raycaster.setFromCamera(pointer, camera)
+      const hit = raycaster.intersectObject(model.group, true).find((h) => (h.object as THREE.Mesh).material && model.legendMats.includes((h.object as THREE.Mesh).material as THREE.Material))
+      const name = hit ? model.legend[model.legendMats.indexOf((hit.object as THREE.Mesh).material as THREE.Material)].name : null
+      renderer.domElement.style.cursor = name ? 'pointer' : ''
+      if (name !== lastHover) {
+        lastHover = name
+        hoverRef.current?.(name)
+      }
+    }
+    const onLeave = () => {
+      if (lastHover !== null) {
+        lastHover = null
+        hoverRef.current?.(null)
+      }
+    }
+    renderer.domElement.addEventListener('pointermove', onMove)
+    renderer.domElement.addEventListener('pointerleave', onLeave)
 
     let size = ''
     const resize = () => {
@@ -108,6 +210,7 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
       renderer.domElement.style.height = '100%'
       camera.aspect = w / h
       camera.updateProjectionMatrix()
+      labelLayer.setSize(w, h)
     }
     const ro = new ResizeObserver(resize)
     ro.observe(host)
@@ -139,6 +242,7 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
       }
       controls.update()
       renderer.render(scene, camera)
+      labelLayer.render(scene, camera)
       raf = requestAnimationFrame(tick)
     }
     tick()
@@ -147,6 +251,10 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
       cancelAnimationFrame(raf)
       ro.disconnect()
       renderer.domElement.removeEventListener('dblclick', onDbl)
+      renderer.domElement.removeEventListener('pointermove', onMove)
+      renderer.domElement.removeEventListener('pointerleave', onLeave)
+      renderer.domElement.style.cursor = ''
+      host.removeChild(labelLayer.domElement)
       unfixTouch()
       controls.dispose()
       scene.traverse((o) => {
@@ -178,5 +286,13 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
     if (opValue !== undefined) api.current?.setOp(opValue)
   }, [opValue, id])
 
-  return <div ref={hostRef} className="h-full w-full cursor-grab touch-none active:cursor-grabbing" />
+  useEffect(() => {
+    api.current?.setHighlight(highlight)
+  }, [highlight, id])
+
+  useEffect(() => {
+    api.current?.setLabels(labels)
+  }, [labels, id])
+
+  return <div ref={hostRef} className="relative h-full w-full cursor-grab touch-none active:cursor-grabbing" />
 }

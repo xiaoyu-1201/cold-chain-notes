@@ -1,4 +1,4 @@
-import { Box, Camera, Layers, Maximize2, RotateCw } from 'lucide-react'
+import { Box, Camera, Layers, Maximize2, RotateCw, Tags } from 'lucide-react'
 import { PartGlyph } from '../ui/PartGlyph'
 import { glyphFor } from '../../lib/partGlyph'
 import { lazy, Suspense, useCallback, useState } from 'react'
@@ -36,6 +36,9 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
   const [big, setBig] = useState(false)
   // 構造說明：點哪一個名稱就顯示哪一個（換零件時清掉）
   const [legendOpen, setLegendOpen] = useState<string | null>(null)
+  // 一鍵在 3D 上標名稱；滑鼠移到名稱或零件上，那個零件亮起來（10/13 使用者）
+  const [labels, setLabels] = useState(false)
+  const [hover, setHover] = useState<string | null>(null)
   const onControl = useCallback((c: PartControl | undefined) => {
     setControl(c)
     setOp(c?.initial ?? 0)
@@ -105,7 +108,7 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
               <Deferred fallback={loading}>
                 <Suspense fallback={loading}>
                   {/* 放大看的時候先停掉這個（同時兩個 3D 在手機上容易卡、掉畫面） */}
-                  {!big && <Part3D key={id} id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} />}
+                  {!big && <Part3D key={id} id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} highlight={hover ?? legendOpen} labels={labels} onHoverPart={setHover} />}
                 </Suspense>
               </Deferred>
             </InView>
@@ -118,11 +121,16 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
                 <RotateCw className="size-4" aria-hidden />
                 自動旋轉
               </button>
-              <button type="button" onClick={() => setBig(true)} className={floatPill(false)}>
-                <Maximize2 className="size-4" aria-hidden />
-                放大看
+              <button type="button" aria-pressed={labels} onClick={() => setLabels((v) => !v)} className={floatPill(labels)}>
+                <Tags className="size-4" aria-hidden />
+                標出構造
               </button>
             </GlassButtonGroup>
+            {/* 放大看放左上角：下面一排按鈕才不會擠成兩排、蓋住 3D */}
+            <button type="button" onClick={() => setBig(true)} className={cn(floatPill(false), 'absolute left-3 top-3')}>
+              <Maximize2 className="size-4" aria-hidden />
+              放大看
+            </button>
             <p className={cn('glass pointer-events-none absolute right-3 top-3 rounded-full px-3 py-1 text-slate-200', t.small)}>{mobile ? '拖曳旋轉・兩指放大・點兩下還原' : '拖曳旋轉・滾輪往游標放大・雙擊還原'}</p>
           </div>
 
@@ -178,6 +186,8 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
                       <button
                         type="button"
                         onClick={() => setLegendOpen((cur) => (cur === item.name ? null : item.name))}
+                        onMouseEnter={() => setHover(item.name)}
+                        onMouseLeave={() => setHover(null)}
                         aria-pressed={legendOpen === item.name}
                         title={item.desc}
                         className={cn('flex min-h-[36px] items-center gap-1.5 rounded-full px-2.5 font-semibold transition', legendOpen === item.name ? 'bg-sky-950 text-sky-100 ring-1 ring-sky-500' : 'text-white hover:bg-white/[0.08]', focusRing)}

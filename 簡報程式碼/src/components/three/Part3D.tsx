@@ -103,7 +103,7 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
       const dir = anchor.clone()
       if (dir.lengthSq() < 1e-4) dir.set(0, 1, 0)
       dir.normalize()
-      const out = anchor.clone().add(dir.multiplyScalar(Math.max(0.15, radius * 1.05 - anchor.length())))
+      const out = anchor.clone()
       tag.position.copy(out)
       const lead = new THREE.Line(new THREE.BufferGeometry().setFromPoints([anchor, out]), lineMat)
       lead.visible = false
@@ -113,23 +113,44 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
       scene.add(tag)
       return tag
     })
-    /** 畫面上疊到的標籤往下錯開（每幾格算一次） */
+    /** 標註排版（10/13 使用者：標籤被擋住、擠在一起）：標籤排在 3D 框的左右兩欄，照零件在畫面上的高低排好、不重疊、避開下面那排按鈕；引線從零件拉到標籤 */
+    const tmp = new THREE.Vector3()
     const unstack = () => {
+      const hr = host.getBoundingClientRect()
+      if (!hr.width) return
+      const pad = 10
+      const gap = 6
+      const minY = hr.top + pad + 34
+      const maxY = hr.bottom - (liftRef.current ? 70 : pad)
       const shown = tags.map((t, i) => ({ t, el: tagEls[i] })).filter((x) => x.t.visible)
       shown.forEach((x) => (x.el.style.transform = ''))
-      const rects = shown.map((x) => x.el.getBoundingClientRect())
-      const order = rects.map((_, i) => i).sort((a, b) => rects[a].top - rects[b].top)
-      const placed: DOMRect[] = []
-      for (const i of order) {
-        const r = rects[i]
-        let dy = 0
-        for (let guard = 0; guard < 12; guard++) {
-          const hit = placed.find((p) => r.left < p.right + 4 && r.right > p.left - 4 && r.top + dy < p.bottom + 3 && r.bottom + dy > p.top - 3)
-          if (!hit) break
-          dy = hit.bottom + 3 - r.top
+      const items = shown.map((x) => {
+        const r = x.el.getBoundingClientRect()
+        tmp.copy(x.t.position).project(camera)
+        const ax = hr.left + ((tmp.x + 1) / 2) * hr.width
+        const ay = hr.top + ((1 - tmp.y) / 2) * hr.height
+        return { ...x, r, ax, ay, z: tmp.z, ty: 0, left: ax < hr.left + hr.width / 2 }
+      })
+      for (const side of [true, false]) {
+        const col = items.filter((it) => it.left === side).sort((a, b) => a.ay - b.ay)
+        let y = minY
+        for (const it of col) {
+          it.ty = Math.max(y, it.ay - it.r.height / 2)
+          y = it.ty + it.r.height + gap
         }
-        if (dy) shown[i].el.style.transform = `translateY(${dy}px)`
-        placed.push(new DOMRect(r.left, r.top + dy, r.width, r.height))
+        const over = y - gap - maxY
+        if (over > 0) col.forEach((it) => (it.ty = Math.max(minY, it.ty - over)))
+      }
+      for (const it of items) {
+        const tx = it.left ? hr.left + pad : hr.right - pad - it.r.width
+        it.el.style.transform = `translate(${tx - it.r.left}px, ${it.ty - it.r.top}px)`
+        // 引線：零件 → 標籤靠近零件的那一邊
+        const ex = it.left ? tx + it.r.width : tx
+        const ey = it.ty + it.r.height / 2
+        tmp.set(((ex - hr.left) / hr.width) * 2 - 1, -((ey - hr.top) / hr.height) * 2 + 1, it.z).unproject(camera)
+        const pos = (it.t.userData.lead as THREE.Line).geometry.getAttribute('position') as THREE.BufferAttribute
+        pos.setXYZ(1, tmp.x, tmp.y, tmp.z)
+        pos.needsUpdate = true
       }
     }
     let frame = 0
@@ -293,7 +314,7 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
       controls.update()
       renderer.render(scene, camera)
       labelLayer.render(scene, camera)
-      if (++frame % 6 === 0) unstack()
+      if (++frame % 3 === 0) unstack()
       raf = requestAnimationFrame(tick)
     }
     tick()

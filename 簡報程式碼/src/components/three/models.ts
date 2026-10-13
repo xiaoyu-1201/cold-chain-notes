@@ -739,9 +739,10 @@ const builders: Record<Part3DId, () => PartModel> = {  /** 視液鏡（10/13 做
     const rod = mat.steel()
     for (const x of [-0.95, 0.95]) b.box(0.08, 0.06, D, rod, [x, H / 2 + 0.05, 0])
     const ceiling = mat.paint(0xf1f5f9)
-    const mount: THREE.Object3D[] = [b.box(3.2, 0.12, 1.5, ceiling, [0, 1.25, 0])]
+    // 吊桿短短一截：冷排貼近天花板（10/13 使用者：吊桿太長）
+    const mount: THREE.Object3D[] = [b.box(3.0, 0.1, 1.4, ceiling, [0, 0.82, 0])]
     for (const x of [-0.95, 0.95]) for (const z of [-0.32, 0.32]) {
-      mount.push(b.cylY(0.022, 0.95, rod, [x, 0.72, z], 12))
+      mount.push(b.cylY(0.022, 0.36, rod, [x, 0.6, z], 12))
       mount.push(b.cylY(0.045, 0.05, rod, [x, 0.5, z], 6))
     }
     const drain = mat.paint(0xe5e7eb)

@@ -690,7 +690,7 @@ button[class~='bg-sky-500/15']:not([class~='w-full'], [data-no-glass], :disabled
 }
 
 /* 10/13 使用者：「最小設定『水平管』這種大小」→ 電腦簡報畫布（1920 寬）裡的字最小 20px。
-   寫在 layer 外面，會蓋過元件裡寫的 text-[16px] 這類小字；手機閱讀版不在 .deck-canvas 裡，不受影響。
+   寫在 layer 外面，會蓋過元件裡寫的 text-[16px] 這類小字（注意：也會蓋過 lg:text-[24px] 這種響應式放大，要放大就直接寫 ≥20 的基本字級）；手機閱讀版不在 .deck-canvas 裡，不受影響。
    學習地圖 10/13 重排後也照這個規則（一欄放不下就在欄裡捲）。 */
 .deck-canvas .text-\[12px\],
 .deck-canvas .text-\[13px\],

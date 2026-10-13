@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { useRef } from 'react'
 import { useKeepParens } from '../hooks/useKeepParens'
+import { wholeNew } from '../lib/newFrame'
 import { Target } from 'lucide-react'
 import { PART_NO, parts } from '../data/parts'
 import { slides } from '../data/slides'
@@ -23,9 +24,6 @@ export const SOURCE_TIP = {
   handbook: '整理自一丞工程手冊，比課堂更深；先以課堂錄音為主',
   extra: '依業界常識補充，課堂沒講到；先以課堂錄音為主',
 } as const
-
-/** 整頁新的頁（changes 寫「整頁是新的」）：內容區整塊圈起來 */
-export const wholeNew = (slide: SlideData) => isNew(slide.added) && typeof slide.changes === 'string' && slide.changes.startsWith('整頁')
 
 /** 單張投影片：標題列 + 內容區塊 + 📌 本章小結論 */
 export function SlideCard({ slide }: { slide: SlideData }) {

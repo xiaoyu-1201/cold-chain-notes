@@ -1,4 +1,4 @@
-import { useEffect, type RefObject } from 'react'
+import { useLayoutEffect, type RefObject } from 'react'
 
 /**
  * 短的括號不要被拆成兩行（10/13 QA：「（內／膨）」「（例如／-15°C）」）。
@@ -25,8 +25,18 @@ function fix(root: Node) {
   for (let n = walker.nextNode(); n; n = walker.nextNode()) fix(n)
 }
 
+// 複製時把塞進去的字元換回來（貼到 LINE、Excel 才搜得到）
+if (typeof document !== 'undefined')
+  document.addEventListener('copy', (e) => {
+    const sel = document.getSelection()?.toString() ?? ''
+    if (!/[\u2060\u00a0]/.test(sel) || !e.clipboardData) return
+    e.clipboardData.setData('text/plain', sel.replace(/\u2060/g, '').replace(/\u00a0/g, ' '))
+    e.preventDefault()
+  })
+
 export function useKeepParens(ref: RefObject<HTMLElement | null>) {
-  useEffect(() => {
+  // 畫面第一次畫出來之前就處理，不會先換行再跳回來
+  useLayoutEffect(() => {
     const el = ref.current
     if (!el) return
     fix(el)

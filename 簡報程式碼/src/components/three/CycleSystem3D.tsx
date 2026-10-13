@@ -378,7 +378,9 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     controls.addEventListener('start', () => {
       fly = null
     })
-    controls.addEventListener('end', () => {
+    // 有慣性（damping）：放開後鏡頭還會滑一下，所以在 change 時判斷，飛行動畫中不算
+    controls.addEventListener('change', () => {
+      if (fly) return
       const moved = camera.position.distanceTo(homeTarget.clone().add(homePos)) > 0.05 || controls.target.distanceTo(homeTarget) > 0.05
       if (moved) markZoomed(true)
     })
@@ -506,12 +508,13 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       holders.forEach((h, id) => (h.visible = id !== fx?.removed))
       removedTag.visible = !!fx?.removed
       if (fx?.removed) {
-        removedTag.element.textContent = '✕ 拿掉了'
+        if (removedTag.element.textContent !== '✕ 拿掉了') removedTag.element.textContent = '✕ 拿掉了'
         removedTag.position.copy(centers.get(fx.removed)!)
       }
       alarmTag.visible = !!fx?.alarm
       if (fx?.alarm) {
-        alarmTag.element.textContent = `⚠ ${fx.alarm.text}`
+        const alarmText = `⚠ ${fx.alarm.text}`
+        if (alarmTag.element.textContent !== alarmText) alarmTag.element.textContent = alarmText
         // 琥珀色用深一階（白字對比約 5:1）；閃爍最淡只到 0.85，白字才不會淡到看不清
         alarmTag.element.style.background = fx.alarm.tone === 'red' ? 'rgba(220,38,38,0.92)' : 'rgba(180,83,9,0.95)'
         alarmTag.element.style.opacity = String(0.925 + 0.075 * Math.sin(t * 6))

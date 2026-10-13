@@ -1,5 +1,8 @@
 import { motion } from 'framer-motion'
+import { Box } from 'lucide-react'
 import { useRef } from 'react'
+import { useDeck } from '../context/deck'
+import { presetSticky } from '../hooks/useStickyState'
 import { useKeepParens } from '../hooks/useKeepParens'
 import type { CoverData, SlideData } from '../data/types'
 import { slides } from '../data/slides'
@@ -23,6 +26,7 @@ export function CoverLayout({ slide, cover }: { slide: SlideData; cover: CoverDa
   const siblings = slides.filter((s) => s.part === slide.part)
   const ref = useRef<HTMLElement>(null)
   useKeepParens(ref)
+  const { goToId } = useDeck()
 
   return (
     <motion.article
@@ -94,12 +98,27 @@ export function CoverLayout({ slide, cover }: { slide: SlideData; cover: CoverDa
         </div>
 
         <motion.div variants={fadeUp}>
-          <div className="rounded-[18px] border border-line bg-card p-6">
-            <div className="mb-3 flex items-center justify-between">
+          <div className="rounded-[18px] border border-line bg-card px-6 pb-6 pt-5">
+            <div className="mb-2 flex items-center justify-between">
               <span className="text-[20px] font-bold text-ink">冷凍循環：冷媒一圈</span>
-              <span className="flex items-center gap-2 text-[17px] font-semibold text-emerald-300">
-                <span className="size-2 rounded-full bg-emerald-500" aria-hidden />
-                系統運轉中
+              <span className="flex items-center gap-3">
+                <span className="flex items-center gap-2 text-[17px] font-semibold text-emerald-300">
+                  <span className="size-2 rounded-full bg-emerald-500" aria-hidden />
+                  系統運轉中
+                </span>
+                {/* 首頁維持 2D 循環圖（開得快、跟老闆畫的一樣）；想看立體的直接跳到核心圖解的 3D（10/13 使用者：「都開始吧」） */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    presetSticky('cycle:view', '3d')
+                    goToId('cycle-lesson')
+                  }}
+                  className="new-frame flex items-center gap-1.5 rounded-full border border-sky-500/50 bg-sky-950 px-4 py-0.5 text-[20px] font-semibold text-sky-200 transition hover:border-sky-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
+                >
+                  <Box className="size-5" aria-hidden />
+                  看 3D 版
+                  <span className="new-chip rounded bg-red-400 px-1.5 text-[20px] font-black leading-6 text-paper">新</span>
+                </button>
               </span>
             </div>
             <CycleExplorer className="w-full" />

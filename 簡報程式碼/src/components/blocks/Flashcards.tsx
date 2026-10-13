@@ -108,7 +108,9 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
 
   // 卡片數量變了（新增名詞）就重新排
   const safeOrder = order.length === total ? order : cards.map((_, i) => i)
-  const visible = useMemo(() => safeOrder.filter((i) => !hideKnown || status[cards[i].term] !== 'known'), [safeOrder, hideKnown, status, cards])
+  // peek：從右邊清單點了一張「會了」的卡，暫時讓它看得到；不去改「只練還不熟的」（10/13 QA：原本會偷偷取消勾選、還被記下來）
+  const [peek, setPeek] = useState<number | null>(null)
+  const visible = useMemo(() => safeOrder.filter((i) => !hideKnown || status[cards[i].term] !== 'known' || i === peek), [safeOrder, hideKnown, status, cards, peek])
   const current = visible.includes(cur) ? cur : visible[0]
   const card = current !== undefined ? cards[current] : null
   const known = cards.filter((c) => status[c.term] === 'known').length
@@ -121,9 +123,10 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
   const model = card?.part ? part3DFor(card.part) : null
   const glyph = card ? glyphFor(card.term) : null
 
-  const show = (i: number) => {
+  const show = (i: number, keepPeek = false) => {
     setCur(i)
     setFlipped(false)
+    if (!keepPeek) setPeek(null)
   }
   const go = (delta: number) => {
     if (!visible.length || current === undefined) return
@@ -162,8 +165,8 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
     show(safeOrder[0])
   }
   const jump = (i: number) => {
-    if (hideKnown && status[cards[i].term] === 'known') setHideKnown(false)
-    show(i)
+    show(i, true)
+    setPeek(hideKnown && status[cards[i].term] === 'known' ? i : null)
   }
   const stop = (e: MouseEvent) => e.stopPropagation()
   const onCardKey = (e: KeyboardEvent) => {

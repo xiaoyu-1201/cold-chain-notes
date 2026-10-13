@@ -78,8 +78,8 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 01 封面 ───────────────────────── */
   {
     id: 'cover',
-    added: '2026-10-12',
-    changes: '引言換成老闆「兩態變化」這句；電腦版的循環圖，零件改畫成實物的樣子',
+    added: '2026-10-13',
+    changes: '多了「看 3D 版」按鈕（循環圖右上角），直接打開核心圖解的 3D',
     part: 'intro',
     layout: 'cover',
     title: '氣冷式冷凍冷藏系統',
@@ -520,8 +520,8 @@ const slideList: SlideData[] = [
   {
     id: 'ch2',
     source: 'handbook',
-    added: '2026-10-12',
-    changes: '吐出溫度改用老闆的 70～100°C（錄音16）；怎麼量看下一頁',
+    added: '2026-10-13',
+    changes: '3D：往復式改直立、標籤重做、放大看可換產品；吐出溫度改用 70～100°C（錄音16）',
     part: 'components',
     chapter: '第 2 章',
     title: '壓縮機：系統的龍頭',
@@ -1046,7 +1046,8 @@ const slideList: SlideData[] = [
   {
     id: 'ch3',
     source: 'handbook',
-    added: '2026-10-10',
+    added: '2026-10-13',
+    changes: '3D「標出構造」：引線指在零件上、外殼裡的零件剖開才標、不蓋到按鈕',
     part: 'components',
     chapter: '第 3 章',
     title: '冷凝器（熱排）：把熱散到室外',
@@ -1121,7 +1122,7 @@ const slideList: SlideData[] = [
                     value: '7 ~ 12',
                     unit: '°C',
                     tone: 'teal',
-                    note: '例：外氣 35°C + TD 12°C → 冷凝溫度 47°C',
+                    note: '例：外氣 35°C＋12°C＝冷凝 47°C',
                   },
                 ],
               },
@@ -1153,8 +1154,8 @@ const slideList: SlideData[] = [
   {
     id: 'ch4',
     source: 'handbook',
-    added: '2026-10-12',
-    changes: '標「新」的步驟：風扇延遲＝留滴水時間（錄音16）；老闆怎麼講除霜看下一頁',
+    added: '2026-10-13',
+    changes: '3D 標籤重做；標「新」的步驟：風扇延遲＝留滴水時間（錄音16）',
     part: 'components',
     chapter: '第 4 章',
     title: '蒸發器（冷排）：把熱吸走＋除霜',
@@ -1366,7 +1367,8 @@ const slideList: SlideData[] = [
   {
     id: 'ch5',
     source: 'handbook',
-    added: '2026-10-10',
+    added: '2026-10-13',
+    changes: '3D：放大看裡六個產品直接換；標籤重做（引線指在零件上、不蓋到按鈕）',
     part: 'components',
     chapter: '第 5 章',
     title: '控制與保護閥件',
@@ -2009,7 +2011,8 @@ const slideList: SlideData[] = [
   {
     id: 'drier-sizes',
     tier: 'ref',
-    added: '2026-10-09',
+    added: '2026-10-13',
+    changes: '3D「標出構造」：引線指在零件上、焊接頭切到「焊接」才標',
     part: 'components',
     chapter: '乾燥過濾器',
     mark: 'DRIER',
@@ -2077,6 +2080,8 @@ const slideList: SlideData[] = [
   },
   {
     id: 'flare-fittings',
+    added: '2026-10-13',
+    changes: '3D「標出構造」：引線指在零件上、不蓋到按鈕',
     tier: 'ref',
     part: 'components',
     chapter: '喇叭頭與接頭',
@@ -2136,6 +2141,8 @@ const slideList: SlideData[] = [
   },
   {
     id: 'insulation',
+    added: '2026-10-13',
+    changes: '3D：「沒包」時不標保溫管；引線指在零件上、不蓋到按鈕',
     part: 'components',
     chapter: '保溫管',
     mark: 'INSUL',
@@ -2450,8 +2457,8 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 核心圖解：冷凍循環（可持續擴充） ───────────────────────── */
   {
     id: 'cycle-lesson',
-    added: '2026-10-12',
-    changes: '循環圖的散熱器、冷排改畫成實物的樣子，小零件加細節；剛打開會閃三下提示可以點',
+    added: '2026-10-13',
+    changes: '3D 多了「放大看」；故障模擬每步都放得下，拿掉／警示寫在零件名稱上',
     part: 'basics',
     chapter: '核心圖解',
     mark: 'CYCLE',
@@ -3757,7 +3764,7 @@ const slideList: SlideData[] = [
               { text: '蒸發器結厚霜、堵住風道', cat: 'frost' },
               { text: '膨脹閥濾網堵塞 / 感溫包漏氣', cat: 'valve' },
               { text: '冷媒洩漏（視液鏡一直冒氣泡）', cat: 'refrigerant' },
-              { text: '乾燥過濾器堵塞（進出口摸起來有溫差）', cat: 'dirt' },
+              { text: '乾燥過濾器堵塞（進出口有溫差）', cat: 'dirt' },
             ],
           },
           {
@@ -4407,8 +4414,8 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 名詞翻卡（間隔重複） ───────────────────────── */
   {
     id: 'glossary',
-    added: '2026-10-12',
-    changes: '名詞卡多了 7 張（卡上標「新」）：吐出溫度、過熱保護器、電容、除霜電熱管、滴水時間、參考坪數、冷凍庫種類',
+    added: '2026-10-13',
+    changes: '「會了」標錯可以取消（再按一次）；多了 7 張名詞卡（卡上標「新」）',
     part: 'review',
     chapter: '名詞翻卡',
     mark: 'WORDS',

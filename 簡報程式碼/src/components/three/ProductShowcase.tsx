@@ -87,7 +87,9 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
     </GlassButtonGroup>
   )
 
-  return (    <section className={cn('flex min-h-0 flex-col rounded-[18px] border border-line bg-card', mobile ? 'gap-2.5 p-3' : 'h-full gap-3 p-6')}>
+  return (
+    // @container：產品膠囊看卡片本身的寬度決定要不要放小圖示（電腦版卡片窄時省下一排，3D 才有空間，10/13）
+    <section className={cn('@container flex min-h-0 flex-col rounded-[18px] border border-line bg-card', mobile ? 'gap-2.5 p-3' : 'h-full gap-2.5 px-5 py-4')}>
       <header className="flex flex-wrap items-center justify-between gap-2">
         <p className={cn('font-semibold text-white', t.title)}>產品展示：{part.label}</p>
         <Segmented
@@ -101,15 +103,21 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
         />
       </header>
       {parts.length > 1 && (
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1.5" role="group" aria-label="換產品">
           {parts.map((p, i) => (
             <button
               key={p.id}
               type="button"
               onClick={() => pick(i)}
+              aria-pressed={i === index}
               className={cn('flex min-h-11 items-center gap-1.5 rounded-full font-semibold transition', mobile ? t.pill : 'px-3 py-1 text-[20px]', i === index ? 'bg-slate-100 text-paper' : 'border border-line bg-card text-slate-200 hover:border-sky-500/50', focusRing)}
             >
-              {glyphFor(p.label) && <PartGlyph id={glyphFor(p.label)!} size={mobile ? 18 : 22} strokeWidth={2.4} />}
+              {/* 電腦版：卡片夠寬（900px 以上）才放小圖示，不然六個產品會擠成兩排 */}
+              {glyphFor(p.label) && (
+                <span className={cn('shrink-0', !mobile && parts.length > 3 && 'hidden @min-[900px]:inline-flex')}>
+                  <PartGlyph id={glyphFor(p.label)!} size={mobile ? 18 : 22} strokeWidth={2.4} />
+                </span>
+              )}
               {p.label}
             </button>
           ))}

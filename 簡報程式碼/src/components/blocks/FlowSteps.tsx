@@ -19,8 +19,8 @@ export function FlowSteps({ block }: { block: FlowBlock }) {
     <div className="flex h-full flex-col gap-3">
       <div className="min-h-0 flex-1">{steps}</div>
       <p className="flex flex-wrap items-baseline gap-x-3 rounded-xl bg-emerald-950 px-4 py-2.5">
-        <span className="text-[17px] font-bold text-emerald-300">{block.result.label}</span>
-        <span className="text-[19px] font-semibold leading-snug text-emerald-50">{block.result.text}</span>
+        <span className="text-[19px] font-bold text-emerald-300">{block.result.label}</span>
+        <span className="text-[21px] font-semibold leading-snug text-emerald-50">{block.result.text}</span>
       </p>
     </div>
   ) : (
@@ -51,7 +51,7 @@ function RowFlow({ block }: { block: FlowBlock }) {
             )}
             <div className={cn('relative flex min-w-0 flex-1 flex-col rounded-2xl border bg-card px-5 py-4', isNew(step.added) ? 'border-2 border-red-400 bg-red-950' : t.border)}>
               <div className="flex items-center justify-between gap-2">
-                <span className={cn('text-[17px] font-bold', t.text)}>
+                <span className={cn('text-[19px] font-bold', t.text)}>
                   步驟 <span className="font-mono">{pad(i + 1)}</span>
                 </span>
                 {step.tag ? (
@@ -67,7 +67,7 @@ function RowFlow({ block }: { block: FlowBlock }) {
                 {step.title}
                 <NewChip added={step.added} />
               </h4>
-              {step.desc && <p className="mt-1.5 text-[19px] leading-normal text-slate-300">{step.desc}</p>}
+              {step.desc && <p className="mt-1.5 text-[21px] leading-normal text-slate-300">{step.desc}</p>}
             </div>
           </Fragment>
         )
@@ -80,7 +80,7 @@ function RowFlow({ block }: { block: FlowBlock }) {
 function ColFlow({ block }: { block: FlowBlock }) {
   const compact = block.compact
   return (
-    <ol className={cn('flex h-full flex-col', compact ? 'justify-between gap-2' : 'justify-between gap-3')}>
+    <ol className={cn('flex h-full flex-col', compact ? 'justify-between gap-1.5' : 'justify-between gap-2')}>
       {block.steps.map((step, i) => {
         const tone = step.tone ?? block.tone
         const t = toneStyles[tone]
@@ -91,7 +91,7 @@ function ColFlow({ block }: { block: FlowBlock }) {
               <span
                 className={cn(
                   'flex shrink-0 items-center justify-center rounded-full border-2 font-mono font-bold',
-                  compact ? 'size-8 text-[16px]' : 'size-11 text-[18px]',
+                  compact ? 'size-8 text-[16px]' : 'size-11 text-[20px]',
                   t.border,
                   t.soft,
                   t.strong,
@@ -106,15 +106,17 @@ function ColFlow({ block }: { block: FlowBlock }) {
                 <h4 className={cn('font-bold leading-snug', compact ? 'text-[20px]' : 'text-[23px]', isLast && step.tone ? t.strong : 'text-slate-50')}>
                   {step.title}
                 </h4>
-                {step.en && <span className="font-mono text-[16px] uppercase tracking-wider text-slate-400">{step.en}</span>}
+                {step.en && <span className="font-mono text-[18px] uppercase tracking-wider text-slate-400">{step.en}</span>}
                 {step.tag && (
                   <Badge tone={tone} size="sm">
                     {step.tag}
                   </Badge>
                 )}
                 <NewChip added={step.added} />
+                {/* 精簡版：短說明跟標題放同一行（長的會自己換到下一行），一頁步驟多也放得下 */}
+                {compact && step.desc && <span className="text-[19px] leading-snug text-slate-300">{step.desc}</span>}
               </div>
-              {step.desc && <p className="mt-0.5 text-[19px] leading-normal text-slate-300">{step.desc}</p>}
+              {!compact && step.desc && <p className="mt-0.5 text-[20px] leading-snug text-slate-300">{step.desc}</p>}
             </div>
           </li>
         )
@@ -132,7 +134,7 @@ function CompactRow({ block }: { block: FlowBlock }) {
         {block.icon && <ItemIcon icon={block.icon} title={block.title} tone={block.tone} size="md" />}
         <div>
           <h3 className="text-[25px] font-bold leading-tight text-slate-50">{block.title}</h3>
-          {block.en && <p className="mt-0.5 font-mono text-[16px] uppercase tracking-[0.18em] text-slate-400">{block.en}</p>}
+          {block.en && <p className="mt-0.5 font-mono text-[18px] uppercase tracking-[0.18em] text-slate-400">{block.en}</p>}
         </div>
       </div>
       <div className="h-12 w-px shrink-0 bg-line" aria-hidden />
@@ -140,8 +142,8 @@ function CompactRow({ block }: { block: FlowBlock }) {
         {block.steps.map((step, i) => (
           <Fragment key={i}>
             {i > 0 && <ArrowRight className="size-5 shrink-0 text-slate-500" aria-hidden />}
-            <span className={cn('flex items-center gap-2 rounded-xl border px-3.5 py-2 text-[20px] font-semibold', t.chip)}>
-              <span className="font-mono text-[17px] opacity-70">{i + 1}</span>
+            <span className={cn('flex items-center gap-2 rounded-xl border px-3.5 py-2 text-[22px] font-semibold', t.chip)}>
+              <span className="font-mono text-[19px] opacity-70">{i + 1}</span>
               {step.title}
             </span>
           </Fragment>
@@ -150,8 +152,8 @@ function CompactRow({ block }: { block: FlowBlock }) {
       {block.result && (
         <div className="flex shrink-0 items-center gap-2.5 rounded-xl border border-emerald-500/45 bg-emerald-950 px-4 py-2.5">
           <Target className="size-5 text-emerald-300" aria-hidden />
-          <span className="text-[17px] font-bold text-emerald-300">{block.result.label}</span>
-          <span className="text-[19px] font-semibold text-emerald-50">{block.result.text}</span>
+          <span className="text-[19px] font-bold text-emerald-300">{block.result.label}</span>
+          <span className="text-[21px] font-semibold text-emerald-50">{block.result.text}</span>
         </div>
       )}
     </section>

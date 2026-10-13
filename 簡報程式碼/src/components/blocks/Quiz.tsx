@@ -18,7 +18,7 @@ export function QuizCards({ block }: { block: QuizBlock }) {
 
   return (
     <div className="flex h-full flex-col gap-3">
-      <div className="flex items-center justify-between text-[18px] text-slate-400">
+      <div className="flex items-center justify-between text-[20px] text-slate-400">
         <p>每題先在心裡說出答案，再點卡片翻開對照。</p>
         <button
           type="button"
@@ -52,11 +52,11 @@ export function QuizCards({ block }: { block: QuizBlock }) {
                   focusRing,
                 )}
               >
-                <span className={cn('font-mono font-black text-sky-400', big ? 'text-[30px]' : 'text-[20px]')}>{pad(i + 1)}</span>
+                <span className={cn('font-mono font-black text-sky-400', big ? 'text-[30px]' : 'text-[22px]')}>{pad(i + 1)}</span>
                 <div className="min-w-0 flex-1">
-                  <p className={cn('font-bold leading-snug text-white', big ? 'text-[30px]' : 'text-[21px]')}>{item.q}</p>
+                  <p className={cn('font-bold leading-snug text-white', big ? 'text-[30px]' : 'text-[23px]')}>{item.q}</p>
                   {shown ? (
-                    <p className={cn('mt-1 leading-snug text-emerald-100', big ? 'text-[25px]' : 'text-[18px]')}>
+                    <p className={cn('mt-1 leading-snug text-emerald-100', big ? 'text-[25px]' : 'text-[20px]')}>
                       {item.a}
                       {item.slide && (
                         <button
@@ -65,7 +65,7 @@ export function QuizCards({ block }: { block: QuizBlock }) {
                             e.stopPropagation()
                             goToId(item.slide!)
                           }}
-                          className={cn('ml-2 inline-flex items-center gap-0.5 font-mono text-[16px] text-slate-400 hover:text-sky-300', focusRing)}
+                          className={cn('ml-2 inline-flex items-center gap-0.5 font-mono text-[18px] text-slate-400 hover:text-sky-300', focusRing)}
                         >
                           P.{pad(numberOf(item.slide))}
                           <ArrowUpRight className="size-3.5" aria-hidden />
@@ -73,7 +73,7 @@ export function QuizCards({ block }: { block: QuizBlock }) {
                       )}
                     </p>
                   ) : (
-                    <p className="mt-1 flex items-center gap-1.5 text-[16px] text-slate-500">
+                    <p className="mt-1 flex items-center gap-1.5 text-[18px] text-slate-500">
                       <Eye className="size-4" aria-hidden />
                       點一下看答案
                     </p>

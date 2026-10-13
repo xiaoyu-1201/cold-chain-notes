@@ -47,16 +47,16 @@ export function RecordingsIndex({ block }: { block: RecordingsIndexBlock }) {
                 aria-current={on ? 'true' : undefined}
                 className={cn('flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition', on ? 'bg-emerald-950 text-ink ring-1 ring-inset ring-emerald-500/40' : 'text-slate-200 hover:bg-white/[0.04]', focusRing)}
               >
-                <span className={cn('w-[92px] shrink-0 font-mono text-[16px] font-bold', on ? 'text-emerald-300' : 'text-slate-400')}>{item.code}</span>
-                <span className="line-clamp-2 min-w-0 flex-1 text-[17px] font-semibold leading-snug">{r?.title ?? item.slide}</span>
-                <span className="shrink-0 font-mono text-[16px] text-slate-500">{r?.duration}</span>
+                <span className={cn('w-[92px] shrink-0 font-mono text-[18px] font-bold', on ? 'text-emerald-300' : 'text-slate-400')}>{item.code}</span>
+                <span className="line-clamp-2 min-w-0 flex-1 text-[19px] font-semibold leading-snug">{r?.title ?? item.slide}</span>
+                <span className="shrink-0 font-mono text-[18px] text-slate-500">{r?.duration}</span>
               </button>
             </li>
           )
         })}
       </ul>
       <div className="flex h-full min-h-0 flex-col gap-3">
-        <div className="flex flex-wrap items-center gap-2 text-[16px] text-slate-300">
+        <div className="flex flex-wrap items-center gap-2 text-[18px] text-slate-300">
           <Headphones className="size-5 text-emerald-300" aria-hidden />
           <span className="font-bold text-ink">{picked.code}</span>
           <span className="text-slate-500">對應內容頁：</span>
@@ -65,10 +65,10 @@ export function RecordingsIndex({ block }: { block: RecordingsIndexBlock }) {
               key={l.slide}
               type="button"
               onClick={() => goToId(l.slide)}
-              className={cn('inline-flex items-center gap-1 rounded-lg border border-line bg-card px-2.5 py-1 text-[16px] font-semibold text-slate-100 transition hover:border-sky-500/50 hover:bg-sky-950', focusRing)}
+              className={cn('inline-flex items-center gap-1 rounded-lg border border-line bg-card px-2.5 py-1 text-[18px] font-semibold text-slate-100 transition hover:border-sky-500/50 hover:bg-sky-950', focusRing)}
             >
               {l.label}
-              <span className="font-mono text-[16px] text-slate-500">P.{pad(numberOf(l.slide))}</span>
+              <span className="font-mono text-[18px] text-slate-500">P.{pad(numberOf(l.slide))}</span>
               <ArrowUpRight className="size-3.5" aria-hidden />
             </button>
           ))}

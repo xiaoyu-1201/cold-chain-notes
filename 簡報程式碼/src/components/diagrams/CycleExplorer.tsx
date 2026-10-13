@@ -52,7 +52,7 @@ export function CycleExplorer({ selected, onSelect, expandable = true, large = f
           title="放大檢視"
           className={cn(
             // 浮在圖上的按鈕：用有模糊的浮動玻璃（.glass），後面是什麼字都好讀
-            'glass absolute right-2 top-2 flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[16px] font-semibold text-slate-100 transition hover:border-sky-500/50 hover:text-sky-300',
+            'glass absolute right-2 top-2 flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[18px] font-semibold text-slate-100 transition hover:border-sky-500/50 hover:text-sky-300',
             focusRing,
           )}
         >
@@ -111,7 +111,7 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
           <p className={cn('font-black leading-tight text-white', large ? 'text-[30px]' : 'text-[22px]')}>{note.title}</p>
-          <p className={cn('mt-0.5 font-semibold', t.text, large ? 'text-[18px]' : 'text-[16px]')}>{note.alias}</p>
+          <p className={cn('mt-0.5 font-semibold', t.text, large ? 'text-[20px]' : 'text-[18px]')}>{note.alias}</p>
         </div>
         <button
           type="button"
@@ -123,27 +123,27 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
         </button>
       </div>
 
-      <div className={cn('mt-3 inline-flex rounded-lg border px-2.5 py-1 font-mono font-bold', t.chip, large ? 'text-[18px]' : 'text-[16px]')}>{note.state}</div>
+      <div className={cn('mt-3 inline-flex rounded-lg border px-2.5 py-1 font-mono font-bold', t.chip, large ? 'text-[20px]' : 'text-[18px]')}>{note.state}</div>
 
       {note.quote && (
-        <blockquote className={cn('mt-3 flex gap-2 rounded-xl bg-paper px-3 py-2.5 leading-snug text-slate-100', large ? 'text-[20px]' : 'text-[17px]')}>
+        <blockquote className={cn('mt-3 flex gap-2 rounded-xl bg-paper px-3 py-2.5 leading-snug text-slate-100', large ? 'text-[22px]' : 'text-[19px]')}>
           <Quote className={cn('mt-0.5 shrink-0 text-emerald-300', large ? 'size-5' : 'size-4')} aria-hidden />
           <span>{note.quote}</span>
         </blockquote>
       )}
 
       {note.analogy && (
-        <p className={cn('mt-2.5 leading-snug text-slate-300', large ? 'text-[18px]' : 'text-[16px]')}>
+        <p className={cn('mt-2.5 leading-snug text-slate-300', large ? 'text-[20px]' : 'text-[18px]')}>
           <span className="mr-2 font-bold text-amber-300">比喻</span>
           {note.analogy}
         </p>
       )}
-      <p className={cn('mt-1.5 leading-snug text-slate-300', large ? 'text-[18px]' : 'text-[16px]')}>
+      <p className={cn('mt-1.5 leading-snug text-slate-300', large ? 'text-[20px]' : 'text-[18px]')}>
         <span className="mr-2 font-bold text-sky-300">重點</span>
         {note.point}
       </p>
       {note.field && (
-        <p className={cn('mt-1.5 leading-snug text-slate-300', large ? 'text-[18px]' : 'text-[16px]')}>
+        <p className={cn('mt-1.5 leading-snug text-slate-300', large ? 'text-[20px]' : 'text-[18px]')}>
           <span className="mr-2 font-bold text-emerald-300">現場</span>
           {note.field}
         </p>
@@ -156,7 +156,7 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
             onClick={() => setView(true)}
             className={cn(
               'flex items-center gap-1.5 rounded-lg border border-sky-500/50 bg-sky-950 font-semibold text-sky-100 transition hover:border-sky-500',
-              large ? 'px-3.5 py-2 text-[17px]' : 'px-2.5 py-1 text-[16px]',
+              large ? 'px-3.5 py-2 text-[19px]' : 'px-2.5 py-1 text-[18px]',
               focusRing,
             )}
           >
@@ -172,7 +172,7 @@ function NotePopover({ id, large, onClose }: { id: CycleNodeId; large: boolean; 
             onClick={() => goToId(note.slide!)}
             className={cn(
               'flex items-center gap-1 rounded-lg border border-line bg-card font-semibold text-slate-100 transition hover:border-sky-500/50',
-              large ? 'px-3.5 py-2 text-[17px]' : 'px-2.5 py-1 text-[16px]',
+              large ? 'px-3.5 py-2 text-[19px]' : 'px-2.5 py-1 text-[18px]',
               focusRing,
             )}
           >
@@ -214,13 +214,13 @@ function ExpandedView({ initial, onClose }: { initial: CycleNodeId | null; onClo
       <div className="flex w-full max-w-[1500px] items-center justify-between">
         <p className="text-[28px] font-black text-white">
           冷凍循環一圈
-          <span className="ml-3 text-[20px] font-semibold text-slate-400">點零件或管路，看怎麼說</span>
+          <span className="ml-3 text-[22px] font-semibold text-slate-400">點零件或管路，看怎麼說</span>
         </p>
         <button
           type="button"
           onClick={onClose}
           className={cn(
-            'flex items-center gap-2 rounded-xl border border-line bg-card px-4 py-2 text-[18px] font-semibold text-slate-100 hover:border-sky-500/50',
+            'flex items-center gap-2 rounded-xl border border-line bg-card px-4 py-2 text-[20px] font-semibold text-slate-100 hover:border-sky-500/50',
             focusRing,
           )}
         >
@@ -259,7 +259,7 @@ export function ClipButton({ src, at, label, large }: { src: string; at: number;
     audio.play().catch(() => setError(true))
   }
 
-  if (error) return <span className="text-[16px] text-amber-200">錄音無法播放（請改用 Chrome 或 Edge）</span>
+  if (error) return <span className="text-[18px] text-amber-200">錄音無法播放（請改用 Chrome 或 Edge）</span>
   return (
     <>
       <audio ref={ref} src={url} preload="none" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => setError(true)} />
@@ -268,7 +268,7 @@ export function ClipButton({ src, at, label, large }: { src: string; at: number;
         onClick={toggle}
         className={cn(
           'flex items-center gap-1.5 rounded-lg border border-emerald-500/45 bg-emerald-950 font-semibold text-emerald-100 transition hover:border-emerald-500',
-          large ? 'px-3.5 py-2 text-[17px]' : 'px-2.5 py-1 text-[16px]',
+          large ? 'px-3.5 py-2 text-[19px]' : 'px-2.5 py-1 text-[18px]',
           focusRing,
         )}
       >

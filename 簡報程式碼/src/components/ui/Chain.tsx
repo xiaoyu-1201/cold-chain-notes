@@ -21,7 +21,7 @@ export function Chain({ steps, tone, lastTone }: ChainProps) {
         return (
           <Fragment key={i}>
             {i > 0 && <ArrowRight className="size-5 shrink-0 text-slate-500" aria-hidden />}
-            <span className={cn('rounded-lg border px-3 py-1.5 text-[19px] font-semibold leading-snug', t.chip)}>
+            <span className={cn('rounded-lg border px-3 py-1.5 text-[21px] font-semibold leading-snug', t.chip)}>
               {step}
             </span>
           </Fragment>

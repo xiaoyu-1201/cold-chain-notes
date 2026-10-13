@@ -542,7 +542,7 @@ const slideList: SlideData[] = [
           { type: 'showcase', parts: [{ id: 'comp', label: '壓縮機' }] },
           {
             type: 'grid',
-            className: 'grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)]',
+            className: 'grid-cols-[minmax(0,1.1fr)_minmax(0,0.8fr)]',
             children: [
               {
                 type: 'grid',
@@ -571,7 +571,7 @@ const slideList: SlideData[] = [
                     汽缸裡殘留的高壓氣體（<Hl>餘隙容積</Hl>）要先膨脹回低壓，吸氣閥才會打開。
                   </>,
                   <>
-                    壓比越高，這段膨脹占掉的行程越多，能吸進的新氣體越少，效率<Warn>急劇下降</Warn>。
+                    壓比越高，能吸進的新氣體越少，效率<Warn>急劇下降</Warn>。
                   </>,
                 ],
                 chain: [
@@ -668,11 +668,11 @@ const slideList: SlideData[] = [
                 en: 'Discharge Temperature',
                 cols: 3,
                 items: [
-                  { label: '太高（100°C 以上）', value: '回太少', unit: '', tone: 'red', note: '冷媒回來不夠，冷卻不了馬達；有到 120°C、管子會抖的' },
+                  { label: '太高（100°C 以上）', value: '回太少', unit: '', tone: 'red', note: '冷媒回來不夠，馬達太燙' },
                   { label: '正常', value: '70～100', unit: '°C', tone: 'emerald', note: '夏天高、冬天低；85°C 最安全' },
                   { label: '太低（60°C 左右）', value: '回太多', unit: '', tone: 'ice', note: '回液，壓縮機會被「淹死」' },
                 ],
-                footnote: <>吐出＝排氣，同一個意思。老闆：「十個人有十個人不會量」，要保護壓縮機，<Hl>一定要量這裡的溫度</Hl>。〔錄音16 00:02～04:19〕</>,
+                footnote: <>吐出＝排氣。老闆：「十個人有十個人不會量」，<Hl>一定要量</Hl>。〔錄音16 00:02～04:19〕</>,
               },
               {
                 type: 'list',
@@ -681,9 +681,9 @@ const slideList: SlideData[] = [
                 title: '怎麼量、怎麼摸',
                 en: 'How to Check',
                 items: [
-                  { icon: Thermometer, title: '量管壁，不用紅外線', desc: '量不到裡面的冷媒，量的是吐出管的管壁：感溫棒貼在銅管上，用鋁箔膠帶包住隔絕外面的空氣（店裡有賣），紅外線不準〔錄音16 01:43〕' },
+                  { icon: Thermometer, title: '量管壁，不用紅外線', desc: '量吐出管的管壁：感溫棒貼銅管、包鋁箔膠帶（店裡有賣）；紅外線不準〔錄音16 01:43〕' },
                   { icon: Snowflake, title: '吸入端可以摸', desc: '溫溫的、手可以碰，這樣才正常' },
-                  { icon: Flame, title: '吐出端不能摸', desc: '一定燙；師傅多半是摸壓縮機的頭來判斷，太燙就是吐出溫度太高〔錄音16 05:10〕' },
+                  { icon: Flame, title: '吐出端不能摸', desc: '一定燙；師傅多半摸壓縮機的頭來判斷〔錄音16 05:10〕' },
                 ],
               },
             ],
@@ -701,9 +701,9 @@ const slideList: SlideData[] = [
                 title: '過熱保護器跳掉之後',
                 en: 'Overload Protector',
                 steps: [
-                  { title: '太燙就跳掉', desc: '外殼裡的過熱保護器（店裡說「歐巴」，OL）大約 135°C 跳，電流太高也會跳；跳掉壓縮機就停，不會冷', icon: PowerOff, tag: '不冷' },
-                  { title: '降溫就復歸', desc: '師傅放冰塊在壓縮機頭上，像發燒冰敷，1～2 小時；不去也會自己慢慢復歸（3～5 小時）', icon: Snowflake, tag: '復歸' },
-                  { title: '反覆跳就燒掉', desc: '冷媒還是不夠就跳了又跳；保護器燒掉，線圈燒到碳化就救不回來', icon: Flame, tag: '燒毀' },
+                  { title: '太燙就跳掉', desc: '過熱保護器（店裡說「歐巴」，OL）約 135°C 跳，電流太高也跳；跳了就不冷', icon: PowerOff, tag: '不冷' },
+                  { title: '降溫就復歸', desc: '冰塊放壓縮機頭上 1～2 小時；不去也會自己慢慢復歸', icon: Snowflake, tag: '復歸' },
+                  { title: '反覆跳就燒掉', desc: '冷媒不夠就一直跳；保護器燒掉、線圈碳化就沒救', icon: Flame, tag: '燒毀' },
                 ],
                 result: { label: '老闆說', text: '「還有救的時候要趕快去」：保護器跳了還會復歸，就是還有救。〔錄音16 06:02～09:28〕' },
               },
@@ -1175,7 +1175,7 @@ const slideList: SlideData[] = [
           { type: 'showcase', parts: [{ id: 'evap', label: '蒸發器（冷風機）' }] },
       {
         type: 'grid',
-        className: 'grid-rows-[minmax(0,1.5fr)_minmax(0,1fr)]',
+        className: 'grid-rows-[minmax(0,1.4fr)_minmax(0,1fr)]',
         children: [
           {
             type: 'grid',
@@ -1195,9 +1195,8 @@ const slideList: SlideData[] = [
                   rows: [
                     { k: '盤管表面', v: '結霜少、除濕弱' },
                     { k: '庫內濕度', v: <Hl>約 90% RH</Hl> },
-                    { k: '80% RH 時', v: 'TD 取 5 ~ 7°C（水果、蛋、肉、魚）' },
                   ],
-                  use: '適合蔬菜、鮮花：不容易乾掉、失重',
+                  use: '適合蔬菜、鮮花（80% RH 時 TD 取 5～7°C）',
                 },
                 right: {
                   badge: '大 TD',
@@ -1223,7 +1222,7 @@ const slideList: SlideData[] = [
                 ],
                 footnote: (
                   <>
-                    低溫庫間距大，是為了預留結霜的風道空間。手冊只說明蒸發器鰭片距離較大，並無具體數值。
+                    低溫庫間距大＝預留結霜的風道；手冊沒有給數值。
                     <Exp />
                   </>
                 ),
@@ -1337,8 +1336,8 @@ const slideList: SlideData[] = [
                 title: '客人會問的',
                 en: 'Store Questions',
                 items: [
-                  { icon: Ruler, title: '電熱管要多長', desc: '介於鰭片長度和冷排外殼長度中間：要橫跨整片鰭片、插進鰭片裡〔錄音16 30:02〕' },
-                  { icon: Droplets, title: '排水要順', desc: '化掉的水還是冰的：排水管要有落差（口袋彎），管裡可以穿軟的電熱，水才不會又結冰〔錄音16 30:02～30:54〕' },
+                  { icon: Ruler, title: '電熱管要多長', desc: '介於鰭片長度和外殼長度中間〔錄音16 30:02〕' },
+                  { icon: Droplets, title: '排水要順', desc: '排水管要有落差；管裡可穿軟電熱，免得又結冰〔錄音16 30:54〕' },
                 ],
               },
               {
@@ -1350,8 +1349,8 @@ const slideList: SlideData[] = [
                 items: [
                   { icon: Timer, title: '除霜時間不夠', desc: '每次化不完，日積月累整片變冰〔錄音16 33:30〕' },
                   { icon: Flame, title: '電熱管壞了', desc: '時間夠，但加熱不夠力' },
-                  { icon: Thermometer, title: '除霜感溫棒壞了', desc: '感溫棒插在鰭片上判斷化完了沒，壞了就判斷不出來' },
-                  { icon: DoorOpen, title: '把冰庫當冰箱開', desc: '有客人一個上午開一百多次，熱氣一直跑進去〔錄音16 35:11〕' },
+                  { icon: Thermometer, title: '除霜感溫棒壞了', desc: '判斷不出化完了沒' },
+                  { icon: DoorOpen, title: '把冰庫當冰箱開', desc: '有人一個上午開一百多次〔錄音16 35:11〕' },
                 ],
               },
             ],
@@ -1417,13 +1416,13 @@ const slideList: SlideData[] = [
                     icon: Workflow,
                     tone: 'ice',
                     title: '一律使用外部均壓型',
-                    desc: '蒸發器有分液頭，或管路壓降大時，一律用外部均壓型膨脹閥。',
+                    desc: '有分液頭或管路壓降大，一律用外部均壓型。',
                   },
                   {
                     icon: CircleCheck,
                     tone: 'emerald',
                     title: '依管徑決定方位',
-                    desc: '感溫包綁在吸氣管的位置看管徑：1/2～5/8″ 綁 1 點鐘、3/4～7/8″ 綁 2 點鐘、1～1¼″ 綁 3 點鐘。',
+                    desc: '看吸氣管管徑：1/2～5/8″ 綁 1 點、3/4～7/8″ 綁 2 點、1～1¼″ 綁 3 點。',
                   },
                   {
                     icon: Ban,
@@ -1431,7 +1430,7 @@ const slideList: SlideData[] = [
                     title: '避開 6 點鐘正下方',
                     desc: (
                       <>
-                        管子底部積有冷凍油，綁在 6 點鐘感溫會遲鈍；感溫包要緊貼管子並包保溫。
+                        底部積冷凍油，感溫會遲鈍；要緊貼管子並包保溫。
                         <Exp />
                       </>
                     ),
@@ -1459,12 +1458,10 @@ const slideList: SlideData[] = [
             title: '抽空停機',
             en: 'Pump Down',
             steps: [
-              { title: '溫控到溫' },
-              { title: '關閉供液電磁閥' },
-              { title: '壓縮機抽空低壓' },
-              { title: '低壓開關停機' },
+              { title: '溫控到溫', desc: '→ 關供液電磁閥' },
+              { title: '壓縮機抽空低壓', desc: '→ 低壓開關停機' },
             ],
-            result: { label: '目的', text: '停機前先把低壓側的冷媒抽走，避免冷媒跑進壓縮機、稀釋冷凍油' },
+            result: { label: '目的', text: '停機前把低壓側冷媒抽走，不讓冷媒跑進壓縮機' },
           },
                 ],
               },
@@ -2290,7 +2287,7 @@ const slideList: SlideData[] = [
               { title: '膨脹閥 → 冷排', desc: '降壓進庫內' },
               { title: '回管（氣管）回壓縮機', desc: '最冷的一支，要包保溫管' },
             ],
-            result: { label: '店裡賣的', text: '就是這些零件；客人配機組時，壓縮機和冷熱排講好，配件以三分為主，最後問回管幾分' },
+            result: { label: '配機組', text: '壓縮機、冷熱排講好，配件以三分為主，最後問回管幾分' },
           },
         ],
       },

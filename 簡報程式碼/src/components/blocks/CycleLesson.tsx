@@ -15,7 +15,7 @@ import { Deferred } from '../ui/Deferred'
 import { Segmented } from '../ui/Segmented'
 
 const CycleSystem3D = lazy(() => import('../three/CycleSystem3D'))
-const loading3D = <p className="absolute inset-0 flex items-center justify-center text-[20px] text-slate-400">3D 載入中…</p>
+const loading3D = <p className="absolute inset-0 flex items-center justify-center text-[22px] text-slate-400">3D 載入中…</p>
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
 
@@ -48,14 +48,14 @@ interface FaultControl {
 function FaultPanel({ f, onSelect }: { f: FaultControl; onSelect: (id: CycleNodeId | null) => void }) {
   const fault = f.fault!
   const last = fault.steps.length - 1
-  const navBtn = cn('flex items-center gap-1 rounded-full border border-line bg-card px-4 py-2 text-[18px] font-semibold text-slate-100 transition hover:border-sky-500/50 disabled:opacity-35', focusRing)
+  const navBtn = cn('flex items-center gap-1 rounded-full border border-line bg-card px-4 py-2 text-[20px] font-semibold text-slate-100 transition hover:border-sky-500/50 disabled:opacity-35', focusRing)
   return (
     <div className="flex h-full flex-col rounded-[18px] border border-line bg-card px-8 py-7">
-      <button type="button" onClick={f.exit} className={cn('flex items-center gap-1 self-start text-[18px] font-semibold text-sky-300 hover:text-sky-200', focusRing)}>
+      <button type="button" onClick={f.exit} className={cn('flex items-center gap-1 self-start text-[20px] font-semibold text-sky-300 hover:text-sky-200', focusRing)}>
         <ChevronLeft className="size-5" aria-hidden />
         結束模擬
       </button>
-      <p className="mt-3 flex items-center gap-2 text-[18px] font-semibold text-red-300">
+      <p className="mt-3 flex items-center gap-2 text-[20px] font-semibold text-red-300">
         <TriangleAlert className="size-5" aria-hidden />
         故障模擬
       </p>
@@ -68,10 +68,10 @@ function FaultPanel({ f, onSelect }: { f: FaultControl; onSelect: (id: CycleNode
               onClick={() => f.setStep(i)}
               className={cn('flex w-full gap-3 rounded-2xl px-4 py-2.5 text-left transition', i === f.step ? 'bg-red-950' : 'hover:bg-white/[0.04]', i > f.step && 'opacity-45', focusRing)}
             >
-              <span className={cn('mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full text-[17px] font-bold', i === f.step ? 'bg-red-400 text-paper' : 'bg-white/[0.07] text-slate-200')}>{i + 1}</span>
+              <span className={cn('mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full text-[19px] font-bold', i === f.step ? 'bg-red-400 text-paper' : 'bg-white/[0.07] text-slate-200')}>{i + 1}</span>
               <span className="min-w-0">
-                <span className="block text-[21px] font-bold text-white">{s.title}</span>
-                <span className="block text-[18px] leading-snug text-slate-300">{s.text}</span>
+                <span className="block text-[23px] font-bold text-white">{s.title}</span>
+                <span className="block text-[20px] leading-snug text-slate-300">{s.text}</span>
               </span>
             </button>
           </li>
@@ -79,7 +79,7 @@ function FaultPanel({ f, onSelect }: { f: FaultControl; onSelect: (id: CycleNode
       </ol>
       {f.step === last && (
         <div className="mt-3 rounded-2xl bg-emerald-950 px-5 py-3">
-          <p className="text-[19px] leading-snug text-emerald-50">
+          <p className="text-[21px] leading-snug text-emerald-50">
             <b className="mr-2 text-emerald-300">所以</b>
             {fault.lesson}
           </p>
@@ -94,7 +94,7 @@ function FaultPanel({ f, onSelect }: { f: FaultControl; onSelect: (id: CycleNode
           下一步
           <ChevronRight className="size-5" aria-hidden />
         </button>
-        <label className="ml-1 flex cursor-pointer items-center gap-2 text-[17px] text-slate-300">
+        <label className="ml-1 flex cursor-pointer items-center gap-2 text-[19px] text-slate-300">
           <input type="checkbox" checked={f.auto} onChange={(e) => f.setAuto(e.target.checked)} className="size-4 accent-sky-400" />
           自動播放
         </label>
@@ -104,7 +104,7 @@ function FaultPanel({ f, onSelect }: { f: FaultControl; onSelect: (id: CycleNode
             f.exit()
             onSelect(fault.part)
           }}
-          className={cn('ml-auto flex items-center gap-1 rounded-full border border-line bg-card px-4 py-2 text-[17px] font-semibold text-sky-300 hover:border-sky-500/50', focusRing)}
+          className={cn('ml-auto flex items-center gap-1 rounded-full border border-line bg-card px-4 py-2 text-[19px] font-semibold text-sky-300 hover:border-sky-500/50', focusRing)}
         >
           看{cycleNotes[fault.part].title.replace(/^[①-④]\s*/, '')}說明
           <ArrowUpRight className="size-4" aria-hidden />
@@ -126,7 +126,7 @@ function Inspector({ selected, onSelect, faults }: { selected: CycleNodeId | nul
       <div data-no-swipe className="flex h-full min-h-0 flex-col gap-3 overflow-y-auto overscroll-contain rounded-[18px] border border-line bg-card px-8 py-4">
         <div>
           <p className="text-[28px] font-bold text-white">冷媒一圈的四個狀態</p>
-          <p className="mt-0.5 text-[17px] text-slate-400">顏色跟圖上的管路一樣；點一下看說明、聽錄音。</p>
+          <p className="mt-0.5 text-[19px] text-slate-400">顏色跟圖上的管路一樣；點一下看說明、聽錄音。</p>
           <ol className="mt-2.5 grid grid-cols-2 gap-2.5">
             {STATES.map((s, i) => (
               <li key={s.id}>
@@ -137,10 +137,10 @@ function Inspector({ selected, onSelect, faults }: { selected: CycleNodeId | nul
                 >
                   <span className="mt-1.5 h-9 w-2 shrink-0 rounded-full" style={{ background: s.color }} aria-hidden />
                   <span className="min-w-0">
-                    <span className="block text-[21px] font-bold" style={{ color: s.ink }}>
+                    <span className="block text-[23px] font-bold" style={{ color: s.ink }}>
                       {i + 1}. {s.state}
                     </span>
-                    <span className="block text-[17px] text-slate-300">{s.where}</span>
+                    <span className="block text-[19px] text-slate-300">{s.where}</span>
                   </span>
                 </button>
               </li>
@@ -149,14 +149,14 @@ function Inspector({ selected, onSelect, faults }: { selected: CycleNodeId | nul
         </div>
         {GROUPS.map((g) => (
           <div key={g.label}>
-            <p className="mb-2 text-[17px] font-semibold text-slate-500">{g.label}</p>
+            <p className="mb-2 text-[19px] font-semibold text-slate-500">{g.label}</p>
             <div className="flex flex-wrap gap-2">
               {g.ids.map((id) => (
                 <button
                   key={id}
                   type="button"
                   onClick={() => onSelect(id)}
-                  className={cn('rounded-full border border-line bg-paper px-3.5 py-1.5 text-[18px] font-semibold text-sky-300 transition hover:border-sky-500/50 hover:bg-sky-950', focusRing)}
+                  className={cn('rounded-full border border-line bg-paper px-3.5 py-1.5 text-[20px] font-semibold text-sky-300 transition hover:border-sky-500/50 hover:bg-sky-950', focusRing)}
                 >
                   {cycleNotes[id].title}
                 </button>
@@ -165,7 +165,7 @@ function Inspector({ selected, onSelect, faults }: { selected: CycleNodeId | nul
           </div>
         ))}
         <div>
-          <p className="mb-2 flex items-center gap-1.5 text-[17px] font-semibold text-red-300">
+          <p className="mb-2 flex items-center gap-1.5 text-[19px] font-semibold text-red-300">
             <TriangleAlert className="size-4" aria-hidden />
             故障模擬：拿掉一個會怎樣？（3D 演給你看）
           </p>
@@ -175,7 +175,7 @@ function Inspector({ selected, onSelect, faults }: { selected: CycleNodeId | nul
                 key={fa.id}
                 type="button"
                 onClick={() => faults.start(fa.id)}
-                className={cn('rounded-full border border-red-500/35 bg-red-950 px-3.5 py-1.5 text-[17px] font-semibold text-red-200 transition hover:border-red-500', focusRing)}
+                className={cn('rounded-full border border-red-500/35 bg-red-950 px-3.5 py-1.5 text-[19px] font-semibold text-red-200 transition hover:border-red-500', focusRing)}
               >
                 {fa.label}
               </button>
@@ -190,14 +190,14 @@ function Inspector({ selected, onSelect, faults }: { selected: CycleNodeId | nul
   const model = part3DFor(selected)
   return (
     <div className="flex h-full flex-col rounded-[18px] border border-line bg-card px-8 py-7">
-      <button type="button" onClick={() => onSelect(null)} className={cn('flex items-center gap-1 self-start text-[18px] font-semibold text-sky-300 hover:text-sky-200', focusRing)}>
+      <button type="button" onClick={() => onSelect(null)} className={cn('flex items-center gap-1 self-start text-[20px] font-semibold text-sky-300 hover:text-sky-200', focusRing)}>
         <ChevronLeft className="size-5" aria-hidden />
         全部零件
       </button>
       <p className="mt-4 text-[38px] font-bold leading-tight text-white">{note.title}</p>
-      <p className={cn('mt-1 text-[20px] font-semibold', toneStyles[note.tone].text)}>{note.alias}</p>
-      <p className="mt-4 self-start rounded-full border border-line bg-paper px-4 py-1.5 text-[18px] font-semibold text-slate-100">{note.state}</p>
-      <div className="mt-5 min-h-0 flex-1 space-y-4 overflow-y-auto text-[21px] leading-relaxed text-slate-200">
+      <p className={cn('mt-1 text-[22px] font-semibold', toneStyles[note.tone].text)}>{note.alias}</p>
+      <p className="mt-4 self-start rounded-full border border-line bg-paper px-4 py-1.5 text-[20px] font-semibold text-slate-100">{note.state}</p>
+      <div className="mt-5 min-h-0 flex-1 space-y-4 overflow-y-auto text-[23px] leading-relaxed text-slate-200">
         {note.quote && <p className="text-slate-100">{note.quote}</p>}
         <p>{note.point}</p>
         {note.field && (
@@ -218,7 +218,7 @@ function Inspector({ selected, onSelect, faults }: { selected: CycleNodeId | nul
           <button
             type="button"
             onClick={() => setViewer(true)}
-            className={cn('flex items-center gap-1.5 rounded-full bg-sky-400 px-5 py-2 text-[18px] font-semibold text-paper transition hover:bg-sky-300', focusRing)}
+            className={cn('flex items-center gap-1.5 rounded-full bg-sky-400 px-5 py-2 text-[20px] font-semibold text-paper transition hover:bg-sky-300', focusRing)}
           >
             <Box className="size-5" aria-hidden />
             3D 看構造
@@ -230,7 +230,7 @@ function Inspector({ selected, onSelect, faults }: { selected: CycleNodeId | nul
           <button
             type="button"
             onClick={() => goToId(note.slide!)}
-            className={cn('flex items-center gap-1 rounded-full border border-line bg-card px-4 py-2 text-[17px] font-semibold text-sky-300 hover:border-sky-500/50', focusRing)}
+            className={cn('flex items-center gap-1 rounded-full border border-line bg-card px-4 py-2 text-[19px] font-semibold text-sky-300 hover:border-sky-500/50', focusRing)}
           >
             {note.chapter} <span className="font-mono text-slate-400">P.{pad(numberOf(note.slide))}</span>
             <ArrowUpRight className="size-4" aria-hidden />
@@ -289,14 +289,14 @@ export function CycleLesson() {
             { value: '3d', label: '3D 立體' },
           ]}
         />
-        <p className="text-[19px] text-slate-400">{view === '2d' ? '點圖上的零件或管路，右邊就會出現說明' : '按下方「啟動冷凍系統」看冷媒跑一圈；點零件看說明，雙擊零件放大'}</p>
+        <p className="text-[21px] text-slate-400">{view === '2d' ? '點圖上的零件或管路，右邊就會出現說明' : '按下方「啟動冷凍系統」看冷媒跑一圈；點零件看說明，雙擊零件放大'}</p>
         {view === '3d' && (
           <button
             type="button"
             aria-pressed={cut}
             onClick={() => setCut((c) => !c)}
             className={cn(
-              'ml-auto flex items-center gap-2 rounded-full px-5 py-2 text-[18px] font-semibold transition',
+              'ml-auto flex items-center gap-2 rounded-full px-5 py-2 text-[20px] font-semibold transition',
               cut ? 'bg-sky-400 text-paper' : 'border border-line bg-card text-sky-300 hover:border-sky-500/50',
               focusRing,
             )}

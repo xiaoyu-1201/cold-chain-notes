@@ -64,7 +64,16 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
               if (newIds.has(s.id)) pages.push(j + 1)
             }
             if (!pages.length) return null
-            return pages[0] === start + 1 && pages.length === 1 ? '新' : `新 P.${pages.join('、')}`
+            if (pages[0] === start + 1 && pages.length === 1) return '新'
+            // 連續的頁寫成範圍：P.24–26
+            const runs: string[] = []
+            for (let k = 0; k < pages.length; k++) {
+              let e = k
+              while (e + 1 < pages.length && pages[e + 1] === pages[e] + 1) e++
+              runs.push(e > k ? `${pages[k]}–${pages[e]}` : String(pages[k]))
+              k = e
+            }
+            return `新 P.${runs.join('、')}`
           }
           // 章節少的篇（兩、三頁）：每列多放一句「這頁的小結論」當預覽，卡片不會下半部空一大塊
           const previewLines = chapters.length <= 2 ? 4 : chapters.length <= 4 ? 1 : 0
@@ -225,16 +234,16 @@ export function ProductMap({ block }: { block: ProductsBlock }) {
                   <item.icon className="size-8" strokeWidth={1.8} aria-hidden />
                 </span>
               )}
-              <span className="flex items-center gap-1 rounded-full border border-line bg-paper px-2.5 py-1 text-[16px] font-semibold text-slate-300 transition group-hover:border-sky-500/50 group-hover:text-sky-300">
+              <span className="flex items-center gap-1 rounded-full border border-line bg-paper px-2.5 py-1 text-[18px] font-semibold text-slate-300 transition group-hover:border-sky-500/50 group-hover:text-sky-300">
                 {item.chapter}
                 <span className="font-mono text-slate-500">P.{pad(numberOf(item.slide))}</span>
                 <ArrowUpRight className="size-3.5" aria-hidden />
               </span>
             </div>
             <h3 className="mt-4 text-[23px] font-black leading-tight text-white">{item.title}</h3>
-            <p className="mt-0.5 font-mono text-[16px] uppercase tracking-[0.14em] text-slate-400">{item.en}</p>
-            <p className="mt-3 text-[18px] leading-normal text-slate-300">{item.items}</p>
-            <span className={cn('mt-auto self-start rounded-md border px-2.5 py-0.5 text-[17px] font-semibold', t.chip)}>{item.side}</span>
+            <p className="mt-0.5 font-mono text-[18px] uppercase tracking-[0.14em] text-slate-400">{item.en}</p>
+            <p className="mt-3 text-[20px] leading-normal text-slate-300">{item.items}</p>
+            <span className={cn('mt-auto self-start rounded-md border px-2.5 py-0.5 text-[19px] font-semibold', t.chip)}>{item.side}</span>
           </motion.button>
         )
       })}
@@ -257,7 +266,7 @@ export function ScenarioCard({ block }: { block: ScenarioBlock }) {
             type="button"
             onClick={() => goToId(block.slide!)}
             className={cn(
-              'flex items-center gap-1 rounded-full border border-line px-2.5 py-0.5 text-[16px] font-semibold text-slate-400 transition hover:border-sky-500/50 hover:text-sky-300',
+              'flex items-center gap-1 rounded-full border border-line px-2.5 py-0.5 text-[18px] font-semibold text-slate-400 transition hover:border-sky-500/50 hover:text-sky-300',
               focusRing,
             )}
           >
@@ -266,18 +275,18 @@ export function ScenarioCard({ block }: { block: ScenarioBlock }) {
           </button>
         )}
       </div>
-      <p className={cn('mt-3 flex gap-2 text-[21px] font-bold leading-snug', t.strong)}>
+      <p className={cn('mt-3 flex gap-2 text-[23px] font-bold leading-snug', t.strong)}>
         <MessageCircle className={cn('mt-1 size-5 shrink-0', t.text)} aria-hidden />
         {block.customer}
       </p>
-      <p className="mt-2.5 flex gap-2 text-[18px] leading-normal text-slate-300">
+      <p className="mt-2.5 flex gap-2 text-[20px] leading-normal text-slate-300">
         <CornerDownRight className="mt-1 size-4 shrink-0 text-slate-500" aria-hidden />
         <span>{block.ask}</span>
       </p>
       <div className="flex flex-wrap items-center gap-1.5 pt-4">
-        <span className="mr-1 text-[17px] font-bold text-emerald-300">推薦</span>
+        <span className="mr-1 text-[19px] font-bold text-emerald-300">推薦</span>
         {block.recommend.map((r) => (
-          <span key={r} className="rounded-md border border-emerald-500/40 bg-emerald-950 px-2 py-0.5 text-[17px] font-semibold text-emerald-100">
+          <span key={r} className="rounded-md border border-emerald-500/40 bg-emerald-950 px-2 py-0.5 text-[19px] font-semibold text-emerald-100">
             {r}
           </span>
         ))}
@@ -292,7 +301,7 @@ export function QuoteCard({ block }: { block: QuoteBlock }) {
     <figure className="relative overflow-hidden rounded-[18px] border border-line border-l-4 border-l-pipe-blue bg-card px-10 py-7">
       <Quote aria-hidden className="absolute right-6 top-4 size-20 text-sky-500/15" />
       <blockquote className="relative text-[44px] font-black leading-tight text-white">{block.text}</blockquote>
-      <figcaption className="relative mt-3 text-[18px] font-semibold text-sky-300">— {block.author}</figcaption>
+      <figcaption className="relative mt-3 text-[20px] font-semibold text-sky-300">— {block.author}</figcaption>
     </figure>
   )
 }
@@ -308,16 +317,16 @@ export function QAPanel({ block }: { block: QABlock }) {
             Q&amp;A
           </span>
         </div>
-        <p className="mt-3 text-[17px] font-bold text-slate-400">建議討論方向</p>
+        <p className="mt-3 text-[19px] font-bold text-slate-400">建議討論方向</p>
         <ul className="mt-2 space-y-1.5">
           {block.prompts.map((p) => (
-            <li key={p} className="flex gap-2.5 text-[19px] leading-snug text-slate-200">
+            <li key={p} className="flex gap-2.5 text-[21px] leading-snug text-slate-200">
               <MessageCircle className="mt-1 size-4 shrink-0 text-sky-300" aria-hidden />
               {p}
             </li>
           ))}
         </ul>
-        <p className="mt-auto pt-4 text-[17px] font-bold text-slate-400">快速回顧</p>
+        <p className="mt-auto pt-4 text-[19px] font-bold text-slate-400">快速回顧</p>
         <div className="mt-2 grid grid-cols-2 gap-2">
           {block.links.map((link) => (
             <button
@@ -325,12 +334,12 @@ export function QAPanel({ block }: { block: QABlock }) {
               type="button"
               onClick={() => goToId(link.slide)}
               className={cn(
-                'group flex items-center justify-between gap-2 rounded-xl border border-line bg-paper px-3.5 py-2 text-left text-[17px] font-semibold text-slate-100 transition hover:border-sky-500/50 hover:bg-sky-950',
+                'group flex items-center justify-between gap-2 rounded-xl border border-line bg-paper px-3.5 py-2 text-left text-[19px] font-semibold text-slate-100 transition hover:border-sky-500/50 hover:bg-sky-950',
                 focusRing,
               )}
             >
               <span className="truncate">{link.label}</span>
-              <span className="flex shrink-0 items-center gap-1 font-mono text-[16px] text-slate-500 group-hover:text-sky-400">
+              <span className="flex shrink-0 items-center gap-1 font-mono text-[18px] text-slate-500 group-hover:text-sky-400">
                 P.{pad(numberOf(link.slide))}
                 <ArrowUpRight className="size-3.5" aria-hidden />
               </span>

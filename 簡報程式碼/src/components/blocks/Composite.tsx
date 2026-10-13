@@ -26,9 +26,9 @@ export function InsightCard({ block, renderChild }: { block: InsightBlock; rende
       <span aria-hidden className={cn('absolute inset-x-0 top-0 h-1', t.bar)} />
       <ItemIcon icon={block.icon} title={block.title} tone={block.tone} size="md" />
       <h3 className="mt-4 text-[32px] font-black leading-tight text-white">{block.title}</h3>
-      <p className={cn('mt-1 font-mono text-[16px] uppercase tracking-[0.2em]', t.text)}>{block.en}</p>
+      <p className={cn('mt-1 font-mono text-[18px] uppercase tracking-[0.2em]', t.text)}>{block.en}</p>
       {block.subtitle && <p className={cn('mt-3 text-[22px] font-bold', t.strong)}>{block.subtitle}</p>}
-      {block.body && <p className="mt-3 text-[21px] leading-[1.6] text-slate-300">{block.body}</p>}
+      {block.body && <p className="mt-3 text-[23px] leading-[1.6] text-slate-300">{block.body}</p>}
       {/* 子區塊在剩下的空間垂直置中：三欄內容多寡不同時，短的那欄不會下半部全空 */}
       {block.children && <div className="mt-5 flex min-h-0 flex-1 flex-col justify-center [&>*]:h-auto">{block.children.map(renderChild)}</div>}
     </section>
@@ -42,7 +42,7 @@ export function TxvPanel({ block }: { block: TxvBlock }) {
       <div className="grid h-full grid-cols-[250px_minmax(0,1fr)] items-center gap-5">
         <figure className="small-fig">
           <BulbClock className="w-full" />
-          <figcaption className="mt-1 text-center text-[17px] text-slate-400">吸氣管截面・感溫包方位</figcaption>
+          <figcaption className="mt-1 text-center text-[19px] text-slate-400">吸氣管截面・感溫包方位</figcaption>
         </figure>
         <ul className="flex flex-col gap-3">
           {block.rules.map((rule, i) => {
@@ -50,11 +50,11 @@ export function TxvPanel({ block }: { block: TxvBlock }) {
             const Icon = rule.icon
             return (
               <li key={i} className={cn('rounded-xl border px-4 py-2.5', t.border, t.soft)}>
-                <div className={cn('flex items-center gap-2 text-[20px] font-bold', t.strong)}>
+                <div className={cn('flex items-center gap-2 text-[22px] font-bold', t.strong)}>
                   <Icon className={cn('size-5 shrink-0', t.text)} aria-hidden />
                   {rule.title}
                 </div>
-                <p className="mt-0.5 text-[18px] leading-snug text-slate-200">{rule.desc}</p>
+                <p className="mt-0.5 text-[20px] leading-snug text-slate-200">{rule.desc}</p>
               </li>
             )
           })}
@@ -72,7 +72,7 @@ export function CyclePanel({ block }: { block: CycleBlock }) {
         <div className="cq-box relative flex min-h-0 flex-1 items-center justify-center" style={{ containerType: 'size' }}>
           <CycleExplorer className="cq-fit" style={{ width: 'min(100cqw, calc(100cqh * 820 / 560))' }} />
         </div>
-        <p className="mt-2 text-center text-[16px] text-slate-400">
+        <p className="mt-2 text-center text-[18px] text-slate-400">
           虛線框都可以點、會跳出說明；中間虛線為高低壓分界：<span className="text-slate-200">壓縮機</span>升壓、<span className="text-slate-200">膨脹閥</span>降壓
         </p>
       </div>

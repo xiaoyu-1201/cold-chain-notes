@@ -18,7 +18,7 @@ function Term({ term, compact, emphasis }: { term: EquationTerm; compact?: boole
       <span className={cn('font-mono font-extrabold leading-none', compact ? 'text-[30px]' : 'text-[44px]', t.strong)}>
         {term.symbol}
       </span>
-      <span className={cn('mt-2 leading-snug text-slate-300', compact ? 'text-[16px]' : 'text-[19px]')}>{term.label}</span>
+      <span className={cn('mt-2 leading-snug text-slate-300', compact ? 'text-[18px]' : 'text-[21px]')}>{term.label}</span>
     </div>
   )
 }
@@ -65,7 +65,7 @@ export function Equation({ block }: { block: EquationBlock }) {
                 {block.highlight}
               </span>
             )}
-            <p className="text-[20px] leading-normal text-slate-100">{block.note}</p>
+            <p className="text-[22px] leading-normal text-slate-100">{block.note}</p>
           </div>
         )}
       </div>

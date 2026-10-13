@@ -10,7 +10,7 @@ interface ConclusionCalloutProps {
 export function ConclusionCallout({ label = '本章小結論', text }: ConclusionCalloutProps) {
   return (
     <aside className="flex h-full items-stretch overflow-hidden rounded-[14px] border border-line bg-card">
-      <span className="flex shrink-0 items-center gap-2 border-r border-line px-7 text-[20px] font-semibold text-sky-300">
+      <span className="flex shrink-0 items-center gap-2 border-r border-line px-7 text-[22px] font-semibold text-sky-300">
         <Pin className="size-5" aria-hidden />
         {label}
       </span>

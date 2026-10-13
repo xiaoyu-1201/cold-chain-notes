@@ -13,20 +13,20 @@ export function StoreTipCard({ store }: { store: StoreTip }) {
           type="button"
           onClick={() => goToId('products')}
           title="跳到店內產品地圖"
-          className="mr-1 flex items-center gap-1.5 rounded-full text-[18px] font-semibold text-sky-300 transition hover:text-sky-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
+          className="mr-1 flex items-center gap-1.5 rounded-full text-[20px] font-semibold text-sky-300 transition hover:text-sky-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
         >
           <Store className="size-5 text-emerald-300" aria-hidden />
           <span className="text-emerald-200">門市實戰</span>
-          <span className="font-mono text-[16px]">P.{pad(numberOf('products'))}</span>
+          <span className="font-mono text-[18px]">P.{pad(numberOf('products'))}</span>
           <ArrowUpRight className="size-4" aria-hidden />
         </button>
         {store.products.map((p) => (
-          <span key={p} className="rounded-full border border-line bg-card px-3 py-0.5 text-[17px] font-semibold text-slate-100">
+          <span key={p} className="rounded-full border border-line bg-card px-3 py-0.5 text-[19px] font-semibold text-slate-100">
             {p}
           </span>
         ))}
       </div>
-      <p className="mt-2 text-[18px] leading-normal text-slate-200">{store.tip}</p>
+      <p className="mt-2 text-[20px] leading-normal text-slate-200">{store.tip}</p>
     </aside>
   )
 }

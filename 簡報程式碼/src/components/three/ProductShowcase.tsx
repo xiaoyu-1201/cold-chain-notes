@@ -1,4 +1,4 @@
-import { Box, Camera, Layers, RotateCw } from 'lucide-react'
+import { Box, Camera, Layers, Maximize2, RotateCw } from 'lucide-react'
 import { PartGlyph } from '../ui/PartGlyph'
 import { glyphFor } from '../../lib/partGlyph'
 import { lazy, Suspense, useCallback, useState } from 'react'
@@ -10,6 +10,7 @@ import { GlassButtonGroup } from '../ui/GlassButtonGroup'
 import { Segmented } from '../ui/Segmented'
 import { part3DFor } from './ids'
 import type { LegendItem, PartControl } from './models'
+import { PartViewer } from './PartViewer'
 
 const Part3D = lazy(() => import('./Part3D'))
 const photos = import.meta.glob<string>('../../assets/parts/*.{jpg,jpeg,png,webp}', { eager: true, import: 'default' })
@@ -31,6 +32,8 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
   const [legend, setLegend] = useState<LegendItem[]>([])
   const [control, setControl] = useState<PartControl | undefined>()
   const [op, setOp] = useState(0)
+  // 10/13 使用者：「這種 3D 可以拉大視窗吧」→ 放大看＝整個畫面的 3D 視窗
+  const [big, setBig] = useState(false)
   const onControl = useCallback((c: PartControl | undefined) => {
     setControl(c)
     setOp(c?.initial ?? 0)
@@ -110,6 +113,10 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
               <button type="button" aria-pressed={spin} onClick={() => setSpin((s) => !s)} className={floatPill(spin)}>
                 <RotateCw className="size-4" aria-hidden />
                 自動旋轉
+              </button>
+              <button type="button" onClick={() => setBig(true)} className={floatPill(false)}>
+                <Maximize2 className="size-4" aria-hidden />
+                放大看
               </button>
             </GlassButtonGroup>
             <p className={cn('glass pointer-events-none absolute right-3 top-3 rounded-full px-3 py-1 text-slate-200', t.small)}>{mobile ? '拖曳旋轉・兩指放大・點兩下還原' : '拖曳旋轉・滾輪往游標放大・雙擊還原'}</p>
@@ -191,6 +198,7 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
           )}
         </div>
       )}
+      {big && id && <PartViewer id={id} title={part.label} onClose={() => setBig(false)} />}
     </section>
   )
 }

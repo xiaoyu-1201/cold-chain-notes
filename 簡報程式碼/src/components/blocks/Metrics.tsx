@@ -31,7 +31,7 @@ export function Metrics({ block }: { block: MetricsBlock }) {
               >
                 <span aria-hidden className={cn('absolute inset-y-0 left-0 w-1', t.dot)} />
                 <div className="flex items-center gap-2">
-                  <span className={cn('font-semibold text-slate-200', lg ? 'text-[22px]' : 'text-[20px]')}>{item.label}</span>
+                  <span className={cn('font-semibold text-slate-200', lg ? 'text-[22px]' : 'text-[22px]')}>{item.label}</span>
                   {item.tag && (
                     <Badge tone={item.tone} size="sm">
                       {item.tag}
@@ -45,12 +45,12 @@ export function Metrics({ block }: { block: MetricsBlock }) {
                   </span>
                   {item.unit && <span className={cn('font-mono text-slate-400', lg ? 'text-[26px]' : 'text-[22px]')}>{item.unit}</span>}
                 </div>
-                {item.note && <p className={cn('mt-1 text-slate-400', lg ? 'text-[18px]' : 'text-[17px]')}>{item.note}</p>}
+                {item.note && <p className={cn('mt-1 text-slate-400', lg ? 'text-[20px]' : 'text-[19px]')}>{item.note}</p>}
               </div>
             )
           })}
         </div>
-        {block.footnote && <p className="text-[18px] leading-snug text-slate-400">{block.footnote}</p>}
+        {block.footnote && <p className="text-[20px] leading-snug text-slate-400">{block.footnote}</p>}
       </div>
     </Panel>
   )
@@ -65,15 +65,15 @@ export function StatCard({ block }: { block: StatBlock }) {
         <div className={cn('flex items-center justify-around gap-3 rounded-2xl border px-4 py-4', t.border, t.soft)}>
           <div className="text-center">
             <div className={cn('font-mono text-[46px] font-extrabold leading-none', t.strong)}>{block.from.value}</div>
-            <div className="mt-2 text-[17px] text-slate-300">{block.from.label}</div>
+            <div className="mt-2 text-[19px] text-slate-300">{block.from.label}</div>
           </div>
           <ArrowRight className={cn('size-9 shrink-0', t.text)} aria-hidden />
           <div className="text-center">
             <div className={cn('font-mono text-[46px] font-extrabold leading-none', t.strong)}>{block.to.value}</div>
-            <div className="mt-2 text-[17px] text-slate-300">{block.to.label}</div>
+            <div className="mt-2 text-[19px] text-slate-300">{block.to.label}</div>
           </div>
         </div>
-        <p className="text-[20px] leading-normal text-slate-300">{block.desc}</p>
+        <p className="text-[22px] leading-normal text-slate-300">{block.desc}</p>
       </div>
     </Panel>
   )
@@ -89,8 +89,8 @@ export function Boundaries({ block }: { block: BoundariesBlock }) {
           <li key={item.label} className={cn('flex flex-1 items-center gap-4 rounded-xl border bg-card px-4 py-2.5', t.border)}>
             <span aria-hidden className={cn('h-10 w-1.5 shrink-0 rounded-full', t.dot)} />
             <div className="min-w-0 flex-1">
-              <div className="text-[21px] font-bold text-slate-100">{item.label}</div>
-              <div className="text-[16px] text-slate-400">{item.note}</div>
+              <div className="text-[23px] font-bold text-slate-100">{item.label}</div>
+              <div className="text-[18px] text-slate-400">{item.note}</div>
             </div>
             <span className={cn('font-mono text-[27px] font-extrabold', t.strong)}>{item.value}</span>
           </li>

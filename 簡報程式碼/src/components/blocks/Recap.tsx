@@ -44,7 +44,7 @@ export function Recap({ block }: { block: RecapBlock }) {
                 <span className="mt-2 block text-[22px] leading-snug text-slate-300">{item.desc}</span>
               </span>
               {item.slide && (
-                <span className="flex shrink-0 items-center gap-1 font-mono text-[17px] text-slate-500 transition group-hover:text-sky-400">
+                <span className="flex shrink-0 items-center gap-1 font-mono text-[19px] text-slate-500 transition group-hover:text-sky-400">
                   P.{pad(numberOf(item.slide))}
                   <ArrowUpRight className="size-4" aria-hidden />
                 </span>
@@ -58,7 +58,7 @@ export function Recap({ block }: { block: RecapBlock }) {
       <section className="flex h-full min-h-0 flex-col justify-center gap-5 rounded-[18px] border border-line bg-card p-6">
         {part?.goal && (
           <div className="border-b border-line pb-5">
-            <p className={cn('flex items-center gap-2 text-[19px] font-bold', t.text)}>
+            <p className={cn('flex items-center gap-2 text-[21px] font-bold', t.text)}>
               <Target className="size-5" aria-hidden />
               這一篇學完，你會
             </p>
@@ -68,11 +68,11 @@ export function Recap({ block }: { block: RecapBlock }) {
 
         {block.refs.length > 0 ? (
           <div className="flex min-h-0 flex-col">
-            <h3 className="flex items-center gap-2 text-[20px] font-bold text-slate-100">
+            <h3 className="flex items-center gap-2 text-[22px] font-bold text-slate-100">
               <BookOpen className="size-5 text-slate-400" aria-hidden />
               查閱頁：需要時再翻
             </h3>
-            <p className="mt-1 text-[16px] text-slate-400">規格、對照、型號怎麼讀；不用背，知道在哪裡就好。</p>
+            <p className="mt-1 text-[18px] text-slate-400">規格、對照、型號怎麼讀；不用背，知道在哪裡就好。</p>
             {/* 查閱頁多（元件篇 8 頁）就排兩欄，不會把「下一步」擠出去 */}
             <ul className={cn('mt-3 min-h-0 gap-2 overflow-hidden', block.refs.length > 4 ? 'grid grid-cols-2' : 'flex flex-col')}>
               {block.refs.map((r) => (
@@ -80,10 +80,10 @@ export function Recap({ block }: { block: RecapBlock }) {
                   <button
                     type="button"
                     onClick={() => goToId(r.slide)}
-                    className={cn('group flex min-h-11 w-full items-center gap-3 rounded-xl border border-dashed border-line bg-paper px-4 py-2 text-left text-[18px] font-semibold text-slate-100 transition hover:border-sky-500/50 hover:bg-sky-950', focusRing)}
+                    className={cn('group flex min-h-11 w-full items-center gap-3 rounded-xl border border-dashed border-line bg-paper px-4 py-2 text-left text-[20px] font-semibold text-slate-100 transition hover:border-sky-500/50 hover:bg-sky-950', focusRing)}
                   >
                     <span className="min-w-0 flex-1">{r.label}</span>
-                    <span className="font-mono text-[16px] text-slate-500">P.{pad(numberOf(r.slide))}</span>
+                    <span className="font-mono text-[18px] text-slate-500">P.{pad(numberOf(r.slide))}</span>
                   </button>
                 </li>
               ))}
@@ -92,7 +92,7 @@ export function Recap({ block }: { block: RecapBlock }) {
         ) : (
           // 沒有查閱頁的篇：列出這一篇的內容頁，想回去看哪一頁直接點
           <div className="flex min-h-0 flex-col">
-            <h3 className="flex items-center gap-2 text-[20px] font-bold text-slate-100">
+            <h3 className="flex items-center gap-2 text-[22px] font-bold text-slate-100">
               <BookOpen className="size-5 text-slate-400" aria-hidden />
               這一篇的頁
             </h3>
@@ -102,10 +102,10 @@ export function Recap({ block }: { block: RecapBlock }) {
                   <button
                     type="button"
                     onClick={() => goToId(s.id)}
-                    className={cn('group flex min-h-11 w-full items-center gap-3 rounded-xl border border-line bg-paper px-4 py-2 text-left text-[18px] font-semibold text-slate-100 transition hover:border-sky-500/50 hover:bg-sky-950', focusRing)}
+                    className={cn('group flex min-h-11 w-full items-center gap-3 rounded-xl border border-line bg-paper px-4 py-2 text-left text-[20px] font-semibold text-slate-100 transition hover:border-sky-500/50 hover:bg-sky-950', focusRing)}
                   >
                     <span className="min-w-0 flex-1">{s.title}</span>
-                    <span className="font-mono text-[16px] text-slate-500">P.{pad(numberOf(s.id))}</span>
+                    <span className="font-mono text-[18px] text-slate-500">P.{pad(numberOf(s.id))}</span>
                   </button>
                 </li>
               ))}
@@ -115,27 +115,27 @@ export function Recap({ block }: { block: RecapBlock }) {
 
         {/* 下一步：先自己考一次，再往下一篇 */}
         <div className="flex flex-col gap-2 border-t border-line pt-5">
-          <p className="text-[17px] font-bold text-slate-400">下一步</p>
+          <p className="text-[19px] font-bold text-slate-400">下一步</p>
           {check && (
             <button
               type="button"
               onClick={() => goToId(check.id)}
-              className={cn('flex min-h-[56px] items-center gap-3 rounded-xl border border-emerald-500/45 bg-emerald-950 px-4 text-left text-[19px] font-bold text-emerald-100 transition hover:border-emerald-500', focusRing)}
+              className={cn('flex min-h-[56px] items-center gap-3 rounded-xl border border-emerald-500/45 bg-emerald-950 px-4 text-left text-[21px] font-bold text-emerald-100 transition hover:border-emerald-500', focusRing)}
             >
               <ClipboardCheck className="size-5 shrink-0" aria-hidden />
               <span className="min-w-0 flex-1">自我檢測：先自己想答案</span>
-              <span className="font-mono text-[16px] font-semibold text-emerald-300">P.{pad(numberOf(check.id))}</span>
+              <span className="font-mono text-[18px] font-semibold text-emerald-300">P.{pad(numberOf(check.id))}</span>
             </button>
           )}
           {nextSlide && nextPart && nextSlide.id !== check?.id && (
             <button
               type="button"
               onClick={() => goToId(nextSlide.id)}
-              className={cn('flex min-h-[56px] items-center gap-3 rounded-xl border border-line bg-paper px-4 text-left text-[19px] font-bold text-slate-100 transition hover:border-sky-500/50 hover:bg-sky-950', focusRing)}
+              className={cn('flex min-h-[56px] items-center gap-3 rounded-xl border border-line bg-paper px-4 text-left text-[21px] font-bold text-slate-100 transition hover:border-sky-500/50 hover:bg-sky-950', focusRing)}
             >
               <ArrowRight className="size-5 shrink-0 text-sky-400" aria-hidden />
               <span className="min-w-0 flex-1">下一篇：{nextPart.short}</span>
-              <span className="font-mono text-[16px] font-semibold text-slate-500">P.{pad(numberOf(nextSlide.id))}</span>
+              <span className="font-mono text-[18px] font-semibold text-slate-500">P.{pad(numberOf(nextSlide.id))}</span>
             </button>
           )}
         </div>

@@ -50,7 +50,7 @@ export function Checklist({ block }: { block: ChecklistBlock }) {
           <button
             type="button"
             onClick={() => setChecked(Array.from({ length: total }, () => false))}
-            className="flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-[17px] font-semibold text-slate-400 transition hover:border-white/25 hover:text-slate-200 focus-visible:outline-2 focus-visible:outline-sky-300"
+            className="flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-[19px] font-semibold text-slate-400 transition hover:border-white/25 hover:text-slate-200 focus-visible:outline-2 focus-visible:outline-sky-300"
           >
             <RotateCcw className="size-4" aria-hidden />
             重設
@@ -90,14 +90,14 @@ export function Checklist({ block }: { block: ChecklistBlock }) {
                   >
                     {on && <Check className="size-5" strokeWidth={3} aria-hidden />}
                   </span>
-                  <span className={cn('text-[20px] leading-snug', on ? 'text-emerald-50' : 'text-slate-200')}>{item}</span>
+                  <span className={cn('text-[22px] leading-snug', on ? 'text-emerald-50' : 'text-slate-200')}>{item}</span>
                 </button>
               </li>
             )
           })}
         </ul>
         {allDone && (
-          <p className="flex items-center gap-2 rounded-xl bg-emerald-950 px-4 py-2 text-[19px] font-bold text-emerald-200">
+          <p className="flex items-center gap-2 rounded-xl bg-emerald-950 px-4 py-2 text-[21px] font-bold text-emerald-200">
             <PartyPopper className="size-5" aria-hidden />
             全部完成！具備上線跟班的基本功。
           </p>

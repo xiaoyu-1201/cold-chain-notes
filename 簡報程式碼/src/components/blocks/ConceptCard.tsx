@@ -27,7 +27,7 @@ export function ConceptCard({ block }: { block: ConceptBlock }) {
         {block.points && (
           <ul className="space-y-2">
             {block.points.map((point, i) => (
-              <li key={i} className="flex gap-3 text-[21px] leading-[1.55] text-slate-300">
+              <li key={i} className="flex gap-3 text-[23px] leading-[1.55] text-slate-300">
                 <span className={cn('mt-[0.62em] size-2 shrink-0 rounded-full', t.dot)} aria-hidden />
                 <span>{point}</span>
               </li>
@@ -47,9 +47,9 @@ export function ConceptCard({ block }: { block: ConceptBlock }) {
                 <div key={pair.label} className={cn('rounded-xl border px-4 py-3', pt.border, pt.soft)}>
                   <div className="flex items-baseline gap-2">
                     <span className={cn('text-[22px] font-bold', pt.strong)}>{pair.label}</span>
-                    <span className="font-mono text-[16px] uppercase tracking-wider text-slate-400">{pair.en}</span>
+                    <span className="font-mono text-[18px] uppercase tracking-wider text-slate-400">{pair.en}</span>
                   </div>
-                  <p className="mt-1 text-[19px] text-slate-200">{pair.desc}</p>
+                  <p className="mt-1 text-[21px] text-slate-200">{pair.desc}</p>
                 </div>
               )
             })}
@@ -63,7 +63,7 @@ export function ConceptCard({ block }: { block: ConceptBlock }) {
         {block.guard && (
           <div
             className={cn(
-              'mt-auto inline-flex items-center gap-2 self-start rounded-lg border px-3.5 py-1.5 text-[19px] font-semibold',
+              'mt-auto inline-flex items-center gap-2 self-start rounded-lg border px-3.5 py-1.5 text-[21px] font-semibold',
               t.chip,
             )}
           >

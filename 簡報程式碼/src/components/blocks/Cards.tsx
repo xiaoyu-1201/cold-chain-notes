@@ -23,7 +23,7 @@ export function InfoCard({ block }: { block: InfoBlock }) {
             {block.title}
             <NewChip added={block.added} />
           </h4>
-          {block.en && <p className="mt-1 font-mono text-[16px] uppercase tracking-[0.14em] text-slate-400">{block.en}</p>}
+          {block.en && <p className="mt-1 font-mono text-[18px] uppercase tracking-[0.14em] text-slate-400">{block.en}</p>}
         </div>
         {block.tag && (
           <Badge tone={block.tone} size="sm">
@@ -31,17 +31,17 @@ export function InfoCard({ block }: { block: InfoBlock }) {
           </Badge>
         )}
       </div>
-      <div className="mt-3 text-[20px] leading-[1.55] text-slate-300">{block.body}</div>
+      <div className="mt-3 text-[22px] leading-[1.55] text-slate-300">{block.body}</div>
       {(block.warn || block.meta) && (
         <div className="flex flex-col gap-2 pt-4">
           {block.warn && (
-            <div className="flex items-start gap-2.5 rounded-xl border border-amber-500/50 bg-amber-950 px-3.5 py-2.5 text-[19px] leading-snug text-amber-100">
+            <div className="flex items-start gap-2.5 rounded-xl border border-amber-500/50 bg-amber-950 px-3.5 py-2.5 text-[21px] leading-snug text-amber-100">
               <TriangleAlert className="mt-0.5 size-5 shrink-0 text-amber-300" aria-hidden />
               <span>{block.warn}</span>
             </div>
           )}
           {block.meta && (
-            <span className="inline-flex items-center gap-1.5 self-start rounded-full border border-slate-500/25 bg-slate-500/10 px-3 py-1 text-[17px] font-semibold text-slate-300">
+            <span className="inline-flex items-center gap-1.5 self-start rounded-full border border-slate-500/25 bg-slate-500/10 px-3 py-1 text-[19px] font-semibold text-slate-300">
               <MapPin className="size-4" aria-hidden />
               {block.meta}
             </span>
@@ -60,7 +60,7 @@ export function ItemList({ block }: { block: ListBlock }) {
       <ol className="flex h-full flex-col divide-y divide-line border-y border-line">
         {block.items.map((item, i) => (
           <li key={item.title} className={cn('flex flex-1 items-center gap-4 px-1 py-2', newFrame(item.added) && cn(newFrame(item.added), 'px-2'))}>
-            <span className="w-6 shrink-0 font-mono text-[17px] font-bold text-slate-500">{i + 1}</span>
+            <span className="w-6 shrink-0 font-mono text-[19px] font-bold text-slate-500">{i + 1}</span>
             <ItemIcon icon={item.icon} title={item.title} tone={block.tone} size="sm" />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
@@ -72,7 +72,7 @@ export function ItemList({ block }: { block: ListBlock }) {
                   </Badge>
                 )}
               </div>
-              <p className="text-[18px] leading-snug text-slate-300">{item.desc}</p>
+              <p className="text-[20px] leading-snug text-slate-300">{item.desc}</p>
             </div>
           </li>
         ))}
@@ -92,9 +92,9 @@ export function Tiles({ block }: { block: TilesBlock }) {
             <div key={item.title} className="flex flex-col justify-center rounded-xl border border-line bg-paper px-4 py-3">
               <div className="flex items-center gap-2.5">
                 <Icon className={cn('size-6 shrink-0', toneStyles[block.tone].text)} aria-hidden />
-                <h4 className="text-[21px] font-bold text-slate-50">{item.title}</h4>
+                <h4 className="text-[23px] font-bold text-slate-50">{item.title}</h4>
               </div>
-              <p className="mt-1.5 text-[17px] leading-snug text-slate-300">{item.desc}</p>
+              <p className="mt-1.5 text-[19px] leading-snug text-slate-300">{item.desc}</p>
             </div>
           )
         })}
@@ -116,13 +116,13 @@ function CompareCard({ side }: { side: CompareSide }) {
       {/* 10/10：內容多的比較卡（P.22、P.29）在 1920×1080 畫布裡放不下、底部結論被切 → 內距、行距收緊一點 */}
       <dl className="mb-2.5 mt-3 space-y-1.5">
         {side.rows.map((row) => (
-          <div key={row.k} className="flex gap-2.5 text-[19px] leading-snug">
+          <div key={row.k} className="flex gap-2.5 text-[21px] leading-snug">
             <dt className="w-[96px] shrink-0 text-slate-400">{row.k}</dt>
             <dd className="text-slate-100">{row.v}</dd>
           </div>
         ))}
       </dl>
-      <div className={cn('mt-auto flex items-center gap-2 rounded-xl px-3.5 py-2 text-[19px] font-semibold leading-snug', t.soft, t.strong)}>
+      <div className={cn('mt-auto flex items-center gap-2 rounded-xl px-3.5 py-2 text-[21px] font-semibold leading-snug', t.soft, t.strong)}>
         <Target className="size-5 shrink-0" aria-hidden />
         {side.use}
       </div>
@@ -138,7 +138,7 @@ export function Compare({ block }: { block: CompareBlock }) {
         <CompareCard side={block.left} />
         <div className="flex flex-col items-center justify-center gap-2" aria-hidden>
           {block.axis.map((label) => (
-            <span key={label} className="rounded-md border border-line bg-paper px-2.5 py-1 font-mono text-[16px] font-bold text-slate-300">
+            <span key={label} className="rounded-md border border-line bg-paper px-2.5 py-1 font-mono text-[18px] font-bold text-slate-300">
               {label}
             </span>
           ))}
@@ -165,16 +165,16 @@ export function Timeline({ block }: { block: TimelineBlock }) {
             <li key={item.gen} className="relative flex flex-col items-center text-center">
               <span
                 className={cn(
-                  'relative z-10 flex size-9 items-center justify-center rounded-full border-2 bg-card font-mono text-[17px] font-bold',
+                  'relative z-10 flex size-9 items-center justify-center rounded-full border-2 bg-card font-mono text-[19px] font-bold',
                   t.border,
                   t.text,
                 )}
               >
                 {i + 1}
               </span>
-              <div className={cn('mt-2 font-mono text-[21px] font-extrabold leading-tight', t.strong)}>{item.gen}</div>
-              <div className="text-[18px] font-semibold text-slate-200">{item.example}</div>
-              <div className="mt-0.5 text-[16px] leading-snug text-slate-400">{item.note}</div>
+              <div className={cn('mt-2 font-mono text-[23px] font-extrabold leading-tight', t.strong)}>{item.gen}</div>
+              <div className="text-[20px] font-semibold text-slate-200">{item.example}</div>
+              <div className="mt-0.5 text-[18px] leading-snug text-slate-400">{item.note}</div>
             </li>
           )
         })}

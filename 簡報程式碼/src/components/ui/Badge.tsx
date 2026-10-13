@@ -4,9 +4,9 @@ import { cn } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
 
 const sizes = {
-  sm: 'px-2.5 py-0.5 text-[17px]',
-  md: 'px-3 py-1 text-[17px]',
-  lg: 'px-4 py-1.5 text-[19px]',
+  sm: 'px-2.5 py-0.5 text-[19px]',
+  md: 'px-3 py-1 text-[19px]',
+  lg: 'px-4 py-1.5 text-[21px]',
 }
 
 interface BadgeProps {

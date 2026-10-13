@@ -24,7 +24,7 @@ export function DiagnosisMatrix({ block }: { block: MatrixBlock }) {
   return (
     <div className="flex h-full flex-col gap-4">
       <div className="flex items-center gap-3" role="group" aria-label="排查聚焦">
-        <span className="text-[18px] font-semibold text-slate-400">排查聚焦：</span>
+        <span className="text-[20px] font-semibold text-slate-400">排查聚焦：</span>
         {filters.map((f) => {
           const active = focus === f.id
           const t = toneStyles[f.tone]
@@ -35,13 +35,13 @@ export function DiagnosisMatrix({ block }: { block: MatrixBlock }) {
               aria-pressed={active}
               onClick={() => setFocus(f.id)}
               className={cn(
-                'flex items-center gap-2 rounded-full border px-4 py-1.5 text-[18px] font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300',
+                'flex items-center gap-2 rounded-full border px-4 py-1.5 text-[20px] font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300',
                 active ? t.chip : 'border-line bg-card text-slate-400 hover:border-white/25 hover:text-slate-200',
               )}
             >
               {f.label}
               {/* 不加透明度：淡色底上對比會掉到 3.4:1（10/10 QA） */}
-              {f.hint && <span className="text-[17px] font-medium">（{f.hint}）</span>}
+              {f.hint && <span className="text-[19px] font-medium">（{f.hint}）</span>}
             </button>
           )
         })}
@@ -57,7 +57,7 @@ export function DiagnosisMatrix({ block }: { block: MatrixBlock }) {
                   <IconChip icon={col.icon} tone={col.tone} />
                   <div className="min-w-0">
                     <h3 className="text-[26px] font-black leading-tight text-white">{col.title}</h3>
-                    <p className="mt-0.5 font-mono text-[16px] uppercase tracking-[0.14em] text-slate-400">{col.en}</p>
+                    <p className="mt-0.5 font-mono text-[18px] uppercase tracking-[0.14em] text-slate-400">{col.en}</p>
                   </div>
                 </div>
                 {col.flag && (
@@ -81,8 +81,8 @@ export function DiagnosisMatrix({ block }: { block: MatrixBlock }) {
                       )}
                     >
                       <div className="flex items-start gap-3">
-                        <span className="pt-0.5 font-mono text-[16px] font-bold text-slate-500">{i + 1}</span>
-                        <p className="flex-1 text-[20px] font-medium leading-snug text-slate-100">{cause.text}</p>
+                        <span className="pt-0.5 font-mono text-[18px] font-bold text-slate-500">{i + 1}</span>
+                        <p className="flex-1 text-[22px] font-medium leading-snug text-slate-100">{cause.text}</p>
                       </div>
                       <div className="mt-2 flex flex-wrap gap-2 pl-7">
                         {cat && (
@@ -108,7 +108,7 @@ export function DiagnosisMatrix({ block }: { block: MatrixBlock }) {
                     )}
                   >
                     <Search className={cn('mt-0.5 size-5 shrink-0', t.text)} aria-hidden />
-                    <p className="text-[18px] leading-snug text-slate-200">
+                    <p className="text-[20px] leading-snug text-slate-200">
                       <span className={cn('mr-1.5 font-bold', t.strong)}>現場第一步</span>
                       {col.firstCheck}
                     </p>

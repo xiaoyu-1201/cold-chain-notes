@@ -86,9 +86,12 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
     // 標籤拉到模型外面（從模型中心往那個零件的方向推出去）＋一條引線指回零件；畫面上疊到時再自動往下錯開（10/13 QA：標籤全擠在中間）
     const lineMat = new THREE.LineBasicMaterial({ color: 0x334155, transparent: true, opacity: 0.7 })
     const tagEls: HTMLDivElement[] = []
+    const tagMeshes: THREE.Mesh[][] = []
     const tags = model.legend.map((item, i) => {
       const bb = new THREE.Box3()
-      meshesOf(model.legendMats[i]).forEach((mesh) => bb.expandByObject(mesh))
+      const ms = meshesOf(model.legendMats[i])
+      tagMeshes.push(ms)
+      ms.forEach((mesh) => bb.expandByObject(mesh))
       const wrap = document.createElement('div')
       const el = document.createElement('div')
       el.textContent = item.name
@@ -123,7 +126,13 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
       return Math.abs(a.x) < radius * 0.08 ? i % 2 === 0 : a.x < 0
     })
     const orderAll = tags.map((_, i) => i).sort((a, b) => tags[b].position.y - tags[a].position.y)
+    // 零件現在有沒有顯示（例：保溫管「沒包」時保溫管是藏起來的）：藏起來的零件不標（10/13 使用者：標籤指到空的地方）
+    const shownNow = (o: THREE.Object3D | null): boolean => (!o ? true : o.visible && shownNow(o.parent))
     const unstack = () => {
+      tags.forEach((t, i) => {
+        t.visible = (labelsOn || i === hlIndex) && tagMeshes[i].some((m) => shownNow(m))
+        ;(t.userData.lead as THREE.Line).visible = t.visible
+      })
       const hr = host.getBoundingClientRect()
       if (!hr.width) return
       const pad = 10

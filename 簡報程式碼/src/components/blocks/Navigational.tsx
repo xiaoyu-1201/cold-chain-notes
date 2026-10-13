@@ -128,7 +128,7 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
                             {ch.title}
                             {rowNew(ch.slide) && (
                               // 欄位很窄：只寫「新」，是哪幾頁放在滑過的說明（10/13 QA：寫頁碼會把這一欄撐爆）
-                              <span title={rowNew(ch.slide)!} className="ml-1.5 inline-block whitespace-nowrap rounded bg-red-400 px-1.5 align-[1px] text-[16px] font-black leading-6 text-paper">新</span>
+                              <span title={rowNew(ch.slide)!} className="new-chip ml-1.5 inline-block whitespace-nowrap rounded bg-red-400 px-1.5 align-[1px] text-[16px] font-black leading-6 text-paper">新</span>
                             )}
                             {isRef && <span className="ml-1.5 inline-block text-[16px] font-semibold text-slate-500">查閱</span>}
                             {preview && (
@@ -198,7 +198,7 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
             )}
           >
             {link.title}
-            {newIds.has(link.slide) && <span className="inline-block rounded bg-red-400 px-1.5 text-[16px] font-black leading-6 text-paper">新</span>}
+            {newIds.has(link.slide) && <span className="new-chip inline-block rounded bg-red-400 px-1.5 text-[16px] font-black leading-6 text-paper">新</span>}
             <span className="font-mono text-[16px] text-slate-500">P.{pad(numberOf(link.slide))}</span>
           </button>
         ))}

@@ -114,7 +114,7 @@ export function SizingPanel({ block }: { block: SizingBlock }) {
   return (
     <section
       role="note"
-      className="relative flex h-full flex-col overflow-hidden rounded-[18px] border-2 border-amber-500/70 bg-card p-6 pt-7"
+      className="relative flex h-full flex-col overflow-hidden rounded-[18px] border-2 border-amber-500/70 bg-card px-6 pb-5 pt-6"
     >
       <div aria-hidden className="hazard-amber absolute inset-x-0 top-0 h-2" />
       <header className="flex items-center gap-4">

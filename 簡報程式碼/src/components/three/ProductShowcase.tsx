@@ -34,6 +34,8 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
   const [op, setOp] = useState(0)
   // 10/13 使用者：「這種 3D 可以拉大視窗吧」→ 放大看＝整個畫面的 3D 視窗
   const [big, setBig] = useState(false)
+  // 構造說明：點哪一個名稱就顯示哪一個（換零件時清掉）
+  const [legendOpen, setLegendOpen] = useState<string | null>(null)
   const onControl = useCallback((c: PartControl | undefined) => {
     setControl(c)
     setOp(c?.initial ?? 0)
@@ -78,11 +80,12 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
               type="button"
               onClick={() => {
                 setIndex(i)
+                setLegendOpen(null)
                 setPi(0)
                 setCut(false)
                 setSpin(true)
               }}
-              className={cn('flex min-h-11 items-center gap-1.5 rounded-full font-semibold transition', mobile ? t.pill : 'px-3 py-1', i === index ? 'bg-slate-100 text-paper' : 'border border-line bg-card text-slate-200 hover:border-sky-500/50', focusRing)}
+              className={cn('flex min-h-11 items-center gap-1.5 rounded-full font-semibold transition', mobile ? t.pill : 'px-3 py-1 text-[20px]', i === index ? 'bg-slate-100 text-paper' : 'border border-line bg-card text-slate-200 hover:border-sky-500/50', focusRing)}
             >
               {glyphFor(p.label) && <PartGlyph id={glyphFor(p.label)!} size={mobile ? 18 : 22} strokeWidth={2.4} />}
               {p.label}
@@ -94,7 +97,7 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
       {tab === '3d' && id ? (
         <>
           <div
-            className={cn('viewport-blueprint relative min-h-0 overflow-hidden rounded-2xl', mobile ? 'h-[300px]' : 'min-h-[240px] flex-1')}
+            className={cn('viewport-blueprint relative min-h-0 overflow-hidden rounded-2xl', mobile ? 'h-[300px]' : 'min-h-[220px] flex-1')}
             onTouchStart={(e) => e.stopPropagation()}
             onTouchEnd={(e) => e.stopPropagation()}
           >
@@ -132,7 +135,7 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
                 )}
                 {/* 電腦版：滑桿跟標題同一行，3D 視窗才不會被擠小（10/13 使用者：3D 視窗被壓太窄） */}
                 {control.kind === 'slider' && !mobile && (
-                  <div className="flex min-w-[240px] flex-1 items-center gap-2 text-slate-400">
+                  <div className="flex min-w-[240px] flex-1 items-center gap-2 text-[20px] text-slate-400">
                     <span className="shrink-0">{control.off}</span>
                     <input type="range" min={0} max={1} step={0.01} value={op} onChange={(e) => operate(Number(e.target.value))} aria-label={control.label} className="min-w-0 flex-1 accent-sky-500" />
                     <span className="shrink-0">{control.on}</span>
@@ -167,14 +170,32 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
               </ul>
             ) : (
               // 電腦版只列名稱、排成一兩行（10/13 使用者：3D 視窗被壓太窄）；完整說明滑過看得到，「放大看」裡也有
-              <ul className="flex flex-wrap gap-x-4 gap-y-1 text-[20px]">
-                {legend.map((item) => (
-                  <li key={item.name} className="flex items-center gap-1.5" title={item.desc}>
-                    <span className="size-3 shrink-0 rounded-full" style={{ background: item.color }} aria-hidden />
-                    <b className="font-semibold text-white">{item.name}</b>
-                  </li>
-                ))}
-              </ul>
+              // 點一下名稱就在下面顯示說明（10/13 使用者：iPad 手指摸不到滑鼠提示）
+              <div className="relative text-[20px]">
+                <ul className="flex flex-wrap gap-x-2 gap-y-1">
+                  {legend.map((item) => (
+                    <li key={item.name}>
+                      <button
+                        type="button"
+                        onClick={() => setLegendOpen((cur) => (cur === item.name ? null : item.name))}
+                        aria-pressed={legendOpen === item.name}
+                        title={item.desc}
+                        className={cn('flex min-h-[36px] items-center gap-1.5 rounded-full px-2.5 font-semibold transition', legendOpen === item.name ? 'bg-sky-950 text-sky-100 ring-1 ring-sky-500' : 'text-white hover:bg-white/[0.08]', focusRing)}
+                      >
+                        <span className="size-3 shrink-0 rounded-full" style={{ background: item.color }} aria-hidden />
+                        {item.name}
+                      </button>
+                    </li>
+                  ))}
+                  {!legendOpen && <li className="flex items-center px-1 text-slate-400">點名稱看說明</li>}
+                </ul>
+                {/* 說明浮在名稱上方（蓋在 3D 下緣），不把 3D 擠小；再點一次或點別的名稱就換掉 */}
+                {legendOpen && (
+                  <p className="absolute inset-x-0 bottom-full mb-2 rounded-xl border border-sky-500/50 bg-card px-4 py-2.5 leading-snug text-slate-200 shadow-[0_8px_24px_-10px_rgba(15,36,64,0.45)]">
+                    <b className="text-white">{legendOpen}</b>・{legend.find((l) => l.name === legendOpen)?.desc}
+                  </p>
+                )}
+              </div>
             ))}
         </>
       ) : (

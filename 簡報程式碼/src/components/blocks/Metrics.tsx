@@ -25,7 +25,7 @@ export function Metrics({ block }: { block: MetricsBlock }) {
                 key={i}
                 className={cn(
                   'relative flex flex-col justify-center overflow-hidden rounded-2xl',
-                  lg ? 'px-6 py-4' : 'px-5 py-1.5',
+                  lg ? 'px-6 py-4' : 'px-5 py-1',
                   'border bg-card', t.border, isNew(item.added) && 'new-frame',
                 )}
               >

@@ -145,14 +145,14 @@ export function FenConverter({ mobile = false }: { mobile?: boolean }) {
   }
 
   const helper = (
-    <div className={cn('flex h-full flex-col', mobile ? 'gap-3' : 'gap-3')}>
+    <div className={cn('flex h-full flex-col', mobile ? 'gap-3' : 'gap-2.5')}>
       <input
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onFocus={(e) => e.currentTarget.select()}
         placeholder="例：3分、3/8″、1-1/8、15.9mm、2.2公分"
         aria-label="輸入尺寸（幾分、英吋、mm 或公分都可以）"
-        className={cn('w-full rounded-2xl bg-card px-5 font-black text-ink outline-none ring-2 ring-sky-500/45 placeholder:font-semibold placeholder:text-slate-500 focus:ring-sky-500', t.input, mobile ? 'py-2' : 'py-3')}
+        className={cn('w-full rounded-2xl bg-card px-5 font-black text-ink outline-none ring-2 ring-sky-500/45 placeholder:font-semibold placeholder:text-slate-500 focus:ring-sky-500', t.input, 'py-2')}
       />
       <div className="flex flex-wrap gap-2">
         {EXAMPLES.map((ex) => (
@@ -316,7 +316,7 @@ export function FenConverter({ mobile = false }: { mobile?: boolean }) {
 
   return (
     <div className="grid h-full min-h-0 grid-cols-[minmax(0,1.08fr)_minmax(0,1fr)] gap-6">
-      <Panel icon={ClipboardCheck} tone="ice" title="對單小幫手：客人說的、單子寫的、卡尺量的，都輸入這裡">
+      <Panel icon={ClipboardCheck} tone="ice" title="對單小幫手：任何寫法都能輸入">
         {helper}
       </Panel>
       <Panel icon={Ruler} tone="amber" title="冷媒銅管尺寸對照（外徑）">

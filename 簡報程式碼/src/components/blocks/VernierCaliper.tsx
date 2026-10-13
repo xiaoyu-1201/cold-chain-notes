@@ -388,7 +388,7 @@ export function VernierCaliper({ mobile = false }: { mobile?: boolean }) {
           <p className={cn('text-slate-400', t.small)}>{mode === 'od' ? '銅管夾在下面的大量爪。管壁：2～5分 0.8 mm（21 番）、6分以上 1.0 mm（19 番）。' : '接頭、彎頭是銅管插在裡面，所以用上面的小量爪伸進去、往外撐。'}</p>
         </section>
 
-        <section className="flex min-h-0 flex-col gap-2 rounded-[18px] border border-line bg-card p-4">
+        <section className="flex min-h-0 flex-col gap-1.5 rounded-[18px] border border-line bg-card px-4 py-3">
           <div className="flex flex-wrap items-baseline justify-between gap-x-3">
             <p className={cn('font-bold text-white', t.h)}>放大看公制游尺</p>
             <p className={cn('text-slate-400', t.small)}>
@@ -402,7 +402,7 @@ export function VernierCaliper({ mobile = false }: { mobile?: boolean }) {
           </div>
         </section>
 
-        <section className="flex min-h-0 flex-col gap-2 rounded-[18px] border border-line bg-card p-4">
+        <section className="flex min-h-0 flex-col gap-1.5 rounded-[18px] border border-line bg-card px-4 py-3">
           <div className="flex items-center justify-between gap-2">
             <p className={cn('font-bold text-white', t.h)}>{quiz ? '考考我：這是幾分？' : '讀數'}</p>
             <button type="button" onClick={newQuiz} className={cn('flex items-center gap-1.5 rounded-full bg-amber-500 px-3 py-1.5 font-bold text-ink hover:brightness-95', t.small)}>

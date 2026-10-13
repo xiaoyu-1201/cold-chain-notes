@@ -11,7 +11,8 @@ export function ChangesNote({ slide, mobile, className }: { slide: SlideData; mo
   return (
     <p
       className={cn(
-        'flex rounded-lg border-l-4 border-red-400 bg-red-950 text-slate-100',
+        // new-chip：「圈出新的」關掉時一起收起來
+        'new-chip flex rounded-lg border-l-4 border-red-400 bg-red-950 text-slate-100',
         // 手機：標題一行、內容下一行（並排會變成很窄的一欄）
         mobile ? 'mt-2 flex-col gap-0.5 px-3 py-2 text-[15px] leading-snug' : 'mt-2 items-baseline gap-3 px-4 py-1.5 text-[20px] leading-snug',
         className,

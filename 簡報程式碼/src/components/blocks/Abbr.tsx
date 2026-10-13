@@ -51,7 +51,7 @@ function Row({ item, tone, mobile }: { item: AbbrItem; tone: Tone; mobile?: bool
       )}
     </>
   )
-  const cls = cn('flex w-full items-start gap-3 rounded-xl text-left', mobile ? 'border border-line bg-white/[0.03] px-3 py-2.5' : 'bg-navy-900/40 px-4 py-2')
+  const cls = cn('flex w-full items-start gap-3 rounded-xl text-left', mobile ? 'border border-line bg-white/[0.03] px-3 py-2.5' : 'bg-navy-900/40 px-4 py-1.5')
   return (
     <li className="min-h-0">
       {item.slide ? (

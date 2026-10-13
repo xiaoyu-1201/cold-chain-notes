@@ -812,7 +812,7 @@ const slideList: SlideData[] = [
     blocks: [
       {
         type: 'grid',
-        className: 'grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]',
+        className: 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
         children: [
           {
             type: 'grid',
@@ -844,10 +844,10 @@ const slideList: SlideData[] = [
                   tone: 'teal',
                   rows: [
                     { k: '長相', v: '比較矮、比較胖' },
-                    { k: '單相配件', v: '繼電器＋啟動電容＋運轉電容（一盒）' },
+                    { k: '單相配件', v: '繼電器＋兩顆電容' },
                     { k: '常見', v: '小顆的幾乎都是' },
                   ],
-                  use: '一馬以下到幾馬的都有',
+                  use: '一馬以下到幾馬都有',
                 },
                 right: {
                   badge: '渦捲式',
@@ -856,9 +856,9 @@ const slideList: SlideData[] = [
                   rows: [
                     { k: '長相', v: '長得比較高' },
                     { k: '單相配件', v: '只有一顆運轉電容' },
-                    { k: '常見', v: '大顆的（黑金剛 ZS 系列）' },
+                    { k: '常見', v: '大顆的（ZS 系列）' },
                   ],
-                  use: '回管多半是六分，保溫管用很多',
+                  use: '回管多半是六分',
                 },
               },
             ],
@@ -874,7 +874,7 @@ const slideList: SlideData[] = [
                 title: '出貨時要一起拿的配件',
                 en: 'What Goes With It',
                 items: [
-                  { icon: CircleCheck, title: '三相：只要角座', desc: '四個角座固定壓縮機，中間插柱子，螺絲從底板鎖上去；220 或 380 三相都一樣', badge: { label: '簡單', tone: 'emerald' } },
+                  { icon: CircleCheck, title: '三相：只要角座', desc: '四個角座固定壓縮機，螺絲從底板鎖上去；220、380 三相都一樣', badge: { label: '簡單', tone: 'emerald' } },
                   { icon: Boxes, title: '單相：角座＋三樣配件', added: '2026-10-12', desc: '往復式單相一定是三樣：繼電器（Relay）、黑色的啟動電容、銀色的運轉電容；接好線裝進小黑盒（店裡也有賣）。渦捲式只有一顆電容、沒有繼電器〔錄音16 12:57〕', badge: { label: '三樣', tone: 'amber' } },
                   { icon: Ban, title: '配件不能拿錯盒', desc: '不同型號的配件盒內容不一樣；先對壓縮機，再對配件', badge: { label: '注意', tone: 'red' } },
                   { icon: Route, title: '兩支管、三支管', added: '2026-10-12', desc: '兩支＝高壓吐出、低壓吸入；第三支是充灌，跟低壓端相通，灌冷媒、測壓力用〔錄音16 13:48〕', badge: { label: '看管子', tone: 'teal' } },
@@ -1213,19 +1213,13 @@ const slideList: SlideData[] = [
                 type: 'metrics',
                 icon: Layers,
                 tone: 'ice',
-                title: '鰭片間距',
+                title: <>鰭片間距<Exp /></>,
                 en: 'Fin Pitch',
                 cols: 1,
                 items: [
                   { label: '冷藏庫', value: '4 ~ 6', unit: 'mm', tone: 'teal' },
-                  { label: '低溫庫', value: '6 ~ 9', unit: 'mm 以上', tone: 'indigo' },
+                  { label: '低溫庫', value: '6 ~ 9', unit: 'mm 以上', tone: 'indigo', note: '留結霜的風道' },
                 ],
-                footnote: (
-                  <>
-                    低溫庫間距大＝預留結霜的風道；手冊沒有給數值。
-                    <Exp />
-                  </>
-                ),
               },
             ],
           },
@@ -3608,7 +3602,7 @@ const slideList: SlideData[] = [
     blocks: [
       {
         type: 'grid',
-        className: 'grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]',
+        className: 'grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)]',
         children: [
           {
             type: 'list',
@@ -3646,10 +3640,10 @@ const slideList: SlideData[] = [
                 badge: '選型底線',
                 points: [
                   <>
-                    選型<Danger>絕不能用 24 小時運轉計算</Danger>！機器要留時間除霜、讓庫溫回穩。
+                    <Danger>不能用 24 小時算</Danger>：要留除霜、回溫的時間。
                   </>,
                   <>
-                    冷凍庫以 <Hl>16 ~ 18 小時 / 天</Hl>、冷藏庫以 <Hl>18 ~ 20 小時 / 天</Hl> 為計算基準。
+                    冷凍庫抓 <Hl>16～18 小時／天</Hl>、冷藏庫抓 <Hl>18～20 小時／天</Hl>。
                   </>,
                 ],
                 formula: (
@@ -3673,8 +3667,8 @@ const slideList: SlideData[] = [
                 example: {
                   caption: '試算：Q_total = 240,000 kcal/24h',
                   rows: [
-                    { label: '÷ 24 h（錯誤）', value: '11,500 kcal/h', note: '低估約 33%，庫溫拉不下來', tone: 'red' },
-                    { label: '÷ 16 h（正確）', value: '17,250 kcal/h', note: '保留化霜與回溫時間', tone: 'emerald' },
+                    { label: '÷ 24 h（錯誤）', value: '11,500 kcal/h', note: '低估 33%，庫溫拉不下來', tone: 'red' },
+                    { label: '÷ 16 h（正確）', value: '17,250 kcal/h', note: '留除霜時間', tone: 'emerald' },
                   ],
                 },
               },

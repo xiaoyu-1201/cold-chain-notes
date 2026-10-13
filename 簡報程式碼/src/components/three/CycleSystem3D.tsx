@@ -153,6 +153,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     const pickables: THREE.Object3D[] = []
     const moving: { o: THREE.Object3D; kind: 'spin' | 'slide'; speed: number; amp: number; base: number; part: Part3DId }[] = []
     const holders = new Map<Part3DId, THREE.Object3D>()
+    const partLabels = new Map<CycleNodeId, { o: CSS2DObject; text: string; css: string; side: Side }>()
 
     const makeLabel = (text: string, id: CycleNodeId | null, major: boolean, tone?: string) => {
       const el = document.createElement('div')
@@ -223,7 +224,9 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       centers.set(p.id, new THREE.Vector3(...p.pos))
       pickables.push(holder)
       const half = new THREE.Box3().setFromObject(holder).getSize(new THREE.Vector3()).multiplyScalar(0.5)
-      placeLabel(makeLabel(p.label, p.id, !!p.major), p.pos, half, p.side ?? 't', p.major ? 0.24 : 0.12)
+      const lab = makeLabel(p.label, p.id, !!p.major)
+      partLabels.set(p.id, { o: lab, text: p.label, css: lab.element.style.cssText, side: p.side ?? 't' })
+      placeLabel(lab, p.pos, half, p.side ?? 't', p.major ? 0.24 : 0.12)
     }
 
     // 管路：底下一條灰色空管，上面一條彩色管＝冷媒，啟動後沿流向慢慢灌滿
@@ -276,17 +279,6 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     const cold = puffs(16, 0x3d8fdc, [[-0.6, 0.2], [0.6, 1.4]], -2.3, -3.0)
 
     // ── 故障模擬用的物件 ──
-    const tag = (bg: string) => {
-      const o = makeLabel('', null, true, '#fff')
-      o.element.style.background = bg
-      o.element.style.boxShadow = '0 6px 20px -6px rgba(0,0,0,0.6)'
-      o.visible = false
-      scene.add(o)
-      return o
-    }
-    const removedTag = tag('rgba(220,38,38,0.92)')
-    const alarmTag = tag('rgba(220,38,38,0.92)')
-    alarmTag.center.set(0.5, 1.6)
     // 膨脹閥入口結冰：一團白色冰晶
     const ice = new THREE.Group()
     // 淡色檢視窗上，白色冰晶會看不見：改成帶藍的冰色、自發光調低
@@ -510,20 +502,36 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
 
       // 故障模擬：拿掉的零件、警示、結冰、冷凍油
       holders.forEach((h, id) => (h.visible = id !== fx?.removed))
-      removedTag.visible = !!fx?.removed
-      if (fx?.removed) {
-        if (removedTag.element.textContent !== '✕ 拿掉了') removedTag.element.textContent = '✕ 拿掉了'
-        removedTag.position.copy(centers.get(fx.removed)!)
-      }
-      alarmTag.visible = !!fx?.alarm
-      if (fx?.alarm) {
-        const alarmText = `⚠ ${fx.alarm.text}`
-        if (alarmTag.element.textContent !== alarmText) alarmTag.element.textContent = alarmText
-        // 琥珀色用深一階（白字對比約 5:1）；閃爍最淡只到 0.85，白字才不會淡到看不清
-        alarmTag.element.style.background = fx.alarm.tone === 'red' ? 'rgba(220,38,38,0.92)' : 'rgba(180,83,9,0.95)'
-        alarmTag.element.style.opacity = String(0.925 + 0.075 * Math.sin(t * 6))
-        alarmTag.position.copy(centers.get(fx.alarm.at)!)
-      }
+      // 拿掉／警示直接寫在那個零件自己的名稱標籤上，不另外疊一個標籤（10/13 使用者截圖：「✕ 拿掉了」「⚠ 低壓跳脫」蓋住零件名稱）
+      partLabels.forEach((pl, id) => {
+        const el = pl.o.element
+        const removed = fx?.removed === id
+        const alarm = fx?.alarm?.at === id ? fx.alarm : null
+        // 拿掉的只加「✕」、名稱畫刪除線（字多了會撞到旁邊的標籤）
+        // 標籤在零件左邊（壓縮機）：警示分兩行，寫成一行會往左撞到小零件；其他一行（分兩行會上下撞到疊在一起的標籤）
+        const two = pl.side === 'l'
+        const want = removed ? `✕ ${pl.text}` : alarm ? `⚠ ${pl.text}${two ? '\n' : '：'}${alarm.text}` : pl.text
+        if (el.textContent !== want) {
+          el.textContent = want
+          el.style.cssText = pl.css
+          if (removed || alarm) {
+            // 琥珀色用深一階（白字對比約 5:1）
+            el.style.background = removed || alarm?.tone === 'red' ? 'rgba(220,38,38,0.92)' : 'rgba(180,83,9,0.95)'
+            el.style.color = '#fff'
+            el.style.boxShadow = '0 6px 20px -6px rgba(0,0,0,0.6)'
+            el.style.fontWeight = '700'
+            if (removed) el.style.textDecoration = 'line-through'
+            if (alarm && two) {
+              el.style.whiteSpace = 'pre'
+              el.style.textAlign = 'center'
+              el.style.borderRadius = '14px'
+              el.style.lineHeight = '1.25'
+            }
+          }
+        }
+        // 警示的閃爍最淡只到 0.85，白字才不會淡到看不清
+        if (alarm) el.style.opacity = String(0.925 + 0.075 * Math.sin(t * 6))
+      })
       ice.visible = !!fx?.ice
       if (ice.visible) ice.scale.lerp(new THREE.Vector3(1, 1, 1), 0.04)
       oil.forEach((m, i) => {

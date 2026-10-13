@@ -60,26 +60,28 @@ function FaultPanel({ f, onSelect }: { f: FaultControl; onSelect: (id: CycleNode
         <TriangleAlert className="size-5" aria-hidden />
         故障模擬
       </p>
-      <p className="text-[34px] font-bold leading-tight text-white">{fault.label}，會怎樣？</p>
-      <ol className="mt-4 min-h-0 flex-1 space-y-2.5">
+      <p className="text-[30px] font-bold leading-tight text-white">{fault.label}，會怎樣？</p>
+      {/* 步驟太長時在這一格裡捲，不要跑到下面的綠色結論後面（10/13 使用者：綠色那條擋住文字） */}
+      <ol className="-mx-1 mt-3 min-h-0 flex-1 space-y-1.5 overflow-y-auto px-1">
         {fault.steps.map((s, i) => (
           <li key={s.title}>
             <button
               type="button"
               onClick={() => f.setStep(i)}
-              className={cn('flex w-full gap-3 rounded-2xl px-4 py-2.5 text-left transition', i === f.step ? 'bg-red-950' : 'hover:bg-white/[0.04]', i > f.step && 'opacity-45', focusRing)}
+              className={cn('flex w-full gap-3 rounded-2xl px-4 py-2 text-left transition', i === f.step ? 'bg-red-950' : 'hover:bg-white/[0.04]', i > f.step && 'opacity-45', focusRing)}
             >
               <span className={cn('mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full text-[19px] font-bold', i === f.step ? 'bg-red-400 text-paper' : 'bg-white/[0.07] text-slate-200')}>{i + 1}</span>
               <span className="min-w-0">
                 <span className="block text-[23px] font-bold text-white">{s.title}</span>
-                <span className="block text-[20px] leading-snug text-slate-300">{s.text}</span>
+                {/* 走過的步驟只留標題（點一下再展開），最後一步加綠色結論時才放得下 */}
+                {i >= f.step && <span className="block text-[20px] leading-snug text-slate-300">{s.text}</span>}
               </span>
             </button>
           </li>
         ))}
       </ol>
       {f.step === last && (
-        <div className="mt-3 rounded-2xl bg-emerald-950 px-5 py-3">
+        <div className="mt-2.5 shrink-0 rounded-2xl bg-emerald-950 px-5 py-2.5">
           <p className="text-[21px] leading-snug text-emerald-50">
             <b className="mr-2 text-emerald-300">所以</b>
             {fault.lesson}

@@ -1,5 +1,5 @@
 import { Box, Camera, Layers, RotateCw, Tags, X } from 'lucide-react'
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { photoCredits } from '../../data/photoCredits'
 import { cn } from '../../lib/cn'
@@ -20,10 +20,14 @@ interface PartViewerProps {
   title: string
   alias?: string
   onClose: () => void
+  /** 同一頁有好幾個產品時：放大的視窗裡直接換，不用關掉（10/13 使用者） */
+  choices?: { label: string; glyph?: ReactNode }[]
+  current?: number
+  onPick?: (i: number) => void
 }
 
 /** 零件構造檢視（全螢幕）：3D 可轉可放大、可剖開；有照片時可切換看照片 */
-export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
+export function PartViewer({ id, title, alias, onClose, choices, current = 0, onPick }: PartViewerProps) {
   const credit = photoCredits[id]
   const photo = photoOf(credit?.file)
   const [tab, setTab] = useState<'3d' | 'photo'>('3d')
@@ -43,6 +47,13 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
   const operate = (v: number) => {
     if (control?.needsCut && !cut) setCut(true)
     setOp(v)
+  }
+  const pick = (i: number) => {
+    if (i === current) return
+    setCut(false)
+    setHover(null)
+    setTab('3d')
+    onPick?.(i)
   }
 
   // 打開時焦點移到關閉鈕、關掉後回到原本的按鈕（10/13 code review）
@@ -112,13 +123,33 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
           <button ref={closeRef} type="button" onClick={onClose} aria-label="關閉（Esc）" className={cn('grid size-11 place-items-center rounded-xl border border-line bg-card text-slate-200 hover:border-sky-500/60', focusRing)}>
             <X className="size-5" aria-hidden />
           </button>
+          {choices && choices.length > 1 && (
+            <div className="flex w-full flex-wrap gap-1.5" role="group" aria-label="換產品">
+              {choices.map((c, i) => (
+                <button
+                  key={c.label}
+                  type="button"
+                  aria-pressed={i === current}
+                  onClick={() => pick(i)}
+                  className={cn(
+                    'flex min-h-11 items-center gap-1.5 rounded-full px-4 py-1.5 text-[16px] font-semibold transition',
+                    i === current ? 'bg-slate-100 text-paper' : 'border border-line bg-card text-slate-200 hover:border-sky-500/50',
+                    focusRing,
+                  )}
+                >
+                  {c.glyph}
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          )}
         </header>
 
         {tab === '3d' ? (
           <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
             <div className="viewport-blueprint relative min-h-[280px] flex-1">
               <Suspense fallback={<p className="absolute inset-0 flex items-center justify-center text-[16px] text-slate-400">3D 模型載入中…</p>}>
-                <Part3D id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} highlight={hover} labels={labels} onHoverPart={setHover} liftPx={28} />
+                <Part3D key={id} id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} highlight={hover} labels={labels} onHoverPart={setHover} liftPx={28} />
               </Suspense>
               <GlassButtonGroup className="absolute bottom-3 left-3 flex flex-wrap gap-2" label="3D 檢視">
                 <button type="button" aria-pressed={cut} onClick={() => setCut((c) => !c)} className={floatToggle(cut)}>

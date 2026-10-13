@@ -24,7 +24,7 @@ type Side = 't' | 'b' | 'l' | 'r'
 const PLACEMENTS: { id: Extract<Part3DId, CycleNodeId>; pos: V3; scale: number; rotZ?: number; label: string; major?: boolean; side?: Side }[] = [
   { id: 'cond', pos: [0, 1.9, 0], scale: 0.85, label: '② 冷凝器', major: true },
   { id: 'evap', pos: [0.4, -1.9, 0], scale: 0.85, label: '④ 蒸發器', major: true },
-  { id: 'comp', pos: [3.2, 0, 0], scale: 0.55, label: '① 壓縮機', major: true, side: 'l' },
+  { id: 'comp', pos: [3.2, 0, 0], scale: 0.5, label: '① 壓縮機', major: true, side: 'l' },
   { id: 'txv', pos: [-1.55, -1.9, 0], scale: 0.34, label: '③ 膨脹閥', major: true },
   { id: 'receiver', pos: [-1.75, 1.8, 0], scale: 0.24, label: '儲液器', side: 'l' },
   { id: 'gbc', pos: [-3.2, 0.75, 0], scale: 0.24, rotZ: Math.PI / 2, label: '手閥', side: 'r' },

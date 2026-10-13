@@ -87,28 +87,77 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
     const lineMat = new THREE.LineBasicMaterial({ color: 0x334155, transparent: true, opacity: 0.7 })
     const tagEls: HTMLDivElement[] = []
     const tagMeshes: THREE.Mesh[][] = []
+    const labelPx = host.closest('.deck-canvas') ? 20 : 15
+    // 一開始的視角（跟下面相機的起始位置一樣）：用來判斷零件哪裡看得到
+    const eye = new THREE.Vector3(radius * 1.6, radius * 1.1, radius * 2.6)
+    const rc = new THREE.Raycaster()
+    const shownAtStart = (o: THREE.Object3D | null): boolean => (!o ? true : o.visible && shownAtStart(o.parent))
+    const blockersAll: THREE.Mesh[] = []
+    model.group.traverse((o) => {
+      const mesh = o as THREE.Mesh
+      if (mesh.isMesh && !o.userData.mountOnly && shownAtStart(o)) {
+        const m = mesh.material as THREE.Material
+        // 半透明的（冷媒流動、玻璃）擋不住視線
+        if (!(m.transparent && m.opacity < 0.6)) blockersAll.push(mesh)
+      }
+    })
+    const blockersNoShell = blockersAll.filter((m) => !model.shells.includes(m.material as THREE.Material))
+    const partMeshes = model.legendMats.map((m) => meshesOf(m))
+    const partBoxes = partMeshes.map((ms) => ms.reduce((b, mesh) => b.expandByObject(mesh), new THREE.Box3()))
     const tags = model.legend.map((item, i) => {
-      const bb = new THREE.Box3()
-      const ms = meshesOf(model.legendMats[i])
+      const ms = partMeshes[i]
+      const bb = partBoxes[i]
       tagMeshes.push(ms)
-      ms.forEach((mesh) => bb.expandByObject(mesh))
       const wrap = document.createElement('div')
       const el = document.createElement('div')
       el.textContent = item.name
-      el.style.cssText = 'font:700 14px system-ui,sans-serif;color:#0f2440;background:rgba(255,255,255,0.96);padding:3px 10px;border-radius:999px;box-shadow:0 0 0 1.5px ' + item.color + ',0 4px 12px -4px rgba(15,36,64,.35);white-space:nowrap;pointer-events:auto;cursor:pointer'
+      // 投影片畫布上最小 20px（畫布會縮小顯示）；放大視窗沒有縮放，15px 就夠
+      el.style.cssText = 'font:700 ' + labelPx + 'px system-ui,sans-serif;color:#0f2440;background:rgba(255,255,255,0.96);padding:3px 10px;border-radius:999px;box-shadow:0 0 0 1.5px ' + item.color + ',0 4px 12px -4px rgba(15,36,64,.35);white-space:nowrap;pointer-events:auto;cursor:pointer'
       // 滑鼠移到標籤上，也讓那個零件亮起來
       el.addEventListener('mouseenter', () => hoverRef.current?.(item.name))
       el.addEventListener('mouseleave', () => hoverRef.current?.(null))
       wrap.appendChild(el)
       tagEls.push(el)
       const tag = new CSS2DObject(wrap)
-      const anchor = bb.isEmpty() ? new THREE.Vector3() : bb.getCenter(new THREE.Vector3())
-      const dir = anchor.clone()
-      if (dir.lengthSq() < 1e-4) dir.set(0, 1, 0)
-      dir.normalize()
-      const out = anchor.clone()
-      tag.position.copy(out)
-      const lead = new THREE.Line(new THREE.BufferGeometry().setFromPoints([anchor, out]), lineMat)
+      const center = bb.isEmpty() ? new THREE.Vector3() : bb.getCenter(new THREE.Vector3())
+      // 引線要點在零件「身上、看得到的地方」（10/13 使用者：標線都沒標好）：
+      //   外框中心可能是空的（毛細管盤成一圈）、可能被別的零件擋住（柱塞在線圈裡）→
+      //   從零件的頂點裡，挑一開始的視角「看得到」又離中心最近的點；記住是哪個零件的哪個點，零件會動時引線跟著走。
+      //   一個點都看不到＝在外殼裡面：沒剖開時不標，剖開才標（挑點時不算外殼）
+      const cands: { mesh: THREE.Mesh; local: THREE.Vector3; world: THREE.Vector3; d: number }[] = []
+      for (const mesh of ms) {
+        const posAttr = mesh.geometry.getAttribute('position') as THREE.BufferAttribute | undefined
+        if (!posAttr) continue
+        const step = Math.max(1, Math.floor(posAttr.count / 1500))
+        for (let j = 0; j < posAttr.count; j += step) {
+          const local = new THREE.Vector3().fromBufferAttribute(posAttr, j)
+          const world = mesh.localToWorld(local.clone())
+          cands.push({ mesh, local, world, d: world.distanceToSquared(center) })
+        }
+      }
+      cands.sort((a, b) => a.d - b.d)
+      const own = new Set<THREE.Object3D>(ms)
+      const pickVisible = (blockers: THREE.Mesh[]) => {
+        const tries = Math.min(cands.length, 48)
+        for (let t = 0; t < tries; t++) {
+          const c = cands[Math.floor((t * cands.length) / tries)]
+          // 稍微往眼睛那邊挪一點點，避免打到自己表面同一點的誤差
+          const dir = c.world.clone().sub(eye)
+          const dist = dir.length()
+          rc.set(eye, dir.normalize())
+          rc.far = dist * 0.995
+          const hit = rc.intersectObjects(blockers, false).find((h) => !own.has(h.object))
+          if (!hit) return c
+        }
+        return null
+      }
+      const seen = pickVisible(blockersAll)
+      const best = seen ?? pickVisible(blockersNoShell) ?? cands[0]
+      tag.userData.inside = !seen && !model.shells.includes(model.legendMats[i])
+      tag.userData.pin = best ? { mesh: best.mesh, local: best.local } : null
+      const anchor = best ? best.world.clone() : center
+      tag.position.copy(anchor)
+      const lead = new THREE.Line(new THREE.BufferGeometry().setFromPoints([anchor, anchor.clone()]), lineMat)
       lead.visible = false
       scene.add(lead)
       tag.userData.lead = lead
@@ -128,24 +177,40 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
     const orderAll = tags.map((_, i) => i).sort((a, b) => tags[b].position.y - tags[a].position.y)
     // 零件現在有沒有顯示（例：保溫管「沒包」時保溫管是藏起來的）：藏起來的零件不標（10/13 使用者：標籤指到空的地方）
     const shownNow = (o: THREE.Object3D | null): boolean => (!o ? true : o.visible && shownNow(o.parent))
-    const unstack = () => {
+    // 外殼裡面的零件：沒剖開時看不到，不標（指著它亮起來時才標）
+    let cutOn = false
+    const showTags = () =>
       tags.forEach((t, i) => {
-        t.visible = (labelsOn || i === hlIndex) && tagMeshes[i].some((m) => shownNow(m))
+        t.visible = ((labelsOn && (cutOn || !t.userData.inside)) || i === hlIndex) && tagMeshes[i].some((m) => shownNow(m))
         ;(t.userData.lead as THREE.Line).visible = t.visible
       })
+    /** 標籤跟著零件身上那個點走（零件會動），每一格畫之前更新 */
+    const followPins = () =>
+      tags.forEach((t) => {
+        const pin = t.userData.pin as { mesh: THREE.Mesh; local: THREE.Vector3 } | null
+        if (!pin || !t.visible) return
+        pin.mesh.localToWorld(t.position.copy(pin.local))
+        const pos = (t.userData.lead as THREE.Line).geometry.getAttribute('position') as THREE.BufferAttribute
+        pos.setXYZ(0, t.position.x, t.position.y, t.position.z)
+        pos.needsUpdate = true
+      })
+    const unstack = () => {
+      showTags()
       const hr = host.getBoundingClientRect()
       if (!hr.width) return
-      const pad = 10
-      const gap = 6
-      const minY = hr.top + pad + 34
-      const maxY = hr.bottom - (liftRef.current ? 70 : pad)
+      // 電腦版整張投影片是縮放的：量到的是螢幕像素，translate 要用縮放前的像素（10/13 使用者：按下去標籤先閃在產品上、引線對不準）
+      const k = hr.width / Math.max(host.offsetWidth, 1)
+      const pad = 10 * k
+      const gap = 6 * k
+      const minY = hr.top + pad + 34 * k
+      const maxY = hr.bottom - (liftRef.current ? 70 * k : pad)
       for (const side of [true, false]) {
         const col = orderAll.filter((i) => tags[i].visible && sideOf[i] === side)
         const items = col.map((i) => {
           const el = tagEls[i]
           const cur = el.getBoundingClientRect()
           // 拿掉上一次的位移，就是標籤原本（在零件上）的位置
-          const r = new DOMRect(cur.left - offsets[i].x, cur.top - offsets[i].y, cur.width, cur.height)
+          const r = new DOMRect(cur.left - offsets[i].x * k, cur.top - offsets[i].y * k, cur.width, cur.height)
           tmp.copy(tags[i].position).project(camera)
           return { i, el, r, ay: hr.top + ((1 - tmp.y) / 2) * hr.height, z: tmp.z, ty: 0 }
         })
@@ -158,7 +223,7 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
         if (over > 0) items.forEach((it) => (it.ty = Math.max(minY, it.ty - over)))
         for (const it of items) {
           const tx = side ? hr.left + pad : hr.right - pad - it.r.width
-          offsets[it.i] = { x: tx - it.r.left, y: it.ty - it.r.top }
+          offsets[it.i] = { x: (tx - it.r.left) / k, y: (it.ty - it.r.top) / k }
           it.el.style.transform = `translate(${offsets[it.i].x}px, ${offsets[it.i].y}px)`
           const ex = side ? tx + it.r.width : tx
           const ey = it.ty + it.r.height / 2
@@ -201,17 +266,11 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
         }
         m.needsUpdate = true
       }
-      tags.forEach((t, i) => {
-        t.visible = labelsOn || i === hlIndex
-        ;(t.userData.lead as THREE.Line).visible = t.visible
-      })
+      showTags()
     }
     const setLabels = (on: boolean) => {
       labelsOn = on
-      tags.forEach((t, i) => {
-        t.visible = on || i === hlIndex
-        ;(t.userData.lead as THREE.Line).visible = t.visible
-      })
+      showTags()
     }
     const moving: { o: THREE.Object3D; kind: 'spin' | 'slide'; speed: number; amp: number; base: number }[] = []
     model.group.traverse((o) => {
@@ -240,12 +299,15 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
     const unfixTouch = fixTouchPointers(controls, host, renderer.domElement)
 
     const plane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0)
-    const setCut = (c: boolean) =>
+    const setCut = (c: boolean) => {
       model.shells.forEach((m) => {
         m.clippingPlanes = c ? [plane] : []
         m.side = c ? THREE.DoubleSide : THREE.FrontSide
         m.needsUpdate = true
       })
+      cutOn = c
+      showTags()
+    }
     const setSpin = (s: boolean) => {
       controls.autoRotate = s
     }
@@ -327,6 +389,10 @@ export default function Part3D({ id, cut, spin, run = false, onLegend, onControl
         if (k >= 1) fly = null
       }
       controls.update()
+      if (labelsOn || hlIndex >= 0) {
+        model.group.updateMatrixWorld()
+        followPins()
+      }
       renderer.render(scene, camera)
       labelLayer.render(scene, camera)
       if (labelsOn || hlIndex >= 0) unstack()

@@ -48,6 +48,14 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
     setSpin(false)
     setOp(v)
   }
+  /** 換產品（頁面上的膠囊、放大視窗裡的膠囊共用） */
+  const pick = (i: number) => {
+    setIndex(i)
+    setLegendOpen(null)
+    setPi(0)
+    setCut(false)
+    setSpin(true)
+  }
   const credits = photoSets[part.id] ?? (id && photoCredits[id] ? [photoCredits[id]] : [])
   const credit = credits[Math.min(pi, credits.length - 1)]
   const photo = photoOf(credit?.file)
@@ -98,13 +106,7 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
             <button
               key={p.id}
               type="button"
-              onClick={() => {
-                setIndex(i)
-                setLegendOpen(null)
-                setPi(0)
-                setCut(false)
-                setSpin(true)
-              }}
+              onClick={() => pick(i)}
               className={cn('flex min-h-11 items-center gap-1.5 rounded-full font-semibold transition', mobile ? t.pill : 'px-3 py-1 text-[20px]', i === index ? 'bg-slate-100 text-paper' : 'border border-line bg-card text-slate-200 hover:border-sky-500/50', focusRing)}
             >
               {glyphFor(p.label) && <PartGlyph id={glyphFor(p.label)!} size={mobile ? 18 : 22} strokeWidth={2.4} />}
@@ -255,7 +257,16 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
           )}
         </div>
       )}
-      {big && id && <PartViewer id={id} title={part.label} onClose={() => setBig(false)} />}
+      {big && id && (
+        <PartViewer
+          id={id}
+          title={part.label}
+          onClose={() => setBig(false)}
+          choices={parts.map((p) => ({ label: p.label, glyph: glyphFor(p.label) && <PartGlyph id={glyphFor(p.label)!} size={20} strokeWidth={2.4} /> }))}
+          current={index}
+          onPick={pick}
+        />
+      )}
     </section>
   )
 }

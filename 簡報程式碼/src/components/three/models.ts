@@ -576,38 +576,40 @@ const builders: Record<Part3DId, () => PartModel> = {  /** 視液鏡（10/13 做
   comp() {
     const b = new Builder()
     const dome = b.shell(new THREE.MeshStandardMaterial({ color: 0x1f2a44, metalness: 0.45, roughness: 0.38 }))
-    // 從上面看是橢圓：x 拉長 1.35 倍、z 縮成 0.8 倍（實物多半是這種長形）
-    const SX = 1.35
-    const SZ = 0.8
-    lathe(b, [[0, -0.7], [0.78, -0.7], [0.9, -0.62], [0.96, -0.45], [0.97, -0.1], [0.95, 0.15], [0.88, 0.4], [0.74, 0.6], [0.5, 0.76], [0.22, 0.83], [0, 0.85]], dome, 'y', [0, 0, 0], 64).scale.set(SX, 1, SZ)
+    // 10/13 使用者：「胖矮好醜」→ 拉長後又嫌「太扁」→ 改成直立、比寬高一點的鐵殼（但還是比渦捲式矮，上課講的）；從上面看稍微橢圓
+    const SX = 1.12
+    const SZ = 0.95
+    const RR = 0.79
+    lathe(b, [[0, -0.95], [0.66, -0.95], [0.74, -0.88], [0.78, -0.7], [0.79, -0.2], [0.785, 0.2], [0.75, 0.5], [0.65, 0.73], [0.47, 0.89], [0.23, 0.97], [0, 0.99]], dome, 'y', [0, 0, 0], 64).scale.set(SX, 1, SZ)
     const seam = b.shell(mat.dark())
-    b.mesh(new THREE.TorusGeometry(0.975, 0.022, 8, 72), seam, [0, -0.12, 0], [R, 0, 0]).scale.set(SX, SZ, 1)
-    feet(b, 2.5, 1.3, -0.76, 1.05, 0.48)
+    b.mesh(new THREE.TorusGeometry(RR + 0.005, 0.02, 8, 72), seam, [0, 0, 0], [R, 0, 0]).scale.set(SX, SZ, 1)
+    feet(b, 2.1, 1.5, -1.01, 0.82, 0.58)
     // 接線盒：電源接頭在裡面；單相要接繼電器＋啟動電容＋運轉電容
     const tbox = mat.paint(0x111827)
-    b.box(0.5, 0.42, 0.24, tbox, [0.35, -0.2, 0.8])
-    b.box(0.42, 0.34, 0.03, mat.paint(0x374151), [0.35, -0.2, 0.93])
-    nameplate(b, 0.97, -0.5, 0.15, SX, SZ)
+    b.box(0.46, 0.4, 0.24, tbox, [0.3, -0.4, RR * SZ + 0.04])
+    b.box(0.38, 0.32, 0.03, mat.paint(0x374151), [0.3, -0.4, RR * SZ + 0.17])
+    nameplate(b, RR, -0.55, 0.3, SX, SZ)
     const cu = mat.copper()
     const stub = (angle: number, y: number, r: number, out: number) => {
       const c = Math.cos(angle)
       const s = Math.sin(angle)
-      return b.tube([[0.8 * SX * c, y, 0.8 * SZ * s], [(0.8 * SX + out - 0.8) * c, y, (0.8 * SZ + out - 0.8) * s]], r, cu)
+      const r0 = RR - 0.02
+      return b.tube([[r0 * SX * c, y, r0 * SZ * s], [(r0 * SX + out - 0.8) * c, y, (r0 * SZ + out - 0.8) * s]], r, cu)
     }
-    stub(0.45, 0.32, 0.085, 1.45) // 吸氣：最粗
-    stub(-0.15, 0.4, 0.055, 1.4) // 排氣
-    stub(1.0, 0.12, 0.04, 1.25) // 充灌：最細
-    b.box(0.1, 0.03, 0.08, cu, [(0.8 * SX + 0.47) * Math.cos(1.0), 0.12, (0.8 * SZ + 0.47) * Math.sin(1.0)]).rotation.y = -1.0
+    stub(0.45, 0.35, 0.085, 1.4) // 吸氣：最粗
+    stub(-0.15, 0.48, 0.055, 1.35) // 排氣
+    stub(1.0, 0.1, 0.04, 1.2) // 充灌：最細
+    b.box(0.1, 0.03, 0.08, cu, [((RR - 0.02) * SX + 0.42) * Math.cos(1.0), 0.1, ((RR - 0.02) * SZ + 0.42) * Math.sin(1.0)]).rotation.y = -1.0
     // 內部（剖開才看得到）
     const stator = mat.copper()
-    b.mesh(new THREE.TorusGeometry(0.5, 0.15, 20, 48), stator, [0, 0.25, 0], [R, 0, 0])
+    b.mesh(new THREE.TorusGeometry(0.48, 0.15, 20, 48), stator, [0, 0.32, 0], [R, 0, 0])
     const rotor = mat.steel()
-    b.cylY(0.28, 0.5, rotor, [0, 0.25, 0])
-    b.cylY(0.06, 1.0, rotor, [0, -0.05, 0], 16)
+    b.cylY(0.27, 0.55, rotor, [0, 0.32, 0])
+    b.cylY(0.06, 1.15, rotor, [0, -0.08, 0], 16)
     const block = mat.paint(0x6b7280)
-    b.box(0.9, 0.28, 0.5, block, [0.15, -0.38, 0])
+    b.box(0.85, 0.3, 0.5, block, [0.12, -0.5, 0])
     const piston = mat.paint(0xf59e0b)
-    b.cylX(0.15, 0.28, piston, [0.42, -0.38, 0.0], 24).userData.anim = { kind: 'slide', amp: 0.07, speed: 14 }
+    b.cylX(0.15, 0.28, piston, [0.4, -0.5, 0.0], 24).userData.anim = { kind: 'slide', amp: 0.07, speed: 14 }
     b.note(dome, '鐵殼（全密閉）', '上下兩半銲死，拆不開；往復式比渦捲式矮')
     b.note(tbox, '接線盒', '電源接在這裡；單相要配繼電器＋啟動電容＋運轉電容')
     b.note(cu, '三支管', '粗的吸氣、細的排氣；第三支是充灌，跟低壓端相通〔錄音16 13:48〕')

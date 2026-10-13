@@ -34,6 +34,7 @@ import { BulbClock } from '../diagrams/BulbClock'
 import { CycleDiagram } from '../diagrams/CycleDiagram'
 import { part3DFor } from '../three/ids'
 import { PartViewer } from '../three/PartViewer'
+import { CycleBigViewer } from '../three/CycleBigViewer'
 
 /* 手機閱讀版：不縮放、實際字級（內文 17px），單欄、最多一層卡片 */
 
@@ -866,6 +867,7 @@ function CycleLessonMobile() {
   const viewModel = viewId ? part3DFor(viewId) : null
   const [view, setView] = useState<'2d' | '3d'>('2d')
   const [cut, setCut] = useState(false)
+  const [big, setBig] = useState(false)
   return (
     <div className="space-y-3">
       {viewModel && note && <PartViewer id={viewModel} title={note.title.replace(/^[①-④]\s*/, '')} alias={note.alias} onClose={() => setViewId(null)} />}
@@ -889,7 +891,35 @@ function CycleLessonMobile() {
             {cut ? '合起來' : '剖開看內部'}
           </button>
         )}
+        {view === '3d' && (
+          <button type="button" onClick={() => setBig(true)} className="rounded-full border border-line bg-card px-3 py-1.5 text-[14px] font-semibold text-sky-300">
+            放大看
+          </button>
+        )}
       </div>
+      {big && view === '3d' && (
+        <CycleBigViewer
+          selected={selected}
+          onSelect={(id) => id && pick(id, false)}
+          cut={cut}
+          onCut={setCut}
+          onClose={() => setBig(false)}
+          side={
+            note ? (
+              <div>
+                <p className="text-[19px] font-black text-white">{note.title}</p>
+                <p className={cn('text-[15px] font-semibold', toneStyles[note.tone].text)}>{note.alias}</p>
+                <p className="mt-1.5 text-[15px]">
+                  <b className="mr-2 text-sky-300">重點</b>
+                  {note.point}
+                </p>
+              </div>
+            ) : (
+              <p className="text-[15px] text-slate-400">點 3D 上的零件名稱，這裡會出現說明。</p>
+            )
+          }
+        />
+      )}
       <p className="text-[15px] text-slate-300">{view === '2d' ? '點圖上的虛線框或下面的按鈕，看說明、聽錄音。' : '按「啟動冷凍系統」看冷媒跑一圈；手指拖曳旋轉、兩指縮放，點零件名稱看說明。'}</p>
       {view === '2d' ? (
         <div className="relative rounded-2xl border border-line bg-card" style={{ aspectRatio: '820 / 560' }}>
@@ -899,7 +929,7 @@ function CycleLessonMobile() {
         <div className="relative h-[420px] overflow-hidden rounded-2xl bg-white/[0.04]">
           <InView fallback={<p className="absolute inset-0 flex items-center justify-center text-[15px] text-slate-400">3D 載入中…</p>}>
             <Suspense fallback={<p className="absolute inset-0 flex items-center justify-center text-[15px] text-slate-400">3D 載入中…</p>}>
-              <CycleSystem3D selected={selected} onSelect={(id) => id && pick(id, true)} cut={cut} compact />
+              {big ? <p className="absolute inset-0 flex items-center justify-center text-[15px] text-slate-400">放大看中…</p> : <CycleSystem3D selected={selected} onSelect={(id) => id && pick(id, true)} cut={cut} compact />}
             </Suspense>
           </InView>
         </div>

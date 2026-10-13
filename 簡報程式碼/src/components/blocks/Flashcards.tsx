@@ -132,6 +132,13 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
     }
     setFlipped(false)
   }
+  /** 標錯了可以改（10/13 使用者：「我想要編輯」）：這張已經是「會了」→ 再按一次取消，留在這張不跳走 */
+  const unmark = () => {
+    if (!card) return
+    const next = { ...status }
+    delete next[card.term]
+    setStatus(next)
+  }
   const reshuffle = () => {
     const o = shuffled(total)
     setOrder(o)
@@ -287,7 +294,7 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
           </div>
         </div>
       ))}
-      <p className={cn('text-slate-500', size.small, !mobile && 'mt-auto')}>綠色＝會了・橘色＝還不熟；記在這台電腦，下次打開還在。</p>
+      <p className={cn('text-slate-500', size.small, !mobile && 'mt-auto')}>綠色＝會了・橘色＝還不熟；標錯了：點那個名詞，再按「會了・再按取消」。記在這台電腦，下次打開還在。</p>
     </div>
   )
 
@@ -329,10 +336,17 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
               <Repeat className="size-5" aria-hidden />
               還不熟
             </button>
-            <button type="button" onClick={() => mark('known')} className={cn(actionBtn, 'bg-emerald-500/15 text-emerald-100 hover:bg-emerald-500/25')}>
-              <Check className="size-5" aria-hidden />
-              會了
-            </button>
+            {status[card.term] === 'known' ? (
+              <button type="button" aria-pressed onClick={unmark} className={cn(actionBtn, 'bg-emerald-400 text-paper hover:bg-emerald-300')} title="這張標成會了；再按一次取消">
+                <Check className="size-5" aria-hidden />
+                會了・再按取消
+              </button>
+            ) : (
+              <button type="button" aria-pressed={false} onClick={() => mark('known')} className={cn(actionBtn, 'bg-emerald-500/15 text-emerald-100 hover:bg-emerald-500/25')}>
+                <Check className="size-5" aria-hidden />
+                會了
+              </button>
+            )}
           </>
         ) : (
           <button type="button" onClick={resetAll} className={cn(actionBtn, 'border border-line bg-card text-slate-100 hover:border-sky-500/50')}>
@@ -344,6 +358,18 @@ export function Flashcards({ block, mobile = false }: { block: FlashcardsBlock; 
           <Shuffle className="size-5" aria-hidden />
           洗牌
         </button>
+        {card && known > 0 && (
+          <button
+            type="button"
+            onClick={() => {
+              if (window.confirm(`把 ${known} 張「會了」全部取消、從頭練？`)) resetAll()
+            }}
+            className={cn(actionBtn, 'border border-line bg-card text-slate-200 hover:border-sky-500/50')}
+          >
+            <RotateCcw className="size-5" aria-hidden />
+            全部重來
+          </button>
+        )}
       </GlassButtonGroup>
       {viewer && model && card && <PartViewer id={model} title={card.term} alias={card.alias} onClose={() => setViewer(false)} />}
     </div>

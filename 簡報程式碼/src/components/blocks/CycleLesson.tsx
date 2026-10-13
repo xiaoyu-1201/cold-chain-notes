@@ -1,4 +1,4 @@
-import { ArrowUpRight, Box, ChevronLeft, ChevronRight, Layers, TriangleAlert } from 'lucide-react'
+import { ArrowUpRight, Box, ChevronLeft, ChevronRight, Layers, Maximize2, TriangleAlert } from 'lucide-react'
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { FAULTS, type Fault } from '../../data/faults'
 import { useStickyState } from '../../hooks/useStickyState'
@@ -9,6 +9,7 @@ import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
 import { CycleDiagram } from '../diagrams/CycleDiagram'
 import { ClipButton } from '../diagrams/CycleExplorer'
+import { CycleBigViewer } from '../three/CycleBigViewer'
 import { part3DFor } from '../three/ids'
 import { PartViewer } from '../three/PartViewer'
 import { Deferred } from '../ui/Deferred'
@@ -250,6 +251,8 @@ export function CycleLesson() {
   const [faultId, setFaultId] = useState<string | null>(null)
   const [faultStep, setFaultStep] = useState(0)
   const [auto, setAuto] = useState(true)
+  // 10/13 使用者：「也要可以把小視窗放大」
+  const [big, setBig] = useState(false)
   const fault = FAULTS.find((x) => x.id === faultId) ?? null
   const faults: FaultControl = {
     fault,
@@ -293,10 +296,20 @@ export function CycleLesson() {
         {view === '3d' && (
           <button
             type="button"
+            onClick={() => setBig(true)}
+            className={cn('ml-auto flex items-center gap-2 rounded-full border border-line bg-card px-5 py-2 text-[20px] font-semibold text-sky-300 transition hover:border-sky-500/50', focusRing)}
+          >
+            <Maximize2 className="size-5" aria-hidden />
+            放大看
+          </button>
+        )}
+        {view === '3d' && (
+          <button
+            type="button"
             aria-pressed={cut}
             onClick={() => setCut((c) => !c)}
             className={cn(
-              'ml-auto flex items-center gap-2 rounded-full px-5 py-2 text-[20px] font-semibold transition',
+              'flex items-center gap-2 rounded-full px-5 py-2 text-[20px] font-semibold transition',
               cut ? 'bg-sky-400 text-paper' : 'border border-line bg-card text-sky-300 hover:border-sky-500/50',
               focusRing,
             )}
@@ -314,10 +327,28 @@ export function CycleLesson() {
             </div>
           ) : (
             <Deferred fallback={loading3D}>
-              <Suspense fallback={loading3D}>
-                <CycleSystem3D selected={selected} onSelect={setSelected} cut={cut} fault={fault?.steps[faultStep].fx ?? null} faultLabel={fault?.label} onExitFault={() => setFaultId(null)} />
-              </Suspense>
+              {/* 放大看時小的先拿掉：同時兩個 3D 很吃效能 */}
+              {big ? (
+                <p className="absolute inset-0 flex items-center justify-center text-[22px] text-slate-400">放大看中…</p>
+              ) : (
+                <Suspense fallback={loading3D}>
+                  <CycleSystem3D selected={selected} onSelect={setSelected} cut={cut} fault={fault?.steps[faultStep].fx ?? null} faultLabel={fault?.label} onExitFault={() => setFaultId(null)} />
+                </Suspense>
+              )}
             </Deferred>
+          )}
+          {big && view === '3d' && (
+            <CycleBigViewer
+              selected={selected}
+              onSelect={setSelected}
+              cut={cut}
+              onCut={setCut}
+              fault={fault?.steps[faultStep].fx ?? null}
+              faultLabel={fault?.label}
+              onExitFault={() => setFaultId(null)}
+              onClose={() => setBig(false)}
+              side={<Inspector selected={selected} onSelect={setSelected} faults={faults} />}
+            />
           )}
         </div>
         <div className="min-w-0 flex-1">

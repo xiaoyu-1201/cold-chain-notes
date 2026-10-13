@@ -284,13 +284,13 @@ const groupOf = (index: number) => dotGroups.find((g) => g.items.includes(index)
 /** 浮出說明：只有滑鼠才顯示（手指點了沒有「移開」這回事，說明框會一直留在畫面上） */
 function useHoverTip() {
   const wrap = useRef<HTMLDivElement>(null)
-  const [tip, setTip] = useState<{ i: number; x: number } | null>(null)
+  const [tip, setTip] = useState<{ i: number; x: number; group?: boolean } | null>(null)
   const show = useCallback(
-    (i: number) => (e: { currentTarget: HTMLElement }) => {
+    (i: number, group?: boolean) => (e: { currentTarget: HTMLElement }) => {
       if (!window.matchMedia('(hover: hover)').matches) return
       const box = wrap.current?.getBoundingClientRect()
       const r = e.currentTarget.getBoundingClientRect()
-      if (box) setTip({ i, x: r.left + r.width / 2 - box.left })
+      if (box) setTip({ i, x: r.left + r.width / 2 - box.left, group })
     },
     [],
   )
@@ -405,14 +405,22 @@ function MergedBar({ index, onGoTo }: { index: number; onGoTo: (index: number) =
                 type="button"
                 onClick={() => onGoTo(group.items[0])}
                 onMouseDown={keepFocus}
-                onMouseEnter={show(group.items[0])}
-                onFocus={show(group.items[0])}
-                aria-label={`：${group.items.length} 頁，跳到第一頁`}
+                onMouseEnter={show(group.items[0], true)}
+                onFocus={show(group.items[0], true)}
+                aria-label={`${part.title}：${group.items.length} 頁，跳到第一頁`}
                 aria-current={current ? 'true' : undefined}
+                // 不套玻璃按鈕的半透明底：頁碼捲到篇名後面時不能透出來（10/13 使用者：「元件」跟頁數重疊）
+                data-no-glass={current ? '' : undefined}
                 className={cn(
                   'relative shrink-0 whitespace-nowrap rounded-full px-2.5 py-1.5 text-[13px] font-semibold leading-tight transition 2xl:px-3 2xl:text-[14px]',
-                  // 這篇的篇名黏在左邊：頁碼捲到後面時篇名還看得到
-                  current ? cn('sticky left-0 z-10 bg-card font-bold shadow-[4px_0_8px_-6px_rgba(15,36,64,0.35)]', toneStyles[part.tone].text) : 'text-slate-400 hover:bg-white/[0.05] hover:text-ink',
+                  // 這篇的篇名黏在左邊：頁碼捲到後面時篇名還看得到；左邊有箭頭時黏在箭頭右邊，不被箭頭蓋住
+                  current
+                    ? cn(
+                        'sticky z-10 bg-card font-bold shadow-[4px_0_8px_-6px_rgba(15,36,64,0.35)]',
+                        fade.l ? 'left-8' : 'left-0',
+                        toneStyles[part.tone].text,
+                      )
+                    : 'text-slate-400 hover:bg-white/[0.05] hover:text-ink',
                   focusRing,
                 )}
               >
@@ -453,20 +461,28 @@ function MergedBar({ index, onGoTo }: { index: number; onGoTo: (index: number) =
           )
         })}
       </div>
-      {tip && <Tip i={tip.i} x={tip.x} />}
+      {tip && <Tip i={tip.i} x={tip.x} group={tip.group} />}
     </div>
   )
 }
-/** 篇章列的浮出說明 */
-function Tip({ i, x }: { i: number; x: number }) {
+/** 篇章列的浮出說明：指篇名＝這篇叫什麼、幾頁；指頁碼＝那一頁的標題（篇名條上已經有，不重複寫篇名）。10/13 使用者嫌太寬 → 窄一點、太長就換行 */
+function Tip({ i, x, group }: { i: number; x: number; group?: boolean }) {
   const s = slides[i]
+  const g = groupOf(i)
   return (
-    <span style={{ left: x }} className="pointer-events-none absolute bottom-full z-50 mb-3 -translate-x-1/2 whitespace-nowrap rounded-lg border border-line bg-card px-3 py-1.5 text-[13px] font-semibold text-slate-100 shadow-[0_6px_18px_-8px_rgba(15,36,64,0.3)]">
-      <span className="font-mono text-sky-400">P.{pad(i + 1)}</span>
-      <span className={cn('mx-1.5', toneStyles[parts[s.part].tone].text)}>{parts[s.part].short}</span>
-      {isNew(s.added) && <span className="mr-1.5 rounded bg-red-400 px-1.5 text-[13px] font-black text-paper">新</span>}
-      {s.tier === 'ref' && <span className="mr-1.5 text-slate-400">查閱 ·</span>}
-      {s.title}
+    <span style={{ left: x }} className="pointer-events-none absolute bottom-full z-50 mb-3 w-max max-w-[260px] -translate-x-1/2 rounded-lg border border-line bg-card px-3 py-1.5 text-[13px] font-semibold leading-snug text-slate-100 shadow-[0_6px_18px_-8px_rgba(15,36,64,0.3)]">
+      {group ? (
+        <>
+          <span className={toneStyles[parts[s.part].tone].text}>{parts[s.part].title}</span>
+          <span className="ml-1.5 text-slate-400">{g.items.length} 頁</span>
+        </>
+      ) : (
+        <>
+          <span className="mr-1.5 font-mono text-sky-400">P.{pad(i + 1)}</span>
+          {isNew(s.added) && <span className="mr-1.5 rounded bg-red-400 px-1.5 text-[13px] font-black text-paper">新</span>}
+          {s.title}
+        </>
+      )}
     </span>
   )
 }

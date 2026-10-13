@@ -49,7 +49,7 @@ function RowFlow({ block }: { block: FlowBlock }) {
                 <ChevronRight className="size-7 text-slate-500" />
               </div>
             )}
-            <div className={cn('relative flex min-w-0 flex-1 flex-col rounded-2xl border bg-card px-5 py-4', isNew(step.added) ? 'border-2 border-red-400 bg-red-950' : t.border)}>
+            <div className={cn('relative flex min-w-0 flex-1 flex-col rounded-2xl px-5 py-4', isNew(step.added) ? 'border-2 border-red-400 bg-red-950' : cn('border bg-card', t.border))}>
               <div className="flex items-center justify-between gap-2">
                 <span className={cn('text-[19px] font-bold', t.text)}>
                   步驟 <span className="font-mono">{pad(i + 1)}</span>

@@ -38,7 +38,8 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
   const { goToId, numberOf } = useDeck()
   const [coreOnly, setCoreOnly] = useStickyState('overview-core-only', false)
   return (
-    <div className="grid h-full grid-rows-[minmax(0,1fr)_auto] gap-5">
+    // keep-size：學習地圖一欄塞很多列，不套「最小 20px」（index.css 的 .deck-canvas 規則）
+    <div className="keep-size grid h-full grid-rows-[minmax(0,1fr)_auto] gap-5">
       <motion.div
         variants={staggerParent}
         className="grid min-h-0 gap-6"
@@ -99,7 +100,7 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
                   </div>
                 </div>
                 {part.goal && (
-                  <p className={cn('mt-2.5 text-[17px] leading-snug text-slate-300', tight && 'line-clamp-2')}>
+                  <p className={cn('mt-2.5 text-[17px] leading-snug text-slate-300', tight && 'line-clamp-1')} title={part.goal}>
                     <span className={cn('mr-1.5 font-bold', t.text)}>學完你會</span>
                     {/* goal 本身多半是「會…」開頭：去掉一個，不會變成「學完你會會…」（10/10 QA） */}
                     {part.goal.replace(/^會/, '')}
@@ -126,7 +127,10 @@ export function PartsOverview({ block }: { block: PartsBlock }) {
                           {hasGlyph && <span className="flex w-6 shrink-0 justify-center text-ink-2">{g && <PartGlyph id={g} size={26} />}</span>}
                           <span className={cn('min-w-0 flex-1 text-balance font-semibold leading-snug text-slate-100', dense ? 'text-[17px]' : 'text-[18px]')}>
                             {ch.title}
-                            {rowNew(ch.slide) && <span className="ml-1.5 inline-block whitespace-nowrap rounded bg-red-400 px-1.5 align-[1px] text-[16px] font-black leading-6 text-paper">{rowNew(ch.slide)}</span>}
+                            {rowNew(ch.slide) && (
+                              // 欄位很窄：只寫「新」，是哪幾頁放在滑過的說明（10/13 QA：寫頁碼會把這一欄撐爆）
+                              <span title={rowNew(ch.slide)!} className="ml-1.5 inline-block whitespace-nowrap rounded bg-red-400 px-1.5 align-[1px] text-[16px] font-black leading-6 text-paper">新</span>
+                            )}
                             {isRef && <span className="ml-1.5 inline-block text-[16px] font-semibold text-slate-500">查閱</span>}
                             {preview && (
                               <span className={cn('mt-1 text-[16px] font-normal leading-snug text-slate-400', previewLines === 4 ? 'line-clamp-4' : 'line-clamp-1')}>{preview}</span>
@@ -275,18 +279,18 @@ export function ScenarioCard({ block }: { block: ScenarioBlock }) {
           </button>
         )}
       </div>
-      <p className={cn('mt-3 flex gap-2 text-[23px] font-bold leading-snug', t.strong)}>
+      <p className={cn('mt-3 flex gap-2 text-[26px] font-bold leading-snug', t.strong)}>
         <MessageCircle className={cn('mt-1 size-5 shrink-0', t.text)} aria-hidden />
         {block.customer}
       </p>
-      <p className="mt-2.5 flex gap-2 text-[20px] leading-normal text-slate-300">
+      <p className="mt-2.5 flex gap-2 text-[23px] leading-normal text-slate-300">
         <CornerDownRight className="mt-1 size-4 shrink-0 text-slate-500" aria-hidden />
         <span>{block.ask}</span>
       </p>
       <div className="flex flex-wrap items-center gap-1.5 pt-4">
-        <span className="mr-1 text-[19px] font-bold text-emerald-300">推薦</span>
+        <span className="mr-1 text-[21px] font-bold text-emerald-300">推薦</span>
         {block.recommend.map((r) => (
-          <span key={r} className="rounded-md border border-emerald-500/40 bg-emerald-950 px-2 py-0.5 text-[19px] font-semibold text-emerald-100">
+          <span key={r} className="rounded-md border border-emerald-500/40 bg-emerald-950 px-2 py-0.5 text-[21px] font-semibold text-emerald-100">
             {r}
           </span>
         ))}

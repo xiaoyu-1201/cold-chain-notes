@@ -688,3 +688,35 @@ button[class~='bg-sky-500/15']:not([class~='w-full'], [data-no-glass], :disabled
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
 }
+
+/* 10/13 使用者：「最小設定『水平管』這種大小」→ 電腦簡報畫布（1920 寬）裡的字最小 20px。
+   寫在 layer 外面，會蓋過元件裡寫的 text-[16px] 這類小字；手機閱讀版不在 .deck-canvas 裡，不受影響。
+   學習地圖（.keep-size）一欄要塞很多列，維持原本字級。 */
+.deck-canvas .text-\[12px\],
+.deck-canvas .text-\[13px\],
+.deck-canvas .text-\[14px\],
+.deck-canvas .text-\[15px\],
+.deck-canvas .text-\[16px\],
+.deck-canvas .text-\[17px\],
+.deck-canvas .text-\[18px\],
+.deck-canvas .text-\[19px\],
+.deck-canvas .text-xs,
+.deck-canvas .text-sm,
+.deck-canvas .text-base {
+  font-size: 20px;
+}
+/* 學習地圖：還原原本字級（選擇器多一層，權重比上面高） */
+.deck-canvas .keep-size .text-\[12px\] { font-size: 12px; }
+.deck-canvas .keep-size .text-\[13px\] { font-size: 13px; }
+.deck-canvas .keep-size .text-\[14px\] { font-size: 14px; }
+.deck-canvas .keep-size .text-\[15px\] { font-size: 15px; }
+.deck-canvas .keep-size .text-\[16px\] { font-size: 16px; }
+.deck-canvas .keep-size .text-\[17px\] { font-size: 17px; }
+.deck-canvas .keep-size .text-\[18px\] { font-size: 18px; }
+.deck-canvas .keep-size .text-\[19px\] { font-size: 19px; }
+.deck-canvas .keep-size .text-xs { font-size: 12px; }
+.deck-canvas .keep-size .text-sm { font-size: 14px; }
+.deck-canvas .keep-size .text-base { font-size: 16px; }
+.deck-canvas .exp-tag { font-size: 20px; }
+/* 避免最後一行只剩一個字（新版瀏覽器才有效，舊的照常換行） */
+.deck-canvas p, .deck-canvas li, .deck-canvas h4, .deck-canvas dd { text-wrap: pretty; }

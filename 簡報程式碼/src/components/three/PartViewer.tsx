@@ -1,5 +1,5 @@
 import { Box, Camera, Layers, RotateCw, X } from 'lucide-react'
-import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { photoCredits } from '../../data/photoCredits'
 import { cn } from '../../lib/cn'
@@ -41,6 +41,16 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
     if (control?.needsCut && !cut) setCut(true)
     setOp(v)
   }
+
+  // 打開時焦點移到關閉鈕、關掉後回到原本的按鈕（10/13 code review）
+  const closeRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    const prev = document.activeElement as HTMLElement | null
+    closeRef.current?.focus()
+    return () => prev?.focus?.()
+  }, [])
+  // 手機用手指：提示要寫手指的操作
+  const touch = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -96,7 +106,7 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
               照片
             </button>
           </div>
-          <button type="button" onClick={onClose} aria-label="關閉（Esc）" className={cn('rounded-xl border border-line bg-card p-2 text-slate-200 hover:border-sky-500/60', focusRing)}>
+          <button ref={closeRef} type="button" onClick={onClose} aria-label="關閉（Esc）" className={cn('grid size-11 place-items-center rounded-xl border border-line bg-card text-slate-200 hover:border-sky-500/60', focusRing)}>
             <X className="size-5" aria-hidden />
           </button>
         </header>
@@ -117,7 +127,7 @@ export function PartViewer({ id, title, alias, onClose }: PartViewerProps) {
                   自動旋轉
                 </button>
               </GlassButtonGroup>
-              <p className="glass pointer-events-none absolute right-3 top-3 rounded-full px-3 py-1 text-[13px] text-slate-200">拖曳旋轉・滾輪往游標放大・雙擊還原</p>
+              <p className="glass pointer-events-none absolute right-3 top-3 rounded-full px-3 py-1 text-[13px] text-slate-200">{touch ? '拖曳旋轉・兩指放大・點兩下還原' : '拖曳旋轉・滾輪往游標放大・雙擊還原'}</p>
             </div>
             <aside className="max-h-[42%] overflow-y-auto border-t border-line bg-card p-4 lg:max-h-none lg:w-[380px] lg:border-l lg:border-t-0">
               {control && (

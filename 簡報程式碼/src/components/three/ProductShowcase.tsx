@@ -101,7 +101,8 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
             <InView fallback={loading}>
               <Deferred fallback={loading}>
                 <Suspense fallback={loading}>
-                  <Part3D key={id} id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} />
+                  {/* 放大看的時候先停掉這個（同時兩個 3D 在手機上容易卡、掉畫面） */}
+                  {!big && <Part3D key={id} id={id} cut={cut} spin={spin} onLegend={setLegend} onControl={onControl} opValue={op} />}
                 </Suspense>
               </Deferred>
             </InView>
@@ -147,9 +148,9 @@ export function ProductShowcase({ parts, mobile = false }: { parts: { id: string
             // 手機一欄、整句換行（10/10 QA：兩欄時被切成「回氣管（銅管）・冷排…」）；電腦畫布空間有限，維持兩欄＋滑過看全文
             <ul className={cn('grid gap-x-4 gap-y-1', mobile ? 'grid-cols-1' : 'grid-cols-2', t.small)}>
               {legend.map((item) => (
-                <li key={item.name} className={cn('flex min-w-0 gap-2', mobile ? 'items-start' : 'items-center')} title={item.desc}>
-                  <span className={cn('size-3 shrink-0 rounded-full', mobile && 'mt-1')} style={{ background: item.color }} aria-hidden />
-                  <span className={cn('text-slate-200', !mobile && 'truncate')}>
+                <li key={item.name} className="flex min-w-0 items-start gap-2" title={item.desc}>
+                  <span className="mt-1.5 size-3 shrink-0 rounded-full" style={{ background: item.color }} aria-hidden />
+                  <span className="leading-snug text-slate-200">
                     <b className="font-semibold text-white">{item.name}</b>
                     <span className="text-slate-400">・{item.desc}</span>
                   </span>

@@ -24,9 +24,9 @@ export function Metrics({ block }: { block: MetricsBlock }) {
               <div
                 key={i}
                 className={cn(
-                  'relative flex flex-col justify-center overflow-hidden rounded-2xl border bg-card',
+                  'relative flex flex-col justify-center overflow-hidden rounded-2xl',
                   lg ? 'px-6 py-4' : 'px-5 py-1.5',
-                  isNew(item.added) ? 'border-2 border-red-400 bg-red-950' : t.border,
+                  isNew(item.added) ? 'border-2 border-red-400 bg-red-950' : cn('border bg-card', t.border),
                 )}
               >
                 <span aria-hidden className={cn('absolute inset-y-0 left-0 w-1', t.dot)} />

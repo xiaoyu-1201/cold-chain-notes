@@ -39,7 +39,7 @@ export function SlideCard({ slide }: { slide: SlideData }) {
       initial="hidden"
       animate="show"
       variants={staggerParent}
-      className="absolute inset-0 flex flex-col px-[88px] pb-[44px] pt-[52px]"
+      className="deck-canvas absolute inset-0 flex flex-col px-[88px] pb-[44px] pt-[52px]"
     >
       <motion.header variants={fadeUp} className="relative flex items-end justify-between gap-10">
         <div className="min-w-0">

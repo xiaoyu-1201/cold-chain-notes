@@ -63,8 +63,10 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
 
   return (
     <div className="hotspot-wrap flex h-full items-center gap-6">
+      {/* 說明放在圖下面（10/13：字放大後右邊放不下） */}
+      <div className="flex w-[820px] shrink-0 flex-col gap-2">
       <figure
-        className="relative w-[960px] shrink-0 overflow-hidden rounded-[14px] border border-line bg-card"
+        className="relative w-[820px] shrink-0 overflow-hidden rounded-[14px] border border-line bg-card"
         style={{ aspectRatio: String(block.ratio) }}
       >
         <img src={block.image} alt={block.alt} draggable={false} className="absolute inset-0 h-full w-full select-none object-cover" />
@@ -99,8 +101,10 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
           點圖上的藍點或右側型號查看說明
         </figcaption>
       </figure>
+      {block.note && <p className="text-[20px] leading-snug text-amber-200">{block.note}</p>}
+      </div>
 
-      <section className="flex h-full min-w-0 flex-1 flex-col gap-4">
+      <section className="flex h-full min-w-0 flex-1 flex-col gap-3">
         <div className={cn('flex flex-col rounded-[18px] border bg-card p-5', gt.border)}>
           <div className="flex items-center gap-3">
             {glyphFor(selected.name) && <PartGlyph id={glyphFor(selected.name)!} size={48} className="-my-1 shrink-0 text-ink-2" />}
@@ -112,7 +116,7 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
           <h4 className="mt-2 text-[24px] font-bold leading-tight text-slate-50">{selected.name}</h4>
           <p className="mt-0.5 font-mono text-[16px] uppercase tracking-[0.14em] text-slate-400">{selected.en}</p>
           <p className="mt-3 text-[19px] leading-normal text-slate-200">{selected.func}</p>
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-3 flex flex-wrap gap-2">
             {model && (
               <button
                 type="button"
@@ -175,7 +179,6 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
           {block.audioSrc2 && <audio ref={audio2Ref} src={audio2Url} preload="none" controls={false} />}
           {view && model && <PartViewer id={model} title={selected.name} alias={`講義型號 ${selected.code}`} onClose={() => setView(false)} />}
         </div>
-        {block.note && <p className="-mt-1 text-[17px] leading-snug text-amber-200">{block.note}</p>}
 
         <div className="flex min-h-0 flex-1 flex-col justify-between gap-2.5">
           {GROUP_ORDER.map((g) => {
@@ -202,7 +205,7 @@ export function HotspotDiagram({ block }: { block: HotspotsBlock }) {
                           aria-pressed={active}
                           title={block.audioSrc ? (inRec ? '錄音中有講解' : '錄音未講解') : undefined}
                           className={cn(
-                            'flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[17px] font-semibold transition',
+                            'flex items-center gap-1 rounded-lg border px-2.5 py-0.5 text-[17px] font-semibold transition',
                             focusRing,
                             active ? 'border-pipe-red bg-red-950 text-red-100 ring-1 ring-pipe-red' : cn(t.chip, 'hover:brightness-95'),
                           )}

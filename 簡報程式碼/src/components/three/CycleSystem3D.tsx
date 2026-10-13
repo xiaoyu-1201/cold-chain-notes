@@ -34,7 +34,7 @@ const PLACEMENTS: { id: Extract<Part3DId, CycleNodeId>; pos: V3; scale: number; 
   { id: 'tc', pos: [-4.45, 0.55, 0], scale: 0.3, label: '溫控器' },
   { id: 'oub', pos: [3.2, 1.3, 0], scale: 0.24, label: '油分離器', side: 'l' },
   { id: 'kp15', pos: [4.45, 0.15, 0], scale: 0.3, label: '壓力開關' },
-  { id: 'acc', pos: [3.2, -1.3, 0], scale: 0.24, label: '液氣分離器', side: 'l' },
+  { id: 'acc', pos: [3.2, -1.3, 0], scale: 0.24, label: '液氣分離器', side: 'r' },
 ]
 
 /**
@@ -54,8 +54,8 @@ const PIPES: { id: PipeId; color: number; points: V3[]; label: string; labelPos:
     labelPos: [-3.42, -0.9, 0],
     side: 'l',
   },
-  { id: 'mixture', color: 0x2bb3a3, points: [[-1.24, -1.9, 0], [-0.55, -1.9, 0]], label: '液氣混合', labelPos: [-1.3, -2.15, 0], side: 'b' },
-  { id: 'suction', color: 0x3d8fdc, points: [[1.35, -1.9, 0], [3.2, -1.9, 0], [3.2, -0.75, 0]], label: '低溫低壓氣態', labelPos: [3.42, -1.6, 0], side: 'r' },
+  { id: 'mixture', color: 0x2bb3a3, points: [[-1.24, -1.9, 0], [-0.55, -1.9, 0]], label: '液氣混合', labelPos: [-0.85, -2.15, 0], side: 'b' },
+  { id: 'suction', color: 0x3d8fdc, points: [[1.35, -1.9, 0], [3.2, -1.9, 0], [3.2, -0.75, 0]], label: '低溫低壓氣態', labelPos: [3.42, -2.05, 0], side: 'r' },
 ]
 
 /** 啟動後的導覽：冷媒從壓縮機出發，一段一段跑完一圈 */
@@ -157,7 +157,8 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     const makeLabel = (text: string, id: CycleNodeId | null, major: boolean, tone?: string) => {
       const el = document.createElement('div')
       el.textContent = text
-      const size = major ? (compact ? 15 : 21) : compact ? 13 : 16
+      // 電腦版最小 20px（10/13 使用者：最小要「水平管」那麼大）
+      const size = major ? (compact ? 15 : 23) : compact ? 13 : 20
       el.style.cssText = [
         'pointer-events:auto',
         `cursor:${id ? 'pointer' : 'default'}`,
@@ -336,7 +337,12 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     }
 
     // 鏡頭：平常由使用者自己縮放／平移；雙擊零件或按按鈕時，平滑飛過去
+    // 10/13 使用者：「整體偏上」→ 鏡頭看的中心往上移一點，整張圖就往下、上下留白一樣
+    const homeTarget = new THREE.Vector3(0, 0.15, 0)
+    /** 全覽時鏡頭相對 homeTarget 的位置（長度在 resize 依畫面比例算） */
     const homePos = new THREE.Vector3(0, 1.5, 12.5)
+    controls.target.copy(homeTarget)
+    camera.position.copy(homeTarget).add(homePos)
     let atHome = true
     let fly: { p0: THREE.Vector3; t0: THREE.Vector3; p1: THREE.Vector3; t1: THREE.Vector3; start: number } | null = null
     const FLY_SEC = 0.7
@@ -349,7 +355,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       fly = { p0: camera.position.clone(), t0: controls.target.clone(), p1: pos, t1: target.clone(), start: clock.getElapsedTime() }
     }
     const home = () => {
-      flyTo(new THREE.Vector3(), homePos.clone())
+      flyTo(homeTarget.clone(), homeTarget.clone().add(homePos))
       markZoomed(false)
     }
     const zoom = (f: number) => {
@@ -368,9 +374,13 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       flyTo(c, c.clone().add(dir.multiplyScalar(THREE.MathUtils.clamp(size * 2.6, 2.6, 6))))
       markZoomed(true)
     }
+    // 只有真的轉動／縮放／平移過才算離開全覽（10/13：只是點一下零件也跳出「全覽」，按了看起來沒反應）
     controls.addEventListener('start', () => {
       fly = null
-      markZoomed(true)
+    })
+    controls.addEventListener('end', () => {
+      const moved = camera.position.distanceTo(homeTarget.clone().add(homePos)) > 0.05 || controls.target.distanceTo(homeTarget) > 0.05
+      if (moved) markZoomed(true)
     })
     api.current = {
       setSelected: (id) => (selectedId = id),
@@ -436,10 +446,10 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
       renderer.domElement.style.height = '100%'
       labels.setSize(w, h)
       camera.aspect = w / h
-      // 高度要放得下上下的標籤（約 7.4 單位），寬度要放得下左右的標籤（約 11.4 單位）
+      // 高度要放得下上下的標籤（約 7.4 單位，上下再各留一點邊），寬度要放得下左右的標籤（約 11.4 單位）
       const span = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))
-      homePos.setLength(Math.max(7.4 / span, 11.4 / (span * camera.aspect)))
-      if (atHome && !fly) camera.position.copy(homePos)
+      homePos.setLength(Math.max(7.9 / span, 11.4 / (span * camera.aspect)))
+      if (atHome && !fly) camera.position.copy(homeTarget).add(homePos)
       camera.updateProjectionMatrix()
     }
     const ro = new ResizeObserver(resize)
@@ -626,10 +636,10 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
     api.current?.setFault(fault)
   }, [fault])
 
-  const text = compact ? 'text-[14px]' : 'text-[19px]'
+  const text = compact ? 'text-[14px]' : 'text-[20px]'
   const btn = cn(
     'flex shrink-0 items-center gap-1.5 rounded-full font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300',
-    compact ? 'px-3 py-1.5 text-[14px]' : 'px-5 py-2 text-[18px]',
+    compact ? 'px-3 py-1.5 text-[14px]' : 'px-5 py-2 text-[20px]',
   )
   const icon = compact ? 'size-4' : 'size-5'
   const zoomBtn = cn('grid place-items-center text-slate-200 transition hover:bg-white/[0.08] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sky-300', compact ? 'size-9' : 'size-11')
@@ -659,7 +669,7 @@ export default function CycleSystem3D({ selected, onSelect, cut, compact = false
             </button>
           )}
         </div>
-        {!zoomed && !compact && <p className="glass pointer-events-none absolute left-5 top-4 rounded-full px-4 py-1.5 text-[16px] text-slate-200">滾輪縮放・右鍵拖曳平移・雙擊零件放大</p>}
+        {!zoomed && !compact && <p className="glass pointer-events-none absolute left-5 top-4 rounded-full px-4 py-1.5 text-[20px] text-slate-200">滾輪縮放・右鍵拖曳平移・雙擊零件放大</p>}
       </div>
       {/* 控制列：停機 → 啟動按鈕；導覽中 → 這一步在做什麼；運轉中 → 重看／停機 */}
       <div className={cn('flex shrink-0 items-center', compact ? 'min-h-[64px] gap-2.5 px-3 py-2.5' : 'min-h-[92px] gap-5 px-7 py-4')}>

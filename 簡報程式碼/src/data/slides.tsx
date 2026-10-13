@@ -1170,12 +1170,12 @@ const slideList: SlideData[] = [
     blocks: [
       {
         type: 'grid',
-        className: 'grid-cols-[minmax(0,0.74fr)_minmax(0,1.26fr)]',
+        className: 'grid-cols-[minmax(0,0.6fr)_minmax(0,1.4fr)]',
         children: [
           { type: 'showcase', parts: [{ id: 'evap', label: '蒸發器（冷風機）' }] },
       {
         type: 'grid',
-        className: 'grid-rows-[minmax(0,1.4fr)_minmax(0,1fr)]',
+        className: 'grid-rows-[minmax(0,1.35fr)_minmax(0,1fr)]',
         children: [
           {
             type: 'grid',
@@ -2164,8 +2164,8 @@ const slideList: SlideData[] = [
                 title: '為什麼要包、包哪一段',
                 en: 'Why Insulate',
                 items: [
-                  { icon: Snowflake, title: '要包：回氣管', desc: '冷排回壓縮機的那一支，溫度很低', badge: { label: '一定要包', tone: 'ice' } },
-                  { icon: Flame, title: '不用包：排氣管、液管', desc: '壓縮機出來接近 100°C；散熱器出來的液管約 40～50°C，都不會滴水' },
+                  { icon: Snowflake, title: '要包：回氣管', desc: '冷排回壓縮機那一支，很冷', badge: { label: '一定要包', tone: 'ice' } },
+                  { icon: Flame, title: '不用包：排氣管、液管', desc: '排氣管近 100°C、液管 40～50°C，不會滴水' },
                   { icon: Building2, title: '比常溫低都要包', desc: '大樓空調的冰水管（約 7°C）也要包' },
                 ],
               },
@@ -2177,8 +2177,8 @@ const slideList: SlideData[] = [
                 en: 'Thickness',
                 cols: 2,
                 items: [
-                  { label: '冷凍', value: '6分', unit: '厚', tone: 'ice', note: '冷凍庫 -18°C，回氣管是零下 20 幾度；還不夠就再套一層（雙套管）' },
-                  { label: '冷藏', value: '4分', unit: '厚', tone: 'teal', note: '可以薄一點：越厚越難包（要割開包上，再用強力膠黏回去）' },
+                  { label: '冷凍', value: '6分', unit: '厚', tone: 'ice', note: '回氣管零下 20 幾度；不夠就再套一層' },
+                  { label: '冷藏', value: '4分', unit: '厚', tone: 'teal', note: '越厚越難包（要割開再黏回去）' },
                 ],
               },
             ],
@@ -3658,16 +3658,16 @@ const slideList: SlideData[] = [
                     <Frac
                       num={
                         <>
-                          Q<Sub>total</Sub> <span className="text-[0.7em] text-amber-200/80">(kcal/24h)</span>
+                          Q<Sub>total</Sub> <span className="text-[max(0.8em,20px)] text-amber-200/80">(kcal/24h)</span>
                         </>
                       }
                       den={
                         <>
-                          運轉時數 <span className="text-[0.7em] text-amber-200/80">(冷凍 16~18 / 冷藏 18~20 h)</span>
+                          運轉時數 <span className="text-[max(0.8em,20px)] text-amber-200/80">(冷凍 16~18 / 冷藏 18~20 h)</span>
                         </>
                       }
                     />{' '}
-                    × 1.15 <span className="font-sans text-[0.68em] text-amber-200/80">（安全裕度）</span>
+                    × 1.15 <span className="font-sans text-[max(0.68em,20px)] text-amber-200/80">（安全裕度）</span>
                   </>
                 ),
                 example: {

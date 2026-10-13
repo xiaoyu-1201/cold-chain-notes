@@ -25,7 +25,7 @@ export function CoverLayout({ slide, cover }: { slide: SlideData; cover: CoverDa
       initial="hidden"
       animate="show"
       variants={staggerParent}
-      className="absolute inset-0 flex flex-col px-[96px] pb-[48px] pt-[64px]"
+      className="deck-canvas absolute inset-0 flex flex-col px-[96px] pb-[48px] pt-[64px]"
     >
       <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] items-center gap-14">
         <div>

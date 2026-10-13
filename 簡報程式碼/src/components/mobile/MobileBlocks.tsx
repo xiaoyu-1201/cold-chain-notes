@@ -358,7 +358,7 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
 
     case 'info':
       return (
-        <Card nested={nested} tone={isNew(block.added) ? undefined : block.tone} className={isNew(block.added) ? 'border-2 border-red-400 bg-red-950' : undefined}>
+        <Card nested={nested} tone={isNew(block.added) ? undefined : block.tone} className={isNew(block.added) ? cn('border-2 border-red-400 bg-red-950', nested && 'rounded-xl px-3 py-2') : undefined}>
           <div className="flex flex-wrap items-center gap-2">
             <Title icon={block.icon} tone={block.tone} small={nested}>
               {block.title}

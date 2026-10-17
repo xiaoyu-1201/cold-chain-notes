@@ -7,7 +7,7 @@ import { searchEntries, textOf, type SearchEntry } from './searchIndex'
  * 金鑰、通行碼檢查、每天次數上限都在那邊；這裡只記通行碼（這台裝置）。
  */
 /** Apps Script 網頁應用程式網址：使用者部署後填（不是祕密，保護靠通行碼） */
-const DEPLOYED_URL = ''
+const DEPLOYED_URL = 'https://script.google.com/macros/s/AKfycbz1Vf8ZT1jFQOGYQJUhNCtK23oqb9uGjDFKHw-hZiFtSGCoHtV0LFJF_pDOO7C5l-YL/exec'
 /** 開發時（npm run dev）可以接假的後端測排版：localStorage「tutor-dev-url」；上線的網站不會讀 */
 const devUrl = () => {
   try {

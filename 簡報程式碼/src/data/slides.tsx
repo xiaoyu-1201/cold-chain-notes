@@ -1047,7 +1047,7 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 10/16～10/17 錄音17～20：壓縮機種類、能力、排氣量、冷凍油、故障 ───────────────────────── */
   {
     id: 'comp-types',
-    added: '2026-10-17',
+    added: '2026-10-16',
     changes: '整頁是新的：錄音17 老闆講的往復式和渦捲式、各牌做到幾匹、單相三相怎麼接',
     part: 'components',
     chapter: '壓縮機種類',
@@ -2414,7 +2414,7 @@ const slideList: SlideData[] = [
   {
     id: 'recording-13',
     tier: 'ref',
-    added: '2026-10-17',
+    added: '2026-10-16',
     changes: '整頁是新的：10/16 上課錄音，點段落就跳到那裡',
     part: 'review',
     chapter: '課堂錄音',
@@ -5253,12 +5253,12 @@ const slideList: SlideData[] = [
           { group: '壓縮機', term: '高溫機／低溫機', added: '2026-10-09', alias: 'CR／CS／CF', en: 'High / Medium / Low Temp', tip: '黑金剛：CR 高溫打冷藏、CS 中溫兩邊都能、CF 低溫打冷凍；越低溫越貴；低溫缺貨可以拿大一點的中溫代替', part: 'comp', tw: { rec: 13, from: 2155.6, to: 2164.9, say: '有分高溫中溫低溫；CR 是屬於高溫，中溫是 CS，低溫是 CF' } },
           { group: '壓縮機', term: 'TF5／PFV', added: '2026-10-07', alias: '三相／單相', en: 'Three-phase / Single-phase', tip: '黑金剛型號後面：TF5＝三相 200～230V，PFV＝單相；型號牌上看 PH 1 或 PH 3', tw: { rec: 13, from: 1253.3, to: 1261.6, say: 'PFV，我們看 PFV 代表就是 PH-1，TF-5 代表就是三相' } },
           { group: '壓縮機', term: '拿錯不能退', added: '2026-10-10', alias: '焊過就算用過', en: 'No Return After Brazing', tip: '壓縮機的管子焊上去就沒人要了；型號、電壓拿錯，老闆說公司沒辦法幫你負擔，所以一個字一個字對', tw: { rec: 13, from: 462.0, to: 469.2, say: '它只要焊接上去沒有人要了，等於是使用後就沒有人要了' } },
-          { group: '壓縮機', term: '束心', added: '2026-10-17', alias: '壓縮機卡死、轉不動', en: 'Seized Compressor', tip: '沒油潤滑、過熱、被撞到、液態冷媒沖掉油；系統有髒東西也會（錄音17 05:10、10/17 講義）' },
+          { group: '壓縮機', term: '束心', added: '2026-10-16', alias: '壓縮機卡死、轉不動', en: 'Seized Compressor', tip: '沒油潤滑、過熱、被撞到、液態冷媒沖掉油；系統有髒東西也會（錄音17 05:10、10/17 講義）' },
           { group: '壓縮機', term: '排氣量', added: '2026-10-17', alias: '幾 cc', en: 'Displacement', tip: '像機車的 cc，跟冷媒無關；挑壓縮機以排氣量為主、BTU 為輔（錄音18 64:28、錄音20 07:46）' },
           { group: '壓縮機', term: '一匹足', added: '2026-10-17', alias: '八分之七、不到一匹', en: 'Full / Short 1 HP', tip: '超過 12,000 BTU 講「一匹足」，不到就講「不到一匹」或分數（錄音18 17:11）' },
           { group: '壓縮機', term: '50 Hz／60 Hz', added: '2026-10-17', alias: '型錄要乘 1.2', en: 'Frequency', tip: '大陸型錄多半是 50 Hz；台灣 60 Hz，能力乘 1.2（錄音20 19:49）' },
-          { group: '壓縮機', term: 'C／R／S', added: '2026-10-17', alias: '三個接點', en: 'Common / Run / Start', tip: '接電小盒子裡的三個點；三相直接接，單相要接配件（錄音17 11:06）' },
-          { group: '壓縮機', term: '半密式', added: '2026-10-17', alias: '半密閉壓縮機', en: 'Semi-hermetic Compressor', tip: '都是大顆的，店裡不放庫存（錄音17 06:00）' },
+          { group: '壓縮機', term: 'C／R／S', added: '2026-10-16', alias: '三個接點', en: 'Common / Run / Start', tip: '接電小盒子裡的三個點；三相直接接，單相要接配件（錄音17 11:06）' },
+          { group: '壓縮機', term: '半密式', added: '2026-10-16', alias: '半密閉壓縮機', en: 'Semi-hermetic Compressor', tip: '都是大顆的，店裡不放庫存（錄音17 06:00）' },
           { group: '散熱器', term: '站壓', alias: '抓漏', en: 'Pressure Test', tip: '從充灌閥灌氮氣、泡水找漏點；散熱器沒有充灌閥', tw: { rec: 9, from: 569.8, to: 578.1, say: '這叫抓漏，自己站壓……站壓或是抓漏' } },
           { group: '散熱器', term: '內膨', alias: '膨脹閥鎖在蒸發器箱內', en: 'Internal TXV Mounting', tip: '冷凍做內膨（膨脹閥會結冰滴水）；冷氣是外膨' },
           { group: '散熱器', term: '濾網', added: '2026-10-17', alias: '散熱器濾網', en: 'Condenser Filter', tip: '白色的，變黑就拿下來洗、一個月一次；裝了不洗反而更糟（錄音18 77:19）' },

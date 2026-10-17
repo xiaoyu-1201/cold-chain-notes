@@ -2,6 +2,8 @@ import { ArrowUpRight, Headphones, Sparkles } from 'lucide-react'
 import { openTutor } from '../../lib/tutor'
 import { useEffect, useRef, useState } from 'react'
 import { recordingOf } from '../../data/recordings'
+import { slideById } from '../../data/slides'
+import { NewChip } from '../ui/NewChip'
 import type { RecordingsIndexBlock } from '../../data/types'
 import { useDeck } from '../../context/deck'
 import { cn, pad } from '../../lib/cn'
@@ -49,7 +51,8 @@ export function RecordingsIndex({ block }: { block: RecordingsIndexBlock }) {
                 className={cn('flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition', on ? 'bg-emerald-950 text-ink ring-1 ring-inset ring-emerald-500/40' : 'text-slate-200 hover:bg-white/[0.04]', focusRing)}
               >
                 <span className={cn('w-[92px] shrink-0 font-mono text-[18px] font-bold', on ? 'text-emerald-300' : 'text-slate-400')}>{item.code}</span>
-                <span className="line-clamp-2 min-w-0 flex-1 text-[19px] font-semibold leading-snug">{r?.title ?? item.slide}</span>
+                <span className="line-clamp-2 min-w-0 flex-1 text-[20px] font-semibold leading-snug">{r?.title ?? item.slide}</span>
+                <NewChip added={slideById(item.slide)?.added} />
                 <span className="shrink-0 font-mono text-[18px] text-slate-500">{r?.duration}</span>
               </button>
             </li>

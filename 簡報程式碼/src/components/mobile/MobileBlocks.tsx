@@ -4,7 +4,7 @@ import { useDeck } from '../../context/deck'
 import { cycleNotes, CYCLE_ORDER, type CycleNodeId } from '../../data/cycleNotes'
 import { CLASS_AUDIO, CLASS_AUDIO_2, usePlayable } from '../../data/media'
 import type { AudioBlock, Block, HotspotsBlock, MatrixBlock, RecordingsIndexBlock, Tone } from '../../data/types'
-import { slides } from '../../data/slides'
+import { slideById, slides } from '../../data/slides'
 import { isNew } from '../../data/whatsNew'
 import { recordingOf } from '../../data/recordings'
 import { openTutor } from '../../lib/tutor'
@@ -1087,7 +1087,9 @@ function RecordingsMobile({ block }: { block: RecordingsIndexBlock }) {
               <span className={cn('w-[80px] shrink-0 font-mono text-[14px] font-bold', on ? 'text-emerald-300' : 'text-slate-400')}>{item.code}</span>
               {/* 長度放到標題下面（10/10 QA：360 寬時長度那欄 143px，標題被擠成一字一行） */}
               <span className="min-w-0 flex-1">
-                <span className="block text-[16px] font-semibold text-white">{rec?.title ?? item.slide}</span>
+                <span className="block text-[16px] font-semibold text-white">
+                  {rec?.title ?? item.slide} <NewChip added={slideById(item.slide)?.added} mobile />
+                </span>
                 {rec?.duration && <span className="block font-mono text-[13px] text-slate-500">{rec.duration}</span>}
               </span>
             </button>

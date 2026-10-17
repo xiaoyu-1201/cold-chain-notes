@@ -59,9 +59,9 @@ export const ABBR_SPECS: AbbrBlock['groups'] = [
     items: [
       { abbr: 'HP', en: 'Horsepower', zh: '馬力（客人說「幾馬」）', tip: '真正要對的是 BTU 和排氣量', slide: 'comp-power' },
       { abbr: 'BTU', en: 'British Thermal Unit', zh: '英熱單位（冷凍能力）', tip: '型號對的是 BTU/h；1 kW ≈ 3,412 BTU/h', slide: 'comp-power' },
-      { abbr: 'ASHRAE', en: 'American Society of Heating, Refrigerating and Air-Conditioning Engineers', zh: '美國冷凍空調工程師學會（測試條件）', tip: '壓縮機能力的測試條件：蒸發 7.2／−6.7／−23.3°C、冷凝 54.4°C', slide: 'comp-rating' },
-      { abbr: 'Hz', en: 'Hertz', zh: '赫茲（電的頻率）', tip: '台灣是 60 Hz；50 Hz 的型錄能力要乘 1.2', slide: 'comp-rating' },
-      { abbr: 'cc', en: 'Cubic Centimeter', zh: '立方公分（排氣量）', tip: '20 cc 出頭算一匹；R134a 要比較大', slide: 'comp-displacement' },
+      { abbr: 'ASHRAE', added: '2026-10-17', en: 'American Society of Heating, Refrigerating and Air-Conditioning Engineers', zh: '美國冷凍空調工程師學會（測試條件）', tip: '壓縮機能力的測試條件：蒸發 7.2／−6.7／−23.3°C、冷凝 54.4°C', slide: 'comp-rating' },
+      { abbr: 'Hz', added: '2026-10-17', en: 'Hertz', zh: '赫茲（電的頻率）', tip: '台灣是 60 Hz；50 Hz 的型錄能力要乘 1.2', slide: 'comp-rating' },
+      { abbr: 'cc', added: '2026-10-17', en: 'Cubic Centimeter', zh: '立方公分（排氣量）', tip: '20 cc 出頭算一匹；R134a 要比較大', slide: 'comp-displacement' },
       { abbr: 'kW / kcal/h', en: 'Kilowatt / Kilocalorie per hour', zh: '千瓦／每小時千卡', tip: '也是冷凍能力：1 kW ≈ 860 kcal/h' },
       { abbr: 'psi / psig', en: 'Pounds per Square Inch (gauge)', zh: '磅／平方英吋（錶壓）', tip: '壓力錶的刻度；1 kg/cm² ≈ 14.2 psi', slide: 'reftools' },
       { abbr: 'P-T', en: 'Pressure–Temperature', zh: '壓力－溫度對照', tip: '同一種冷媒，壓力和溫度綁在一起；Ref Tools 就是查這個', slide: 'reftools' },
@@ -94,7 +94,7 @@ export const ABBR_THERMO: AbbrBlock['groups'] = [
       { abbr: 'GWP', en: 'Global Warming Potential', zh: '全球暖化潛勢', tip: '數字越大越暖化；R404A 很高', slide: 'refrigerants' },
       { abbr: 'ODP', en: 'Ozone Depletion Potential', zh: '臭氧破壞潛勢', tip: 'HFC 冷媒 ODP＝0', slide: 'refrigerants' },
       { abbr: 'POE', en: 'Polyol Ester', zh: '多元醇酯（合成冷凍油）', tip: 'HFC 冷媒配 POE 油；R22 舊機配礦物油；不能混', slide: 'refrigerants' },
-      { abbr: 'MO', en: 'Mineral Oil', zh: '礦物油', tip: '只能灌 R22、R438A、R408A，不能灌 R404A', slide: 'comp-oil' },
+      { abbr: 'MO', added: '2026-10-17', en: 'Mineral Oil', zh: '礦物油', tip: '只能灌 R22、R438A、R408A，不能灌 R404A', slide: 'comp-oil' },
     ],
   },
 ]

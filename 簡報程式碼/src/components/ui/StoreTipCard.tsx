@@ -1,13 +1,15 @@
 import { ArrowUpRight, Store } from 'lucide-react'
 import { useDeck } from '../../context/deck'
 import type { StoreTip } from '../../data/types'
-import { pad } from '../../lib/cn'
+import { cn, pad } from '../../lib/cn'
+import { newFrame } from '../../lib/newFrame'
+import { NewChip } from './NewChip'
 
 /** 標題右側的「門市實戰」卡：相關品項＋老闆叮嚀；藍色連結可跳到店內產品地圖 */
 export function StoreTipCard({ store }: { store: StoreTip }) {
   const { goToId, numberOf } = useDeck()
   return (
-    <aside className="relative w-[740px] shrink-0 rounded-[14px] border border-emerald-500/35 bg-emerald-950/70 px-6 py-4">
+    <aside className={cn('relative w-[740px] shrink-0 rounded-[14px] border border-emerald-500/35 bg-emerald-950/70 px-6 py-4', newFrame(store.added))}>
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
@@ -17,6 +19,7 @@ export function StoreTipCard({ store }: { store: StoreTip }) {
         >
           <Store className="size-5 text-emerald-300" aria-hidden />
           <span className="text-emerald-200">門市實戰</span>
+          <NewChip added={store.added} />
           <span className="font-mono text-[18px]">P.{pad(numberOf('products'))}</span>
           <ArrowUpRight className="size-4" aria-hidden />
         </button>

@@ -30,3 +30,6 @@
 
 # 公司版專用頁（同等級代替表）：公開 repo 不放原始碼，公開網站用 companyOnly.public.tsx
 簡報程式碼/src/data/companyOnly.tsx
+
+# 設計檢查工具的截圖暫存（taste-skill）
+.taste-skill/

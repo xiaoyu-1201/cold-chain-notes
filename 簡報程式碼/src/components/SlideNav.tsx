@@ -2,7 +2,7 @@ import { BookOpen, BookOpenCheck, ChevronLeft, ChevronRight, CornerUpLeft, Layou
 import { useCallback, useEffect, useRef, useState, type MouseEvent, type PointerEvent as ReactPointerEvent, type ReactNode, type WheelEvent as ReactWheelEvent } from 'react'
 import { parts } from '../data/parts'
 import { slides } from '../data/slides'
-import { NEW_LABEL, isNew, newTag, shortDate } from '../data/whatsNew'
+import { NEW_LABEL, isNew, newTag } from '../data/whatsNew'
 import { byCategory } from '../data/categories'
 import { useModal } from '../hooks/useModal'
 import type { PartId } from '../data/types'
@@ -220,7 +220,6 @@ function PageGrid({ index, onGoTo, onClose }: { index: number; onGoTo: (index: n
           <LayoutGrid className="size-5 text-sky-400" aria-hidden />
           <p className="shrink-0 whitespace-nowrap text-[18px] font-black text-ink">全部 {slides.length} 頁</p>
           {NEW_COUNT > 0 && <span className="rounded-lg bg-red-400 px-2.5 py-0.5 text-[15px] font-black text-paper">紅色＝{NEW_LABEL}，共 {NEW_COUNT} 頁</span>}
-          {SHOW_LATEST && <span className="rounded-lg border-2 border-red-400 px-2.5 py-0.5 text-[15px] font-black text-red-400">粗框＝這次 {shortDate(LATEST)} 改的，{LATEST_COUNT} 頁</span>}
           <button ref={closeRef} type="button" onClick={onClose} className={cn('ml-auto flex min-h-[40px] items-center gap-1.5 rounded-xl border border-line px-3 text-[15px] font-semibold text-slate-200 hover:border-sky-500/60', focusRing)}>
             <X className="size-4" aria-hidden />
             關閉<span className="hidden sm:inline">（Esc）</span>
@@ -257,7 +256,7 @@ function PageGrid({ index, onGoTo, onClose }: { index: number; onGoTo: (index: n
                       }}
                       className={cn(
                         'flex min-h-[48px] items-start gap-2 rounded-xl px-3 py-2 text-left text-[15px] leading-snug transition',
-                        !on && SHOW_LATEST && s.added === LATEST ? 'border-2' : 'border',
+                        'border',
                         on ? 'border-sky-500 bg-sky-950 font-bold text-ink' : fresh ? 'border-red-400 bg-red-950 text-slate-100 hover:border-red-500' : 'border-line text-slate-200 hover:border-sky-500/60',
                         focusRing,
                       )}
@@ -281,9 +280,6 @@ function PageGrid({ index, onGoTo, onClose }: { index: number; onGoTo: (index: n
 
 /** 全部頁一覽用：新頁數、最近一次改的那天和頁數（10/12 QA：紅色的頁很多，老闆要分得出哪幾頁是這次改的） */
 const NEW_COUNT = slides.filter((s) => isNew(s.added)).length
-const LATEST = slides.reduce((m, s) => (s.added && s.added > m ? s.added : m), '')
-const LATEST_COUNT = slides.filter((s) => s.added === LATEST).length
-const SHOW_LATEST = !!LATEST && isNew(LATEST) && LATEST_COUNT < NEW_COUNT
 
 /** 依篇章分組（保持投影片順序），給頁碼點分區用 */
 const dotGroups = slides.reduce<{ part: PartId; items: number[] }[]>((acc, s, i) => {

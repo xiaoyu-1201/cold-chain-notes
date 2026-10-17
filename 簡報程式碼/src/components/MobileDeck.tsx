@@ -3,7 +3,7 @@ import { BookOpenCheck, Box, ChevronLeft, ChevronRight, CornerUpLeft, List, Penc
 import { useCallback, useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
 import { DeckContext, useDeck, type DeckApi } from '../context/deck'
 import { presetSticky } from '../hooks/useStickyState'
-import { PART_NO, parts } from '../data/parts'
+import { parts } from '../data/parts'
 import { slides } from '../data/slides'
 import type { SlideData } from '../data/types'
 import { isNew, newTag } from '../data/whatsNew'
@@ -16,12 +16,16 @@ import { SearchPanel } from './SearchPanel'
 import { ProgressPanel } from './ProgressPanel'
 import { TutorPanel } from './TutorPanel'
 import { openTutor } from '../lib/tutor'
+import { flashNew, revealOnScroll } from '../lib/anim'
+import { newFrame } from '../lib/newFrame'
+import { NewChip } from './ui/NewChip'
 import { PracticeQuestion } from './Practice'
 import { PRACTICE } from '../data/practice'
 import { markSeen, useLearn } from '../lib/learn'
 import { SOURCE_LABEL } from './SlideCard'
 import { BlueprintBackground } from './ui/BlueprintBackground'
 import { ChangesNote } from './ui/ChangesNote'
+import { Title } from './ui/rich'
 import { NewToggle } from './ui/NewToggle'
 import { useKeepParens } from '../hooks/useKeepParens'
 import { LensMagnify, LensView } from './ui/LiquidLens'
@@ -154,7 +158,7 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
               >
                 {/* 上留標題列＋安全區、下留懸浮列＋安全區＋一點呼吸空間：最後一段（學完馬上練）不會被蓋住 */}
                 <article className="mx-auto max-w-[720px] px-4 pb-[calc(env(safe-area-inset-bottom)+112px)] pt-[calc(env(safe-area-inset-top)+76px)] lg:max-w-[960px]">
-                  <MobileSlide slide={slide} index={page.index} />
+                  <MobileSlide slide={slide} />
                 </article>
               </motion.div>
             </AnimatePresence>
@@ -249,14 +253,25 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
 }
 
 /** 一頁的內容：眉標、標題、門市實戰、各區塊（手機排法）、小結論 */
-function MobileSlide({ slide, index }: { slide: SlideData; index: number }) {
+function MobileSlide({ slide }: { slide: SlideData }) {
   const part = parts[slide.part]
   const cover = slide.layout === 'cover' ? slide.cover : undefined
   const hints = interactionHints(slide, true)
-  const siblings = slides.filter((s) => s.part === slide.part)
   const ref = useRef<HTMLElement>(null)
   useKeepParens(ref)
   const { goToId } = useDeck()
+  // 往下滑時內容一塊一塊浮上來；改過的地方紅框閃一下（10/18 GSAP）
+  useEffect(() => {
+    const sec = ref.current
+    if (!sec) return
+    const items = [...sec.querySelectorAll<HTMLElement>(':scope > div > *, :scope > aside')]
+    const stopReveal = revealOnScroll(sec.closest<HTMLElement>('.overflow-y-auto'), items)
+    const stopFlash = flashNew(sec)
+    return () => {
+      stopReveal()
+      stopFlash()
+    }
+  }, [])
 
   return (
     <section ref={ref}>
@@ -296,39 +311,33 @@ function MobileSlide({ slide, index }: { slide: SlideData; index: number }) {
       ) : (
         <header>
           <div className="flex flex-wrap items-center gap-2 text-[14px]">
-            <span className="drawing-no inline-flex items-stretch overflow-hidden rounded-[4px] border border-ink/45 text-[13px] leading-none" title={`第 ${index + 1} 頁`}>
-              <span className="px-1.5 py-1 font-bold text-ink">
-                圖 {PART_NO[slide.part]}-{siblings.indexOf(slide) + 1}
-              </span>
-              <span className="border-l border-ink/30 px-1.5 py-1 text-ink-3">共 {siblings.length}</span>
-            </span>
             <span className={cn('rounded-md border px-2 py-0.5 font-semibold', toneStyles[part.tone].chip)}>{part.short}</span>
             {slide.chapter && <span className="rounded-md border border-line px-2 py-0.5 font-semibold text-slate-300">{slide.chapter}</span>}
             {slide.source && <span className="rounded-md border border-line px-2 py-0.5 font-semibold text-slate-400">{SOURCE_LABEL[slide.source]}</span>}
             {slide.advanced && slide.part !== 'advanced' && <span className="rounded-md border border-amber-500/50 bg-amber-950 px-2 py-0.5 font-semibold text-amber-200">進階</span>}
             {slide.tier === 'ref' && <span className="rounded-md border border-line px-2 py-0.5 font-semibold text-slate-400">查閱</span>}
-            {isNew(slide.added) && <NewToggle mobile />}
-            {isNew(slide.added) && <span className="new-keep rounded-md bg-red-400 px-2 py-0.5 font-black text-paper">{newTag(slide.added)}</span>}
+            {isNew(slide.added) && <NewToggle mobile label={newTag(slide.added)} />}
           </div>
-          <h2 className="mt-2 text-[26px] font-black leading-[1.3] text-white">{slide.title}</h2>
+          <h2 className="mt-2 text-[26px] font-black leading-[1.3] text-white">
+            <Title text={slide.title} />
+          </h2>
           <ChangesNote slide={slide} mobile />
+          {/* 「可以點」改成一行小字、不加框（10/18 設計健檢：手機第一個畫面先看到內容） */}
           {hints.length > 0 && (
-            <p className="mt-2 flex gap-1.5 rounded-lg border border-dashed border-sky-500/60 bg-sky-950 px-3 py-1.5 text-[15px] text-sky-200">
-              <Pointer className="mt-1 size-4 shrink-0 text-sky-400" aria-hidden />
-              <span>
-                <b className="mr-1 text-sky-400">可以點</b>
-                {hints.join('；')}
-              </span>
+            <p className="mt-2 flex gap-1.5 text-[14px] leading-snug text-slate-400">
+              <Pointer className="mt-0.5 size-4 shrink-0 text-sky-400" aria-hidden />
+              <span>{hints.join('；')}</span>
             </p>
           )}
         </header>
       )}
 
       {slide.store && (
-        <aside className="mt-4 rounded-[14px] border border-emerald-500/35 bg-emerald-950/70 p-4">
+        <aside className={cn('mt-4 rounded-[14px] border border-emerald-500/35 bg-emerald-950/70 p-4', newFrame(slide.store.added))}>
           <p className="flex items-center gap-2 font-bold text-emerald-200">
             <Store className="size-5" aria-hidden />
             門市實戰
+            <NewChip added={slide.store.added} mobile />
           </p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {slide.store.products.map((p) => (

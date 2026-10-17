@@ -1,6 +1,8 @@
 import { ArrowUpRight } from 'lucide-react'
 import type { AbbrBlock, AbbrItem, Tone } from '../../data/types'
 import { useDeck } from '../../context/deck'
+import { NewChip } from '../ui/NewChip'
+import { newFrame } from '../../lib/newFrame'
 import { cn, pad } from '../../lib/cn'
 import { toneStyles } from '../../lib/tone'
 
@@ -35,7 +37,10 @@ function Row({ item, tone, mobile }: { item: AbbrItem; tone: Tone; mobile?: bool
   const t = toneStyles[tone]
   const body = (
     <>
-      <span className={cn('shrink-0 font-mono font-black leading-none', t.text, mobile ? 'w-[88px] text-[16px]' : 'w-[150px] text-[21px]')}>{item.abbr}</span>
+      <span className={cn('shrink-0 font-mono font-black leading-none', t.text, mobile ? 'w-[88px] text-[16px]' : 'w-[150px] text-[21px]')}>
+        {item.abbr}
+        <NewChip added={item.added} mobile={mobile} className="ml-1.5 align-middle" />
+      </span>
       <span className="min-w-0 flex-1">
         <span className={cn('block font-bold leading-snug text-white', mobile ? 'text-[16px]' : 'text-[20px]')}>{item.en}</span>
         <span className={cn('block leading-snug text-slate-300', mobile ? 'text-[15px]' : 'text-[17px]')}>
@@ -51,7 +56,7 @@ function Row({ item, tone, mobile }: { item: AbbrItem; tone: Tone; mobile?: bool
       )}
     </>
   )
-  const cls = cn('flex w-full items-start gap-3 rounded-xl text-left', mobile ? 'border border-line bg-white/[0.03] px-3 py-2.5' : 'bg-navy-900/40 px-4 py-1.5')
+  const cls = cn('flex w-full items-start gap-3 rounded-xl text-left', mobile ? 'border border-line bg-white/[0.03] px-3 py-2.5' : 'bg-navy-900/40 px-4 py-1.5', newFrame(item.added))
   return (
     <li className="min-h-0">
       {item.slide ? (

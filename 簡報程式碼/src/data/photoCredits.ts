@@ -61,6 +61,33 @@ export const photoSets: Record<string, PhotoCredit[]> = {
     { ...classPhoto, file: '1005-driers-solder', label: '焊接（有 S）', note: '型號尾巴有 S、盒子寫 ODF＝焊接。052 S＝2分（胖）、032 S＝2分（小支）。' },
     { ...unit, label: '裝在機組上', note: photoCredits.dml.note },
   ],
+  // 10/18 設計健檢：加公開圖庫的實拍（使用者：「多放照片可以，只是要適合」）；店裡自己拍的之後換上來
+  comp: [
+    { ...unit, label: '裝在機組上', note: photoCredits.comp.note },
+    {
+      file: 'compressor-coil',
+      label: '冰箱裡的壓縮機',
+      note: '黑色的是英博格往復式壓縮機，標籤看得到 R134a、115 VAC、60Hz：型號牌上冷媒、電壓、頻率都要對。右邊是風扇和散熱器。',
+      title: 'Refrigeration comp and coil',
+      author: 'Kristoferb',
+      license: 'CC BY-SA 3.0',
+      licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0',
+      source: 'https://commons.wikimedia.org/wiki/File:Refrigeration_comp_and_coil.jpg',
+    },
+  ],
+  cond: [
+    { ...unit, label: '機組上的', note: photoCredits.cond.note },
+    {
+      file: 'ac-outdoor-unit',
+      label: '冷氣室外機',
+      note: '冷氣室外機：大風扇後面就是冷凝器（散熱器），把室內的熱排到外面。裝在鐵架裡要留通風，散熱才好。',
+      title: 'Panasonic AIR CONDITIONER OUTDOOR UNIT (381)',
+      author: 'Dinkun Chen',
+      license: 'CC BY-SA 4.0',
+      licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+      source: 'https://commons.wikimedia.org/wiki/File:Panasonic_AIR_CONDITIONER_OUTDOOR_UNIT_(381).jpg',
+    },
+  ],
   flare: [{ ...classPhoto, file: '1005-capillary', note: '上面：銅管口打成喇叭嘴（張開的斜面），後面套著喇叭螺帽；下面：螺帽裡面的內牙。' }],
   fittings: [
     {
@@ -71,6 +98,16 @@ export const photoSets: Record<string, PhotoCredit[]> = {
       license: 'CC BY-SA 3.0',
       licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/',
       source: 'https://commons.wikimedia.org/wiki/File:Kupferfittings_4062.jpg',
+    },
+    {
+      file: 'brazing-copper',
+      label: '焊接口',
+      note: '焊接接頭（ODF）就是這樣接：銅管插進接頭，用噴槍加熱，焊料吃進縫隙。焊過的零件就算用過，拿錯不能退。',
+      title: 'Propane torch soldering copper pipe',
+      author: 'neffk',
+      license: 'CC BY 2.0',
+      licenseUrl: 'https://creativecommons.org/licenses/by/2.0/',
+      source: 'https://commons.wikimedia.org/w/index.php?curid=50017388',
     },
   ],
   insul: [

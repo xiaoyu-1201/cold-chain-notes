@@ -46,7 +46,7 @@ export const cycleNotes: Record<CycleNodeId, CycleNote> = {
     audioAt: 11 * 60 + 57,
     audio2At: 4 * 60 + 46,
     slide: 'ch2',
-    chapter: '第 2 章',
+    chapter: '壓縮機總覽',
     anchor: { x: 75, y: 50, place: 'left' },
   },
   cond: {
@@ -62,7 +62,7 @@ export const cycleNotes: Record<CycleNodeId, CycleNote> = {
     audioAt: 0,
     audio2At: 11 * 60 + 41,
     slide: 'ch3',
-    chapter: '第 3 章',
+    chapter: '冷凝器總覽',
     anchor: { x: 50, y: 25, place: 'below' },
   },
   txv: {
@@ -79,7 +79,7 @@ export const cycleNotes: Record<CycleNodeId, CycleNote> = {
     audioAt: 5 * 60 + 47,
     audio2At: 10 * 60 + 52,
     slide: 'ch5',
-    chapter: '第 5 章',
+    chapter: '閥件總覽',
     anchor: { x: 21, y: 50, place: 'right' },
   },
   evap: {
@@ -94,7 +94,7 @@ export const cycleNotes: Record<CycleNodeId, CycleNote> = {
     audioAt: 6 * 60 + 27,
     audio2At: 14 * 60 + 15,
     slide: 'ch4',
-    chapter: '第 4 章',
+    chapter: '蒸發器總覽',
     anchor: { x: 50, y: 76, place: 'above' },
   },
   discharge: {

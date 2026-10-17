@@ -7,7 +7,8 @@ import { useLayoutEffect, type RefObject } from 'react'
  * 跨元件的括號（「（<Em>內膨</Em>）」）處理不到，只能靠內容自己調。
  */
 const WJ = '\u2060'
-const RX = /（[^（）\n]{1,8}）|\([^()\n]{1,8}\)/g
+// 〔錄音18 06:55〕這種出處也整段黏在一起（10/18 QA：「〔錄／音19 04:49〕」被拆開）
+const RX = /（[^（）\n]{1,8}）|\([^()\n]{1,8}\)|〔[^〔〕\n]{1,16}〕/g
 
 const glue = (s: string) =>
   s.replace(RX, (m) => [...m.replace(/\u2060/g, '').replace(/ /g, '\u00a0')].join(WJ))
@@ -15,7 +16,7 @@ const glue = (s: string) =>
 function fix(root: Node) {
   if (root.nodeType === Node.TEXT_NODE) {
     const v = root.nodeValue ?? ''
-    if (/[（(]/.test(v)) {
+    if (/[（(〔]/.test(v)) {
       const g = glue(v)
       if (g !== v) root.nodeValue = g
     }

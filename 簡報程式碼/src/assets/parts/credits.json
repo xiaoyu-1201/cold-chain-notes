@@ -1,0 +1,72 @@
+[
+ {
+  "file": "src/assets/parts/compressor-coil.jpg",
+  "media": "image",
+  "ref": "commons:15953118",
+  "title": "Refrigeration comp and coil",
+  "creator": "Kristoferb",
+  "creatorUrl": null,
+  "date": "2010-08-06",
+  "license": "CC BY-SA 3.0",
+  "licenseCode": "by-sa",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "creditRequired": true,
+  "page": "https://commons.wikimedia.org/wiki/File:Refrigeration_comp_and_coil.jpg",
+  "via": "Wikimedia Commons",
+  "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a3/Refrigeration_comp_and_coil.jpg/1280px-Refrigeration_comp_and_coil.jpg",
+  "width": 1280,
+  "height": 834,
+  "bytes": 318756,
+  "credit": "\"Refrigeration comp and coil\" by Kristoferb, CC BY-SA 3.0, via Wikimedia Commons",
+  "notes": [
+   "Share-alike: an altered version (recoloured, combined with other pictures) must be shared under the same licence."
+  ],
+  "saved": "2026-10-17T17:08:22.474Z"
+ },
+ {
+  "file": "src/assets/parts/ac-outdoor-unit.jpg",
+  "media": "image",
+  "ref": "commons:144186805",
+  "title": "Panasonic AIR CONDITIONER OUTDOOR UNIT (381)",
+  "creator": "Dinkun Chen",
+  "creatorUrl": null,
+  "date": "2024-01-18",
+  "license": "CC BY-SA 4.0",
+  "licenseCode": "by-sa",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "creditRequired": true,
+  "page": "https://commons.wikimedia.org/wiki/File:Panasonic_AIR_CONDITIONER_OUTDOOR_UNIT_(381).jpg",
+  "via": "Wikimedia Commons",
+  "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/47/Panasonic_AIR_CONDITIONER_OUTDOOR_UNIT_%28381%29.jpg/1280px-Panasonic_AIR_CONDITIONER_OUTDOOR_UNIT_%28381%29.jpg",
+  "width": 1280,
+  "height": 832,
+  "bytes": 333241,
+  "credit": "\"Panasonic AIR CONDITIONER OUTDOOR UNIT (381)\" by Dinkun Chen, CC BY-SA 4.0, via Wikimedia Commons",
+  "notes": [
+   "Share-alike: an altered version (recoloured, combined with other pictures) must be shared under the same licence."
+  ],
+  "saved": "2026-10-17T17:08:24.708Z"
+ },
+ {
+  "file": "src/assets/parts/brazing-copper.jpg",
+  "media": "image",
+  "ref": "openverse:97e75a05-31bf-4696-bbeb-440047856625",
+  "title": "Propane torch soldering copper pipe",
+  "creator": "neffk (talk)",
+  "creatorUrl": "https://en.wikipedia.org/wiki/User:Neffk",
+  "date": null,
+  "license": "CC BY 2.0",
+  "licenseCode": "by",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+  "creditRequired": true,
+  "page": "https://commons.wikimedia.org/w/index.php?curid=50017388",
+  "via": "Wikimedia Commons",
+  "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/Propane_torch_soldering_copper_pipe.jpg/1280px-Propane_torch_soldering_copper_pipe.jpg",
+  "width": 1280,
+  "height": 853,
+  "bytes": 116006,
+  "credit": "\"Propane torch soldering copper pipe\" by neffk (talk), CC BY 2.0, via Wikimedia Commons",
+  "notes": [],
+  "saved": "2026-10-17T17:08:32.678Z"
+ }
+]

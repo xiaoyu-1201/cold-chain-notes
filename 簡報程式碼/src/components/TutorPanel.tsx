@@ -356,12 +356,15 @@ function AskTab({ currentId, go }: { currentId: string; go: (id: string) => void
   const call = useCall<AskData>()
   const rec = recordingOf(currentId)
   // example：按範例題直接問，不用先打字（範例不一定跟這頁有關，就不附這一頁）
+  const last = useRef('')
   const send = async (example?: string) => {
     const text = (example ?? q).trim()
     if (!text || call.loading) return
-    const r = await call.run('ask', { input: text, page: currentId, context: contextFor(text, example ? undefined : currentId) })
+    last.current = text
+    const page = example ? '' : currentId
+    const r = await call.run('ask', { input: text, page, context: contextFor(text, example ? undefined : currentId) })
     if (r) {
-      setHist((h) => [{ ...r.data, id: Date.now(), q: text, page: currentId }, ...h].slice(0, 20))
+      setHist((h) => [{ ...r.data, id: Date.now(), q: text, page }, ...h].slice(0, 20))
       if (!example) setQ('')
     }
   }
@@ -402,9 +405,8 @@ function AskTab({ currentId, go }: { currentId: string; go: (id: string) => void
           <span className="text-[14px] text-slate-500">會先看這一頁，再找筆記裡相關的頁</span>
         </div>
       </form>
-      <Examples title="常問的問題（點了直接問）" groups={ASK_EX} disabled={call.loading} onPick={(x) => void send(x)} />
       {call.loading && <Loading />}
-      {call.err != null && <ErrorBox err={call.err} retry={send} />}
+      {call.err != null && <ErrorBox err={call.err} retry={() => void send(last.current)} />}
       {hist.map((it, i) => (
         <article key={it.id ?? i} className={box}>
           <p className="break-words text-[15px] font-bold text-sky-300 [overflow-wrap:anywhere]">問：{it.q}</p>
@@ -423,6 +425,7 @@ function AskTab({ currentId, go }: { currentId: string; go: (id: string) => void
           )}
         </article>
       ))}
+      <Examples title="常問的問題（點了直接問）" groups={ASK_EX} disabled={call.loading} onPick={(x) => void send(x)} />
       {hist.length > 0 && (
         <button type="button" onClick={() => setHist([])} className="self-start text-[14px] text-slate-500 underline underline-offset-2">
           清掉問過的紀錄（只清這台）
@@ -459,11 +462,11 @@ function Examples({ title, groups, disabled, onPick }: { title: string; groups: 
     <section className="flex flex-col gap-2">
       <h3 className={h}>{title}</h3>
       {groups.map((g) => (
-        <div key={g.group}>
+        <div key={g.group} role="group" aria-label={g.group}>
           <p className="mb-1 text-[13px] font-bold text-slate-500">{g.group}</p>
           <div className="flex flex-wrap gap-1.5">
             {g.items.map((x) => (
-              <button key={x} type="button" disabled={disabled} onClick={() => onPick(x)} className="min-h-11 rounded-full border border-line bg-card px-3.5 py-1.5 text-left text-[15px] font-semibold leading-snug text-slate-200 hover:border-sky-500/50 disabled:opacity-40">
+              <button key={x} type="button" aria-disabled={disabled || undefined} onClick={() => !disabled && onPick(x)} className="min-h-11 rounded-full border border-line bg-card px-3.5 py-1.5 text-left text-[15px] font-semibold leading-snug text-slate-200 hover:border-sky-500/50 aria-disabled:opacity-40">
                 {x}
               </button>
             ))}
@@ -490,7 +493,6 @@ const TRIAGE_EX = [
   '冷凍庫的散熱器要買多大',
   '冷媒補了，過幾天又不冷',
   '冷排一直結冰、越來越不冷',
-  '壓縮機嗡嗡叫，但是轉不動',
   '新的壓縮機才裝沒多久就壞了',
   '壓縮機外殼一直冒汗，回氣管結霜很厚',
   '壓縮機很吵、一直在抖',
@@ -784,8 +786,7 @@ const BOSS_EX = [
   '散熱外移、管子拉很長，冷媒大概要多灌多少？',
   '中溫車拿來打冷藏，什麼時候划算？',
   '店裡常賣的溫控器是哪幾款？差在哪？',
-  '散熱器「有外箱」和「無穿衫」差多少？怎麼推？',
-  '高壓氣管在現場都怎麼叫？',
+  '散熱器「有外箱」和「無穿衫」價差大概多少？',
 ]
 
 function BossTab({ currentId, go }: { currentId: string; go: (id: string) => void }) {
@@ -796,7 +797,8 @@ function BossTab({ currentId, go }: { currentId: string; go: (id: string) => voi
     setErr(null)
     try {
       const r = await callTutor('bossList')
-      setItems(((r.items as BossItem[]) ?? []).filter((x) => !x.archive))
+      // 收起來的也留著：範例題拿來比對，收起來過的不再出現（10/18 code review）
+      setItems((r.items as BossItem[]) ?? [])
     } catch (e) {
       setErr(e)
     }
@@ -805,18 +807,23 @@ function BossTab({ currentId, go }: { currentId: string; go: (id: string) => voi
     void load()
   }, [])
   const [added, setAdded] = useState<string[]>([])
+  const [failed, setFailed] = useState<string[]>([])
   const addEx = async (q: string) => {
+    if (added.includes(q)) return
     setAdded((a) => [...a, q])
+    setFailed((f) => f.filter((x) => x !== q))
     try {
-      await callTutor('bossAdd', { q, page: currentId })
+      await callTutor('bossAdd', { q })
       void load()
-    } catch (e) {
+    } catch {
       setAdded((a) => a.filter((x) => x !== q))
-      setErr(e)
+      setFailed((f) => [...f, q])
     }
   }
-  const open = items?.filter((x) => !x.answer) ?? []
-  const done = items?.filter((x) => x.answer) ?? []
+  const live = items?.filter((x) => !x.archive) ?? []
+  const open = live.filter((x) => !x.answer)
+  const done = live.filter((x) => x.answer)
+  const examples = items ? BOSS_EX.filter((x) => !items.some((it) => it.q === x)) : []
   const lineText = '想請教老闆：\n' + open.map((x, i) => `${i + 1}. ${x.q}`).join('\n')
   return (
     <div className="flex flex-col gap-4">
@@ -833,16 +840,20 @@ function BossTab({ currentId, go }: { currentId: string; go: (id: string) => voi
           ＋ 自己加一題
         </button>
       )}
-      <section className="flex flex-col gap-1.5">
-        <h3 className={h}>筆記還沒講清楚、值得問老闆的（點了加進清單）</h3>
-        <div className="flex flex-wrap gap-1.5">
-          {BOSS_EX.filter((x) => !items?.some((it) => it.q === x)).map((x) => (
-            <button key={x} type="button" disabled={added.includes(x)} onClick={() => void addEx(x)} className="min-h-11 rounded-full border border-amber-500/40 bg-amber-950 px-3.5 py-1.5 text-left text-[15px] font-semibold leading-snug text-amber-100 hover:border-amber-500 disabled:opacity-40">
-              ＋ {x}
-            </button>
-          ))}
-        </div>
-      </section>
+      {/* 清單讀到之後才顯示（才比對得出哪幾題已經加過） */}
+      {examples.length > 0 && (
+        <section className="flex flex-col gap-1.5">
+          <h3 className={h}>筆記還沒講清楚、值得問老闆的（點了加進清單）</h3>
+          <div className="flex flex-wrap gap-1.5">
+            {examples.map((x) => (
+              <button key={x} type="button" aria-disabled={added.includes(x) || undefined} onClick={() => void addEx(x)} className="min-h-11 rounded-full border border-amber-500/40 bg-amber-950 px-3.5 py-1.5 text-left text-[15px] font-semibold leading-snug text-amber-100 hover:border-amber-500 aria-disabled:opacity-40">
+                ＋ {x}
+                {failed.includes(x) && <span className="ml-1.5 text-[13px] text-red-300">沒加成功，再按一次</span>}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
       {err != null && <ErrorBox err={err} retry={() => void load()} />}
       {!items && err == null && <Loading text="讀取清單…" />}
       {items && (

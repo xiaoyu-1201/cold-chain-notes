@@ -7,6 +7,8 @@ import { NewChip } from '../ui/NewChip'
 import { isNew } from '../../data/whatsNew'
 import { Panel } from '../ui/Panel'
 import { ArrowRight } from 'lucide-react'
+import { CountUp } from '../ui/CountUp'
+import { parseNum } from '../../lib/anim'
 
 const colClass = { 1: 'grid-cols-1', 2: 'grid-cols-2', 3: 'grid-cols-3' } as const
 
@@ -26,7 +28,8 @@ export function Metrics({ block }: { block: MetricsBlock }) {
                 className={cn(
                   'relative flex flex-col justify-center overflow-hidden rounded-2xl',
                   lg ? 'px-6 py-4' : 'px-5 py-1',
-                  'border bg-card', t.border, isNew(item.added) && 'new-frame',
+                  // 不畫整圈框線（紅色的會跟「新」的紅框搞混，10/18 QA）：左邊色條＋淡底就分得出來
+                  'bg-paper', isNew(item.added) && 'new-frame',
                 )}
               >
                 <span aria-hidden className={cn('absolute inset-y-0 left-0 w-1', t.dot)} />
@@ -41,7 +44,8 @@ export function Metrics({ block }: { block: MetricsBlock }) {
                 </div>
                 <div className={cn('flex items-baseline gap-2', lg ? 'mt-1' : 'mt-0.5')}>
                   <span className={cn('font-mono font-extrabold tracking-tight', lg ? 'text-[64px] leading-[1.05]' : 'text-[38px] leading-none', t.strong)}>
-                    {item.value}
+                    {/* 小於 10 的多半是分類（「4 分」「2 條線」），跑了意思會怪 */}
+                    <CountUp text={item.value} run={(parseNum(item.value)?.n ?? 0) >= 10} />
                   </span>
                   {item.unit && <span className={cn('font-mono text-slate-400', lg ? 'text-[26px]' : 'text-[22px]')}>{item.unit}</span>}
                 </div>
@@ -64,12 +68,16 @@ export function StatCard({ block }: { block: StatBlock }) {
       <div className="flex h-full flex-col justify-center gap-4">
         <div className={cn('flex items-center justify-around gap-3 rounded-2xl border px-4 py-4', t.border, t.soft)}>
           <div className="text-center">
-            <div className={cn('font-mono text-[46px] font-extrabold leading-none', t.strong)}>{block.from.value}</div>
+            <div className={cn('font-mono text-[46px] font-extrabold leading-none', t.strong)}>
+              <CountUp text={block.from.value} />
+            </div>
             <div className="mt-2 text-[19px] text-slate-300">{block.from.label}</div>
           </div>
           <ArrowRight className={cn('size-9 shrink-0', t.text)} aria-hidden />
           <div className="text-center">
-            <div className={cn('font-mono text-[46px] font-extrabold leading-none', t.strong)}>{block.to.value}</div>
+            <div className={cn('font-mono text-[46px] font-extrabold leading-none', t.strong)}>
+              <CountUp text={block.to.value} />
+            </div>
             <div className="mt-2 text-[19px] text-slate-300">{block.to.label}</div>
           </div>
         </div>

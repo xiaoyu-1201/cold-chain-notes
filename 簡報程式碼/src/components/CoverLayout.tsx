@@ -6,7 +6,6 @@ import { presetSticky } from '../hooks/useStickyState'
 import { useKeepParens } from '../hooks/useKeepParens'
 import type { CoverData, SlideData } from '../data/types'
 import { slides } from '../data/slides'
-import { PART_NO } from '../data/parts'
 import { ConclusionCallout } from './ui/ConclusionCallout'
 import { fadeUp, staggerParent } from './ui/motion'
 import { CycleExplorer } from './diagrams/CycleExplorer'
@@ -23,7 +22,6 @@ export function CoverLayout({ slide, cover }: { slide: SlideData; cover: CoverDa
     { value: String(partCount), label: '篇' },
     { value: String(coreCount), label: '頁必讀' },
   ]
-  const siblings = slides.filter((s) => s.part === slide.part)
   const ref = useRef<HTMLElement>(null)
   useKeepParens(ref)
   const { goToId } = useDeck()
@@ -39,12 +37,6 @@ export function CoverLayout({ slide, cover }: { slide: SlideData; cover: CoverDa
       <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] items-center gap-14">
         <div>
           <motion.p variants={fadeUp} className="flex items-center gap-3 text-[20px] font-semibold text-slate-300">
-            <span className="drawing-no inline-flex items-stretch overflow-hidden rounded-[4px] border border-ink/45 text-[18px] leading-none text-ink">
-              <span className="px-2.5 py-1.5 font-bold">
-                圖 {PART_NO[slide.part]}-{siblings.indexOf(slide) + 1}
-              </span>
-              <span className="border-l border-ink/30 px-2 py-1.5 text-ink-3">共 {siblings.length}</span>
-            </span>
             冷凍材料行培訓筆記
           </motion.p>
 

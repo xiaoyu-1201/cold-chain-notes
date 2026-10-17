@@ -513,6 +513,8 @@ export interface AbbrItem {
   tip?: string
   /** 相關頁 */
   slide?: string
+  /** 哪天加的（≥ NEW_SINCE 標「新」＋紅框） */
+  added?: string
 }
 
 export type Block =
@@ -576,6 +578,8 @@ export interface CoverData {
 export interface StoreTip {
   products: string[]
   tip: ReactNode
+  /** 這段哪天改過（≥ NEW_SINCE 標「新」＋紅框） */
+  added?: string
 }
 
 export interface SlideData {

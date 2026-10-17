@@ -412,7 +412,7 @@ const slideList: SlideData[] = [
             en: 'Compressor',
             items: '全密閉 / 半密閉；往復式、渦卷式、迴轉式',
             side: '高低壓分界',
-            chapter: '第 2 章',
+            chapter: '壓縮機總覽',
             slide: 'ch2',
           },
           {
@@ -422,7 +422,7 @@ const slideList: SlideData[] = [
             en: 'Condensing Unit',
             items: '氣冷冷凝器、室外機組、散熱風扇馬達',
             side: '高壓側',
-            chapter: '第 3 章',
+            chapter: '冷凝器總覽',
             slide: 'ch3',
           },
           {
@@ -432,7 +432,7 @@ const slideList: SlideData[] = [
             en: 'Unit Cooler',
             items: '吊頂冷風機、除霜電熱管、蒸發器風扇',
             side: '低壓側',
-            chapter: '第 4 章',
+            chapter: '蒸發器總覽',
             slide: 'ch4',
           },
           {
@@ -442,7 +442,7 @@ const slideList: SlideData[] = [
             en: 'Control Valves',
             items: '感溫膨脹閥 / 閥芯、電磁閥、壓力調節閥',
             side: '高低壓分界',
-            chapter: '第 5 章',
+            chapter: '閥件總覽',
             slide: 'ch5',
           },
           {
@@ -452,7 +452,7 @@ const slideList: SlideData[] = [
             en: 'Accessories',
             items: '乾燥過濾器、視液鏡、液氣分離器、儲液器、油分離器',
             side: '全系統',
-            chapter: '第 5 章',
+            chapter: '閥件總覽',
             slide: 'ch5',
           },
           {
@@ -472,7 +472,7 @@ const slideList: SlideData[] = [
             en: 'Piping & Insulation',
             items: '英制銅管、銅配件、橡塑保溫管',
             side: '全系統',
-            chapter: '第 2 章',
+            chapter: '壓縮機總覽',
             slide: 'ch2',
           },
           {
@@ -482,7 +482,7 @@ const slideList: SlideData[] = [
             en: 'Controls',
             items: '微電腦溫控器、高低壓開關、除霜定時器、接觸器',
             side: '控制迴路',
-            chapter: '第 5 章',
+            chapter: '閥件總覽',
             slide: 'ch5',
           },
           {
@@ -492,7 +492,7 @@ const slideList: SlideData[] = [
             en: 'Tools',
             items: '雙錶組、真空泵、回收機、擴管器、銀焊條、氮氣',
             side: '施工維修',
-            chapter: '第 9 章',
+            chapter: '故障診斷',
             slide: 'ch9',
           },
           {
@@ -502,7 +502,7 @@ const slideList: SlideData[] = [
             en: 'Cold Room',
             items: 'PU 庫板、冷庫門、門簾、照明、溫度記錄器',
             side: '庫體',
-            chapter: '第 7–8 章',
+            chapter: '熱負荷與選型',
             slide: 'ch7-8',
           },
         ],
@@ -522,13 +522,14 @@ const slideList: SlideData[] = [
     id: 'ch2',
     source: 'handbook',
     added: '2026-10-17',
-    changes: '「一定要問」補了：冷凍油、要足的或小一點、為什麼壞、散熱外移',
+    changes: '門市實戰「一定要問」補了 4 件事；實物照片多一張壓縮機',
     part: 'components',
     chapter: '壓縮機總覽',
     title: '壓縮機：系統的龍頭',
     en: 'Compressor',
     store: {
       products: ['全密閉壓縮機', '半密閉壓縮機', '冷凍油', '乾燥過濾器'],
+      added: '2026-10-17',
       tip: (
         <>
           換壓縮機一定要問：冷媒（看油 <Em>MO／POE</Em>）、電源、<Em>低溫或高溫</Em>、要足的或小一點、<Em>為什麼壞、散熱有沒有外移</Em>；燒毀的要清管、換乾燥過濾器。
@@ -1465,9 +1466,9 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 09 第 3 章 ───────────────────────── */
   {
     id: 'ch3',
+    added: '2026-10-18',
+    changes: '實物照片多一張：冷氣室外機（大風扇後面就是冷凝器）',
     source: 'handbook',
-    added: '2026-10-13',
-    changes: '3D「標出構造」：引線指在零件上、外殼裡的零件剖開才標、不蓋到按鈕',
     part: 'components',
     chapter: '冷凝器總覽',
     title: '冷凝器（熱排）：把熱散到室外',
@@ -2666,8 +2667,8 @@ const slideList: SlideData[] = [
   },
   {
     id: 'flare-fittings',
-    added: '2026-10-13',
-    changes: '3D「標出構造」：引線指在零件上、不蓋到按鈕',
+    added: '2026-10-18',
+    changes: '實物照片多一張：焊接口怎麼接',
     tier: 'ref',
     part: 'components',
     chapter: '喇叭頭與接頭',
@@ -3140,7 +3141,7 @@ const slideList: SlideData[] = [
             points: [{ x: 51.5, y: 79.4 }],
             func: '冷凍系統裡只能有冷媒、不能有水：水會結冰堵住管路。乾燥過濾器裡的分子篩會吸水、濾雜質，一定要裝；它也是常常更換的東西。',
             slide: 'ch9',
-            chapter: '第 9 章',
+            chapter: '故障診斷',
             audioAt: 2 * 60 + 33,
             audioAt2: 19 * 60 + 5,
           },
@@ -3167,7 +3168,7 @@ const slideList: SlideData[] = [
             ],
             func: '電磁閥平常是關的（常閉），通電才打開。庫溫到了，它和壓縮機一起斷電關閉，把冷媒關在液管，避免冷媒跑進蒸發器、讓下次難啟動。',
             slide: 'ch5',
-            chapter: '第 5 章',
+            chapter: '閥件總覽',
             audioAt: 14 * 60 + 46,
             audioAt2: 19 * 60 + 5,
           },
@@ -3183,7 +3184,7 @@ const slideList: SlideData[] = [
             ],
             func: '膨脹閥負責降壓節流：像洗車時壓住水管口，把液態冷媒噴成細小的液氣混合，進蒸發器後才能快速蒸發吸熱。',
             slide: 'ch5',
-            chapter: '第 5 章',
+            chapter: '閥件總覽',
             audioAt: 5 * 60 + 47,
             audioAt2: 4 * 60 + 46,
           },
@@ -3199,7 +3200,7 @@ const slideList: SlideData[] = [
             ],
             func: '冷媒在蒸發器裡蒸發，把庫內的熱吸走，所以吹出冷風。講義上面那組是冷藏庫、下面那組是冷凍庫（有電熱除霜），一台壓縮機帶兩種庫溫。',
             slide: 'ch4',
-            chapter: '第 4 章',
+            chapter: '蒸發器總覽',
             audioAt: 6 * 60 + 27,
           },
           {
@@ -3211,7 +3212,7 @@ const slideList: SlideData[] = [
             points: [{ x: 55, y: 26.6 }],
             func: 'KVP 裝在冷藏庫蒸發器出口，讓蒸發壓力不低於設定值，冷藏庫才不會被拉得跟冷凍庫一樣冷。很少用（一年賣不到兩顆）。',
             slide: 'ch5',
-            chapter: '第 5 章',
+            chapter: '閥件總覽',
           },
           {
             id: 'nrv',
@@ -3222,7 +3223,7 @@ const slideList: SlideData[] = [
             points: [{ x: 50, y: 54.6 }],
             func: '逆止閥裝在冷凍庫的吸氣管，只讓冷媒單向流動，停機時防止冷媒倒流進冰冷的冷凍庫蒸發器。很少用（一年賣不到兩顆）。',
             slide: 'ch5',
-            chapter: '第 5 章',
+            chapter: '閥件總覽',
           },
           {
             id: 'kvl',
@@ -3233,7 +3234,7 @@ const slideList: SlideData[] = [
             points: [{ x: 58.4, y: 54.2 }],
             func: 'KVL 裝在壓縮機吸氣口前：剛開機降溫或除霜完時吸氣壓力偏高，它限制吸氣壓力，避免壓縮機馬達過載燒毀。很少用（一年賣不到兩顆）。',
             slide: 'ch5',
-            chapter: '第 5 章',
+            chapter: '閥件總覽',
           },
           {
             id: 'comp',
@@ -3244,7 +3245,7 @@ const slideList: SlideData[] = [
             points: [{ x: 67.25, y: 68.2 }],
             func: '壓縮機是龍頭，沒有它什麼都不行：把低溫低壓的冷媒氣體壓成高溫高壓，送到冷凝器散熱。只能壓氣體，不能壓液體。',
             slide: 'ch2',
-            chapter: '第 2 章',
+            chapter: '壓縮機總覽',
             audioAt: 11 * 60 + 57,
             audioAt2: 4 * 60 + 46,
           },
@@ -3257,7 +3258,7 @@ const slideList: SlideData[] = [
             points: [{ x: 62.75, y: 27.1 }],
             func: '壓縮機像汽車引擎，需要冷凍油潤滑；油會跟著冷媒跑出去，油分離器在排氣端把油分出來送回壓縮機。',
             slide: 'ch5',
-            chapter: '第 5 章',
+            chapter: '閥件總覽',
             audioAt: 3 * 60 + 52,
             audioAt2: 9 * 60 + 35,
           },
@@ -3270,7 +3271,7 @@ const slideList: SlideData[] = [
             points: [{ x: 72.4, y: 42.1 }],
             func: 'NRD 搭配 KVR 使用：冬天高壓偏低時，讓一部分壓縮機排氣直接補進儲液器，保持液管壓力，把冷媒推向膨脹閥。',
             slide: 'ch3',
-            chapter: '第 3 章',
+            chapter: '冷凝器總覽',
           },
           {
             id: 'cond',
@@ -3281,7 +3282,7 @@ const slideList: SlideData[] = [
             points: [{ x: 80, y: 46.8 }],
             func: '冷凝器把高溫高壓氣體的熱排掉、凝結成液體，吹出的風有四、五十度。鰭片會吸灰塵，一定要定期清洗。',
             slide: 'ch3',
-            chapter: '第 3 章',
+            chapter: '冷凝器總覽',
             audioAt: 0,
             audioAt2: 11 * 60 + 41,
           },
@@ -3294,7 +3295,7 @@ const slideList: SlideData[] = [
             points: [{ x: 77.75, y: 58.9 }],
             func: 'KVR 在冬天外溫低時維持冷凝壓力，避免膨脹閥前後壓差不足、供液不夠。',
             slide: 'ch3',
-            chapter: '第 3 章',
+            chapter: '冷凝器總覽',
           },
           {
             id: 'kp15',
@@ -3306,7 +3307,7 @@ const slideList: SlideData[] = [
             func: '高低壓開關在低壓太低或高壓太高時切斷電源、讓壓縮機停機，保護壓縮機；每套系統都一定要裝。',
             audioAt2: 18 * 60 + 36,
             slide: 'ch5',
-            chapter: '第 5 章',
+            chapter: '閥件總覽',
           },
           {
             id: 'ekc-temp',
@@ -3320,7 +3321,7 @@ const slideList: SlideData[] = [
             ],
             func: '溫度控制器用來設定庫溫，到溫就讓壓縮機停。溫差一般抓 4°C：例如設 -20°C 停、回升到 -16°C 再啟動，避免壓縮機開關太頻繁；EKC 201 還會控制除霜。',
             slide: 'ch4',
-            chapter: '第 4 章',
+            chapter: '蒸發器總覽',
             audioAt: 16 * 60 + 15,
           },
           {
@@ -4067,7 +4068,7 @@ const slideList: SlideData[] = [
     source: 'handbook',
     part: 'advanced',
     advanced: true,
-    chapter: '第 6 章',
+    chapter: '過冷過熱調校',
     title: '熱力平衡與過冷 / 過熱度調校',
     en: 'Superheat & Subcooling',
     store: {
@@ -4183,7 +4184,7 @@ const slideList: SlideData[] = [
     source: 'handbook',
     part: 'advanced',
     advanced: true,
-    chapter: '第 7 – 8 章',
+    chapter: '熱負荷與選型',
     title: '熱負荷計算與選型原則',
     en: 'Heat Load & Selection',
     store: {
@@ -4440,7 +4441,7 @@ const slideList: SlideData[] = [
                 ),
                 recommend: ['檢漏劑 / 電子檢漏器', '銀焊條', '乾燥過濾器'],
                 slide: 'ch9',
-                chapter: '第 9 章',
+                chapter: '故障診斷',
               },
               {
                 type: 'scenario',
@@ -4454,7 +4455,7 @@ const slideList: SlideData[] = [
                 ),
                 recommend: ['同規格壓縮機', '乾燥過濾器', '酸性測試劑'],
                 slide: 'ch2',
-                chapter: '第 2 章',
+                chapter: '壓縮機總覽',
               },
               {
                 type: 'scenario',
@@ -4468,7 +4469,7 @@ const slideList: SlideData[] = [
                 ),
                 recommend: ['除霜電熱管', '溫度感測器', '風扇馬達', '門封條'],
                 slide: 'ch4',
-                chapter: '第 4 章',
+                chapter: '蒸發器總覽',
               },
               {
                 type: 'info',

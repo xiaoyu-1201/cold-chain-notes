@@ -11,7 +11,7 @@ export function AlertPanel({ block }: { block: AlertBlock }) {
   return (
     <section
       role="note"
-      className="relative flex h-full flex-col overflow-hidden rounded-[18px] border-2 border-red-500/60 bg-card p-6 pt-8"
+      className="relative flex h-full flex-col overflow-hidden rounded-[18px] bg-card p-6 pt-8"
     >
       <div aria-hidden className="hazard-red absolute inset-x-0 top-0 h-2.5" />
       <header className="mb-5 flex items-center gap-4">
@@ -32,7 +32,7 @@ export function AlertPanel({ block }: { block: AlertBlock }) {
         {block.items.map((item) => {
           const Icon = item.icon
           return (
-            <div key={item.title} className={cn('flex max-h-[240px] flex-1 flex-col justify-center rounded-2xl px-5 py-4', 'border border-red-500/30 bg-red-950/45', isNew(item.added) && 'new-frame')}>
+            <div key={item.title} className={cn('flex max-h-[240px] flex-1 flex-col justify-center rounded-2xl px-5 py-4', 'bg-red-950/45', isNew(item.added) && 'new-frame')}>
               <div className="flex items-center gap-3">
                 <Icon className="size-7 shrink-0 text-red-300" aria-hidden />
                 <h4 className="text-[25px] font-bold text-red-50">{item.title}</h4>

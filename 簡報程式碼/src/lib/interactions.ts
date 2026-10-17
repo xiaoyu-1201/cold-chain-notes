@@ -18,7 +18,7 @@ const HINTS: Partial<Record<Block['type'], [string, string]>> = {
   estimate: ['選情境，一題一題幫客人配出整套', '選情境，一題一題幫客人配出整套'],
   hpcalc: ['輸入鐵甲型號或 BTU；按「幫我講給客人聽」請 AI 助教寫講法', '輸入型號或 BTU；可以請 AI 助教寫講法'],
   sessionNotes: ['點左邊的段落直接跳過去；右邊可以捲', '點段落標題打開、再點一次收起來'],
-  askfirst: ['左邊選商品看要問什麼；點「看 P.xx」回原本那頁；下面可以跟 AI 助教練習', '上面選商品；點「看 P.xx」回原本那頁；最下面跟 AI 助教練習'],
+  askfirst: ['左邊選商品看要問什麼；點卡片下面的「看 P.31」這種頁碼回原本那頁；下面可以跟 AI 助教練習', '上面選商品；點「看 P.31」這種頁碼回原本那頁；最下面跟 AI 助教練習'],
   flashcards: ['點卡片翻面、聽英文和台語；‹ › 換卡，右邊點名詞直接跳', '點卡片翻面、聽發音；‹ › 換卡，下面「全部名詞」直接跳'],
   products: ['點品項，跳到對應章節', '點章節按鈕，跳到對應章節'],
   parts: ['點章節，直接跳過去', '點章節按鈕，直接跳過去'],
@@ -34,6 +34,9 @@ function collect(blocks: Block[], out: Set<Block['type']>) {
   }
 }
 
+const hasTableImage = (blocks: Block[]): boolean =>
+  blocks.some((b) => (b.type === 'table' ? !!b.image : b.type === 'grid' || b.type === 'section' || (b.type === 'insight' && b.children) ? hasTableImage(b.children ?? []) : false))
+
 /** 這一頁有哪些東西可以點（讓新人知道哪裡能互動） */
 export function interactionHints(slide: SlideData, mobile = false): string[] {
   const types = new Set<Block['type']>()
@@ -41,6 +44,8 @@ export function interactionHints(slide: SlideData, mobile = false): string[] {
   const hints = [...types].flatMap((t) => {
     // 公開網站沒有完整錄音：錄音頁不提示「點段落播放」
     if (t === 'audio' && !HAS_CLASS_AUDIO) return []
+    // 表格有附原稿照片才有「照片按鈕」（10/18 QA：沒照片的表格也顯示這句）
+    if (t === 'table' && !hasTableImage(slide.blocks)) return []
     const hint = HINTS[t]
     return hint ? [hint[mobile ? 1 : 0]] : []
   })

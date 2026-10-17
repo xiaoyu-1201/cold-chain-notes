@@ -18,12 +18,12 @@ interface PanelProps {
   children: ReactNode
 }
 
-/** 標準內容卡片：白底＋細框（技術藍圖），不用陰影、不用漸層；圖示直接上色 */
+/** 標準內容卡片：白底、不加框線（10/18 設計健檢：框裡面又有框太亂），不用陰影、不用漸層；圖示直接上色 */
 export function Panel({ icon: Icon, title, tone = 'ice', right, className, bodyClassName, children }: PanelProps) {
   // 標題講的是零件 → 用零件線稿取代通用圖示
   const glyph = glyphFor(title)
   return (
-    <section className={cn('relative flex h-full min-h-0 flex-col rounded-[18px] border border-line bg-card p-7', className)}>
+    <section className={cn('relative flex h-full min-h-0 flex-col rounded-[18px] bg-card p-7', className)}>
       {(title || Icon) && (
         <header className="mb-4 flex items-center gap-3">
           {glyph ? (

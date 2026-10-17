@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
+import { flashNew } from '../lib/anim'
 import { useKeepParens } from '../hooks/useKeepParens'
-import { wholeNew } from '../lib/newFrame'
 import { Target } from 'lucide-react'
-import { PART_NO, parts } from '../data/parts'
+import { parts } from '../data/parts'
 import { slides } from '../data/slides'
 import type { SlideData } from '../data/types'
-import { NEW_LABEL, isNew, newTag } from '../data/whatsNew'
+import { isNew, newTag } from '../data/whatsNew'
 import { cn } from '../lib/cn'
 import { toneStyles } from '../lib/tone'
 import { BlockRenderer } from './blocks/BlockRenderer'
@@ -16,6 +16,7 @@ import { ConclusionCallout } from './ui/ConclusionCallout'
 import { fadeUp, staggerParent } from './ui/motion'
 import { StoreTipCard } from './ui/StoreTipCard'
 import { ChangesNote } from './ui/ChangesNote'
+import { Title } from './ui/rich'
 import { NewToggle } from './ui/NewToggle'
 
 /** 內容來源標示（沒標＝課堂錄音／講義，最優先學） */
@@ -34,13 +35,12 @@ export function SlideCard({ slide }: { slide: SlideData }) {
 function StandardSlide({ slide }: { slide: SlideData }) {
   const ref = useRef<HTMLElement>(null)
   useKeepParens(ref)
+  // 這頁改過的地方，紅框閃一下（10/18 GSAP）
+  useEffect(() => flashNew(ref.current), [])
 
   const part = parts[slide.part]
   const index = slides.indexOf(slide)
   const firstOfPart = index <= 0 || slides[index - 1].part !== slide.part
-  // 在本篇的第幾頁（方便知道自己在哪）
-  const siblings = slides.filter((s) => s.part === slide.part)
-  const position = siblings.indexOf(slide) + 1
   // 小節名稱開頭跟篇名重複（「進階」篇的「進階 Insight」）就省掉重複的字
   const chapterLabel = slide.chapter?.startsWith(part.short) ? slide.chapter.slice(part.short.length).trim() : slide.chapter
 
@@ -56,13 +56,6 @@ function StandardSlide({ slide }: { slide: SlideData }) {
         <div className="min-w-0">
           {/* 眉標：篇章・小節・本篇第幾頁（安靜的一行字，取代一排標籤） */}
           <p className="flex min-w-0 items-center gap-2.5 text-[20px] font-semibold">
-            {/* 工程圖號：圖 篇-頁｜共幾頁（像圖紙右下角的圖號欄） */}
-            <span className="drawing-no mr-1 inline-flex shrink-0 items-stretch overflow-hidden rounded-[4px] border border-ink/45 text-[18px] leading-none text-ink">
-              <span className="px-2.5 py-1.5 font-bold">
-                圖 {PART_NO[slide.part]}-{position}
-              </span>
-              <span className="border-l border-ink/30 px-2 py-1.5 text-ink-3">共 {siblings.length}</span>
-            </span>
             <span className={toneStyles[part.tone].text}>{part.short}</span>
             {chapterLabel && <span className="text-slate-300">· {chapterLabel}</span>}
             {slide.source && (
@@ -76,15 +69,12 @@ function StandardSlide({ slide }: { slide: SlideData }) {
                 · 查閱
               </span>
             )}
-            {/* 開關放前面、日期放後面：關掉時日期隱形，空的是右邊（10/13 使用者） */}
-            {isNew(slide.added) && <NewToggle />}
-            {isNew(slide.added) && (
-              <span className="new-keep rounded-lg bg-red-400 px-3 py-1 text-[20px] font-black leading-none text-paper shadow-sm" title={NEW_LABEL}>
-                {newTag(slide.added)}
-              </span>
-            )}
+            {/* 「新・日期」和「圈出新的」合成一顆（10/18 設計健檢：頁首太多小標籤） */}
+            {isNew(slide.added) && <NewToggle label={newTag(slide.added)} />}
           </p>
-          <h2 className="mt-2 text-[60px] font-bold leading-[1.1] tracking-tight text-white">{slide.title}</h2>
+          <h2 className="mt-2 text-[60px] font-bold leading-[1.1] tracking-tight text-white">
+            <Title text={slide.title} />
+          </h2>
           <ChangesNote slide={slide} />
           {firstOfPart && part.goal && (
             // 每一篇第一頁：先講清楚這一篇學完要會什麼
@@ -97,8 +87,8 @@ function StandardSlide({ slide }: { slide: SlideData }) {
         {slide.store && <StoreTipCard store={slide.store} />}
       </motion.header>
 
-      {/* 整頁都是新的：內容區整塊圈起來（「圈出新的」開著時） */}
-      <div className={cn('relative mt-7 grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)]', wholeNew(slide) && 'new-frame-page')}>
+      {/* 整頁新的只在標題標「新」，不再整塊圈紅框；只有局部改過的地方才圈（10/18 設計健檢） */}
+      <div className="relative mt-7 grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)]">
         {slide.blocks.map((block, i) => (
           <BlockRenderer key={i} block={block} />
         ))}

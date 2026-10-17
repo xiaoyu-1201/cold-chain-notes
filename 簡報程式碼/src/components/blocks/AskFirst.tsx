@@ -100,7 +100,7 @@ export function AskFirst({ mobile = false }: { mobile?: boolean }) {
     )
   return (
     <div className="grid h-full min-h-0 grid-cols-[minmax(0,0.62fr)_minmax(0,1.6fr)] gap-6">
-      <div className="flex min-h-0 flex-col justify-between gap-5">
+      <div className="flex min-h-0 flex-col gap-5">
         {picker}
         {tutorBtns}
       </div>

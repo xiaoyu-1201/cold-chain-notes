@@ -51,3 +51,18 @@ export function Frac({ num, den }: { num: ReactNode; den: ReactNode }) {
     </span>
   )
 }
+
+/**
+ * 頁標題：冒號前後各自不拆開，要換行就在冒號後面換（10/18 設計健檢：手機「開單前問客人：選／商品…」斷在奇怪的地方）。
+ * 單獨一段比一行還長時，那一段裡面照常換行。
+ */
+export function Title({ text }: { text: string }) {
+  const i = text.indexOf('：')
+  if (i < 0) return <>{text}</>
+  return (
+    <>
+      <span className="inline-block">{text.slice(0, i + 1)}</span>
+      <span className="inline-block">{text.slice(i + 1)}</span>
+    </>
+  )
+}

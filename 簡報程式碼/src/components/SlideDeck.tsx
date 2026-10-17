@@ -207,7 +207,7 @@ export function SlideDeck() {
                 className="deck-hover relative origin-top-left bg-paper"
                 style={{ width: STAGE_W, height: STAGE_H, transform: `scale(${scale})` }}
               >
-                <BlueprintBackground frame width={STAGE_W} />
+                <BlueprintBackground />
                 {AUDIT ? (
                   <div className="absolute inset-0">
                     <SlideCard key={slide.id} slide={slide} />

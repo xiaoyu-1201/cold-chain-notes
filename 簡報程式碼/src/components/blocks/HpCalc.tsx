@@ -1,5 +1,6 @@
 import { Calculator, Fan, MessagesSquare, Sparkles } from 'lucide-react'
 import { openTutor } from '../../lib/tutor'
+import { CountUp } from '../ui/CountUp'
 import { useMemo } from 'react'
 import { useStickyState } from '../../hooks/useStickyState'
 import { cn } from '../../lib/cn'
@@ -90,7 +91,7 @@ export function HpCalc({ mobile = false }: { mobile?: boolean }) {
         <div>
           <dt className={cn('font-semibold text-slate-400', s.small)}>能力（60 Hz）</dt>
           <dd className={cn('font-black tabular-nums text-white', s.big)}>
-            {r.btu.toLocaleString()}
+            <CountUp text={r.btu.toLocaleString('en-US')} />
             <span className={cn('ml-1 font-bold text-slate-400', s.small)}>BTU</span>
           </dd>
         </div>
@@ -99,7 +100,7 @@ export function HpCalc({ mobile = false }: { mobile?: boolean }) {
             ÷ {DIV[r.t].toLocaleString()}（{TEMP_NAME[r.t]}）
           </dt>
           <dd className={cn('font-black tabular-nums text-sky-300', s.big)}>
-            {r.hp.toFixed(2)}
+            <CountUp text={r.hp.toFixed(2)} />
             <span className={cn('ml-1 font-bold text-slate-400', s.small)}>匹</span>
           </dd>
         </div>

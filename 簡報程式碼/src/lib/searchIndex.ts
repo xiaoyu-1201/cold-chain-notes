@@ -2,6 +2,7 @@ import { isValidElement } from 'react'
 import { slideById, slides } from '../data/slides'
 import { recordingOf } from '../data/recordings'
 import { PRACTICE } from '../data/practice'
+import { ASK_FIRST } from '../data/askFirst'
 import type { Block, RecordingsIndexBlock, SlideData } from '../data/types'
 
 /**
@@ -88,6 +89,11 @@ function chunksOf(block: Block, prefix: string, out: SearchChunk[]) {
   }
   if (block.type === 'recordingsIndex') {
     recordingChunks(block, out)
+    return
+  }
+  // 開單前問客人：資料在 askFirst.ts，一個商品一段（搜尋、AI 助教都讀得到）
+  if (block.type === 'askfirst') {
+    for (const g of ASK_FIRST) out.push({ label: `開單前問：${g.label}`, text: g.items.map((i) => `${i.q} 為什麼問：${i.why} 回答後：${i.then}`).join(' ') })
     return
   }
   const t = clean(textOf(block))

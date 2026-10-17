@@ -13,6 +13,8 @@ import { ChapterDrawer } from './ChapterDrawer'
 import { ProgressBar } from './ProgressBar'
 import { SearchPanel } from './SearchPanel'
 import { ProgressPanel } from './ProgressPanel'
+import { TutorPanel } from './TutorPanel'
+import { openTutor } from '../lib/tutor'
 import { markSeen } from '../lib/learn'
 import { SlideCard } from './SlideCard'
 import { SlideNav } from './SlideNav'
@@ -245,6 +247,7 @@ export function SlideDeck() {
             onOpenMenu={() => setDrawerOpen(true)}
             onSearch={() => setSearchOpen(true)}
             onProgress={() => setProgressOpen(true)}
+            onTutor={() => openTutor()}
             onToggleFullscreen={toggleFullscreen}
             back={showBack && returnTo !== null ? { number: returnTo + 1, title: slides[returnTo].title } : null}
             onBack={goBack}
@@ -263,6 +266,7 @@ export function SlideDeck() {
           />
           <SearchPanel open={searchOpen} onClose={() => setSearchOpen(false)} onSelect={jumpTo} />
           <ProgressPanel open={progressOpen} currentId={slide.id} onClose={() => setProgressOpen(false)} onSelect={jumpTo} />
+          <TutorPanel currentId={slide.id} onSelect={jumpTo} />
         </div>
       </DeckContext.Provider>
     </MotionConfig>

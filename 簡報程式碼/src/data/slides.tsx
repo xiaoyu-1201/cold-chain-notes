@@ -69,9 +69,10 @@ import insulationImg from '../assets/1005-insulation-chart.jpg'
 import refrigerantTableImg from '../assets/refrigerant-table.jpg'
 import { Danger, Em, Exp, Frac, Hl, Sub, Warn } from '../components/ui/rich'
 import { ABBR_PARTS, ABBR_SPECS, ABBR_THERMO } from './abbr'
-import { CLASS_AUDIO, CLASS_AUDIO_10, CLASS_AUDIO_11, CLASS_AUDIO_12, CLASS_AUDIO_13, CLASS_AUDIO_14, CLASS_AUDIO_15, CLASS_AUDIO_16, CLASS_AUDIO_2, CLASS_AUDIO_3, CLASS_AUDIO_4, CLASS_AUDIO_5, CLASS_AUDIO_6, CLASS_AUDIO_7, CLASS_AUDIO_8, CLASS_AUDIO_9, HAS_CLASS_AUDIO } from './media'
+import { CLASS_AUDIO, CLASS_AUDIO_10, CLASS_AUDIO_11, CLASS_AUDIO_12, CLASS_AUDIO_13, CLASS_AUDIO_14, CLASS_AUDIO_15, CLASS_AUDIO_16, CLASS_AUDIO_17, CLASS_AUDIO_18, CLASS_AUDIO_19, CLASS_AUDIO_20, CLASS_AUDIO_2, CLASS_AUDIO_3, CLASS_AUDIO_4, CLASS_AUDIO_5, CLASS_AUDIO_6, CLASS_AUDIO_7, CLASS_AUDIO_8, CLASS_AUDIO_9, HAS_CLASS_AUDIO } from './media'
 import type { SlideData } from './types'
 import { NewChip } from '../components/ui/NewChip'
+import { COMPANY_SLIDES } from './companyOnly'
 
 /** 各頁定義（定義順序不等於顯示順序，顯示順序見檔案最後的 ORDER） */
 const slideList: SlideData[] = [
@@ -520,8 +521,8 @@ const slideList: SlideData[] = [
   {
     id: 'ch2',
     source: 'handbook',
-    added: '2026-10-13',
-    changes: '3D：往復式改直立、標籤重做、放大看可換產品；吐出溫度改用 70～100°C（錄音16）',
+    added: '2026-10-17',
+    changes: '「一定要問」補了：冷凍油、要足的或小一點、為什麼壞、散熱外移',
     part: 'components',
     chapter: '第 2 章',
     title: '壓縮機：系統的龍頭',
@@ -530,7 +531,7 @@ const slideList: SlideData[] = [
       products: ['全密閉壓縮機', '半密閉壓縮機', '冷凍油', '乾燥過濾器'],
       tip: (
         <>
-          客人要換壓縮機，一定要問：冷媒、電源（單相或三相）、<Em>低溫機或高溫機</Em>、馬力，最好看機器上的型號牌；壓縮機燒毀的案子，要一起換乾燥過濾器。
+          換壓縮機一定要問：冷媒（看油 <Em>MO／POE</Em>）、電源、<Em>低溫或高溫</Em>、要足的或小一點、<Em>為什麼壞、散熱有沒有外移</Em>；燒毀的要清管、換乾燥過濾器。
         </>
       ),
     },
@@ -733,7 +734,8 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 壓縮機貨架（錄音13） ───────────────────────── */
   {
     id: 'comp-brands',
-    added: '2026-10-09',
+    added: '2026-10-17',
+    changes: '標「新」的一點：丹佛斯的數字是排氣量，21G 不是一匹（錄音20）',
     part: 'components',
     chapter: '壓縮機貨架',
     mark: 'BRANDS',
@@ -754,7 +756,7 @@ const slideList: SlideData[] = [
               { icon: Package, title: '英博格（Embraco）', desc: '小顆的，一馬以下；義大利品牌、斯洛伐克製造（標籤上有寫）。只有 110、220 單相，沒有三相', badge: { label: '小顆', tone: 'ice' } },
               { icon: Factory, title: '鐵甲（Tecumseh）', desc: '以法國廠為主（型號 GAJ 開頭）；泰國廠是 KK 系列（型號 AW 開頭，例 AW2464）；巴西廠店裡不賣、美國廠已退出。在台灣超過 50 年', badge: { label: '中小顆', tone: 'teal' } },
               { icon: Cylinder, title: 'Copeland（黑金剛）', desc: '店裡賣最多，口語叫黑金剛、孔不爛；CS、CR、CF 系列，分高溫、中溫、低溫；印度廠和墨西哥廠都有', badge: { label: '賣最多', tone: 'amber' } },
-              { icon: Snowflake, title: 'Danfoss（現在叫 Secop）', desc: '壓縮機部門已改名 Secop，很多人還是叫 Danfoss。型號裡有 G 的灌 R134a（冷藏）、有 CL 的灌 R404A（冷凍）；數字越大越大顆', badge: { label: '看冷媒', tone: 'violet' } },
+              { icon: Snowflake, title: 'Danfoss（現在叫 Secop）', added: '2026-10-17', desc: '很多人還是叫 Danfoss。G＝R134a（冷藏）、CL＝R404A（冷凍）；數字是排氣量（cc），R134a 的 21G 只有約 3/4 匹〔錄音20〕', badge: { label: '看冷媒', tone: 'violet' } },
             ],
           },
           {
@@ -1037,6 +1039,424 @@ const slideList: SlideData[] = [
       text: (
         <>
           壓縮機<Hl>焊過就不能退</Hl>：出貨前型號、電壓、相位、配件、溫度全部再對一次，一個字都不能錯。
+        </>
+      ),
+    },
+  },
+
+  /* ───────────────────────── 10/16～10/17 錄音17～20：壓縮機種類、能力、排氣量、冷凍油、故障 ───────────────────────── */
+  {
+    id: 'comp-types',
+    added: '2026-10-17',
+    changes: '整頁是新的：錄音17 老闆講的往復式和渦捲式、各牌做到幾匹、單相三相怎麼接',
+    part: 'components',
+    chapter: '壓縮機種類',
+    mark: 'TYPES',
+    title: '往復式、渦捲式：各做到幾匹',
+    en: 'Reciprocating vs Scroll',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
+        children: [
+          {
+            type: 'compare',
+            icon: Cog,
+            tone: 'ice',
+            title: '兩種構造，跟電壓無關',
+            en: 'Two Designs',
+            axis: ['活塞', '渦捲盤'],
+            left: {
+              badge: '往復式',
+              value: '有活塞',
+              tone: 'teal',
+              rows: [
+                { k: '液壓縮', v: <>閥片會破、<Hl>連桿會斷</Hl></> },
+                { k: '大小', v: '從小到大都有；店裡常賣到 5 匹左右' },
+              ],
+              use: '小顆的都是往復式：丹佛斯、英博格、鐵甲（含泰國 KK）',
+            },
+            right: {
+              badge: '渦捲式',
+              value: '沒有閥片',
+              tone: 'indigo',
+              rows: [
+                { k: '液壓縮', v: <>比較不會壞，<Hl>容錯率比較高</Hl></> },
+                { k: '大小', v: '大多大顆；從 1.5 匹起跳，沒有做 110V' },
+              ],
+              use: '是趨勢；孔不爛（黑金剛）的大顆都是渦捲式',
+            },
+          },
+          {
+            type: 'grid',
+            className: 'grid-rows-[auto_minmax(0,1fr)]',
+            children: [
+              {
+                type: 'list',
+                icon: Ruler,
+                tone: 'amber',
+                title: '各牌做到幾匹',
+                en: 'Size Ranges',
+                items: [
+                  { icon: Package, title: '英博格：1.5 匹以下', desc: '渦捲式從 1.5 匹開始，兩邊剛好接起來〔錄音17 09:24〕' },
+                  { icon: Factory, title: '鐵甲：往復式，到 2 匹左右', desc: '冷凍、冷藏都有〔錄音17 10:15〕' },
+                  { icon: Boxes, title: '大系統：並聯、半密式', desc: '30 匹可能是三台 10 匹或兩台 15 匹並聯；半密式都很大顆，店裡不放庫存〔錄音17 07:43〕' },
+                ],
+              },
+              {
+                type: 'list',
+                icon: Plug,
+                tone: 'violet',
+                title: '接電：看線、看 C／R／S',
+                en: 'Wiring',
+                items: [
+                  { icon: Plug, title: '110V、220V 都是兩條線', desc: '看插頭：110V 兩支平的腳，220V 是 T 型；第三支是接地線，不帶電〔錄音17 01:43〕' },
+                  { icon: Zap, title: '三相三條線，不用配件', desc: '220V、380V 都有三相；接進 C、R、S 三個點就啟動。單相才要配繼電器＋兩顆電容〔錄音17 11:06〕' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          電壓（單相、三相）跟構造（往復式、渦捲式）是兩回事；<Hl>渦捲式沒有閥片</Hl>，液壓縮比較不會壞，所以是趨勢。小顆的都是往復式。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'comp-rating',
+    added: '2026-10-17',
+    changes: '整頁是新的：錄音18、20 老闆講的測試條件、BTU 換算幾匹、鐵甲型號怎麼看、50 Hz 要乘 1.2',
+    part: 'components',
+    chapter: '壓縮機能力',
+    mark: 'RATING',
+    title: '壓縮機幾匹：看測試條件，再除',
+    en: 'Compressor Rating',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]',
+        children: [
+          {
+            type: 'grid',
+            className: 'grid-rows-[minmax(0,1fr)_auto]',
+            children: [
+              {
+                type: 'metrics',
+                icon: ThermometerSnowflake,
+                tone: 'ice',
+                title: '一樣的條件測，才比得出大小',
+                en: 'ASHRAE Test Points',
+                cols: 3,
+                items: [
+                  { label: '高溫（冷藏）', value: '12,000', unit: 'BTU', tone: 'red', note: '蒸發 7.2°C 時＝1 匹' },
+                  { label: '中溫', value: '8,000', unit: 'BTU', tone: 'amber', note: '蒸發 −6.7°C 時＝1 匹' },
+                  { label: '低溫（冷凍）', value: '4,000', unit: 'BTU', tone: 'ice', note: '蒸發 −23.3°C；有人用 4,500' },
+                ],
+                footnote: <>冷凝溫度標準是 <Hl>54.4°C</Hl>（ASHRAE）。散熱越好能力越大：孔不爛用 48.9°C 測，數字比較好看；鐵甲用 54.4°C，比較嚴格。〔錄音18 00:53～09:27〕</>,
+              },
+              {
+                type: 'info',
+                icon: Zap,
+                tone: 'amber',
+                title: '型錄是 50 Hz：台灣要乘 1.2',
+                en: '50 Hz vs 60 Hz',
+                body: <>台灣的電是 60 Hz。很多型錄（尤其大陸的）寫 50 Hz 的能力，要<Hl>乘 1.2</Hl>：例 3,089 BTU ×1.2 ≈ 3,706 BTU。〔錄音20 19:49〕</>,
+              },
+            ],
+          },
+          {
+            type: 'grid',
+            className: 'grid-rows-[auto_minmax(0,1fr)]',
+            children: [
+              {
+                type: 'table',
+                tone: 'amber',
+                corner: '鐵甲型號',
+                head: ['5520', '7512', '2446'],
+                rows: [
+                  { label: '第 1 個數字', cells: ['5＝高溫', '7＝中溫', '2＝低溫'] },
+                  { label: '第 2 個數字', cells: ['5 位數', '5 位數', '4 位數'] },
+                  { label: 'BTU', cells: ['20,000', '12,000', '4,600'] },
+                  { label: '幾匹', cells: ['÷12,000≈1.7', '÷8,000＝1.5', '÷4,000≈1'] },
+                ],
+                notes: [<>4、5、9 開頭都是高溫，<Hl>7 一定是中溫，2 一定是低溫</Hl>。先看第一個數字，除錯就全錯。〔錄音18 23:15、73:54〕</>],
+              },
+              {
+                type: 'list',
+                icon: Calculator,
+                tone: 'teal',
+                title: '其他牌子',
+                en: 'Other Brands',
+                items: [
+                  { icon: Cylinder, title: '孔不爛 CK20K＝20,000 BTU', desc: 'CK、CR 是外型；20K 的 K＝1,000〔錄音18 03:25〕' },
+                  { icon: Snowflake, title: '丹佛斯 15G 的 15＝排氣量', desc: '15 cc，不是 BTU；排氣量看下一頁〔錄音20 06:55〕' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          先分<Hl>高、中、低溫</Hl>，再把 BTU 除以 <Hl>12,000、8,000、4,000</Hl> 就是幾匹；型錄是 50 Hz 的要乘 1.2。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'comp-displacement',
+    added: '2026-10-17',
+    changes: '整頁是新的：錄音18、20 老闆講的排氣量和 BTU、R134a 的 21 不是一匹、低溫一匹分大中小',
+    part: 'components',
+    chapter: '壓縮機能力',
+    mark: 'CC',
+    title: '排氣量和 BTU：21 不一定是一匹',
+    en: 'Displacement vs BTU',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]',
+        children: [
+          {
+            type: 'list',
+            icon: Gauge,
+            tone: 'ice',
+            title: '兩個都要對，以排氣量為主',
+            en: 'Two Numbers',
+            items: [
+              { icon: Truck, title: '排氣量像機車的 cc', desc: '125 cc 跟 250 cc 跑同一條路，排氣量大的先到；跟灌什麼冷媒無關〔錄音18 64:28〕' },
+              { icon: RefreshCw, title: 'BTU 會跟著冷媒變', desc: '同一顆換灌 R404A，能力從 15,000 變 17,000 BTU，排氣量沒變；灌 R134a 只剩約 6 成' },
+              { icon: Scale, title: '老闆：排氣量為主、能力為輔', desc: '代替時兩個都對；跟客人講「BTU 變大是冷媒的關係」〔錄音20 07:46〕' },
+              { icon: MessagesSquare, title: '跟客人講分數', desc: '1/4、1/3、1/2、3/4、1、1¼、1½……；0.87 講「八分之七」，超過 12,000 BTU 講「一匹足」〔錄音18 17:11〕' },
+            ],
+          },
+          {
+            type: 'grid',
+            className: 'grid-rows-[auto_minmax(0,1fr)]',
+            children: [
+              {
+                type: 'table',
+                tone: 'red',
+                corner: '同樣大小',
+                head: ['R22、R404A', 'R134a'],
+                rows: [
+                  { label: '半匹', cells: ['約 12 cc', '15～16 cc 以上'] },
+                  { label: '21 cc', cells: ['一匹', <>只有約 <Hl>3/4 匹</Hl></>] },
+                ],
+                notes: [<>R134a 能力比較差，排氣量要比較大。客人要「冷藏一匹」，<Danger>不能直接給 21G</Danger>（21G 約 7,000 多 BTU）。R134a 壓縮機只能灌 R134a。〔錄音20 08:38～28:24〕</>],
+              },
+              {
+                type: 'table',
+                tone: 'ice',
+                corner: '低溫「一匹」',
+                head: ['2180', '21CL', '2192', '2446'],
+                rows: [
+                  { label: '能力', cells: ['3,942', '約 3,700', '4,705', '4,700 多'] },
+                  { label: '排氣量', cells: ['20.4 cc', '21 cc', '26.1 cc', '26.2 cc'] },
+                  { label: '叫法', cells: ['小型一匹', '小型一匹', '中型一匹', '中型一匹'] },
+                ],
+                notes: [<>低溫車用 4,000 BTU 當一匹，同樣叫「一匹」可以差一級：要問客人要<Hl>足的</Hl>還是小一點的。〔錄音20 34:06～40:55〕</>],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          排氣量不會變，BTU 會跟著冷媒變；<Hl>R134a 的 21 只有約 3/4 匹</Hl>，低溫的「一匹」也分小型、中型。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'hp-calc',
+    added: '2026-10-17',
+    changes: '整頁是新的：幾匹換算器，輸入鐵甲型號或 BTU，算出幾匹、怎麼跟客人講、散熱器配多大',
+    part: 'components',
+    chapter: '壓縮機能力',
+    mark: 'CALC',
+    title: '幾匹換算器：型號、BTU 一算就知道',
+    en: 'Horsepower Calculator',
+    blocks: [{ type: 'hpcalc' }],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          鐵甲看<Hl>第一個數字</Hl>分高中低溫，BTU 除以 12,000、8,000、4,000 就是幾匹；散熱器先抓 <Hl>×2</Hl>，環境差再加大。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'comp-oil',
+    added: '2026-10-17',
+    changes: '整頁是新的：錄音18 老闆講的冷媒跟著冷凍油走、R404A 和 R438A 怎麼選、R22 淘汰後型號怎麼變',
+    part: 'components',
+    chapter: '壓縮機與冷媒',
+    mark: 'OIL',
+    title: '能灌什麼冷媒：看壓縮機裡的油',
+    en: 'Oil Decides the Refrigerant',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
+        children: [
+          {
+            type: 'grid',
+            className: 'grid-rows-[minmax(0,1fr)_auto]',
+            children: [
+              {
+                type: 'compare',
+                icon: Droplets,
+                tone: 'amber',
+                title: '壓縮機不挑冷媒，油才挑',
+                en: 'MO vs POE',
+                axis: ['礦物油', '合成油'],
+                left: {
+                  badge: '礦物油（MO）',
+                  value: '只能三種',
+                  tone: 'amber',
+                  rows: [
+                    { k: '可以灌', v: 'R22、R438A（冷藏）、R408A（冷凍）' },
+                    { k: '不能灌', v: <Danger>R404A</Danger> },
+                  ],
+                  use: 'R408A 有一半是 R22，比較貴，多半是救舊系統用',
+                },
+                right: {
+                  badge: '合成油（POE）',
+                  value: '都可以',
+                  tone: 'emerald',
+                  rows: [
+                    { k: '可以灌', v: 'R404A、R438A、R507……' },
+                    { k: '例外', v: 'R134a 的壓縮機只能灌 R134a' },
+                  ],
+                  use: '現在新的壓縮機幾乎都是合成油',
+                },
+              },
+              {
+                type: 'info',
+                icon: History,
+                tone: 'slate',
+                title: 'R22 淘汰後，鐵甲型號怎麼變',
+                en: 'Model Numbers',
+                body: <>以前 5 開頭＝R22（礦物油）。換合成油後，法國的改成 <Hl>9 或 4 開頭</Hl>（5510→9510、5517→4517）；泰國 KK 沒改型號、標籤還寫 R22，其實是 POE。<Em>同一個型號有 MO 和 POE 兩種，拿貨要看清楚</Em>。〔錄音18 26:45、46:22〕</>,
+              },
+            ],
+          },
+          {
+            type: 'list',
+            icon: Snowflake,
+            tone: 'ice',
+            title: 'R404A 和 R438A 怎麼選',
+            en: 'R404A or R438A',
+            items: [
+              { icon: CircleCheck, title: 'R404A 是主力', desc: '冷藏到冷凍都能用、比較便宜；打到 −20°C 只有 R404A 行〔錄音18 39:36〕' },
+              { icon: Thermometer, title: 'R438A 代替 R22，冷藏為主', desc: '冷藏時兩個差不多；有人堅持冷藏灌 R438A，因為高壓沒那麼高' },
+              { icon: Gauge, title: '高壓高不等於散熱差', desc: '同樣冷凝溫度，R404A 本來就約 250 psi、R22 約 210 psi；散熱器不一定要加大〔錄音18 42:59〕' },
+              { icon: Ban, title: '低溫車不要灌 R438A', desc: '2 開頭的低溫車，建議灌 R404A〔錄音18 55:52〕' },
+              { icon: Refrigerator, title: '404 壓縮機也能打冷藏', desc: '以前台灣進的 404 壓縮機都是低溫車，大家才以為 404＝冷凍〔錄音18 36:59〕' },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          能灌什麼冷媒，<Hl>看壓縮機裡的油</Hl>：礦物油只能 R22、R438A、R408A；合成油都可以，但 R134a 的壓縮機只能灌 R134a。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'comp-fault',
+    tier: 'ref',
+    added: '2026-10-17',
+    changes: '整頁是新的：10/17 講義「壓縮機故障自我判斷」',
+    part: 'components',
+    chapter: '壓縮機故障',
+    mark: 'FAULT',
+    title: '壓縮機壞了：看症狀找原因',
+    en: 'Compressor Failure Check',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)]',
+        children: [
+          {
+            type: 'list',
+            icon: Cog,
+            tone: 'red',
+            title: '機械：閥片、卡死、抖動',
+            en: 'Mechanical',
+            items: [
+              { icon: Droplets, title: '油黑', desc: '系統不乾淨（維修最多）、長期過熱、油變質；換新的要先清管路' },
+              { icon: Snowflake, title: '低壓閥片破', desc: '液壓縮最多：裡面有水滴聲、外殼冒汗、回氣管結霜太厚＝冷媒太多' },
+              { icon: Flame, title: '高壓閥片破', desc: '出口到冷凝器堵住、常常過熱、散熱不良' },
+              { icon: Ban, title: '束心（卡死）', desc: '沒油潤滑、過熱、被撞到、液態冷媒沖掉油' },
+              { icon: Waypoints, title: '抖動、異聲', desc: '沒放水平、腳座沒鎖、焊藥掉進去、吐出管太長（做 U 型管）' },
+            ],
+          },
+          {
+            type: 'list',
+            icon: Zap,
+            tone: 'amber',
+            title: '電：漏電、線圈、繼電器',
+            en: 'Electrical',
+            items: [
+              { icon: Zap, title: '漏電', desc: '真空狀態下啟動、過熱、外殼結露生鏽、火線地線接錯' },
+              { icon: Cpu, title: '線圈燒毀', desc: '電壓太低、冷媒太多、散熱不良、油酸化；110V、220V 接錯' },
+              { icon: Plug, title: '繼電器（Relay）燒毀', desc: '螺絲鬆、電壓太低接點黏死、沒插好' },
+              { icon: ShieldAlert, title: '過載保護器燒毀', desc: '一直高電流、跳太多次、散熱不良' },
+            ],
+          },
+          {
+            type: 'grid',
+            className: 'grid-rows-[minmax(0,1fr)_auto]',
+            children: [
+              {
+                type: 'list',
+                icon: ShieldCheck,
+                tone: 'emerald',
+                title: '新的壓縮機',
+                en: 'New Unit',
+                items: [
+                  { icon: Droplets, title: '油清澈、沒味道', desc: '變黑黃、有怪味＝油變質' },
+                  { icon: Gauge, title: 'C、S、R 量電阻', desc: 'C-S 加 C-R＝S-R；對照技術資料' },
+                  { icon: Timer, title: '抽完真空快點焊', desc: '合成油最怕水分' },
+                ],
+              },
+              {
+                type: 'info',
+                icon: Syringe,
+                tone: 'ice',
+                title: 'R404A、R507 用液態灌',
+                en: 'Liquid Charging',
+                body: <>液態從高壓進、氣態從低壓進；運轉時關高壓，從低壓慢慢補。第一次灌，等 3 分鐘以上再補。</>,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          壓縮機壞掉，多半是<Hl>冷媒太多（液壓縮）</Hl>、<Hl>散熱不良（過熱）</Hl>、<Hl>系統不乾淨</Hl>；裝新的之前，管路要先清乾淨。
         </>
       ),
     },
@@ -1992,6 +2412,172 @@ const slideList: SlideData[] = [
     },
   },
   {
+    id: 'recording-13',
+    tier: 'ref',
+    added: '2026-10-17',
+    changes: '整頁是新的：10/16 上課錄音，點段落就跳到那裡',
+    part: 'review',
+    chapter: '課堂錄音',
+    mark: 'AUDIO 13',
+    title: '錄音17｜壓縮機複習：單相三相、往復式和渦捲式、束心',
+    en: 'Recording 17',
+    blocks: [
+      {
+        type: 'audio',
+        src: CLASS_AUDIO_17,
+        title: '錄音17（10/16）',
+        en: 'Class Recording',
+        duration: '13:55',
+        chapters: [
+          { at: 1, title: '單相要三樣配件', summary: '繼電器、黑色啟動電容、銀色運轉電容；店裡有接好線的「懶人線」；三相不用配件' },
+          { at: 103, title: '110V、220V 看插頭', summary: '110V 是兩個平的腳、220V 是 T 型；三相是三條線，有 220V、380V' },
+          { at: 208, title: '電和構造是兩回事', summary: '單相三相講的是電；往復式（活塞）、渦捲式（兩片渦捲盤）講的是構造' },
+          { at: 260, title: '渦捲式是趨勢', summary: '沒有閥片，液壓縮比較不會壞；往復式遇到液壓縮，閥片會破' },
+          { at: 310, title: '束心（卡死）', summary: '系統有髒東西、沒裝乾燥過濾器、油不夠；大系統要裝油分離器' },
+          { at: 360, title: '各牌做到幾匹', summary: '英博格 1.5 匹以下、渦捲從 1.5 匹起；鐵甲最大約 2 匹；大系統好幾顆並聯' },
+          { at: 666, title: 'C、R、S 三個接點', summary: '三相三條線直接接；單相要接配件；排法不一定一樣，但一定有 C、R、S' },
+          { at: 820, title: '冷媒成分不用背', summary: '不會有客人問成分，看得懂就好' },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          <Hl>單相要三樣配件、三相不用</Hl>；電和構造是兩回事；渦捲式沒有閥片，比較不怕液壓縮。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'recording-14',
+    tier: 'ref',
+    added: '2026-10-17',
+    changes: '整頁是新的：10/17 上課錄音第一段（約 80 分鐘），點段落就跳到那裡',
+    part: 'review',
+    chapter: '課堂錄音',
+    mark: 'AUDIO 14',
+    title: '錄音18｜壓縮機能力：測試條件、幾匹、鐵甲型號、冷凍油、散熱器',
+    en: 'Recording 18',
+    blocks: [
+      {
+        type: 'audio',
+        src: CLASS_AUDIO_18,
+        title: '錄音18（10/17）',
+        en: 'Class Recording',
+        duration: '79:50',
+        chapters: [
+          { at: 3, title: '高溫、中溫、低溫', summary: '每個牌子都分；高溫＝冷藏（R）、低溫＝冷凍（F）、中溫兩個都可以（RF）' },
+          { at: 53, title: '國際測試條件', summary: '蒸發 7.2／−6.7／−23.3°C、冷凝 54.4°C；孔不爛用 48.9°C 測，數字比較大' },
+          { at: 205, title: '孔不爛的型號', summary: 'CK20K：20K＝20,000 BTU' },
+          { at: 415, title: 'BTU 換幾匹', summary: '高溫 12,000、中溫 8,000、低溫 4,000 BTU 算一匹' },
+          { at: 567, title: '鐵甲型號怎麼看', summary: '第一個數字＝溫度、第二個＝幾位數，補 0 再除，就是幾匹' },
+          { at: 1031, title: '跟客人講分數', summary: '0.87 講「八分之七」；超過講「足」、不到講「不到」' },
+          { at: 1605, title: 'R22 淘汰後型號變了', summary: '法國鐵甲 5 開頭改 9 或 4；泰國 KK 沒改型號，其實是 POE' },
+          { at: 1964, title: '冷凍油決定冷媒', summary: '礦物油只能 R22、R438A、R408A；合成油都可以' },
+          { at: 2219, title: '404 不是只能打冷凍', summary: '現在高溫車也寫 404，一樣可以打冷藏' },
+          { at: 2376, title: 'R404A 還是 R438A', summary: '冷藏差不多；打到 −20°C 只有 R404A；R404A 是主力' },
+          { at: 2579, title: '高壓高不等於散熱差', summary: '同樣冷凝溫度，R404A 的高壓本來就比較高' },
+          { at: 3352, title: '低溫車不要灌 R438A', summary: '2 開頭的低溫車，不要建議灌 R438A' },
+          { at: 3559, title: '散熱器講「以上」', summary: '不知道現場環境，跟客人講「○匹以上」' },
+          { at: 3712, title: '高溫車打到幾度', summary: '冷排和庫內差 5～7°C；高溫車可以打到 0°C 左右；中溫車大多拿來打冷凍' },
+          { at: 3868, title: '排氣量和 BTU 都要對', summary: '排氣量像機車的 cc，跟冷媒無關；BTU 會跟著冷媒變' },
+          { at: 4232, title: '散熱器 ×2', summary: '壓縮機幾匹 ×2，挑最接近的；沒外移、廚房要加大，最多 2.5 倍' },
+          { at: 4485, title: '散熱外移、管子很長', summary: '管子也在散熱，散熱器可以小一點；但冷媒要灌比較多' },
+          { at: 4639, title: '散熱器濾網', summary: '白色的，變黑就拿下來洗、一個月一次；裝了不洗反而更糟' },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          能力看 <Hl>BTU 除以 12,000／8,000／4,000</Hl>；能灌什麼冷媒<Hl>看冷凍油</Hl>；散熱器<Hl>×2、講「以上」</Hl>。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'recording-15',
+    tier: 'ref',
+    added: '2026-10-17',
+    changes: '整頁是新的：10/17 上課錄音第二段，點段落就跳到那裡',
+    part: 'review',
+    chapter: '課堂錄音',
+    mark: 'AUDIO 15',
+    title: '錄音19｜高壓開關保護壓縮機；冰箱和材料為什麼不保固',
+    en: 'Recording 19',
+    blocks: [
+      {
+        type: 'audio',
+        src: CLASS_AUDIO_19,
+        title: '錄音19（10/17）',
+        en: 'Class Recording',
+        duration: '5:47',
+        chapters: [
+          { at: 1, title: '跳機都在保護壓縮機', summary: '壓縮機最貴；高壓開關跟它串聯，例如設 300 psi，超過就停；有自動、手動恢復' },
+          { at: 102, title: '冰箱的保固', summary: '商用冰箱多半工廠做好直接賣，工廠保固一年' },
+          { at: 181, title: '散熱外移不保固', summary: '管子變長，冷媒灌多少就不一定' },
+          { at: 279, title: '材料為什麼不保固', summary: '我們只賺材料的錢；跟客人講清楚原因' },
+          { at: 336, title: '下單前問熱排多大', summary: '報價很快，真的要下單，先問熱排多大' },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          跳機都是在<Hl>保護壓縮機</Hl>；散熱外移、材料<Hl>不保固要講出原因</Hl>。
+        </>
+      ),
+    },
+  },
+  {
+    id: 'recording-16',
+    tier: 'ref',
+    added: '2026-10-17',
+    changes: '整頁是新的：10/17 上課錄音第三段，點段落就跳到那裡',
+    part: 'review',
+    chapter: '課堂錄音',
+    mark: 'AUDIO 16',
+    title: '錄音20｜丹佛斯型號＝排氣量、50／60 Hz、低溫一匹分大中小',
+    en: 'Recording 20',
+    blocks: [
+      {
+        type: 'audio',
+        src: CLASS_AUDIO_20,
+        title: '錄音20（10/17）',
+        en: 'Class Recording',
+        duration: '48:05',
+        chapters: [
+          { at: 52, title: 'G 系列以冷藏為主', summary: '型錄有高中低溫，但拿 G 系列打冷凍，能力掉很多' },
+          { at: 415, title: '丹佛斯的數字＝排氣量', summary: '8.5G、15G、18G、21G 的數字就是幾 cc' },
+          { at: 466, title: '排氣量為主、BTU 為輔', summary: '能力會跟著冷媒變，排氣量不會' },
+          { at: 518, title: 'R134a 排氣量要比較大', summary: '別人半匹 12 cc，R134a 要 15～16 cc' },
+          { at: 801, title: '同樣半匹，排氣量不同', summary: '舊的 R22 半匹 12 cc；R134a 的 15G 也算半匹' },
+          { at: 882, title: 'R134a 的散熱器', summary: '高壓比較低，乘 1.5 就夠；老闆還是照乘 2' },
+          { at: 1189, title: '50 Hz 要乘 1.2', summary: '大陸型錄多半是 50 Hz；台灣 60 Hz，能力乘 1.2' },
+          { at: 1241, title: '大陸冰箱沒指定 60 Hz', summary: '到台灣轉比較快、能力變大，散熱器卻沒跟著加大' },
+          { at: 1445, title: '丹佛斯配散熱器', summary: '15G 配 1¼ 匹，放廚房配 1⅓；18G 配 1½' },
+          { at: 1549, title: '21G 不是一匹', summary: 'R134a 的 21G 只有約 3/4 匹；R404A 的 21CL 才是一匹' },
+          { at: 2046, title: '低溫一匹分小、中', summary: '2180、21CL 小型一匹；2192、2446 中型一匹；要問足的還是小一點' },
+          { at: 2352, title: '看外表分大小', summary: '越大顆，能力越大' },
+          { at: 2612, title: '看懂型錄', summary: '細節藏在型錄裡，看不懂就問；常看就變成反應' },
+          { at: 2678, title: '英博格一匹以下', summary: '55、65、70、8.5、10、12；小顆的主要是英博格和丹佛斯' },
+          { at: 2782, title: 'R134a 只能灌 R134a', summary: '從 R12 改過來的構造；POE 的 R404A 壓縮機什麼都能灌' },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          丹佛斯看<Hl>排氣量</Hl>；50 Hz 型錄<Hl>乘 1.2</Hl>；同樣叫一匹分大小，要問客人<Hl>要足的還是小一點</Hl>。
+        </>
+      ),
+    },
+  },
+  {
     id: 'caliper',
     part: 'units',
     chapter: '游標卡尺',
@@ -2826,6 +3412,8 @@ const slideList: SlideData[] = [
   {
     id: 'cond-practice',
     tier: 'ref',
+    added: '2026-10-17',
+    changes: '標「新」的兩點：加大最多到 2.5 倍、跟客人講「以上」和濾網（錄音18）',
     part: 'components',
     chapter: '冷凝器實務',
     mark: 'COND',
@@ -2844,9 +3432,9 @@ const slideList: SlideData[] = [
             en: 'Sizing',
             items: [
               { icon: Calculator, title: '標準', desc: '壓縮機 1 馬配散熱器 2 馬；估價先用 ×2', badge: { label: '先記這個', tone: 'amber' } },
-              { icon: TrendingUp, title: '要加大', desc: '散熱器放在廚房、室內這種很熱的地方，沒有拉到外面' },
+              { icon: TrendingUp, title: '要加大，最多到 2.5 倍', added: '2026-10-17', desc: '沒有外移、在天花板裡通風差、旁邊有油煙、客人不會保養：例 2 匹裝到 4.5～5 匹〔錄音18 56:44〕' },
               { icon: TrendingDown, title: '可以小一點', desc: '散熱器拉到通風好的地方、店在山上（外氣比較涼）；銅管拉長也會幫忙散熱' },
-              { icon: MessagesSquare, title: '訂貨時再提醒', desc: '客人要訂的時候，再問一次要加大還是減少，讓客人自己決定' },
+              { icon: MessagesSquare, title: '講「以上」，再推濾網', added: '2026-10-17', desc: '不知道現場就說「建議 1¼ 匹以上」；白色濾網插在鰭片前，一個月洗一次（不洗反而更糟）〔錄音18 59:19、77:19〕' },
             ],
           },
           {
@@ -4174,6 +4762,78 @@ const slideList: SlideData[] = [
     },
   },
 
+  /* ───────────────────────── 10/17 冷媒法規（環境部官方資料） ───────────────────────── */
+  {
+    id: 'refrigerant-rules',
+    added: '2026-10-17',
+    changes: '整頁是新的：R22 和 R404A 這些冷媒的管制時程（環境部官方資料），進貨、跟客人說明都用得到',
+    part: 'units',
+    chapter: '冷媒法規',
+    mark: 'RULES',
+    title: '冷媒法規：R22 快沒了，R404A 也在減',
+    en: 'Refrigerant Regulations in Taiwan',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
+        children: [
+          {
+            type: 'grid',
+            className: 'grid-rows-[auto_minmax(0,1fr)]',
+            children: [
+              {
+                type: 'metrics',
+                icon: History,
+                tone: 'red',
+                title: 'R22（HCFC）：只剩修舊機',
+                en: 'HCFC Phase-out',
+                cols: 2,
+                items: [
+                  { label: '2020 年起', value: '0.5', unit: '%', tone: 'amber', note: '只能修 2020/1/1 以前就在用的設備' },
+                  { label: '2030 年起', value: '0', unit: '', tone: 'red', note: '完全停止進口' },
+                ],
+                footnote: <>老闆：R22 被管制，「物以稀為貴」，舊機改灌 R438A 或換合成油的壓縮機。〔錄音18 28:27〕</>,
+              },
+              {
+                type: 'table',
+                tone: 'ice',
+                corner: 'HFC 全國用量上限',
+                head: ['2025', '2029', '2035', '2040', '2045'],
+                rows: [{ label: '剩幾成', cells: ['10 成', '9 成', '7 成', '5 成', '2 成'] }],
+                notes: [
+                  <>HFC 就是現在的主力冷媒：R404A、R507、R410A、R134a、R32 都在列管的 18 種裡。<Hl>2025 年 7 月 1 日起，沒有核准不能進口、出口</Hl>。</>,
+                  <>出處：環境部〈氫氟碳化物管理辦法〉（114 年 2 月 25 日發布，第 3、5 條）；HCFC 時程：環境部空氣品質改善維護資訊網〈臭氧層保護在台灣〉。</>,
+                ],
+              },
+            ],
+          },
+          {
+            type: 'list',
+            icon: Store,
+            tone: 'amber',
+            title: '對材料行有什麼影響',
+            en: 'What It Means for the Store',
+            items: [
+              { icon: Scale, title: '用量是用「二氧化碳當量」算的', desc: '同樣 1 公斤，暖化潛勢（GWP）越高佔的額度越多：R404A 3,922、R134a 1,430、R32 675（環境部 GWP 表）' },
+              { icon: TrendingDown, title: '總量一年比一年少', desc: '2029 年開始減，2045 年只剩 2 成；GWP 高的冷媒會越來越難進' },
+              { icon: Truck, title: '冷媒要跟有核配的供應商買', desc: '供應商要向環境部申報經銷商名單；店裡有沒有要另外申報，要跟供應商或環境部確認' },
+              { icon: RefreshCw, title: '拆、灌冷媒要用回收設備', desc: '辦法規定使用廠商拆解、填充要用回收或回用設備，紀錄保存 6 年（第 16 條）' },
+              { icon: MessagesSquare, title: '跟客人說明的依據', desc: '客人問「冷媒怎麼越來越貴、越來越難買」，這就是原因' },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          R22 只剩修舊機、<Hl>2030 年歸零</Hl>；R404A 這些 HFC 冷媒 <Hl>2025 年 7 月起進出口要核准</Hl>、2029 年開始一路減到 2 成。進貨、庫存、跟客人說明都要知道。
+        </>
+      ),
+    },
+  },
+
   /* ───────────────────────── 估價練習（只用錄音講過的規則） ───────────────────────── */
   {
     id: 'estimate',
@@ -4227,6 +4887,91 @@ const slideList: SlideData[] = [
       text: (
         <>
           先問<Hl>冰什麼</Hl>，壓縮機是龍頭、其他都跟著它配；散熱器配 2 倍，<Hl>乾燥過濾器、壓力開關一定要</Hl>，膨脹閥系統加儲液器，散熱外移加電磁閥。
+        </>
+      ),
+    },
+  },
+
+  /* ───────────────────────── 開單前問客人（10/17 總表） ───────────────────────── */
+  {
+    id: 'ask-first',
+    added: '2026-10-17',
+    changes: '整頁是新的：各頁「先問客人」的問題整理成一張表，每題加上為什麼問、回答後怎麼做；可以叫 AI 助教陪你練',
+    part: 'practice',
+    chapter: '門市實戰',
+    mark: 'ASK',
+    title: '開單前問客人：選商品，看要問什麼',
+    en: 'Questions Before Billing',
+    blocks: [{ type: 'askfirst' }],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          <Hl>先問診、再開單</Hl>：每個問題都有原因，問對了才拿得對；聽到客人的答案，就知道下一步要推什麼。
+        </>
+      ),
+    },
+  },
+
+  /* ───────────────────────── 客訴與不保固（錄音19） ───────────────────────── */
+  {
+    id: 'warranty',
+    added: '2026-10-17',
+    changes: '整頁是新的：材料為什麼不保固、冰箱散熱外移不保固、客人說「才裝就壞」先問什麼（錄音19＋10/17 講義）',
+    part: 'practice',
+    chapter: '門市實戰',
+    mark: 'CLAIM',
+    title: '客訴與「不保固」：先問原因，再講清楚',
+    en: 'Complaints & Warranty',
+    blocks: [
+      {
+        type: 'grid',
+        className: 'grid-cols-3',
+        children: [
+          {
+            type: 'list',
+            icon: ShieldAlert,
+            tone: 'amber',
+            title: '材料為什麼不保固',
+            en: 'Why No Warranty',
+            items: [
+              { icon: Package, title: '我們賣的是材料', desc: <>只賺材料的錢；工資、施工都在師傅的報價裡，裝得好不好是施工的人負責。〔錄音19 04:39〕</> },
+              { icon: HardHat, title: '要保固，就是施工的價錢', desc: <>施工的人收了工錢，工資、人工都算在他的成本裡，才負責保固；材料行只收材料錢。〔錄音19 04:49〕</> },
+              { icon: MessagesSquare, title: '講原因，不要只說「不保固」', desc: <>老闆會直接跟客人講為什麼沒有保固，客人聽懂就不會吵。〔錄音19 04:39〕</> },
+            ],
+          },
+          {
+            type: 'list',
+            icon: Refrigerator,
+            tone: 'ice',
+            title: '冰箱、散熱外移',
+            en: 'Fridges & Remote Condensers',
+            items: [
+              { icon: Factory, title: '商用冰箱：工廠保固一年', desc: <>玻璃冰箱、白鐵冰箱多半是工廠做好直接賣，工廠保固一年。〔錄音19 01:42〕</> },
+              { icon: Ban, title: '散熱外移的不保固', desc: <>管子變長，冷媒要灌多少就不一定（一定比原本多）。〔錄音19 03:01〕</> },
+              { icon: Gauge, title: '跳機都是在保護壓縮機', desc: <>高壓開關跟壓縮機串聯，例如設 300 psi，超過就停；有自動、手動恢復兩種。〔錄音19 00:47〕</> },
+            ],
+          },
+          {
+            type: 'list',
+            icon: Stethoscope,
+            tone: 'red',
+            title: '客人說「才裝就壞」：先問',
+            en: 'Ask Before Arguing',
+            items: [
+              { icon: Fan, title: '散熱器多大？有沒有外移？', desc: '散熱不良會過熱、跳過載保護器、高壓閥片破。' },
+              { icon: Droplets, title: '裝之前有沒有清管？', desc: '系統不乾淨，油會變黑；燒過的要清管、換乾燥過濾器。' },
+              { icon: Syringe, title: '冷媒灌多少？', desc: '灌太多會液壓縮，低壓閥片破、回氣管結霜太厚。' },
+            ],
+          },
+        ],
+      },
+    ],
+    conclusion: {
+      label: '一句話',
+      text: (
+        <>
+          客訴先<Hl>問散熱、清管、冷媒量</Hl>，對照故障判斷表找原因；材料不保固要<Hl>講出原因</Hl>：我們只賺材料的錢，保固是施工的人負責。
         </>
       ),
     },
@@ -4366,13 +5111,13 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 錄音索引（取代一頁一段的錄音頁） ───────────────────────── */
   {
     id: 'recordings',
-    added: '2026-10-12',
-    changes: '多了錄音16（10/12 上課：元件新頁複習，39 分鐘）',
+    added: '2026-10-17',
+    changes: '多了錄音17～20（10/16、10/17 上課：壓縮機複習、能力和型號、保固、丹佛斯和排氣量）',
     part: 'review',
     chapter: '課堂錄音',
     mark: 'AUDIO',
     // 公開網站沒有完整錄音（只在公司版、離線檔）：標題不能寫「點一段就能聽」（10/09 QA）
-    title: HAS_CLASS_AUDIO ? '課堂錄音：16 段，點一段就能聽' : '課堂錄音：16 段各講什麼',
+    title: HAS_CLASS_AUDIO ? '課堂錄音：20 段，點一段就能聽' : '課堂錄音：20 段各講什麼',
     en: 'Recordings',
     blocks: [
       {
@@ -4390,6 +5135,10 @@ const slideList: SlideData[] = [
           { slide: 'recording-10', code: '錄音14', related: [{ label: 'ODF／SAE／MPT', slide: 'pipe-marks' }, { label: '保溫管 15 種', slide: 'insulation-sizes' }] },
           { slide: 'recording-11', code: '錄音15', related: [{ label: '送貨對貨 SOP', slide: 'delivery-sop' }, { label: '四個牌子', slide: 'comp-brands' }] },
           { slide: 'recording-12', code: '錄音16', related: [{ label: '壓縮機保護', slide: 'comp-protect' }, { label: '電壓與相位', slide: 'comp-power' }, { label: '散熱器三種', slide: 'outdoor-units' }, { label: '冷排除霜', slide: 'defrost' }, { label: '冷凍庫三種', slide: 'room-types' }] },
+          { slide: 'recording-13', code: '錄音17', related: [{ label: '往復式、渦捲式', slide: 'comp-types' }, { label: '電壓與相位', slide: 'comp-power' }, { label: '故障判斷', slide: 'comp-fault' }] },
+          { slide: 'recording-14', code: '錄音18', related: [{ label: '能力怎麼看', slide: 'comp-rating' }, { label: '幾匹換算器', slide: 'hp-calc' }, { label: '冷凍油', slide: 'comp-oil' }, { label: '散熱器配多大', slide: 'cond-practice' }] },
+          { slide: 'recording-15', code: '錄音19', related: [{ label: '客訴與不保固', slide: 'warranty' }, { label: '壓縮機保護', slide: 'comp-protect' }] },
+          { slide: 'recording-16', code: '錄音20', related: [{ label: '排氣量', slide: 'comp-displacement' }, { label: '四個牌子', slide: 'comp-brands' }, { label: '幾匹換算器', slide: 'hp-calc' }] },
         ],
       },
     ],
@@ -4414,8 +5163,8 @@ const slideList: SlideData[] = [
   /* ───────────────────────── 名詞翻卡（間隔重複） ───────────────────────── */
   {
     id: 'glossary',
-    added: '2026-10-13',
-    changes: '「會了」標錯可以取消（再按一次）；多了 7 張名詞卡（卡上標「新」）',
+    added: '2026-10-17',
+    changes: '多了 9 張名詞卡（錄音17～20：束心、排氣量、一匹足、50／60 Hz、C／R／S、半密式、濾網、R438A、R408A；卡上標「新」）',
     part: 'review',
     chapter: '名詞翻卡',
     mark: 'WORDS',
@@ -4486,8 +5235,15 @@ const slideList: SlideData[] = [
           { group: '壓縮機', term: '高溫機／低溫機', added: '2026-10-09', alias: 'CR／CS／CF', en: 'High / Medium / Low Temp', tip: '黑金剛：CR 高溫打冷藏、CS 中溫兩邊都能、CF 低溫打冷凍；越低溫越貴；低溫缺貨可以拿大一點的中溫代替', part: 'comp', tw: { rec: 13, from: 2155.6, to: 2164.9, say: '有分高溫中溫低溫；CR 是屬於高溫，中溫是 CS，低溫是 CF' } },
           { group: '壓縮機', term: 'TF5／PFV', added: '2026-10-07', alias: '三相／單相', en: 'Three-phase / Single-phase', tip: '黑金剛型號後面：TF5＝三相 200～230V，PFV＝單相；型號牌上看 PH 1 或 PH 3', tw: { rec: 13, from: 1253.3, to: 1261.6, say: 'PFV，我們看 PFV 代表就是 PH-1，TF-5 代表就是三相' } },
           { group: '壓縮機', term: '拿錯不能退', added: '2026-10-10', alias: '焊過就算用過', en: 'No Return After Brazing', tip: '壓縮機的管子焊上去就沒人要了；型號、電壓拿錯，老闆說公司沒辦法幫你負擔，所以一個字一個字對', tw: { rec: 13, from: 462.0, to: 469.2, say: '它只要焊接上去沒有人要了，等於是使用後就沒有人要了' } },
+          { group: '壓縮機', term: '束心', added: '2026-10-17', alias: '壓縮機卡死、轉不動', en: 'Seized Compressor', tip: '沒油潤滑、過熱、被撞到、液態冷媒沖掉油；系統有髒東西也會（錄音17 05:10、10/17 講義）' },
+          { group: '壓縮機', term: '排氣量', added: '2026-10-17', alias: '幾 cc', en: 'Displacement', tip: '像機車的 cc，跟冷媒無關；挑壓縮機以排氣量為主、BTU 為輔（錄音18 64:28、錄音20 07:46）' },
+          { group: '壓縮機', term: '一匹足', added: '2026-10-17', alias: '八分之七、不到一匹', en: 'Full / Short 1 HP', tip: '超過 12,000 BTU 講「一匹足」，不到就講「不到一匹」或分數（錄音18 17:11）' },
+          { group: '壓縮機', term: '50 Hz／60 Hz', added: '2026-10-17', alias: '型錄要乘 1.2', en: 'Frequency', tip: '大陸型錄多半是 50 Hz；台灣 60 Hz，能力乘 1.2（錄音20 19:49）' },
+          { group: '壓縮機', term: 'C／R／S', added: '2026-10-17', alias: '三個接點', en: 'Common / Run / Start', tip: '接電小盒子裡的三個點；三相直接接，單相要接配件（錄音17 11:06）' },
+          { group: '壓縮機', term: '半密式', added: '2026-10-17', alias: '半密閉壓縮機', en: 'Semi-hermetic Compressor', tip: '都是大顆的，店裡不放庫存（錄音17 06:00）' },
           { group: '散熱器', term: '站壓', alias: '抓漏', en: 'Pressure Test', tip: '從充灌閥灌氮氣、泡水找漏點；散熱器沒有充灌閥', tw: { rec: 9, from: 569.8, to: 578.1, say: '這叫抓漏，自己站壓……站壓或是抓漏' } },
           { group: '散熱器', term: '內膨', alias: '膨脹閥鎖在蒸發器箱內', en: 'Internal TXV Mounting', tip: '冷凍做內膨（膨脹閥會結冰滴水）；冷氣是外膨' },
+          { group: '散熱器', term: '濾網', added: '2026-10-17', alias: '散熱器濾網', en: 'Condenser Filter', tip: '白色的，變黑就拿下來洗、一個月一次；裝了不洗反而更糟（錄音18 77:19）' },
           { group: '單位與冷媒', term: '馬', alias: '馬力（口語）', en: 'HP（正確單位是 BTU）', tip: '客人都講幾馬', tw: { rec: 2, from: 304.2, to: 306.3, say: '口語的話就講幾馬' } },
           { group: '單位與冷媒', term: '分', alias: '管徑單位', en: '1/8 inch', tip: '1 吋＝8 分＝25.4 mm，1 分＝3.175 mm' },
           { group: '單位與冷媒', term: '游標卡尺', alias: '卡尺', en: 'Vernier Caliper', tip: '量銅管外徑，÷ 3.175 就是幾分；先看游尺的 0 對到哪，找雙數的長刻度最快', tw: { rec: 12, from: 468.1, to: 474.4, say: '所以你看頂點就很快了，2、4、6、8，8 就是 1 分嘛' } },
@@ -4497,6 +5253,8 @@ const slideList: SlideData[] = [
           { group: '單位與冷媒', term: 'R22 210 psig', alias: '資深師傅的標竿', en: '≈ 40.42°C 冷凝', tip: '同一個溫度，拿來比其他冷媒的高壓' },
           { group: '單位與冷媒', term: '冷凍油', alias: 'POE、礦物油', en: 'Refrigeration Oil', tip: 'HFC 冷媒用 POE；不同的油不能混' },
           { group: '單位與冷媒', term: '混合冷媒', alias: 'R404A、R410A、R417A', en: 'Blend Refrigerant', tip: '有露點、泡點兩個溫度；Ref Tools 預設看露點' },
+          { group: '單位與冷媒', term: 'R438A', added: '2026-10-17', alias: '代替 R22', en: 'R438A', tip: '特性接近 R22，以冷藏為主；礦物油的壓縮機也能灌（錄音18 39:36）' },
+          { group: '單位與冷媒', term: 'R408A', added: '2026-10-17', alias: '代替 R502', en: 'R408A', tip: '冷凍用；裡面約一半是 R22，比較貴，多半是救舊系統（錄音18 34:47）' },
         ],
       },
     ],
@@ -4531,7 +5289,8 @@ const slideList: SlideData[] = [
   },
   {
     id: 'abbr-specs',
-    added: '2026-10-09',
+    added: '2026-10-17',
+    changes: '多了 ASHRAE、Hz、cc 三個縮寫（錄音18、20）',
     part: 'review',
     chapter: '英文縮寫 2/3',
     mark: 'ABBR 2',
@@ -4549,7 +5308,8 @@ const slideList: SlideData[] = [
   },
   {
     id: 'abbr-thermo',
-    added: '2026-10-08',
+    added: '2026-10-17',
+    changes: '多了 MO（礦物油），跟 POE 對照（錄音18）',
     part: 'review',
     chapter: '英文縮寫 3/3',
     mark: 'ABBR 3',
@@ -4903,6 +5663,7 @@ const ORDER = [
   'reftools',
   'reftable',
   'refrigerants',
+  'refrigerant-rules',
   'recap-2',
   'check-2',
   'industry',
@@ -4915,8 +5676,15 @@ const ORDER = [
   'comp-protect',
   'comp-brands',
   'comp-power',
+  'comp-types',
   'comp-temp',
+  'comp-rating',
+  'comp-displacement',
+  'hp-calc',
+  'comp-oil',
   'comp-pick',
+  'equivalents',
+  'comp-fault',
   'ch3',
   'coil-spec',
   'cond-practice',
@@ -4933,12 +5701,14 @@ const ORDER = [
   'recap-4',
   'check-4',
   'estimate',
+  'ask-first',
   'coil-store',
   'ac-materials',
   'store-mindset',
   'newbie-sales',
   'ch9',
   'sop',
+  'warranty',
   'delivery-sop',
   'recap-5',
   'check-5',
@@ -4955,11 +5725,16 @@ const ORDER = [
   'insights',
 ]
 
-export const slides: SlideData[] = ORDER.map((id) => {
-  const slide = slideList.find((s) => s.id === id)
+/** 只放公司版的頁：公開網站沒有它們，ORDER 裡找不到就跳過 */
+const COMPANY_IDS = new Set(['equivalents'])
+const allSlides = [...slideList, ...COMPANY_SLIDES]
+
+export const slides: SlideData[] = ORDER.flatMap((id) => {
+  const slide = allSlides.find((s) => s.id === id)
+  if (!slide && COMPANY_IDS.has(id)) return []
   if (!slide) throw new Error(`找不到投影片：${id}`)
-  return slide
+  return [slide]
 })
 
 /** 錄音頁的定義（不在 ORDER 裡，由「課堂錄音」索引頁拿來用） */
-export const slideById = (id: string) => slideList.find((s) => s.id === id)
+export const slideById = (id: string) => allSlides.find((s) => s.id === id)

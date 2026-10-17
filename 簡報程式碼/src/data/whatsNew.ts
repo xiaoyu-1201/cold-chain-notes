@@ -4,7 +4,7 @@
  * 下一批上線時把 NEW_SINCE 改成那一批的日期，舊的標記就自動退掉（added 留著當紀錄）。
  */
 // 10/12 使用者：要標得很明顯（紅色）；10/13 使用者：紅點太多 → 只留最新一批（10/12），頁面上再講哪裡是新的（SlideData.changes＋各卡片的 added）
-export const NEW_SINCE = '2026-10-12'
+export const NEW_SINCE = '2026-10-17'
 
 export const isNew = (added?: string) => !!added && added >= NEW_SINCE
 /** 日期縮寫：2026-10-12 → 「10/12」 */

@@ -1,4 +1,4 @@
-import { BookOpen, BookOpenCheck, ChevronLeft, ChevronRight, CornerUpLeft, LayoutGrid, Maximize, Menu, Minimize, Pointer, Search, X } from 'lucide-react'
+import { BookOpen, BookOpenCheck, ChevronLeft, ChevronRight, CornerUpLeft, LayoutGrid, Maximize, Menu, Minimize, Pointer, Search, Sparkles, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState, type MouseEvent, type PointerEvent as ReactPointerEvent, type ReactNode, type WheelEvent as ReactWheelEvent } from 'react'
 import { parts } from '../data/parts'
 import { slides } from '../data/slides'
@@ -21,6 +21,7 @@ interface SlideNavProps {
   onOpenMenu: () => void
   onSearch: () => void
   onProgress: () => void
+  onTutor: () => void
   onToggleFullscreen: () => void
   /** 頁內連結跳轉後才出現的「返回」目標 */
   back: { number: number; title: string } | null
@@ -74,6 +75,7 @@ export function SlideNav({
   onOpenMenu,
   onSearch,
   onProgress,
+  onTutor,
   onToggleFullscreen,
   back,
   onBack,
@@ -108,6 +110,14 @@ export function SlideNav({
           <span className={labelCls}>今天</span>
           {isNew('2026-10-09') && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-red-400" />}
         </NavButton>
+        {/* 手機寬度用電腦版時底部太擠（10/17 QA：跟頁碼重疊）：小於 640 不放，手機版上方有星星 */}
+        <span className="hidden sm:contents">
+        <NavButton label="AI 助教：問問題、客人說、接客練習、問老闆清單" onClick={onTutor} className="relative">
+          <Sparkles className="size-5 text-violet-300" aria-hidden />
+          <span className={labelCls}>助教</span>
+          {isNew('2026-10-17') && <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-red-400" />}
+        </NavButton>
+        </span>
         {back ? (
           // 只寫「返回 P.52」：完整標題放在說明（滑鼠停留、讀屏都聽得到），按鈕可以縮小，不會擠到中間的篇章列
           <NavButton

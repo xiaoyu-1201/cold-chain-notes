@@ -27,3 +27,6 @@
 
 # 微台小工具（Scriptable 腳本，另一個專案，不跟培訓筆記一起上傳）
 /微台小工具/
+
+# 公司版專用頁（同等級代替表）：公開 repo 不放原始碼，公開網站用 companyOnly.public.tsx
+簡報程式碼/src/data/companyOnly.tsx

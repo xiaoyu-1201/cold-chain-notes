@@ -470,6 +470,16 @@ export interface FenBlock {
   type: 'fen'
 }
 
+/** 幾匹換算器：鐵甲型號或 BTU → 幾匹、跟客人講的說法、散熱器配多大（錄音18、20） */
+export interface HpCalcBlock {
+  type: 'hpcalc'
+}
+
+/** 開單前問客人總表：選商品 → 要問什麼、為什麼問、回答後怎麼做（資料在 data/askFirst.ts） */
+export interface AskFirstBlock {
+  type: 'askfirst'
+}
+
 /** 看懂散熱器／冷排規格「排×支×鏡面」（錄音08～10） */
 export interface CoilReaderBlock {
   type: 'coilreader'
@@ -533,6 +543,8 @@ export type Block =
   | CycleLessonBlock
   | QuizBlock
   | FenBlock
+  | HpCalcBlock
+  | AskFirstBlock
   | CaliperBlock
   | CoilReaderBlock
   | ShowcaseBlock
@@ -582,6 +594,8 @@ export interface SlideData {
   changes?: ReactNode
   /** 沒標＝第一週必讀；ref＝查閱手冊（規格、對照、型號讀法，需要時再翻） */
   tier?: 'ref'
+  /** 只放公司版（公開網站建置時拿掉）；AI 助教也不會把這頁送出去 */
+  companyOnly?: boolean
   /** 每頁底部「📌 本章小結論」 */
   conclusion: { label?: string; text: ReactNode }
 }

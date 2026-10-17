@@ -13,19 +13,21 @@ export interface LearnState {
   done: Record<string, number>
   /** 答錯、還沒在複習裡答對的題（n＝答錯幾次） */
   wrong: Record<string, { at: number; n: number }>
+  /** 每一題最後一次作答的時間（每日 3 題複習挑「最久沒練」的） */
+  rev: Record<string, number>
   /** 上次停在哪一頁 */
   last?: string
 }
 
 const KEY = 'cold-chain-deck:learn'
-const empty = (): LearnState => ({ seen: {}, done: {}, wrong: {} })
+const empty = (): LearnState => ({ seen: {}, done: {}, wrong: {}, rev: {} })
 
 function load(): LearnState {
   try {
     const raw = localStorage.getItem(KEY)
     if (!raw) return empty()
     const v = JSON.parse(raw) as Partial<LearnState>
-    return { seen: v.seen ?? {}, done: v.done ?? {}, wrong: v.wrong ?? {}, last: v.last }
+    return { seen: v.seen ?? {}, done: v.done ?? {}, wrong: v.wrong ?? {}, rev: v.rev ?? {}, last: v.last }
   } catch {
     return empty()
   }
@@ -102,19 +104,36 @@ const sameDay = (a: number, b: number) => new Date(a).toDateString() === new Dat
  */
 export function answer(id: string, correct: boolean): AnswerResult {
   const now = Date.now()
+  const rev = { ...state.rev, [id]: now }
   if (correct) {
     const w = state.wrong[id]
-    if (w && sameDay(w.at, now)) return 'tomorrow'
+    if (w && sameDay(w.at, now)) {
+      commit({ ...state, rev })
+      return 'tomorrow'
+    }
     const wrong = { ...state.wrong }
     delete wrong[id]
-    commit({ ...state, done: { ...state.done, [id]: state.done[id] ?? now }, wrong })
+    commit({ ...state, done: { ...state.done, [id]: state.done[id] ?? now }, wrong, rev })
     return 'learned'
   }
   const prev = state.wrong[id]
   const done = { ...state.done }
   delete done[id]
-  commit({ ...state, done, wrong: { ...state.wrong, [id]: { at: now, n: (prev?.n ?? 0) + 1 } } })
+  commit({ ...state, done, rev, wrong: { ...state.wrong, [id]: { at: now, n: (prev?.n ?? 0) + 1 } } })
   return 'wrong'
+}
+
+/**
+ * 每日 3 題複習（10/17 助教第 9 項）：最多 1 題錯題（最早錯的）＋學會過、最久沒練的；今天練過的不再出。
+ * 錯題本來就有「錯題複習」，這裡只放 1 題，其他給久沒練的（間隔複習）。
+ */
+export function dailyReview(s: LearnState, n = 3, now = Date.now()) {
+  const last = (id: string) => s.rev[id] ?? s.done[id] ?? 0
+  const fresh = (id: string) => !sameDay(last(id), now)
+  const wrong = PRACTICE_IDS.filter((id) => s.wrong[id] && fresh(id)).sort((a, b) => s.wrong[a].at - s.wrong[b].at)
+  const old = PRACTICE_IDS.filter((id) => s.done[id] && !s.wrong[id] && fresh(id)).sort((a, b) => last(a) - last(b))
+  const pick = [...wrong.slice(0, 1), ...old].slice(0, n)
+  return pick.length < n ? [...pick, ...wrong.slice(1)].slice(0, n) : pick
 }
 
 /** 重新開始：「繼續上次」也一起清掉 */

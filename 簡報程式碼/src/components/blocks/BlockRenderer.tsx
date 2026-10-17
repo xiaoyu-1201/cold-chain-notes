@@ -17,6 +17,8 @@ import { PartsOverview, ProductMap, QAPanel, QuoteCard, ScenarioCard } from './N
 import { EstimatePractice } from './Estimate'
 import { CoilReader } from './CoilReader'
 import { FenConverter } from './FenConverter'
+import { HpCalc } from './HpCalc'
+import { AskFirst } from './AskFirst'
 import { VernierCaliper } from './VernierCaliper'
 import { PhotoCard } from './PhotoCard'
 import { ProductShowcase } from '../three/ProductShowcase'
@@ -111,6 +113,10 @@ function Leaf({ block }: { block: Exclude<Block, GridBlock> }) {
       return <QuizCards block={block} />
     case 'fen':
       return <FenConverter />
+    case 'hpcalc':
+      return <HpCalc />
+    case 'askfirst':
+      return <AskFirst />
     case 'caliper':
       return <VernierCaliper />
     case 'coilreader':

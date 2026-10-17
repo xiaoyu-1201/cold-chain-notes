@@ -13,7 +13,7 @@ export function NewChip({ added, mobile, className }: { added?: string; mobile?:
       className={cn(
         // new-chip：「圈出新的」關掉時一起藏起來（index.css）
         'new-chip inline-flex shrink-0 items-center rounded-md bg-red-400 font-black text-paper',
-        mobile ? 'px-1.5 text-[12px] leading-5' : 'px-2 text-[16px] leading-6',
+        mobile ? 'px-1.5 text-[13px] leading-5' : 'px-2 text-[16px] leading-6',
         className,
       )}
     >

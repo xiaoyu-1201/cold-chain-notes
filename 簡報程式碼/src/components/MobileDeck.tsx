@@ -1,5 +1,5 @@
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
-import { BookOpenCheck, Box, ChevronLeft, ChevronRight, CornerUpLeft, List, PencilLine, Pin, Pointer, Presentation, Search, Store } from 'lucide-react'
+import { BookOpenCheck, Box, ChevronLeft, ChevronRight, CornerUpLeft, List, PencilLine, Pin, Pointer, Presentation, Search, Sparkles, Store } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
 import { DeckContext, useDeck, type DeckApi } from '../context/deck'
 import { presetSticky } from '../hooks/useStickyState'
@@ -14,6 +14,8 @@ import { ChapterDrawer } from './ChapterDrawer'
 import { MobileBlock } from './mobile/MobileBlocks'
 import { SearchPanel } from './SearchPanel'
 import { ProgressPanel } from './ProgressPanel'
+import { TutorPanel } from './TutorPanel'
+import { openTutor } from '../lib/tutor'
 import { PracticeQuestion } from './Practice'
 import { PRACTICE } from '../data/practice'
 import { markSeen, useLearn } from '../lib/learn'
@@ -169,6 +171,11 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
                 <Search className="size-[22px]" aria-hidden />
                 {isNew('2026-10-08') && <span aria-hidden className="absolute right-1.5 top-1.5 size-2.5 rounded-full bg-red-400" />}
               </button>
+              {/* 只放圖示：標題列已經很擠（返回鈕出現時字會被擠光） */}
+              <button type="button" onClick={() => openTutor()} aria-label="AI 助教" title="AI 助教" className={cn(barIcon, 'relative')}>
+                <Sparkles className="size-[22px] text-violet-300" aria-hidden />
+                {isNew('2026-10-17') && <span aria-hidden className="absolute right-1.5 top-1.5 size-2.5 rounded-full bg-red-400" />}
+              </button>
               <button
                 type="button"
                 onClick={() => setProgressOpen(true)}
@@ -181,6 +188,7 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
               </button>
               {showBack ? (
                 <button
+                  aria-label={`返回 P.${pad(returnTo! + 1)}`}
                   type="button"
                   onClick={() => {
                     if (returnTo !== null) goTo(returnTo)
@@ -188,8 +196,9 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
                   }}
                   className="flex h-11 shrink-0 items-center gap-1 rounded-full border border-emerald-500/50 bg-emerald-950 px-3 text-[15px] font-bold text-emerald-100"
                 >
+                  {/* 只寫頁碼：標題列很擠，「返回」兩個字放在說明裡（10/17 QA：375 寬標題只剩 2 個字） */}
                   <CornerUpLeft className="size-5" aria-hidden />
-                  返回 P.{pad(returnTo! + 1)}
+                  P.{pad(returnTo! + 1)}
                 </button>
               ) : (
                 <button type="button" onClick={onExit} aria-label="切換到電腦版（投影片）" title="電腦版（投影片）" className={barIcon}>
@@ -215,6 +224,15 @@ export function MobileDeck({ onExit }: { onExit: () => void }) {
           }}
         />
         <ProgressPanel open={progressOpen} mobile currentId={slide.id} onClose={() => setProgressOpen(false)} onSelect={(i) => goTo(i)} />
+        <TutorPanel
+          mobile
+          currentId={slide.id}
+          onSelect={(i) => {
+            if (i === indexRef.current) return
+            setReturnTo(indexRef.current)
+            goTo(i)
+          }}
+        />
         <SearchPanel
           open={searchOpen}
           mobile

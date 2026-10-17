@@ -1,4 +1,5 @@
-import { ArrowRight, Check, PencilLine, X } from 'lucide-react'
+import { ArrowRight, Check, PencilLine, Sparkles, X } from 'lucide-react'
+import { openTutor, TUTOR_JUMP, tutorIsOpen } from '../lib/tutor'
 import { useEffect, useRef, useState, type Ref } from 'react'
 import { createPortal } from 'react-dom'
 import { useDeck } from '../context/deck'
@@ -86,7 +87,7 @@ export function PracticeQuestion({
                 done && !isAns && !isPicked && 'border-line bg-card text-slate-500',
               )}
             >
-              <span className={cn('flex shrink-0 items-center justify-center rounded-full font-mono font-bold', big ? 'size-9 text-[18px]' : 'size-7 text-[13px]', done && isAns ? 'bg-emerald-400 text-paper' : done && isPicked ? 'bg-red-400 text-paper' : 'bg-white/[0.07] text-slate-300')}>
+              <span className={cn('flex shrink-0 items-center justify-center rounded-full font-mono font-bold', big ? 'size-9 text-[20px]' : 'size-7 text-[13px]', done && isAns ? 'bg-emerald-400 text-paper' : done && isPicked ? 'bg-red-400 text-paper' : 'bg-white/[0.07] text-slate-300')}>
                 {done && isAns ? <Check className={big ? 'size-5' : 'size-4'} aria-hidden /> : done && isPicked ? <X className={big ? 'size-5' : 'size-4'} aria-hidden /> : String.fromCharCode(65 + k)}
               </span>
               <span className="min-w-0 flex-1">{o}</span>
@@ -98,9 +99,19 @@ export function PracticeQuestion({
         <div ref={statusRef} tabIndex={-1} className={cn('rounded-2xl outline-none', big ? 'mt-5 px-6 py-4' : 'mt-3 px-4 py-3', right ? 'bg-emerald-950' : 'bg-red-950')} role="status">
           <p className={cn('font-bold', big ? 'text-[24px]' : 'text-[16px]', right ? 'text-emerald-300' : 'text-red-300')}>{right ? '答對了！' : '答錯了：正確答案是綠色那個'}</p>
           <p className={cn('mt-1 leading-relaxed text-slate-200', big ? 'text-[21px]' : 'text-[15px]')}>{p.why}</p>
-          {!right && <p className={cn('mt-2 text-slate-400', big ? 'text-[19px]' : 'text-[14px]')}>已放進「今天」的錯題複習，明天再答對就會拿掉。</p>}
+          {!right && <p className={cn('mt-2 text-slate-400', big ? 'text-[20px]' : 'text-[14px]')}>已放進「今天」的錯題複習，明天再答對就會拿掉。</p>}
+          {!right && (
+            <button
+              type="button"
+              onClick={() => openTutor('ask', { kind: 'wrong', slideId: id, q: p.q, options: p.options, picked: picked!, answer: p.answer, why: p.why })}
+              className={cn('mt-3 inline-flex items-center gap-2 rounded-full border border-violet-400/50 bg-violet-950 font-bold text-violet-100 hover:border-violet-400', big ? 'min-h-[56px] px-6 text-[21px]' : 'min-h-11 px-4 text-[15px]')}
+            >
+              <Sparkles className={big ? 'size-6' : 'size-4'} aria-hidden />
+              為什麼錯？問助教
+            </button>
+          )}
           {result === 'tomorrow' && (
-            <p className={cn('mt-2 text-slate-400', big ? 'text-[19px]' : 'text-[14px]')}>這題今天才答錯過、看過答案，先留在錯題複習；明天再答對一次，才算學會。</p>
+            <p className={cn('mt-2 text-slate-400', big ? 'text-[20px]' : 'text-[14px]')}>這題今天才答錯過、看過答案，先留在錯題複習；明天再答對一次，才算學會。</p>
           )}
         </div>
       )}
@@ -151,14 +162,18 @@ function PracticeDialog({ id, onClose }: { id: string; onClose: () => void }) {
     const prev = document.activeElement as HTMLElement | null
     first.current?.focus({ preventScroll: true })
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      // 助教開在上面：讓助教先關
+      if (e.key === 'Escape' && !tutorIsOpen()) {
         e.preventDefault()
         closeRef.current()
       }
     }
+    const onJump = () => closeRef.current()
     window.addEventListener('keydown', onKey, true)
+    window.addEventListener(TUTOR_JUMP, onJump)
     return () => {
       window.removeEventListener('keydown', onKey, true)
+      window.removeEventListener(TUTOR_JUMP, onJump)
       prev?.focus?.({ preventScroll: true })
     }
   }, [])

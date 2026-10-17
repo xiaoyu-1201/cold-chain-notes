@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight, Box, Check, CheckCircle2, ExternalLink, Headphones, Pause, Quote, TriangleAlert } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Box, Check, CheckCircle2, ExternalLink, Headphones, Pause, Quote, Sparkles, TriangleAlert } from 'lucide-react'
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useDeck } from '../../context/deck'
 import { cycleNotes, CYCLE_ORDER, type CycleNodeId } from '../../data/cycleNotes'
@@ -7,6 +7,7 @@ import type { AudioBlock, Block, HotspotsBlock, MatrixBlock, RecordingsIndexBloc
 import { slides } from '../../data/slides'
 import { isNew } from '../../data/whatsNew'
 import { recordingOf } from '../../data/recordings'
+import { openTutor } from '../../lib/tutor'
 
 /** 這一批新增的頁：學習地圖的連結後面加紅色「新」；查閱頁加（查閱） */
 const newIds = new Set(slides.filter((s) => isNew(s.added)).map((s) => s.id))
@@ -25,6 +26,8 @@ import { EstimatePractice } from '../blocks/Estimate'
 import { CoilReader } from '../blocks/CoilReader'
 import { InView } from '../ui/InView'
 import { FenConverter } from '../blocks/FenConverter'
+import { HpCalc } from '../blocks/HpCalc'
+import { AskFirst } from '../blocks/AskFirst'
 import { VernierCaliper } from '../blocks/VernierCaliper'
 import { ProductShowcase } from '../three/ProductShowcase'
 import { Abbr } from '../blocks/Abbr'
@@ -696,6 +699,10 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
 
     case 'fen':
       return <FenConverter mobile />
+    case 'hpcalc':
+      return <HpCalc mobile />
+    case 'askfirst':
+      return <AskFirst mobile />
     case 'caliper':
       return <VernierCaliper mobile />
     case 'coilreader':
@@ -1090,6 +1097,14 @@ function RecordingsMobile({ block }: { block: RecordingsIndexBlock }) {
                     </PageLink>
                   ))}
                 </div>
+                <button
+                  type="button"
+                  onClick={() => openTutor('ask', { kind: 'digest', slideId: item.slide, mode: '錄音導讀' })}
+                  className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-violet-400/50 bg-violet-950 px-4 text-[15px] font-bold text-violet-100"
+                >
+                  <Sparkles className="size-4" aria-hidden />
+                  助教：這段錄音導讀＋考 3 題
+                </button>
                 <AudioMobile block={rec.audio} />
               </div>
             )}

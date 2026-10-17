@@ -6,11 +6,56 @@ import { parts } from '../data/parts'
 import { PRACTICE } from '../data/practice'
 import { slides } from '../data/slides'
 import { cn, pad } from '../lib/cn'
-import { PRACTICE_IDS, resetLearn, resumeId, todayPages, useLearn } from '../lib/learn'
+import { dailyReview, PRACTICE_IDS, resetLearn, resumeId, todayPages, useLearn } from '../lib/learn'
+import { TUTOR_JUMP, tutorIsOpen } from '../lib/tutor'
+import { isNew } from '../data/whatsNew'
 import { toneStyles } from '../lib/tone'
 import { PracticeQuestion } from './Practice'
 
 const indexOf = (id: string) => slides.findIndex((s) => s.id === id)
+
+/** 每日 3 題複習（10/17）：一次一題，答完按「下一題」；答錯可以按「為什麼錯？問助教」 */
+function DailyReview({ ids, go }: { ids: string[]; go: (id: string) => void }) {
+  const [k, setK] = useState(0)
+  const [answered, setAnswered] = useState(false)
+  const id = ids[k]
+  return (
+    <section className="mt-6">
+      <h3 className="flex items-center gap-2 px-1 text-[15px] font-bold text-slate-300">
+        {ids.length ? `每日複習（今天 ${ids.length} 題）` : '每日 3 題複習'}
+        {isNew('2026-10-17') && <span className="rounded bg-red-400 px-1.5 text-[13px] font-black text-paper">新</span>}
+      </h3>
+      {ids.length === 0 ? (
+        <p className="mt-2 px-1 text-[14px] text-slate-500">先去練幾頁：答對過的題目，隔幾天會回到這裡再考一次（越久沒練的越先出）。</p>
+      ) : !id ? (
+        <p className="mt-2 rounded-xl bg-emerald-950 px-4 py-3 text-[15px] text-emerald-200">今天的 {ids.length} 題做完了，明天再來。</p>
+      ) : (
+        <div className="mt-2 rounded-[14px] border border-line bg-card p-3">
+          <p className="mb-2 text-[14px] font-semibold text-slate-400">
+            第 {k + 1}／{ids.length} 題 ·{' '}
+            <button type="button" onClick={() => go(id)} className="text-sky-300 underline underline-offset-2">
+              P.{pad(indexOf(id) + 1)} {slides[indexOf(id)].title}
+            </button>
+          </p>
+          <PracticeQuestion key={id} id={id} onAnswered={() => setAnswered(true)} />
+          {answered && (
+            <button
+              type="button"
+              onClick={() => {
+                setK(k + 1)
+                setAnswered(false)
+              }}
+              className="mt-3 inline-flex min-h-11 items-center gap-1 rounded-xl border border-line bg-paper px-4 text-[15px] font-bold text-slate-200 hover:border-sky-500/50"
+            >
+              {k + 1 < ids.length ? '下一題' : '完成'}
+              <ArrowRight className="size-4" aria-hidden />
+            </button>
+          )}
+        </div>
+      )}
+    </section>
+  )
+}
 
 /**
  * 「今天」：讀到哪、今天讀這 3 頁、錯題複習（AI 軟體課：學一段、馬上練、錯的再回來）。
@@ -31,6 +76,7 @@ function ProgressDialog({ onClose, onSelect, mobile, currentId }: { onClose: () 
       resume,
       today: todayPages(learn, 3, [currentId, ...(resume ? [resume] : [])]),
       wrong: PRACTICE_IDS.filter((id) => learn.wrong[id]),
+      daily: dailyReview(learn),
       /** 還沒練過的頁（含目前這頁、繼續上次那頁）：today 空了不代表全部練完（10/10 code review） */
       left: PRACTICE_IDS.filter((id) => !learn.done[id]),
     }
@@ -46,14 +92,17 @@ function ProgressDialog({ onClose, onSelect, mobile, currentId }: { onClose: () 
     const prev = document.activeElement as HTMLElement | null
     closeBtn.current?.focus({ preventScroll: true })
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === 'Escape' && !tutorIsOpen()) {
         e.preventDefault()
         closeRef.current()
       }
     }
+    const onJump = () => closeRef.current()
     window.addEventListener('keydown', onKey, true)
+    window.addEventListener(TUTOR_JUMP, onJump)
     return () => {
       window.removeEventListener('keydown', onKey, true)
+      window.removeEventListener(TUTOR_JUMP, onJump)
       prev?.focus?.({ preventScroll: true })
     }
   }, [])
@@ -169,6 +218,8 @@ function ProgressDialog({ onClose, onSelect, mobile, currentId }: { onClose: () 
           <p className="mt-1 px-1 text-[14px] text-slate-500">
             讀完那一頁，{mobile ? '捲到最下面' : '按小結論右邊'}的「學完馬上練」答一題；答對了，下次打開這裡就換成下一頁。
           </p>
+
+          <DailyReview ids={snap.daily} go={go} />
 
           <h3 className="mt-6 px-1 text-[15px] font-bold text-slate-300">錯題複習（{snap.wrong.length}）</h3>
           {snap.wrong.length === 0 ? (

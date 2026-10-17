@@ -1,4 +1,5 @@
-import { ArrowUpRight, Headphones } from 'lucide-react'
+import { ArrowUpRight, Headphones, Sparkles } from 'lucide-react'
+import { openTutor } from '../../lib/tutor'
 import { useEffect, useRef, useState } from 'react'
 import { recordingOf } from '../../data/recordings'
 import type { RecordingsIndexBlock } from '../../data/types'
@@ -72,6 +73,15 @@ export function RecordingsIndex({ block }: { block: RecordingsIndexBlock }) {
               <ArrowUpRight className="size-3.5" aria-hidden />
             </button>
           ))}
+          {/* 錄音頁不在一般頁序裡：導讀要把選到的那段（recording-xx）交給助教（10/17 QA） */}
+          <button
+            type="button"
+            onClick={() => openTutor('ask', { kind: 'digest', slideId: picked.slide, mode: '錄音導讀' })}
+            className={cn('ml-auto inline-flex min-h-11 items-center gap-1.5 rounded-full border border-violet-400/50 bg-violet-950 px-4 text-[20px] font-bold text-violet-100 hover:border-violet-400', focusRing)}
+          >
+            <Sparkles className="size-5" aria-hidden />
+            導讀＋考 3 題
+          </button>
         </div>
         <div className="min-h-0 flex-1">{rec && <AudioChapters key={picked.slide} block={rec.audio} />}</div>
       </div>

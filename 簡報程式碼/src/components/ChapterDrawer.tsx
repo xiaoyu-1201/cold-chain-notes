@@ -5,6 +5,7 @@ import { parts } from '../data/parts'
 import { slides } from '../data/slides'
 import type { Part, SlideData } from '../data/types'
 import { isNew, newTag } from '../data/whatsNew'
+import { byCategory } from '../data/categories'
 import { cn, pad } from '../lib/cn'
 import { toneStyles } from '../lib/tone'
 import { Kbd } from './ui/Kbd'
@@ -100,8 +101,18 @@ export function ChapterDrawer({ open, index, onClose, onSelect, mobile = false }
                     {group.part.label}
                   </h3>
                   {group.part.goal && <p className="mb-2 px-3 text-[13px] leading-relaxed text-slate-500">學完你會：{group.part.goal}</p>}
+                  {/* 篇裡再照小類別分組（10/18 使用者：一眼看出每一類有哪幾頁；頁碼可能跳號，翻頁順序不變） */}
+                  {byCategory(group.items).map((cat) => (
+                  <div key={cat.name || 'all'} className="mb-3 last:mb-0">
+                  {cat.name && (
+                    <p className="mb-1.5 mt-1 flex items-center gap-2 px-1 text-[15px] font-bold text-slate-200">
+                      <span aria-hidden className={cn('h-4 w-1 rounded-full', toneStyles[group.part.tone].dot)} />
+                      {cat.name}
+                      <span className="text-[13px] font-semibold text-slate-500">{cat.items.length} 頁</span>
+                    </p>
+                  )}
                   <ul className="divide-y divide-line overflow-hidden rounded-[14px] border border-line bg-card">
-                    {group.items.map(({ slide, index: i }) => {
+                    {cat.items.map(({ slide, index: i }) => {
                       const active = i === index
                       return (
                         <li key={slide.id} ref={active ? activeRef : undefined}>
@@ -137,6 +148,8 @@ export function ChapterDrawer({ open, index, onClose, onSelect, mobile = false }
                       )
                     })}
                   </ul>
+                  </div>
+                  ))}
                 </section>
               ))}
             </div>

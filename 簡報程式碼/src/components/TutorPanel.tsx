@@ -355,13 +355,14 @@ function AskTab({ currentId, go }: { currentId: string; go: (id: string) => void
   const [hist, setHist] = useStickyState<AskItem[]>('tutor:asks', [])
   const call = useCall<AskData>()
   const rec = recordingOf(currentId)
-  const send = async () => {
-    const text = q.trim()
+  // example：按範例題直接問，不用先打字（範例不一定跟這頁有關，就不附這一頁）
+  const send = async (example?: string) => {
+    const text = (example ?? q).trim()
     if (!text || call.loading) return
-    const r = await call.run('ask', { input: text, page: currentId, context: contextFor(text, currentId) })
+    const r = await call.run('ask', { input: text, page: currentId, context: contextFor(text, example ? undefined : currentId) })
     if (r) {
       setHist((h) => [{ ...r.data, id: Date.now(), q: text, page: currentId }, ...h].slice(0, 20))
-      setQ('')
+      if (!example) setQ('')
     }
   }
   return (
@@ -401,6 +402,7 @@ function AskTab({ currentId, go }: { currentId: string; go: (id: string) => void
           <span className="text-[14px] text-slate-500">會先看這一頁，再找筆記裡相關的頁</span>
         </div>
       </form>
+      <Examples title="常問的問題（點了直接問）" groups={ASK_EX} disabled={call.loading} onPick={(x) => void send(x)} />
       {call.loading && <Loading />}
       {call.err != null && <ErrorBox err={call.err} retry={send} />}
       {hist.map((it, i) => (
@@ -440,6 +442,38 @@ function Chip({ children, onClick }: { children: ReactNode; onClick: () => void 
 }
 const openJob = (job: TutorJob) => openTutor('ask', job)
 
+/**
+ * 範例題（10/18 使用者：「原來那幾個很不錯，但太少了」「要有含金量」）。
+ * 都是筆記教過、門市真的會遇到的問題：問完會附頁碼，也是很好的複習。
+ */
+const ASK_EX: { group: string; items: string[] }[] = [
+  { group: '壓縮機', items: ['礦物油的壓縮機可以灌 R404A 嗎？', '客人要冷藏一匹，可以給丹佛斯 21G 嗎？', '低溫的「一匹」為什麼有大有小？要怎麼問客人？', '大陸型錄寫 50 Hz，能力要怎麼換算？', '鐵甲 7512 是幾匹？怎麼看出來的？', '往復式和渦捲式差在哪？什麼時候用哪一種？'] },
+  { group: '散熱器、冷排', items: ['散熱器什麼時候要加大？最多加到多少？', '為什麼跟客人講散熱器要說「以上」？', '冷排結冰很厚，一定要換蒸發器嗎？', '散熱外移、管子很長，散熱器可以配小一點嗎？'] },
+  { group: '冷媒、配件', items: ['R22 現在還能用嗎？以後會怎樣？', '冷藏要灌 R404A 還是 R438A？', '保溫管灰色和黑色差在哪？', '客人說「兩分」的乾燥過濾器，要再問什麼？'] },
+  { group: '門市、客訴', items: ['材料為什麼不保固？要怎麼跟客人講？', '客人一直來補冷媒，該推什麼？', '換壓縮機開單前一定要問哪幾件事？', '壓縮機燒掉，換新的之前要先做什麼？'] },
+]
+
+/** 一組一組的範例按鈕（按了直接用） */
+function Examples({ title, groups, disabled, onPick }: { title: string; groups: { group: string; items: string[] }[]; disabled?: boolean; onPick: (x: string) => void }) {
+  return (
+    <section className="flex flex-col gap-2">
+      <h3 className={h}>{title}</h3>
+      {groups.map((g) => (
+        <div key={g.group}>
+          <p className="mb-1 text-[13px] font-bold text-slate-500">{g.group}</p>
+          <div className="flex flex-wrap gap-1.5">
+            {g.items.map((x) => (
+              <button key={x} type="button" disabled={disabled} onClick={() => onPick(x)} className="min-h-11 rounded-full border border-line bg-card px-3.5 py-1.5 text-left text-[15px] font-semibold leading-snug text-slate-200 hover:border-sky-500/50 disabled:opacity-40">
+                {x}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
+  )
+}
+
 /* ───────── ⑥ 客人說一句話 ───────── */
 
 interface TriageData {
@@ -449,7 +483,22 @@ interface TriageData {
   covered: boolean
   bossQuestion: string
 }
-const TRIAGE_EX = ['我冰箱不冷了', '壓縮機一直跳 Over Load', '我要換一顆壓縮機', '冷凍庫的散熱器要買多大']
+const TRIAGE_EX = [
+  '我冰箱不冷了',
+  '壓縮機一直跳 Over Load',
+  '我要換一顆壓縮機',
+  '冷凍庫的散熱器要買多大',
+  '冷媒補了，過幾天又不冷',
+  '冷排一直結冰、越來越不冷',
+  '壓縮機嗡嗡叫，但是轉不動',
+  '新的壓縮機才裝沒多久就壞了',
+  '壓縮機外殼一直冒汗，回氣管結霜很厚',
+  '壓縮機很吵、一直在抖',
+  '我要兩瓶冷媒',
+  '我要兩分的乾燥過濾器',
+  '我要買保溫管',
+  '冷氣的銅管跟機器的牙對不上',
+]
 
 function TriageTab({ currentId, go }: { currentId: string; go: (id: string) => void }) {
   const [q, setQ] = useStickyState('tutor:triage', '')
@@ -549,7 +598,18 @@ interface RpScore {
   tip: string
 }
 type Line = { who: '客人' | '我'; text: string }
-const TOPICS = ['客人要換壓縮機', '客人要買散熱器', '客人冰箱不冷來問', '客人要配冷氣材料（銅管、保溫管）']
+const TOPICS = [
+  '客人要換壓縮機',
+  '客人要買散熱器',
+  '客人冰箱不冷來問',
+  '客人要配冷氣材料（銅管、保溫管）',
+  '客人說要做一間幾坪的冷凍庫',
+  '客人一進門就說要兩瓶冷媒',
+  '客人新裝的壓縮機壞了，來客訴',
+  '客人只說要「兩分」的乾燥過濾器',
+  '客人拿大陸型錄來，問能力為什麼不一樣',
+  '客人要冷藏「一匹」的壓縮機',
+]
 const MAX_TURNS = 12
 
 function RoleplayTab({ go }: { go: (id: string) => void }) {
@@ -719,6 +779,15 @@ interface BossItem {
   archive: boolean
 }
 
+const BOSS_EX = [
+  '低溫一匹到底用 4,000 還是 4,500 BTU 算？店裡怎麼算？',
+  '散熱外移、管子拉很長，冷媒大概要多灌多少？',
+  '中溫車拿來打冷藏，什麼時候划算？',
+  '店裡常賣的溫控器是哪幾款？差在哪？',
+  '散熱器「有外箱」和「無穿衫」差多少？怎麼推？',
+  '高壓氣管在現場都怎麼叫？',
+]
+
 function BossTab({ currentId, go }: { currentId: string; go: (id: string) => void }) {
   const [items, setItems] = useState<BossItem[] | null>(null)
   const [err, setErr] = useState<unknown>(null)
@@ -735,6 +804,17 @@ function BossTab({ currentId, go }: { currentId: string; go: (id: string) => voi
   useEffect(() => {
     void load()
   }, [])
+  const [added, setAdded] = useState<string[]>([])
+  const addEx = async (q: string) => {
+    setAdded((a) => [...a, q])
+    try {
+      await callTutor('bossAdd', { q, page: currentId })
+      void load()
+    } catch (e) {
+      setAdded((a) => a.filter((x) => x !== q))
+      setErr(e)
+    }
+  }
   const open = items?.filter((x) => !x.answer) ?? []
   const done = items?.filter((x) => x.answer) ?? []
   const lineText = '想請教老闆：\n' + open.map((x, i) => `${i + 1}. ${x.q}`).join('\n')
@@ -753,6 +833,16 @@ function BossTab({ currentId, go }: { currentId: string; go: (id: string) => voi
           ＋ 自己加一題
         </button>
       )}
+      <section className="flex flex-col gap-1.5">
+        <h3 className={h}>筆記還沒講清楚、值得問老闆的（點了加進清單）</h3>
+        <div className="flex flex-wrap gap-1.5">
+          {BOSS_EX.filter((x) => !items?.some((it) => it.q === x)).map((x) => (
+            <button key={x} type="button" disabled={added.includes(x)} onClick={() => void addEx(x)} className="min-h-11 rounded-full border border-amber-500/40 bg-amber-950 px-3.5 py-1.5 text-left text-[15px] font-semibold leading-snug text-amber-100 hover:border-amber-500 disabled:opacity-40">
+              ＋ {x}
+            </button>
+          ))}
+        </div>
+      </section>
       {err != null && <ErrorBox err={err} retry={() => void load()} />}
       {!items && err == null && <Loading text="讀取清單…" />}
       {items && (

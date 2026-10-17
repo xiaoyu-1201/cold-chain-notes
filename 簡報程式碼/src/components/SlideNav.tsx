@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState, type MouseEvent, type Pointer
 import { parts } from '../data/parts'
 import { slides } from '../data/slides'
 import { NEW_LABEL, isNew, newTag, shortDate } from '../data/whatsNew'
+import { byCategory } from '../data/categories'
 import { useModal } from '../hooks/useModal'
 import type { PartId } from '../data/types'
 import { cn, pad } from '../lib/cn'
@@ -229,8 +230,18 @@ function PageGrid({ index, onGoTo, onClose }: { index: number; onGoTo: (index: n
           {dotGroups.map((g) => (
             <section key={g.part} className="mb-4 last:mb-0">
               <h3 className={cn('mb-2 text-[16px] font-black', toneStyles[parts[g.part].tone].text)}>{parts[g.part].label ?? groupLabel(g.part)}</h3>
+              {/* 篇裡再照小類別分組（10/18 使用者），頁碼可能跳號 */}
+              {byCategory(g.items.map((i) => ({ slide: slides[i], i }))).map((cat) => (
+              <div key={cat.name || 'all'} className="mb-2.5 last:mb-0">
+              {cat.name && (
+                <p className="mb-1.5 flex items-center gap-2 text-[14px] font-bold text-slate-200">
+                  <span aria-hidden className={cn('h-4 w-1 rounded-full', toneStyles[parts[g.part].tone].dot)} />
+                  {cat.name}
+                  <span className="text-[13px] font-semibold text-slate-500">{cat.items.length} 頁</span>
+                </p>
+              )}
               <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-2">
-                {g.items.map((i) => {
+                {cat.items.map(({ i }) => {
                   const s = slides[i]
                   const on = i === index
                   const fresh = isNew(s.added)
@@ -258,6 +269,8 @@ function PageGrid({ index, onGoTo, onClose }: { index: number; onGoTo: (index: n
                   )
                 })}
               </div>
+              </div>
+              ))}
             </section>
           ))}
         </div>

@@ -524,7 +524,7 @@ const slideList: SlideData[] = [
     added: '2026-10-17',
     changes: '「一定要問」補了：冷凍油、要足的或小一點、為什麼壞、散熱外移',
     part: 'components',
-    chapter: '第 2 章',
+    chapter: '壓縮機總覽',
     title: '壓縮機：系統的龍頭',
     en: 'Compressor',
     store: {
@@ -1469,7 +1469,7 @@ const slideList: SlideData[] = [
     added: '2026-10-13',
     changes: '3D「標出構造」：引線指在零件上、外殼裡的零件剖開才標、不蓋到按鈕',
     part: 'components',
-    chapter: '第 3 章',
+    chapter: '冷凝器總覽',
     title: '冷凝器（熱排）：把熱散到室外',
     en: 'Air-Cooled Condenser',
     store: {
@@ -1577,7 +1577,7 @@ const slideList: SlideData[] = [
     added: '2026-10-13',
     changes: '3D 標籤重做；標「新」的步驟：風扇延遲＝留滴水時間（錄音16）',
     part: 'components',
-    chapter: '第 4 章',
+    chapter: '蒸發器總覽',
     title: '蒸發器（冷排）：把熱吸走＋除霜',
     en: 'Evaporator & Defrost',
     store: {
@@ -1701,7 +1701,7 @@ const slideList: SlideData[] = [
     added: '2026-10-12',
     changes: '整頁是新的：錄音16 老闆講的除霜、滴水時間、冷排結冰四個原因、內膨外膨',
     part: 'components',
-    chapter: '第 4 章',
+    chapter: '冷排除霜',
     mark: 'DEFROST',
     title: '冷排除霜：冷凍跟冷藏最大的差別',
     en: 'Defrost',
@@ -1790,7 +1790,7 @@ const slideList: SlideData[] = [
     added: '2026-10-13',
     changes: '3D：放大看裡六個產品直接換；標籤重做（引線指在零件上、不蓋到按鈕）',
     part: 'components',
-    chapter: '第 5 章',
+    chapter: '閥件總覽',
     title: '控制與保護閥件',
     en: 'Controls & Protection',
     store: {
@@ -4301,7 +4301,7 @@ const slideList: SlideData[] = [
     tier: 'ref',
     source: 'handbook',
     part: 'practice',
-    chapter: '第 9 章',
+    chapter: '故障診斷',
     title: '現場四大高頻故障診斷矩陣',
     en: 'Troubleshooting Matrix',
     store: {

@@ -19,6 +19,7 @@ import { CoilReader } from './CoilReader'
 import { FenConverter } from './FenConverter'
 import { HpCalc } from './HpCalc'
 import { AskFirst } from './AskFirst'
+import { SessionNotes } from './SessionNotes'
 import { VernierCaliper } from './VernierCaliper'
 import { PhotoCard } from './PhotoCard'
 import { ProductShowcase } from '../three/ProductShowcase'
@@ -117,6 +118,8 @@ function Leaf({ block }: { block: Exclude<Block, GridBlock> }) {
       return <HpCalc />
     case 'askfirst':
       return <AskFirst />
+    case 'sessionNotes':
+      return <SessionNotes />
     case 'caliper':
       return <VernierCaliper />
     case 'coilreader':

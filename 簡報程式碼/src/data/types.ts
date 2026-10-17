@@ -480,6 +480,11 @@ export interface AskFirstBlock {
   type: 'askfirst'
 }
 
+/** 上課筆記：每次上課的單獨筆記（讀 上課資料/單次筆記/*.md） */
+export interface SessionNotesBlock {
+  type: 'sessionNotes'
+}
+
 /** 看懂散熱器／冷排規格「排×支×鏡面」（錄音08～10） */
 export interface CoilReaderBlock {
   type: 'coilreader'
@@ -545,6 +550,7 @@ export type Block =
   | FenBlock
   | HpCalcBlock
   | AskFirstBlock
+  | SessionNotesBlock
   | CaliperBlock
   | CoilReaderBlock
   | ShowcaseBlock

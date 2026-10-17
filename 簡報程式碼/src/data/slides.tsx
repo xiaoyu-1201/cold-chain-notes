@@ -4892,6 +4892,24 @@ const slideList: SlideData[] = [
     },
   },
 
+  /* ───────────────────────── 上課筆記（每次上課的單獨筆記，10/17） ───────────────────────── */
+  {
+    id: 'session-notes',
+    tier: 'ref',
+    added: '2026-10-17',
+    changes: '整頁是新的：每次上課的單獨筆記直接放在這裡，手機也能快速看',
+    part: 'review',
+    chapter: '上課筆記',
+    mark: 'NOTES',
+    title: '上課筆記：每次上課講了什麼',
+    en: 'Class Notes',
+    blocks: [{ type: 'sessionNotes' }],
+    conclusion: {
+      label: '怎麼用',
+      text: <>想快速回顧哪一次上課就看這頁；要找某個主題，用「搜尋」或問 AI 助教，會帶你到整理好的內容頁。</>,
+    },
+  },
+
   /* ───────────────────────── 開單前問客人（10/17 總表） ───────────────────────── */
   {
     id: 'ask-first',
@@ -5713,6 +5731,7 @@ const ORDER = [
   'recap-5',
   'check-5',
   'recordings',
+  'session-notes',
   'glossary',
   'abbr-parts',
   'abbr-specs',

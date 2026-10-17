@@ -1,4 +1,4 @@
-import { defineConfig, type Plugin, type UserConfig } from 'vite'
+import { defineConfig, searchForWorkspaceRoot, type Plugin, type UserConfig } from 'vite'
 import { fileURLToPath } from 'node:url'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
@@ -32,6 +32,9 @@ const noClassAudio = (): Plugin => ({
  * 錄音只留在公司版（build:company）、離線檔（build:offline）和本機開發。
  */
 export const makeConfig = (mode: string): UserConfig => ({
+  // 上課筆記直接讀 ../上課資料/單次筆記/*.md（在專案資料夾外面）：開發時只多開這一個資料夾，
+  // 不要開 '..'（會連錄音、照片、帳務檔都讀得到；10/17 code review）
+  server: { fs: { allow: [searchForWorkspaceRoot(process.cwd()), fileURLToPath(new URL('../上課資料/單次筆記', import.meta.url))] } },
   plugins: [react(), tailwindcss(), ...(mode === 'pages' ? [noClassAudio()] : [])],
   resolve: {
     alias:

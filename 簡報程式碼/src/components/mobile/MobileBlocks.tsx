@@ -28,6 +28,7 @@ import { InView } from '../ui/InView'
 import { FenConverter } from '../blocks/FenConverter'
 import { HpCalc } from '../blocks/HpCalc'
 import { AskFirst } from '../blocks/AskFirst'
+import { SessionNotes } from '../blocks/SessionNotes'
 import { VernierCaliper } from '../blocks/VernierCaliper'
 import { ProductShowcase } from '../three/ProductShowcase'
 import { Abbr } from '../blocks/Abbr'
@@ -703,6 +704,8 @@ export function MobileBlock({ block, nested }: { block: Block; nested?: boolean 
       return <HpCalc mobile />
     case 'askfirst':
       return <AskFirst mobile />
+    case 'sessionNotes':
+      return <SessionNotes mobile />
     case 'caliper':
       return <VernierCaliper mobile />
     case 'coilreader':

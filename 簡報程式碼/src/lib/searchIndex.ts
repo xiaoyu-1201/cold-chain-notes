@@ -3,6 +3,7 @@ import { slideById, slides } from '../data/slides'
 import { recordingOf } from '../data/recordings'
 import { PRACTICE } from '../data/practice'
 import { ASK_FIRST } from '../data/askFirst'
+import { SESSION_NOTES } from '../data/sessionNotes'
 import type { Block, RecordingsIndexBlock, SlideData } from '../data/types'
 
 /**
@@ -92,6 +93,15 @@ function chunksOf(block: Block, prefix: string, out: SearchChunk[]) {
     return
   }
   // 開單前問客人：資料在 askFirst.ts，一個商品一段（搜尋、AI 助教都讀得到）
+  // 上課筆記：一份筆記的每個 ## 段落各一段（搜尋、AI 助教都讀得到）
+  if (block.type === 'sessionNotes') {
+    for (const n of SESSION_NOTES)
+      for (const sec of n.md.split(/\n(?=##\s)/).slice(1)) {
+        const [head, ...rest] = sec.split('\n')
+        out.push({ label: `上課筆記 ${n.id.replace(/\s*上課筆記$/, '')}：${head.replace(/^##\s+/, '')}`, text: clean(rest.join(' ').replace(/^\s*([-*]|\d+\.)\s/gm, ' ').replace(/[#*|>`]+/g, ' ')) })
+      }
+    return
+  }
   if (block.type === 'askfirst') {
     for (const g of ASK_FIRST) out.push({ label: `開單前問：${g.label}`, text: g.items.map((i) => `${i.q} 為什麼問：${i.why} 回答後：${i.then}`).join(' ') })
     return

@@ -458,9 +458,12 @@ function MergedBar({ index, onGoTo }: { index: number; onGoTo: (index: number) =
                       className={cn(
                         // after:：看不見的外圈，平板手指點得到（觸控範圍 36px）
                         'relative flex h-7 min-w-7 shrink-0 items-center justify-center rounded-full px-1 font-mono text-[13px] font-bold transition after:absolute after:-inset-1.5 after:content-[""]',
-                        on ? 'bg-card font-black text-sky-300 shadow-sm ring-2 ring-sky-500' : 'text-slate-300 hover:bg-white/[0.07] hover:text-ink',
-                        !on && slides[i].tier === 'ref' && 'text-slate-500',
-                        fresh && (on ? 'ring-red-400' : 'ring-1 ring-red-400 text-red-400'),
+                        // 新頁：紅底白字，一眼看得出來（10/18 使用者：頁碼列也要好認）；不能再疊灰字的 class，不然字會變深色看不清楚
+                        on
+                          ? cn('bg-card font-black text-sky-300 shadow-sm ring-2', fresh ? 'ring-red-400' : 'ring-sky-500')
+                          : fresh
+                            ? 'bg-red-400 text-paper hover:bg-red-500'
+                            : cn('hover:bg-white/[0.07] hover:text-ink', slides[i].tier === 'ref' ? 'text-slate-500' : 'text-slate-300'),
                         focusRing,
                       )}
                     >
@@ -491,7 +494,7 @@ function Tip({ i, x, group }: { i: number; x: number; group?: boolean }) {
       ) : (
         <>
           <span className="mr-1.5 font-mono text-sky-400">P.{pad(i + 1)}</span>
-          {isNew(s.added) && <span className="mr-1.5 rounded bg-red-400 px-1.5 text-[13px] font-black text-paper">新</span>}
+          {isNew(s.added) && <span className="mr-1.5 rounded bg-red-400 px-1.5 text-[13px] font-black text-paper">{newTag(s.added)}</span>}
           {s.title}
         </>
       )}

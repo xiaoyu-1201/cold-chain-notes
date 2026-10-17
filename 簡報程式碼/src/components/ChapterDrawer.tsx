@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import { parts } from '../data/parts'
 import { slides } from '../data/slides'
 import type { Part, SlideData } from '../data/types'
-import { isNew } from '../data/whatsNew'
+import { isNew, newTag } from '../data/whatsNew'
 import { cn, pad } from '../lib/cn'
 import { toneStyles } from '../lib/tone'
 import { Kbd } from './ui/Kbd'
@@ -119,11 +119,12 @@ export function ChapterDrawer({ open, index, onClose, onSelect, mobile = false }
                             </span>
                             <span className="min-w-0 flex-1">
                               <span className={cn('block truncate text-[16px] font-semibold', active ? 'text-sky-100' : 'text-slate-100')}>
-                                {isNew(slide.added) && <span className="mr-1.5 rounded bg-red-400 px-1.5 text-[13px] font-black text-paper">新</span>}
                                 {slide.title}
                               </span>
-                              {slide.chapter && (
+                              {/* 新頁：標日期（跟頁面標題一樣「新・10/17」），放第二行，標題才不會被擠到看不完（10/18 使用者） */}
+                              {(slide.chapter || isNew(slide.added)) && (
                                 <span className="block text-[13px] text-slate-400">
+                                  {isNew(slide.added) && <span className="mr-1.5 rounded bg-red-400 px-1.5 font-black text-paper">{newTag(slide.added)}</span>}
                                   {slide.chapter}
                                   {slide.advanced && <span className="ml-1.5 font-bold text-amber-300">進階</span>}
                                   {slide.tier === 'ref' && <span className="ml-1.5 text-slate-500">查閱</span>}
